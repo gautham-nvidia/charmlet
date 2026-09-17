@@ -1,0 +1,103 @@
+{
+  "name": "charmlet",
+  "displayName": "Charmlet: Coding Charms",
+  "description": "An interactive hanging charm. Phase 0 docked-view prototype.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "publisher": "gautham-nvidia",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gautham-nvidia/charmlet.git"
+  },
+  "extensionKind": [
+    "ui"
+  ],
+  "keywords": [
+    "charms",
+    "hanging charm",
+    "coding companion"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "charmlet.view",
+          "name": "Charmlet",
+          "type": "webview",
+          "visibility": "collapsed",
+          "initialSize": 280
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "charmlet.show",
+        "title": "Show Charm",
+        "category": "Charmlet"
+      },
+      {
+        "command": "charmlet.toggle",
+        "title": "Toggle Charm",
+        "category": "Charmlet"
+      },
+      {
+        "command": "charmlet.hide",
+        "title": "Hide Charm",
+        "category": "Charmlet"
+      },
+      {
+        "command": "charmlet.reset",
+        "title": "Reset Charm",
+        "category": "Charmlet"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test:unit": "npm run compile-tests && node --test out/test/state.test.js",
+    "test:ui": "playwright test",
+    "test": "npm run test:unit && npm run test:ui",
+    "package:vsix": "vsce package --no-dependencies --skip-license"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/matter-js": "^0.20.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "24.x",
+    "@types/vscode": "1.90.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.5.0",
+    "npm-run-all": "^4.1.5",
+    "pngjs": "^7.0.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1"
+  },
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.6"
+  },
+  "dependencies": {
+    "lucide": "^1.47.0",
+    "matter-js": "^0.20.0"
+  }
+}

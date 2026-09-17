@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phase-0:
+    name: Build, test and package
+    runs-on: windows-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: extension
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: extension/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Build and test on pinned VS Code
+        run: |
+          $env:VSCODE_EXECUTABLE = node --input-type=module -e "import { downloadAndUnzipVSCode } from '@vscode/test-electron'; console.log(await downloadAndUnzipVSCode('1.138.0'));" | Select-Object -Last 1
+          if ($LASTEXITCODE -ne 0 -or !(Test-Path $env:VSCODE_EXECUTABLE)) { throw 'VS Code test host download failed.' }
+          npm test
+      - name: Package development VSIX
+        run: npm run package:vsix
+      - name: Retain test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-0-test-evidence-${{ github.sha }}
+          path: extension/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Retain installable prototype
+        uses: actions/upload-artifact@v4
+        with:
+          name: charmlet-phase-0-${{ github.sha }}
+          path: extension/*.vsix
+          if-no-files-found: error
+          retention-days: 14

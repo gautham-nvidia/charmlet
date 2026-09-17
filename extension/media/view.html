@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src __CSP__; style-src __CSP__; script-src 'nonce-__NONCE__';">
+  <link rel="stylesheet" href="__STYLE__">
+  <title>Charmlet</title>
+</head>
+<body>
+  <main id="app" aria-label="Charmlet">
+    <div id="stage" data-ready="false" data-running="false">
+      <div id="rig">
+        <div id="hanging" hidden>
+          <svg id="cord" aria-hidden="true"><path id="thread"></path></svg>
+          <span id="anchor" aria-hidden="true"></span>
+          <button id="charm" type="button" aria-label="Nudge terminal charm" title="Nudge charm" draggable="false">
+            <img src="__CHARM__" alt="" width="72" height="84" draggable="false">
+          </button>
+        </div>
+        <button id="restore" type="button" aria-label="Restore charm" title="Restore charm" hidden></button>
+      </div>
+    </div>
+    <div class="tools" role="toolbar" aria-label="Charm controls">
+      <div class="identity"><span class="swatch"></span><span>Terminal</span></div>
+      <div class="actions">
+        <button id="motion" type="button" role="switch" aria-checked="true" aria-label="Motion" title="Motion"></button>
+        <button id="reset" type="button" aria-label="Reset position" title="Reset position"></button>
+        <button id="toggle" type="button" aria-label="Hide charm" title="Hide charm"></button>
+      </div>
+    </div>
+    <div class="readout"><span id="phase" role="status" aria-live="polite">Parked</span><output id="length">128 px</output></div>
+  </main>
+  <script nonce="__NONCE__" src="__SCRIPT__"></script>
+</body>
+</html>
