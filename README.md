@@ -6,6 +6,9 @@ Phase 0 proves the interaction in a **docked view**, not a floating overlay over
 **Status, 2026-09-17:** one original terminal-keycap prototype, validated locally on Windows / VS Code
 1.138.0. No Marketplace or Open VSX release yet. No telemetry, account, payment or runtime AI required.
 
+[Phase 0 merged in PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) after
+[hosted Windows CI passed](https://github.com/gautham-nvidia/charmlet/actions/runs/35273596086).
+
 ![Phase 0 in the right sidebar of a real VS Code window](docs/phase-0-right-dock.png)
 
 ## Run the demo

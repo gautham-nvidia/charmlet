@@ -8,7 +8,7 @@ and next action. Current milestone status is summarized below; entries preserve 
 
 | ID | Status | Scope / next gate | Tracking |
 |---|---|---|---|
-| P0 | Validated locally; integration pending | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3) |
+| P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
 | P1 | Next | Free-core sizing/cord UX, cancellation/lifecycle coverage, accessibility, profiling and engine-floor tests | [#2](https://github.com/gautham-nvidia/charmlet/issues/2) |
 | P2 | Planned | Three finished free originals, switching UI, generic Silicon coworker trial | [Roadmap #1](https://github.com/gautham-nvidia/charmlet/issues/1) |
 | P3 | Planned | Cross-editor/OS/remote tests; approved identity and license; Marketplace + Open VSX | Roadmap #1 |
@@ -80,3 +80,24 @@ successful Windows checks are not evidence for every fork.
 - CI runs build/unit/UI/package checks and keeps artifacts associated with the checked commit. It does not
   publish the extension. The PR checklist requires dated log updates and explicit untested requirements.
 - Integration and remote CI results will be appended after the feature branch is pushed and merged.
+
+## 2026-09-17 - Phase 0 delivered to main
+
+| History | Description / evidence |
+|---|---|
+| [`c02e440`](https://github.com/gautham-nvidia/charmlet/commit/c02e440) | `feat: establish tested Phase 0 charm prototype (#3)` |
+| [`0fa45e4`](https://github.com/gautham-nvidia/charmlet/commit/0fa45e4) | `docs: add dated project tracking and CI gates (#1, #3)` |
+| [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) | `feat/phase-0-prototype` -> `main`, merged with both commits preserved |
+| [`cf1e584`](https://github.com/gautham-nvidia/charmlet/commit/cf1e5848090f6959c14b780107dbe865834dd766) | `Merge PR #4: tested Phase 0 prototype and project traceability` |
+| [CI run 35273596086](https://github.com/gautham-nvidia/charmlet/actions/runs/35273596086) | Hosted Windows build, tests and packaging succeeded at **2026-09-17T20:56:39Z**, before merge |
+
+The earlier "integration pending" status is superseded by this record. Local main was fast-forwarded
+to the GitHub merge. No force push, history rewrite, registry publication or company-organized repository.
+Phase 0 acceptance is recorded in issue #3. Roadmap #1 stays open; the next work is the free-core
+refinement in issue #2, not payment infrastructure or a native overlay.
+
+This delivery record uses `docs/phase-0-delivery-record` and a separate PR so documentation follows
+the same workflow as code. Its own date, commit description and merge are discoverable through the
+file's Git history; it does not need to embed its own future commit hash. Retain merged branches for
+inspection. CI artifacts expire after 14 days; the screenshot, tests, commit messages and project log
+remain versioned in the repository.
