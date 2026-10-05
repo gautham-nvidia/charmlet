@@ -10,3 +10,6 @@ extension/playwright-report/
 *.log
 .DS_Store
 Thumbs.db
+
+# Local agent recovery notes
+/session/

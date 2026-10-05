@@ -1,5 +1,7 @@
 # Charmlet - design research and build plan
 
+**Implementation update, 2026-10-05:** Phase 1's free-core controls and interaction checks are implemented in development version 0.0.2, with local Windows passes on VS Code 1.90.0 and 1.138.0. See [PROJECT_LOG.md](PROJECT_LOG.md) and the [validation record](docs/phase-1-validation.md) for current evidence and remaining feedback. Each phase uses its own branch and merges to main before the next begins. Earlier proposals below remain historical.
+
 **Implementation update, 2026-09-17:** Charmlet is the selected product name; the personal public
 repository is `gautham-nvidia/charmlet`. Phase 0's docked prototype now has passing Windows real-editor
 checks and a development VSIX. See [README.md](README.md) for setup and [PROJECT_LOG.md](PROJECT_LOG.md)

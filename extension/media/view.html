@@ -24,12 +24,21 @@
     <div class="tools" role="toolbar" aria-label="Charm controls">
       <div class="identity"><span class="swatch"></span><span>Terminal</span></div>
       <div class="actions">
+        <button id="settings-toggle" type="button" aria-label="Charm settings" title="Charm settings" aria-expanded="false" aria-controls="settings"></button>
         <button id="motion" type="button" role="switch" aria-checked="true" aria-label="Motion" title="Motion"></button>
         <button id="reset" type="button" aria-label="Reset position" title="Reset position"></button>
         <button id="toggle" type="button" aria-label="Hide charm" title="Hide charm"></button>
       </div>
     </div>
-    <div class="readout"><span id="phase" role="status" aria-live="polite">Parked</span><output id="length">128 px</output></div>
+    <div id="settings" hidden>
+      <label for="size">Size</label>
+      <input id="size" type="range" min="60" max="140" step="10" value="100">
+      <output id="size-value" for="size">100%</output>
+      <label for="cord-length">Cord</label>
+      <input id="cord-length" type="range" min="48" max="320" step="2" value="126">
+      <output id="cord-value" for="cord-length">126 px</output>
+    </div>
+    <div class="readout"><span id="phase" role="status" aria-live="polite">Parked</span><output id="length">126 px</output></div>
   </main>
   <script nonce="__NONCE__" src="__SCRIPT__"></script>
 </body>

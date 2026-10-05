@@ -1,11 +1,16 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
+function commandInput(window: Page) {
+	const widget = window.locator('.quick-input-widget');
+	return widget.getByRole('combobox').or(widget.getByRole('textbox'));
+}
+
 async function command(window: Page, title: string) {
 	await window.keyboard.press('Control+Shift+P');
-	const input = window.locator('.quick-input-widget input');
+	const input = commandInput(window);
 	await expect(input).toBeVisible();
 	await input.fill('>');
 	await input.pressSequentially(title, { delay: 15 });
@@ -43,8 +48,13 @@ async function browserFrames(window: Page, count = 12) {
 	}), count);
 }
 
-async function dragCharm(window: Page, frame: Frame, deltaX: number, deltaY: number) {
+async function beginDrag(window: Page, frame: Frame, deltaX: number, deltaY: number) {
 	await expect(frame.locator('#charm')).toBeVisible();
+	await frame.locator('#charm').evaluate(charm => {
+		charm.addEventListener('pointerdown', event => {
+			(charm as HTMLElement).dataset.testPointer = String((event as PointerEvent).pointerId);
+		}, { once: true });
+	});
 	const bounds = await frame.locator('#charm').boundingBox();
 	if (!bounds) {
 		throw new Error('Cannot drag an invisible charm.');
@@ -58,11 +68,18 @@ async function dragCharm(window: Page, frame: Frame, deltaX: number, deltaY: num
 		await browserFrames(window, 1);
 	}
 	await expect(frame.locator('#phase')).toHaveText('Held');
+}
+
+async function dragCharm(window: Page, frame: Frame, deltaX: number, deltaY: number) {
+	await beginDrag(window, frame, deltaX, deltaY);
 	await window.mouse.up();
 }
 
 test('real-editor charm supports docking, gestures, focus, persistence and reduced motion', async ({}, testInfo) => {
+	test.setTimeout(180000);
 	const profile = mkdtempSync(join(tmpdir(), 'charmlet-ui-'));
+	const scratchFile = join(profile, 'charmlet-trial.ts');
+	writeFileSync(scratchFile, "export const greeting = 'Hello, Charmlet!';\n");
 	const environment: Record<string, string> = {};
 	for (const [key, value] of Object.entries(process.env)) {
 		if (value !== undefined && key !== 'ELECTRON_RUN_AS_NODE') {
@@ -77,7 +94,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			`--extensionDevelopmentPath=${resolve('.')}`,
 			'--skip-welcome', '--skip-release-notes', '--disable-workspace-trust',
 			'--disable-telemetry', '--disable-updates',
-			resolve('src/charm-state.ts'),
+			scratchFile,
 		],
 		env: environment,
 		timeout: 45000,
@@ -91,9 +108,9 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 		await window.waitForLoadState('domcontentloaded');
 		await expect(window.locator('.monaco-workbench')).toBeVisible({ timeout: 30000 });
-		await expect(window.locator('.part.editor .view-lines').first()).toContainText('export interface CharmState', { timeout: 30000 });
+		await expect(window.locator('.part.editor .view-lines').first()).toContainText('Hello, Charmlet!', { timeout: 30000 });
 		await window.keyboard.press('Control+Shift+P');
-		const input = window.locator('.quick-input-widget input');
+		const input = commandInput(window);
 		await expect(input).toBeVisible();
 		await input.fill('>');
 		await input.pressSequentially('Charmlet: Show Charm', { delay: 30 });
@@ -179,11 +196,12 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 		await command(window, 'Charmlet: Show Charm');
 		await expect(window.locator('.part.editor .monaco-editor.focused')).toBeVisible();
-		await window.keyboard.press('Control+N');
+		await window.keyboard.press('Control+End');
+		await window.keyboard.press('Enter');
 		await window.keyboard.type('const charmletTrial = true;');
 		await expect(window.locator('.part.editor .monaco-editor.focused .view-lines')).toContainText('const charmletTrial = true;');
-		await window.keyboard.press('Control+Z');
-		await window.keyboard.press('Control+F4');
+		await window.keyboard.press('Control+S');
+		await expect.poll(() => readFileSync(scratchFile, 'utf8')).toContain('const charmletTrial = true;');
 		await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 650));
 		frame = await readyFrame(window);
 		const fits = await frame.locator('#charm').evaluate(charm => {
@@ -193,6 +211,219 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 		expect(fits).toBe(true);
 		await window.screenshot({ path: testInfo.outputPath('compact-window.png') });
+
+		await test.step('size and cord controls persist across reload', async () => {
+			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
+			frame = await readyFrame(window);
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await frame.getByRole('slider', { name: 'Size', exact: true }).focus();
+			await frame.getByRole('slider', { name: 'Size', exact: true }).press('End');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+			await expect.poll(() => frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width)).toBeGreaterThan(95);
+			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
+			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('End');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '320');
+			await window.screenshot({ path: testInfo.outputPath('phase-1-settings.png') });
+			await Promise.all([
+				window.waitForEvent('domcontentloaded'),
+				command(window, 'Developer: Reload Window'),
+			]);
+			frame = await readyFrame(window);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '320');
+			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 500));
+			frame = await readyFrame(window);
+			await expect.poll(() => frame.locator('#charm').evaluate(charm => {
+				const bounds = charm.getBoundingClientRect();
+				const stage = document.getElementById('stage')!.getBoundingClientRect();
+				return bounds.left >= stage.left - 1 && bounds.right <= stage.right + 1
+					&& bounds.top >= stage.top - 1 && bounds.bottom <= stage.bottom + 1;
+			})).toBe(true);
+			await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThan(320);
+			await window.screenshot({ path: testInfo.outputPath('phase-1-compact-large-charm.png') });
+			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '320');
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
+			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Home');
+			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('ArrowRight');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
+			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Escape');
+			await expect(frame.locator('#settings-toggle')).toBeFocused();
+			await expect(frame.locator('#settings')).toBeHidden();
+		});
+
+		await test.step('cancelled and lost-capture drags restore the parked state', async () => {
+			for (const cancellation of ['pointercancel', 'capture', 'blur']) {
+				const before = Number(await frame.locator('#charm').getAttribute('data-position-x'));
+				await beginDrag(window, frame, -20, 40);
+				await expect.poll(async () => Number(await frame.locator('#charm').getAttribute('data-position-x'))).toBeLessThan(before - 10);
+				const pointerId = Number(await frame.locator('#charm').getAttribute('data-test-pointer'));
+				if (cancellation === 'capture') {
+					await frame.locator('#charm').evaluate((charm, id) => charm.releasePointerCapture(id), pointerId);
+				} else if (cancellation === 'blur') {
+					await frame.evaluate(() => globalThis.dispatchEvent(new Event('blur')));
+				} else {
+					await frame.locator('#charm').dispatchEvent('pointercancel', { pointerId });
+				}
+				await window.mouse.up();
+				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
+				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
+				await expect(frame.locator('#phase')).toHaveText('Parked');
+				expect(await frame.locator('#charm').evaluate((charm, id) => charm.hasPointerCapture(id), pointerId)).toBe(false);
+			}
+		});
+
+		await test.step('resizing during a drag cancels it without saving the temporary length', async () => {
+			await beginDrag(window, frame, -20, 40);
+			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 650));
+			await expect(frame.locator('#phase')).toHaveText('Parked');
+			await window.mouse.up();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
+			await expect(frame.locator('#charm')).not.toHaveClass(/dragging/);
+			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
+		});
+
+		await test.step('collapsing the view during a drag preserves preferences', async () => {
+			await beginDrag(window, frame, 0, 40);
+			await window.keyboard.press('Control+Alt+B');
+			await window.mouse.up();
+			await expect.poll(async () => {
+				try {
+					return frame.isDetached() || !(await frame.locator('#stage').isVisible());
+				} catch (error) {
+					if (frame.isDetached()) {
+						return true;
+					}
+					throw error;
+				}
+			}).toBe(true);
+			await window.keyboard.press('Control+Alt+B');
+			frame = await readyFrame(window);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
+			await expect(frame.locator('#phase')).toHaveText('Parked');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
+		});
+
+		await test.step('system reduced motion overrides animation and high contrast keeps focus visible', async () => {
+			await frame.getByRole('switch', { name: 'Motion', exact: true }).click();
+			await frame.locator('#charm').click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'true');
+			await window.emulateMedia({ reducedMotion: 'reduce' });
+			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toBeDisabled();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
+			const stoppedFrames = await frame.locator('#stage').getAttribute('data-frames');
+			await frame.locator('#charm').click();
+			await browserFrames(window);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-frames', stoppedFrames!);
+			await command(window, 'Preferences: Color Theme');
+			const themeInput = commandInput(window);
+			await themeInput.fill('Dark High Contrast');
+			await window.locator('.quick-input-list').getByText('Dark High Contrast', { exact: true }).click();
+			await expect(frame.locator('body')).toHaveClass(/vscode-high-contrast/);
+			await frame.locator('#charm').focus();
+			await frame.locator('#charm').press('ArrowRight');
+			await expect(frame.locator('#charm')).toHaveCSS('outline-style', 'solid');
+			await window.screenshot({ path: testInfo.outputPath('phase-1-high-contrast.png') });
+			await window.emulateMedia({ reducedMotion: 'no-preference' });
+			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toBeEnabled();
+		});
+
+		await test.step('keyboard hiding and restoring leave focus on usable controls', async () => {
+			await frame.locator('#charm').focus();
+			await frame.locator('#charm').press('Escape');
+			await expect(frame.locator('#toggle')).toBeFocused();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
+			await frame.locator('#restore').focus();
+			await frame.locator('#restore').press('Enter');
+			await expect(frame.locator('#charm')).toBeFocused();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
+		});
+
+		await test.step('record visible, settled and hidden resource snapshots', async () => {
+			const sampleDurationMs = 2000;
+			const captureMetrics = () => app.evaluate(({ app: host }) => {
+				const processes = host.getAppMetrics().map((metric: {
+					pid: number;
+					creationTime: number;
+					type: string;
+					cpu: { percentCPUUsage: number };
+					memory: { workingSetSize: number };
+				}) => ({
+					pid: metric.pid,
+					creationTime: metric.creationTime,
+					type: metric.type,
+					cpuPercent: metric.cpu.percentCPUUsage,
+					workingSetKB: metric.memory.workingSetSize,
+				}));
+				return { monotonicMs: performance.now(), processes };
+			});
+			const samples = [];
+			for (const mode of ['active', 'settled', 'hidden']) {
+				if (mode === 'active') {
+					await frame.locator('#charm').click();
+					await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'true');
+				} else if (mode === 'settled') {
+					await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+				} else {
+					await frame.getByRole('button', { name: 'Hide charm', exact: true }).click();
+					await expect(frame.locator('#hanging')).toBeHidden();
+					await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
+				}
+				const beforeFrames = Number(await frame.locator('#stage').getAttribute('data-frames'));
+				const runningBefore = await frame.locator('#stage').getAttribute('data-running');
+				// Prime Electron's interval counters, then wait without driving workbench animation frames.
+				const before = await captureMetrics();
+				await new Promise(resolveSample => setTimeout(resolveSample, sampleDurationMs));
+				const after = await captureMetrics();
+				const afterFrames = Number(await frame.locator('#stage').getAttribute('data-frames'));
+				const runningAfter = await frame.locator('#stage').getAttribute('data-running');
+				const frameDelta = afterFrames - beforeFrames;
+				if (mode === 'active') {
+					expect(frameDelta).toBeGreaterThan(0);
+				} else {
+					expect(frameDelta).toBe(0);
+				}
+				for (const process of after.processes) {
+					expect(Number.isFinite(process.cpuPercent)).toBe(true);
+					expect(process.cpuPercent).toBeGreaterThanOrEqual(0);
+					expect(Number.isFinite(process.workingSetKB)).toBe(true);
+					expect(process.workingSetKB).toBeGreaterThanOrEqual(0);
+				}
+				samples.push({
+					mode,
+					intervalMs: after.monotonicMs - before.monotonicMs,
+					beforeFrames,
+					afterFrames,
+					frameDelta,
+					runningBefore,
+					runningAfter,
+					before,
+					after,
+				});
+			}
+			const report = {
+				schemaVersion: 1,
+				recordedAt: new Date().toISOString(),
+				hostVersion: await app.evaluate(({ app: host }) => host.getVersion()),
+				electronVersion: await app.evaluate(() => process.versions.electron),
+				platform: process.platform,
+				arch: process.arch,
+				requestedHost: process.env.VSCODE_TEST_VERSION ?? 'installed',
+				scope: 'All processes reported by the isolated VS Code host, including editor and automation overhead. Not extension-only CPU or memory.',
+				cpuMeaning: 'Electron percentCPUUsage since the preceding metrics call. Process identity is pid plus creationTime; a new process has no baseline.',
+				memoryMeaning: 'Electron workingSetSize in KB, per process. Shared pages can occur in multiple processes; do not sum as unique memory.',
+				sampleDurationMs,
+				samples,
+			};
+			const reportPath = testInfo.outputPath('resource-profile.json');
+			writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+			await testInfo.attach('resource-profile.json', { path: reportPath, contentType: 'application/json' });
+		});
 	} catch (error) {
 		await window.screenshot({ path: testInfo.outputPath('failure.png') });
 		throw error;

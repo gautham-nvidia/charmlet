@@ -4,12 +4,12 @@ Dates use YYYY-MM-DD; Git preserves exact timestamps and authors. Append dated e
 and corrections rather than erasing history. Record the linked issue/PR, commit description, evidence
 and next action. Current milestone status is summarized below; entries preserve how it changed.
 
-## Milestones - updated 2026-09-17
+## Milestones - updated 2026-10-05
 
 | ID | Status | Scope / next gate | Tracking |
 |---|---|---|---|
 | P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
-| P1 | Next | Free-core sizing/cord UX, cancellation/lifecycle coverage, accessibility, profiling and engine-floor tests | [#2](https://github.com/gautham-nvidia/charmlet/issues/2) |
+| P1 | Implementation verified; integration and placement feedback tracked in #2 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
 | P2 | Planned | Three finished free originals, switching UI, generic Silicon coworker trial | [Roadmap #1](https://github.com/gautham-nvidia/charmlet/issues/1) |
 | P3 | Planned | Cross-editor/OS/remote tests; approved identity and license; Marketplace + Open VSX | Roadmap #1 |
 | F1 | Deferred | Quiet opt-in coding motivation in the status bar | Roadmap #1 |
@@ -101,3 +101,24 @@ the same workflow as code. Its own date, commit description and merge are discov
 file's Git history; it does not need to embed its own future commit hash. Retain merged branches for
 inspection. CI artifacts expire after 14 days; the screenshot, tests, commit messages and project log
 remain versioned in the repository.
+
+## 2026-10-05 - Phase 1 free core
+
+- Branch: `feat/phase-1-free-core`; tracking [P1 #2](https://github.com/gautham-nvidia/charmlet/issues/2).
+- Development version: **0.0.2**. The previously uncommitted P1 work was resumed and retained.
+- User confirmed the delivery rule: one branch per phase, merged into `main` before the next phase starts. P2 is not part of this change.
+- Added saved size/cord controls, size-aware layout/physics, cancelled-drag recovery, visibility handling, focus improvements and reduced-motion interaction.
+- Repaired the editor test for both Command Palette accessibility roles and moved its editing fixture into a temporary directory. This also removes the unrelated Git-discovery toast from the screenshots.
+
+| Windows PC verification | Result |
+|---|---|
+| Type checking, lint and bundles | Passed |
+| State/physics unit tests | 9 passed |
+| VS Code 1.90.0 UI test | Full interaction test passed |
+| VS Code 1.138.0 UI test | Full interaction test passed |
+| Active / settled / hidden profiling | Raw captures checked and preserved; see the [validation record](docs/phase-1-validation.md) |
+| Development VSIX | `extension/charmlet-0.0.2.vsix` built locally; registry publication remains separate |
+
+The CI matrix runs build/unit/UI/package checks on both Windows hosts. Hosted results and the merge commit are recorded by the phase PR and issue #2; local evidence does not substitute for that gate. The source/art license and publisher decisions remain open, and nothing here publishes to a registry.
+
+Human feedback on occupied dock width has been requested and is not yet recorded. Automated compact-layout, typing and focus checks passed. After P1 is merged and reviewed, the next implementation phase is the three-original free collection.

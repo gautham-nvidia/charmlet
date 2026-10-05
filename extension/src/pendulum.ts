@@ -1,5 +1,5 @@
 import { Bodies, Body, Composite, Constraint, Engine, Sleeping } from 'matter-js';
-import { clamp, getLayout } from './charm-state';
+import { DEFAULT_STATE, clamp, getLayout } from './charm-state';
 
 export type Point = { x: number; y: number };
 
@@ -12,9 +12,9 @@ export class Pendulum {
 	private walls: Body[] = [];
 	private quietFrames = 0;
 
-	constructor(width: number, height: number, cordLength: number) {
-		this.layout = getLayout(width, height, cordLength);
-		this.body = Bodies.circle(this.layout.anchorX, this.layout.anchorY + this.layout.cordLength + 32, 34, {
+	constructor(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size) {
+		this.layout = getLayout(width, height, cordLength, size);
+		this.body = Bodies.circle(this.layout.anchorX, this.layout.anchorY + this.layout.cordLength + this.layout.attachmentOffset, this.layout.bodyRadius, {
 			frictionAir: 0.025,
 			restitution: 0.2,
 			sleepThreshold: 45,
@@ -23,12 +23,12 @@ export class Pendulum {
 		this.tether = Constraint.create({
 			pointA: { x: this.layout.anchorX, y: this.layout.anchorY },
 			bodyB: this.body,
-			length: this.layout.cordLength + 32,
+			length: this.layout.cordLength + this.layout.attachmentOffset,
 			stiffness: 0.9,
 			damping: 0.08,
 		});
 		Composite.add(this.engine.world, [this.body, this.tether]);
-		this.resize(width, height, cordLength);
+		this.resize(width, height, cordLength, size);
 	}
 
 	get moving() {
@@ -43,11 +43,15 @@ export class Pendulum {
 		return -Math.atan2(this.body.position.x - this.layout.anchorX, this.body.position.y - this.layout.anchorY);
 	}
 
-	resize(width: number, height: number, cordLength: number) {
+	resize(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size) {
 		this.release();
-		this.layout = getLayout(width, height, cordLength);
+		const previousRadius = this.layout.bodyRadius;
+		this.layout = getLayout(width, height, cordLength, size);
+		const ratio = this.layout.bodyRadius / previousRadius;
+		Body.scale(this.body, ratio, ratio);
+		Body.setInertia(this.body, Infinity);
 		this.tether.pointA = { x: this.layout.anchorX, y: this.layout.anchorY };
-		this.tether.length = this.layout.cordLength + 32;
+		this.tether.length = this.layout.cordLength + this.layout.attachmentOffset;
 		for (const wall of this.walls) {
 			Composite.remove(this.engine.world, wall);
 		}
@@ -62,7 +66,7 @@ export class Pendulum {
 
 	setLength(length: number) {
 		this.layout.cordLength = clamp(length, 48, this.layout.maximumCord);
-		this.tether.length = this.layout.cordLength + 32;
+		this.tether.length = this.layout.cordLength + this.layout.attachmentOffset;
 		this.wake();
 	}
 
@@ -88,13 +92,22 @@ export class Pendulum {
 		this.wake();
 	}
 
-	drag(point: Point) {
+	drag(point: Point, immediate = false) {
 		if (this.pointer) {
 			this.pointer.pointA = {
-				x: clamp(point.x, 34, this.layout.width - 34),
-				y: clamp(point.y, 12, this.layout.height - 34),
+				x: clamp(point.x, this.layout.bodyRadius, this.layout.width - this.layout.bodyRadius),
+				y: clamp(point.y, 12, this.layout.height - this.layout.bodyRadius),
 			};
-			this.wake();
+			if (immediate) {
+				Body.setPosition(this.body, {
+					x: this.pointer.pointA.x - this.pointer.pointB.x,
+					y: this.pointer.pointA.y - this.pointer.pointB.y,
+				});
+				Body.setVelocity(this.body, { x: 0, y: 0 });
+				Sleeping.set(this.body, true);
+			} else {
+				this.wake();
+			}
 		}
 	}
 
@@ -122,7 +135,7 @@ export class Pendulum {
 	settle() {
 		Body.setPosition(this.body, {
 			x: this.layout.anchorX,
-			y: this.layout.anchorY + this.layout.cordLength + 32,
+			y: this.layout.anchorY + this.layout.cordLength + this.layout.attachmentOffset,
 		});
 		Body.setVelocity(this.body, { x: 0, y: 0 });
 		Sleeping.set(this.body, true);

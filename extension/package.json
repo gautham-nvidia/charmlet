@@ -1,8 +1,8 @@
 {
   "name": "charmlet",
   "displayName": "Charmlet: Coding Charms",
-  "description": "An interactive hanging charm. Phase 0 docked-view prototype.",
-  "version": "0.0.1",
+  "description": "An interactive hanging charm with adjustable size and cord. Free, offline, docked-view extension.",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.90.0"
   },
