@@ -66,6 +66,33 @@ test('a click impulse moves the charm, then the pendulum sleeps', () => {
 	pendulum.dispose();
 });
 
+test('opposite nudges have balanced travel in a narrow dock', () => {
+	for (const size of [60, 100, 140]) {
+		const left = new Pendulum(180, 500, 320, size);
+		const right = new Pendulum(180, 500, 320, size);
+		try {
+			const leftStart = left.position.x;
+			const rightStart = right.position.x;
+			left.nudge(-1);
+			right.nudge(1);
+			let leftTravel = 0;
+			let rightTravel = 0;
+			for (let frame = 0; frame < 120; frame++) {
+				left.step();
+				right.step();
+				leftTravel = Math.max(leftTravel, leftStart - left.position.x);
+				rightTravel = Math.max(rightTravel, right.position.x - rightStart);
+			}
+			assert.ok(leftTravel > 10 && rightTravel > 10, `Size ${size}: both nudges must move`);
+			assert.ok(Math.abs(leftTravel - rightTravel) < 1,
+				`Size ${size}: left travel ${leftTravel}, right travel ${rightTravel}`);
+		} finally {
+			left.dispose();
+			right.dispose();
+		}
+	}
+});
+
 test('pulling extends the cord and releases without a stuck drag constraint', () => {
 	const pendulum = new Pendulum(280, 400, 128);
 	pendulum.grab(pendulum.position);

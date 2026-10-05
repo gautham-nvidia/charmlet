@@ -9,7 +9,7 @@ and next action. Current milestone status is summarized below; entries preserve 
 | ID | Status | Scope / next gate | Tracking |
 |---|---|---|---|
 | P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
-| P1 | Implementation verified; integration and placement feedback tracked in #2 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
+| P1 | Free core and placement feedback addressed; integration tracked in #2 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
 | P2 | Planned | Three finished free originals, switching UI, generic Silicon coworker trial | [Roadmap #1](https://github.com/gautham-nvidia/charmlet/issues/1) |
 | P3 | Planned | Cross-editor/OS/remote tests; approved identity and license; Marketplace + Open VSX | Roadmap #1 |
 | F1 | Deferred | Quiet opt-in coding motivation in the status bar | Roadmap #1 |
@@ -122,3 +122,11 @@ remain versioned in the repository.
 The CI matrix runs build/unit/UI/package checks on both Windows hosts. Hosted results and the merge commit are recorded by the phase PR and issue #2; local evidence does not substitute for that gate. The source/art license and publisher decisions remain open, and nothing here publishes to a registry.
 
 Human feedback on occupied dock width has been requested and is not yet recorded. Automated compact-layout, typing and focus checks passed. After P1 is merged and reviewed, the next implementation phase is the three-original free collection.
+
+## 2026-10-05 - Phase 1 placement feedback
+
+Gautham tried 0.0.2 and clarified that the interaction felt good, but the charm hung at the extreme right and lacked room to swing both ways. The screenshot showed a parked charm with the cord set to 320 px. This refinement centers the anchor within the panel while retaining saved size/cord values and the existing motion tuning.
+
+Development version **0.0.3**, on the retained `feat/phase-1-free-core` branch brought forward from main. The new narrow-dock physics regression failed with the old anchor and passed with centering. Type/lint/build, ten unit tests and the complete UI test on Windows VS Code 1.90.0 and 1.138.0 passed. The UI also checks centered clearance after sizing/resizing and an explicit rightward nudge.
+
+[Centered settings view](docs/phase-1-centered.png) and [compact view](docs/phase-1-centered-compact.png) preserve the follow-up appearance. Earlier 0.0.2 captures remain unchanged. PR/hosted-CI/merge evidence is tracked in issue #2. This is still Phase 1; Phase 2 has not started.

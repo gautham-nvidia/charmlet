@@ -34,6 +34,16 @@ async function readyFrame(window: Page): Promise<Frame> {
 	return result;
 }
 
+async function expectBalancedSwingRoom(frame: Frame) {
+	await expect.poll(() => frame.locator('#charm').evaluate(charm => {
+		const bounds = charm.getBoundingClientRect();
+		const stage = document.getElementById('stage')!.getBoundingClientRect();
+		const leftGap = bounds.left - stage.left;
+		const rightGap = stage.right - bounds.right;
+		return Math.abs(leftGap - rightGap);
+	})).toBeLessThanOrEqual(2);
+}
+
 async function browserFrames(window: Page, count = 12) {
 	await window.evaluate(total => new Promise<void>(resolveFrames => {
 		let remaining = total;
@@ -152,9 +162,14 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 		await expect.poll(() => frame.locator('#hanging').evaluate(node => node.getAnimations().every(animation => animation.playState === 'finished'))).toBe(true);
+		await expectBalancedSwingRoom(frame);
 		const startX = Number(await frame.locator('#charm').getAttribute('data-position-x'));
 		await frame.locator('#charm').click();
 		await expect.poll(async () => Math.abs(Number(await frame.locator('#charm').getAttribute('data-position-x')) - startX)).toBeGreaterThan(3);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+		await frame.locator('#charm').focus();
+		await frame.locator('#charm').press('ArrowRight');
+		await expect.poll(async () => Number(await frame.locator('#charm').getAttribute('data-position-x')) - startX).toBeGreaterThan(3);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 		await dragCharm(window, frame, 0, 90);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '216');
@@ -223,6 +238,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('End');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '320');
+			await expectBalancedSwingRoom(frame);
 			await window.screenshot({ path: testInfo.outputPath('phase-1-settings.png') });
 			await Promise.all([
 				window.waitForEvent('domcontentloaded'),
@@ -240,6 +256,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 					&& bounds.top >= stage.top - 1 && bounds.bottom <= stage.bottom + 1;
 			})).toBe(true);
 			await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThan(320);
+			await expectBalancedSwingRoom(frame);
 			await window.screenshot({ path: testInfo.outputPath('phase-1-compact-large-charm.png') });
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '320');

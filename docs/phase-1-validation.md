@@ -50,3 +50,11 @@ Remove-Item Env:VSCODE_TEST_VERSION
 - Reduced motion was exercised through browser media emulation; the Windows accessibility settings themselves were not changed. No screen-reader usability claim is made.
 - macOS/Linux, Cursor/Devin Desktop, Remote-SSH/WSL and browser hosts remain future compatibility work.
 - This is a development package. Publisher identity, project license and registry publication remain separate release decisions.
+
+## 0.0.3 follow-up - balanced swing room
+
+The dock-placement feedback listed above was received: the right-edge hanging point left unequal room for left/right swings. Version 0.0.3 centers the anchor and preserves the chosen cord length and size. The earlier pending-feedback statement describes the 0.0.2 checkpoint.
+
+A new narrow-dock physics regression failed on the previous anchor and passed after centering. The full local gate now passes ten unit tests, plus the complete real-editor test on both Windows VS Code 1.90.0 and 1.138.0. The UI asserts balanced clearance at default size, maximum size and compact height and verifies a rightward nudge in addition to the existing click/drag checks.
+
+[Centered controls](phase-1-centered.png) and [compact placement](phase-1-centered-compact.png) show the result. The numerical resource table above remains the original, dated 0.0.2 capture; no new CPU or smoothness claim is inferred from this placement fix.

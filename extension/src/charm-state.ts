@@ -54,7 +54,7 @@ export function getLayout(width: number, height: number, cordLength: number, siz
 		charmHeight: 84 * factor,
 		bodyRadius: 34 * factor,
 		attachmentOffset: 32 * factor,
-		anchorX: Math.max(48 * factor, safeWidth - 68 * factor),
+		anchorX: safeWidth / 2,
 		anchorY: 12,
 		cordLength: clamp(cordLength, 48, maximumCord),
 		maximumCord,

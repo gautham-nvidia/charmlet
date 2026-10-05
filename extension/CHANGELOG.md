@@ -3,6 +3,21 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.0.3 - 2026-10-05 (Phase 1 placement refinement)
+
+Tracking: [P1 #2](https://github.com/gautham-nvidia/charmlet/issues/2).
+
+### Fixed
+
+- Center the hanging point within the dock so a nearby right wall no longer limits one direction disproportionately.
+- Preserve saved size/cord preferences and the existing motion settings when upgrading.
+
+### Verified
+
+- A narrow-dock regression compares travel from opposite nudges at all three tested charm sizes.
+- Real-editor checks cover balanced clearance at default size, maximum size and compact window height, plus movement in both directions.
+- Ten unit tests and the complete Windows UI test passed on VS Code 1.90.0 and 1.138.0.
+
 ## 0.0.2 - 2026-10-05 (Phase 1 free core)
 
 Tracking: [P1 #2](https://github.com/gautham-nvidia/charmlet/issues/2).

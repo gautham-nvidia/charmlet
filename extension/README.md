@@ -1,8 +1,9 @@
 # Charmlet: Coding Charms
 
 An original terminal-keycap charm that drops in, swings when nudged, and parks on its cord.
+The hanging point is centered in the view to leave room for swings in either direction.
 
-**Phase 1 development build, version 0.0.2.** Charmlet lives in a dockable VS Code view, not over your code
+**Phase 1 development build, version 0.0.3.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 
 ## Try it
