@@ -2,14 +2,17 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-05:** Phase 1 development build **0.0.2**, with size/cord controls and real-editor
+**Status, 2026-10-05:** Phase 1 development build **0.0.5**, with size/cord controls and real-editor
 checks passing on Windows / VS Code **1.90.0 and 1.138.0**. One original terminal-keycap charm is
 bundled. No telemetry, account, payment or runtime AI is required.
 
 [Phase 1 tracking](https://github.com/gautham-nvidia/charmlet/issues/2) and the
 [dated validation record](docs/phase-1-validation.md) show the checks and remaining review items.
 
-![Charmlet size and cord controls in a real VS Code window](docs/phase-1/settings.png)
+![Charmlet returned to its resting position after a pull](docs/phase-1-returned-0.0.5.png)
+
+The hanging point is centered in the panel so the charm has room to swing both ways. Your saved
+size and cord length are preserved when upgrading from 0.0.2.
 
 ## Run the demo
 
@@ -28,7 +31,7 @@ unchanged. After rebuilding, reload that demo window to load the updated code.
 
 1. In the demo window, press **Ctrl+Shift+P**, then run **Charmlet: Show Charm**.
 2. Run **View: Move View**, choose **Charmlet**, then **New Secondary Side Bar Entry** for a right dock.
-3. Click to nudge; pull down to park, sideways to swing, and up to retract. The eye restores it.
+3. Click to nudge; pull downward to stretch, then release to return to the resting position. Pull upward to retract; the eye restores it.
 4. Open **Charm settings** below the charm to adjust its size and cord length. Escape closes settings.
 
 Motion and reset controls live below the charm. Tab to the charm for Enter/Space, arrow-key and Escape
@@ -43,7 +46,7 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs nine state/physics tests and one real-editor interaction
+`test` builds and lints both bundles, runs fourteen state/physics tests and one real-editor interaction
 regression. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.
@@ -84,11 +87,11 @@ git log --all --graph --date=iso-strict --format="%h %ad %s"
 git log --follow --date=short --format="%h %ad %s" -- PROJECT_LOG.md
 ```
 
-Next: collect the remaining dock-placement feedback, then build the three-charm free collection in
-Phase 2 after Phase 1 is merged. Broader compatibility and dual-registry publishing follow;
-status-bar motivation and paid cosmetics remain later features. Publishing requires its own approval
-and identity/license decisions. Windows VS Code 1.90.0 and 1.138.0 are tested; macOS/Linux,
-Cursor/Devin Desktop and remote/browser hosts remain unverified.
+Next: build the three-charm free collection in Phase 2, on a new phase branch after the Phase 1
+refinement is merged. Broader compatibility and dual-registry publishing follow; status-bar motivation
+and paid cosmetics remain later features. Publishing requires its own approval and identity/license
+decisions. Windows VS Code 1.90.0 and 1.138.0 are tested; macOS/Linux, Cursor/Devin Desktop and
+remote/browser hosts remain unverified.
 
 ## Ownership and licenses
 

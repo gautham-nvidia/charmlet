@@ -26,7 +26,7 @@ export function restoreState(value: unknown): CharmState {
 	return {
 		version: 1,
 		cordLength: typeof candidate.cordLength === 'number' && Number.isFinite(candidate.cordLength)
-			? clamp(candidate.cordLength, 48, 320)
+			? Math.max(48, candidate.cordLength)
 			: DEFAULT_STATE.cordLength,
 		size: typeof candidate.size === 'number' && Number.isFinite(candidate.size)
 			? clamp(candidate.size, 60, 140)
@@ -44,7 +44,7 @@ export function getLayout(width: number, height: number, cordLength: number, siz
 	const minimumHeight = Math.max(144, 60 + 84 * factor);
 	const safeWidth = Math.max(minimumWidth, width);
 	const safeHeight = Math.max(minimumHeight, height);
-	const maximumCord = Math.max(48, Math.min(320, safeHeight - 12 - 74 * factor - 10));
+	const maximumCord = Math.max(48, safeHeight - 12 - 74 * factor - 10);
 	return {
 		width: safeWidth,
 		height: safeHeight,
@@ -54,7 +54,7 @@ export function getLayout(width: number, height: number, cordLength: number, siz
 		charmHeight: 84 * factor,
 		bodyRadius: 34 * factor,
 		attachmentOffset: 32 * factor,
-		anchorX: Math.max(48 * factor, safeWidth - 68 * factor),
+		anchorX: safeWidth / 2,
 		anchorY: 12,
 		cordLength: clamp(cordLength, 48, maximumCord),
 		maximumCord,
