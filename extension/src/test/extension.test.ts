@@ -58,7 +58,7 @@ async function browserFrames(window: Page, count = 12) {
 	}), count);
 }
 
-async function beginDrag(window: Page, frame: Frame, deltaX: number, deltaY: number) {
+async function beginDrag(window: Page, frame: Frame, deltaX: number, deltaY: number, grabFraction = 0.5) {
 	await expect(frame.locator('#charm')).toBeVisible();
 	await frame.locator('#charm').evaluate(charm => {
 		charm.addEventListener('pointerdown', event => {
@@ -69,8 +69,8 @@ async function beginDrag(window: Page, frame: Frame, deltaX: number, deltaY: num
 	if (!bounds) {
 		throw new Error('Cannot drag an invisible charm.');
 	}
-	const startX = bounds.x + bounds.width / 2;
-	const startY = bounds.y + bounds.height / 2;
+	const startX = bounds.x + bounds.width * grabFraction;
+	const startY = bounds.y + bounds.height * grabFraction;
 	await window.mouse.move(startX, startY);
 	await window.mouse.down();
 	for (let step = 1; step <= 12; step++) {
@@ -78,6 +78,7 @@ async function beginDrag(window: Page, frame: Frame, deltaX: number, deltaY: num
 		await browserFrames(window, 1);
 	}
 	await expect(frame.locator('#phase')).toHaveText('Held');
+	return { x: startX, y: startY };
 }
 
 async function dragCharm(window: Page, frame: Frame, deltaX: number, deltaY: number) {
@@ -151,12 +152,13 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await window.locator('.quick-input-list').getByText('View: Move View', { exact: true }).click();
 		await input.fill('Charmlet');
 		await expect(window.locator('.quick-input-list')).toContainText('Charmlet');
-		await window.locator('.quick-input-list').getByText('Charmlet', { exact: true }).click();
+		await window.locator('.quick-input-list .monaco-list-row').filter({ has: window.getByText('Charmlet', { exact: true }) }).click();
 		await input.fill('New Secondary Side Bar');
 		await expect(window.locator('.quick-input-list')).toContainText('New Secondary Side Bar');
 		await window.keyboard.press('Enter');
 		await expect(window.locator('.quick-input-widget')).toBeHidden();
 		let frame = await readyFrame(window);
+		await expect(window.locator('.part.auxiliarybar a.action-label[aria-label="Charmlet"]')).toBeVisible();
 		await expect.poll(() => frame.locator('#stage').evaluate(stage => stage.clientHeight)).toBeGreaterThan(350);
 		await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
@@ -172,7 +174,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await expect.poll(async () => Number(await frame.locator('#charm').getAttribute('data-position-x')) - startX).toBeGreaterThan(3);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 		await dragCharm(window, frame, 0, 90);
-		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '216');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 		await window.screenshot({ path: testInfo.outputPath('right-dock.png') });
@@ -194,7 +196,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 		await frame.locator('#charm').focus();
 		await frame.locator('#charm').press('ArrowDown');
-		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '236');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
 		await frame.locator('#charm').press('Escape');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
 		await Promise.all([
@@ -205,7 +207,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
 		await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
 		await frame.locator('#restore').click();
-		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '236');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
 		await frame.locator('#charm').click();
 		await browserFrames(window);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
@@ -236,8 +238,10 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
 			await expect.poll(() => frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width)).toBeGreaterThan(95);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
+			const maximumCord = (await frame.getByRole('slider', { name: 'Cord', exact: true }).getAttribute('max'))!;
+			expect(Number(maximumCord)).toBeGreaterThan(320);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('End');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '320');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
 			await expectBalancedSwingRoom(frame);
 			await window.screenshot({ path: testInfo.outputPath('phase-1-settings.png') });
 			await Promise.all([
@@ -246,7 +250,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			]);
 			frame = await readyFrame(window);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '320');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 500));
 			frame = await readyFrame(window);
 			await expect.poll(() => frame.locator('#charm').evaluate(charm => {
@@ -255,11 +259,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				return bounds.left >= stage.left - 1 && bounds.right <= stage.right + 1
 					&& bounds.top >= stage.top - 1 && bounds.bottom <= stage.bottom + 1;
 			})).toBe(true);
-			await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThan(320);
+			await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThan(Number(maximumCord));
 			await expectBalancedSwingRoom(frame);
 			await window.screenshot({ path: testInfo.outputPath('phase-1-compact-large-charm.png') });
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '320');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
 			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Home');
@@ -337,6 +341,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await frame.locator('#charm').click();
 			await browserFrames(window);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-frames', stoppedFrames!);
+			const restingCord = (await frame.locator('#stage').getAttribute('data-cord'))!;
+			await dragCharm(window, frame, 0, 90);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', restingCord);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-frames', stoppedFrames!);
 			await command(window, 'Preferences: Color Theme');
 			const themeInput = commandInput(window);
 			await themeInput.fill('Dark High Contrast');
@@ -359,6 +368,77 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await frame.locator('#restore').press('Enter');
 			await expect(frame.locator('#charm')).toBeFocused();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
+		});
+
+		await test.step('downward pulls return to the selected resting length without saving the stretch', async () => {
+			for (const reset of [false, true]) {
+				if (reset) {
+					await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
+				}
+				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+				const restingCord = reset ? '126' : '50';
+				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', restingCord);
+				const originalX = Number(await frame.locator('#charm').getAttribute('data-position-x'));
+				const originalY = Number(await frame.locator('#charm').getAttribute('data-position-y'));
+				const stageBounds = await frame.locator('#stage').boundingBox();
+				const charmBounds = await frame.locator('#charm').boundingBox();
+				if (!stageBounds || !charmBounds) {
+					throw new Error('Return test requires a visible charm and stage.');
+				}
+				await beginDrag(window, frame, 0, stageBounds.y + stageBounds.height - charmBounds.y - charmBounds.height);
+				await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeGreaterThan(Number(restingCord) + 100);
+				await window.screenshot({ path: testInfo.outputPath(`phase-1-stretched-${restingCord}.png`) });
+				await window.mouse.up();
+				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', restingCord);
+				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+				await expect(frame.locator('#phase')).toHaveText('Parked');
+				await expect.poll(async () => Math.abs(Number(await frame.locator('#charm').getAttribute('data-position-x')) - originalX)).toBeLessThan(1);
+				await expect.poll(async () => Math.abs(Number(await frame.locator('#charm').getAttribute('data-position-y')) - originalY)).toBeLessThan(1);
+				await window.screenshot({ path: testInfo.outputPath(`phase-1-returned-${restingCord}.png`) });
+				await Promise.all([
+					window.waitForEvent('domcontentloaded'),
+					command(window, 'Developer: Reload Window'),
+				]);
+				frame = await readyFrame(window);
+				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', restingCord);
+				await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
+			}
+		});
+
+		await test.step('circular drags release and recover without refreshing the editor', async () => {
+			for (const direction of [-1, 1]) {
+				await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
+				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
+				const start = await beginDrag(window, frame, 0, 0, 0.1);
+				const stageBounds = await frame.locator('#stage').boundingBox();
+				if (!stageBounds) {
+					throw new Error('Circular-drag test requires a visible stage.');
+				}
+				const radius = Math.min(100, stageBounds.width * 0.4, stageBounds.height * 0.2);
+				for (let step = 1; step <= 24; step++) {
+					const theta = direction * 2 * Math.PI * step / 24;
+					await window.mouse.move(start.x + radius * (Math.cos(theta) - 1), start.y + radius * Math.sin(theta));
+					await browserFrames(window, 1);
+				}
+				await window.mouse.move(start.x, start.y);
+				await window.mouse.up();
+				await expect(frame.locator('#phase')).toHaveText('Parked', { timeout: 20000 });
+				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
+				await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
+				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
+				await expect(frame.locator('#charm')).not.toHaveClass(/dragging/);
+				const pointerId = Number(await frame.locator('#charm').getAttribute('data-test-pointer'));
+				expect(await frame.locator('#charm').evaluate((charm, id) => charm.hasPointerCapture(id), pointerId)).toBe(false);
+				const inside = await frame.locator('#charm').evaluate(charm => {
+					const bounds = charm.getBoundingClientRect();
+					const stage = document.getElementById('stage')!.getBoundingClientRect();
+					return bounds.left >= stage.left - 1 && bounds.right <= stage.right + 1
+						&& bounds.top >= stage.top - 1 && bounds.bottom <= stage.bottom + 1;
+				});
+				expect(inside).toBe(true);
+			}
+			await window.screenshot({ path: testInfo.outputPath('phase-1-circle-recovered.png') });
 		});
 
 		await test.step('record visible, settled and hidden resource snapshots', async () => {

@@ -44,7 +44,7 @@ let previousTime = 0;
 let accumulatedTime = 0;
 let transition: Animation | undefined;
 let frames = 0;
-let drag: { id: number; start: Point; latest: Point; cordLength: number; moved: boolean } | undefined;
+let drag: { id: number; start: Point; cordLength: number; moved: boolean } | undefined;
 const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, state.cordLength, state.size);
 
@@ -190,7 +190,7 @@ function cancelDrag() {
 	const cancelled = drag;
 	drag = undefined;
 	pendulum.release();
-	pendulum.setLength(cancelled.cordLength);
+	pendulum.setLength(state.cordLength);
 	pendulum.settle();
 	charm.classList.remove('dragging');
 	if (charm.hasPointerCapture(cancelled.id)) {
@@ -226,7 +226,8 @@ charm.addEventListener('pointerdown', event => {
 	}
 	transition?.cancel();
 	const startPoint = point(event);
-	drag = { id: event.pointerId, start: startPoint, latest: startPoint, cordLength: pendulum.layout.cordLength, moved: false };
+	drag = { id: event.pointerId, start: startPoint, cordLength: pendulum.layout.cordLength, moved: false };
+	pendulum.grab(startPoint);
 	charm.setPointerCapture(event.pointerId);
 	charm.classList.add('dragging');
 	render();
@@ -241,9 +242,7 @@ charm.addEventListener('pointermove', event => {
 	const deltaY = current.y - drag.start.y;
 	if (!drag.moved && Math.hypot(deltaX, deltaY) > 6) {
 		drag.moved = true;
-		pendulum.grab(drag.start);
 	}
-	drag.latest = current;
 	if (drag.moved) {
 		if (Math.abs(deltaY) > Math.abs(deltaX)) {
 			pendulum.setLength(drag.cordLength + deltaY);
@@ -265,17 +264,19 @@ charm.addEventListener('pointerup', event => {
 	pendulum.release();
 	charm.classList.remove('dragging');
 	charm.releasePointerCapture(event.pointerId);
-	const deltaY = completed.latest.y - completed.start.y;
-	const deltaX = completed.latest.x - completed.start.x;
-	if (!completed.moved) {
-		nudge(completed.start.x < pendulum.position.x ? 1 : -1);
-	} else if (deltaY < -60 && -deltaY > Math.abs(deltaX)) {
+	const end = point(event);
+	const deltaY = end.y - completed.start.y;
+	const deltaX = end.x - completed.start.x;
+	if (completed.moved && deltaY < -60 && -deltaY > Math.abs(deltaX)) {
 		state.hidden = true;
 		showState();
 	} else {
-		state.cordLength = pendulum.layout.cordLength;
+		pendulum.returnToLength(state.cordLength, reducedMotion());
+		if (!completed.moved) {
+			nudge(completed.start.x < pendulum.position.x ? 1 : -1);
+		}
 		if (reducedMotion()) {
-			pendulum.settle();
+			stop();
 		} else {
 			start();
 		}

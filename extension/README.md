@@ -1,9 +1,9 @@
 # Charmlet: Coding Charms
 
-An original terminal-keycap charm that drops in, swings when nudged, and parks on its cord.
+An original terminal-keycap charm that drops in, swings when nudged, and returns to its resting cord length after a pull.
 The hanging point is centered in the view to leave room for swings in either direction.
 
-**Phase 1 development build, version 0.0.3.** Charmlet lives in a dockable VS Code view, not over your code
+**Phase 1 development build, version 0.0.5.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 
 ## Try it
@@ -11,10 +11,12 @@ or desktop. It uses supported APIs and does not modify your VS Code installation
 Install a development VSIX through **Extensions: Install from VSIX...**, or follow the
 [source setup](https://github.com/gautham-nvidia/charmlet#readme).
 
+Charmlet has its own Activity Bar container titled **Charmlet**. You can move it to the right sidebar using VS Code's view controls.
+
 1. Open the Command Palette and run **Charmlet: Show Charm**.
 2. For a right-side dock, run **View: Move View**, select **Charmlet**, then **New Secondary Side Bar Entry**.
-3. Click the keycap to nudge it. Pull downward to extend and park; pull upward at least 60 pixels to retract.
-4. Open **Charm settings** to adjust **Size** (60-140%) and **Cord** (48-320 px, limited by the available space).
+3. Click the keycap to nudge it. Pull downward and release to return to the resting position; pull upward at least 60 pixels to hide it.
+4. Open **Charm settings** to adjust **Size** (60-140%) and **Cord** (from 48 px up to the available panel height).
 
 | Control | Action |
 |---|---|
@@ -31,6 +33,8 @@ and Escape hides. System reduced-motion preferences override the animation switc
 Size, cord, visibility and motion choices are saved locally. Shrinking the panel temporarily shortens
 the visible cord; expanding it restores your requested length. Cancelling a drag keeps the previous
 parked length. The settings panel stays closed until you open it.
+
+Size and Cord in settings define the resting appearance. A downward pull stretches temporarily and eases back on release. If an earlier build saved an unwanted long cord, use Reset once or choose your preferred resting length in settings.
 
 ## Free and local
 

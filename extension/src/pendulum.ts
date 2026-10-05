@@ -11,6 +11,7 @@ export class Pendulum {
 	private pointer?: Constraint;
 	private walls: Body[] = [];
 	private quietFrames = 0;
+	private returnMotion?: { from: number; target: number; elapsed: number };
 
 	constructor(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size) {
 		this.layout = getLayout(width, height, cordLength, size);
@@ -32,7 +33,7 @@ export class Pendulum {
 	}
 
 	get moving() {
-		return Boolean(this.pointer) || !this.body.isSleeping;
+		return Boolean(this.pointer) || Boolean(this.returnMotion) || !this.body.isSleeping;
 	}
 
 	get position(): Point {
@@ -44,6 +45,7 @@ export class Pendulum {
 	}
 
 	resize(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size) {
+		this.returnMotion = undefined;
 		this.release();
 		const previousRadius = this.layout.bodyRadius;
 		this.layout = getLayout(width, height, cordLength, size);
@@ -65,8 +67,23 @@ export class Pendulum {
 	}
 
 	setLength(length: number) {
+		this.returnMotion = undefined;
 		this.layout.cordLength = clamp(length, 48, this.layout.maximumCord);
 		this.tether.length = this.layout.cordLength + this.layout.attachmentOffset;
+		this.wake();
+	}
+
+	returnToLength(length: number, immediate = false) {
+		this.release();
+		const target = clamp(length, 48, this.layout.maximumCord);
+		if (immediate || Math.abs(target - this.layout.cordLength) < 0.001) {
+			this.setLength(target);
+			if (immediate) {
+				this.settle();
+			}
+			return;
+		}
+		this.returnMotion = { from: this.layout.cordLength, target, elapsed: 0 };
 		this.wake();
 	}
 
@@ -80,6 +97,7 @@ export class Pendulum {
 
 	grab(point: Point) {
 		this.release();
+		this.returnMotion = undefined;
 		this.pointer = Constraint.create({
 			pointA: { ...point },
 			bodyB: this.body,
@@ -95,8 +113,8 @@ export class Pendulum {
 	drag(point: Point, immediate = false) {
 		if (this.pointer) {
 			this.pointer.pointA = {
-				x: clamp(point.x, this.layout.bodyRadius, this.layout.width - this.layout.bodyRadius),
-				y: clamp(point.y, 12, this.layout.height - this.layout.bodyRadius),
+				x: clamp(point.x - this.pointer.pointB.x, this.layout.bodyRadius, this.layout.width - this.layout.bodyRadius) + this.pointer.pointB.x,
+				y: clamp(point.y - this.pointer.pointB.y, this.layout.bodyRadius, this.layout.height - this.layout.bodyRadius) + this.pointer.pointB.y,
 			};
 			if (immediate) {
 				Body.setPosition(this.body, {
@@ -115,6 +133,7 @@ export class Pendulum {
 		if (this.pointer) {
 			Composite.remove(this.engine.world, this.pointer);
 			this.pointer = undefined;
+			this.constrainPosition();
 			this.wake();
 		}
 	}
@@ -123,16 +142,34 @@ export class Pendulum {
 		if (!this.moving) {
 			return;
 		}
+		if (this.returnMotion) {
+			const motion = this.returnMotion;
+			motion.elapsed += 1000 / 60;
+			const progress = Math.min(1, motion.elapsed / 350);
+			const eased = progress * progress * (3 - 2 * progress);
+			this.layout.cordLength = progress === 1 ? motion.target : motion.from + (motion.target - motion.from) * eased;
+			this.tether.length = this.layout.cordLength + this.layout.attachmentOffset;
+			Sleeping.set(this.body, false);
+			if (progress === 1) {
+				this.returnMotion = undefined;
+			}
+		}
 		Engine.update(this.engine, 1000 / 60);
-		const resting = !this.pointer && this.body.speed < 0.12
+		this.constrainPosition();
+		const resting = !this.pointer && !this.returnMotion && this.body.speed < 0.12
 			&& Math.abs(this.body.position.x - this.layout.anchorX) < 0.8;
 		this.quietFrames = resting ? this.quietFrames + 1 : 0;
-		if (this.quietFrames > 30 || this.body.isSleeping) {
+		if (!this.returnMotion && (this.quietFrames > 30 || this.body.isSleeping)) {
 			this.settle();
 		}
 	}
 
 	settle() {
+		if (this.returnMotion) {
+			this.layout.cordLength = this.returnMotion.target;
+			this.tether.length = this.layout.cordLength + this.layout.attachmentOffset;
+			this.returnMotion = undefined;
+		}
 		Body.setPosition(this.body, {
 			x: this.layout.anchorX,
 			y: this.layout.anchorY + this.layout.cordLength + this.layout.attachmentOffset,
@@ -145,6 +182,23 @@ export class Pendulum {
 	dispose() {
 		Composite.clear(this.engine.world, false);
 		Engine.clear(this.engine);
+	}
+
+	private constrainPosition() {
+		const { x, y } = this.body.position;
+		const { bodyRadius, width, height } = this.layout;
+		const position = {
+			x: clamp(x, bodyRadius, width - bodyRadius),
+			y: clamp(y, bodyRadius, height - bodyRadius),
+		};
+		if (position.x !== x || position.y !== y) {
+			const velocity = { ...this.body.velocity };
+			Body.setPosition(this.body, position);
+			Body.setVelocity(this.body, {
+				x: position.x !== x ? 0 : velocity.x,
+				y: position.y !== y ? 0 : velocity.y,
+			});
+		}
 	}
 
 	private wake() {

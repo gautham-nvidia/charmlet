@@ -3,6 +3,38 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.0.5 - 2026-10-05 (Phase 1 return to rest)
+
+Tracking: [P1 #2](https://github.com/gautham-nvidia/charmlet/issues/2).
+
+### Changed
+
+- Downward pulls stretch temporarily, then ease back to the selected resting cord length and position. Dragging no longer saves a new cord length.
+- Cord settings and keyboard adjustments remain the explicit way to change the resting length.
+- Grabbing, resizing, hiding and reduced-motion settings handle an in-progress return; reduced motion returns immediately.
+- A dedicated Charmlet view container supplies the native panel title and icon.
+
+### Verified
+
+- Fourteen state/physics tests plus real-editor checks on Windows VS Code 1.90.0 and 1.138.0.
+- Pull-and-release returns to both a custom 50 px setting and the 126 px default; reload keeps the original setting.
+- Circular-input recovery remains covered. A true 360-degree spin/orbit is still being clarified with the user.
+
+## 0.0.4 - 2026-10-05 (Phase 1 drag recovery)
+
+Tracking: [P1 #2](https://github.com/gautham-nvidia/charmlet/issues/2).
+
+### Fixed
+
+- Let the cord extend to the available panel height instead of stopping at 320 px; retain the short default and saved requested length.
+- Keep the simulated charm body inside the view during fast or off-center drags and after release.
+- Use the final release position to park deliberate vertical pulls; preserve the prior length after sideways or circular gestures.
+
+### Verified
+
+- Twelve state/physics tests, including long-cord persistence and circular-drag bounds/recovery.
+- Complete real-editor tests on Windows VS Code 1.90.0 and 1.138.0, including bottom parking, reload persistence and circles in both directions without refresh.
+
 ## 0.0.3 - 2026-10-05 (Phase 1 placement refinement)
 
 Tracking: [P1 #2](https://github.com/gautham-nvidia/charmlet/issues/2).

@@ -6,7 +6,7 @@ import { Pendulum } from '../pendulum';
 test('missing or invalid saved values restore a usable charm', () => {
 	assert.deepEqual(restoreState(undefined), DEFAULT_STATE);
 	assert.deepEqual(restoreState({ cordLength: Number.NaN, hidden: 'yes' }), DEFAULT_STATE);
-	assert.equal(restoreState({ cordLength: 9999 }).cordLength, 320);
+	assert.equal(restoreState({ cordLength: 9999 }).cordLength, 9999);
 	assert.equal(restoreState({ cordLength: -10 }).cordLength, 48);
 });
 
@@ -90,6 +90,141 @@ test('opposite nudges have balanced travel in a narrow dock', () => {
 			left.dispose();
 			right.dispose();
 		}
+	}
+});
+
+test('long saved cords use tall views and survive temporary clamping', () => {
+	const state = restoreState({ cordLength: 700 });
+	assert.equal(state.cordLength, 700);
+	assert.equal(getLayout(280, 900, state.cordLength).cordLength, 700);
+	assert.ok(getLayout(280, 240, state.cordLength).cordLength < 700);
+	assert.equal(state.cordLength, 700);
+	assert.equal(getLayout(280, 900, state.cordLength).cordLength, 700);
+	const pendulum = new Pendulum(280, 900, 126);
+	pendulum.setLength(9999);
+	pendulum.settle();
+	assert.ok(pendulum.layout.cordLength > 320);
+	assert.ok(Math.abs(pendulum.position.y + pendulum.layout.charmHeight / 2 - (pendulum.layout.height - 10)) < 0.001);
+	pendulum.dispose();
+});
+
+test('rapid circular drags keep the body in view and recover after release', () => {
+	for (const immediate of [false, true]) {
+		const pendulum = new Pendulum(140, 800, 126, 60);
+		try {
+			const start = {
+				x: pendulum.position.x - pendulum.layout.charmWidth * 0.45,
+				y: pendulum.position.y - pendulum.layout.charmHeight * 0.45,
+			};
+			const assertInside = () => {
+				const { x, y } = pendulum.position;
+				const { bodyRadius, width, height } = pendulum.layout;
+				assert.ok(x >= bodyRadius - 0.001 && x <= width - bodyRadius + 0.001, `Horizontal escape: ${x}`);
+				assert.ok(y >= bodyRadius - 0.001 && y <= height - bodyRadius + 0.001, `Vertical escape: ${y}`);
+			};
+			pendulum.grab(start);
+			for (let step = 1; step <= 16; step++) {
+				const theta = 2 * Math.PI * step / 16;
+				const point = { x: start.x + 160 * (Math.cos(theta) - 1), y: start.y + 160 * Math.sin(theta) };
+				const dx = point.x - start.x;
+				const dy = point.y - start.y;
+				if (Math.abs(dy) > Math.abs(dx)) {
+					pendulum.setLength(126 + dy);
+				}
+				pendulum.drag(point, immediate);
+				if (!immediate) {
+					pendulum.step();
+				}
+				assertInside();
+			}
+			pendulum.release();
+			pendulum.setLength(126);
+			if (immediate) {
+				pendulum.settle();
+			}
+			for (let step = 0; step < 1500; step++) {
+				pendulum.step();
+				assertInside();
+			}
+			assert.equal(pendulum.moving, false);
+			assert.equal(pendulum.engine.world.constraints.length, 1);
+			assert.equal(pendulum.position.x, pendulum.layout.anchorX);
+		} finally {
+			pendulum.dispose();
+		}
+	}
+});
+
+test('a stretched cord eases back to its resting length before settling', () => {
+	const pendulum = new Pendulum(280, 800, 126);
+	try {
+		const resting = pendulum.position;
+		pendulum.setLength(600);
+		pendulum.settle();
+		pendulum.returnToLength(126);
+		assert.equal(pendulum.layout.cordLength, 600);
+		assert.equal(pendulum.moving, true);
+		let previous = 600;
+		for (let step = 0; step < 30; step++) {
+			pendulum.step();
+			assert.ok(pendulum.layout.cordLength <= previous && pendulum.layout.cordLength >= 126);
+			if (step === 0) {
+				assert.ok(pendulum.layout.cordLength > 126 && pendulum.layout.cordLength < 600);
+				assert.ok(pendulum.position.y > resting.y);
+			}
+			previous = pendulum.layout.cordLength;
+		}
+		assert.equal(pendulum.layout.cordLength, 126);
+		for (let step = 0; step < 1500; step++) {
+			pendulum.step();
+		}
+		assert.equal(pendulum.moving, false);
+		assert.deepEqual(pendulum.position, resting);
+	} finally {
+		pendulum.dispose();
+	}
+});
+
+test('return motion respects reduced motion, grabs, resize and immediate settling', () => {
+	const pendulum = new Pendulum(280, 800, 126);
+	try {
+		pendulum.setLength(600);
+		pendulum.settle();
+		const clock = pendulum.engine.timing.timestamp;
+		pendulum.returnToLength(126, true);
+		assert.equal(pendulum.layout.cordLength, 126);
+		assert.equal(pendulum.moving, false);
+		assert.equal(pendulum.engine.timing.timestamp, clock);
+		pendulum.setLength(600);
+		pendulum.settle();
+		pendulum.returnToLength(126);
+		pendulum.step();
+		pendulum.grab(pendulum.position);
+		const heldLength = pendulum.layout.cordLength;
+		for (let step = 0; step < 10; step++) {
+			pendulum.step();
+		}
+		assert.equal(pendulum.layout.cordLength, heldLength);
+		pendulum.release();
+		pendulum.returnToLength(126);
+		pendulum.step();
+		pendulum.resize(180, 200, 126);
+		const resizedLength = getLayout(180, 200, 126).cordLength;
+		for (let step = 0; step < 60; step++) {
+			pendulum.step();
+		}
+		assert.equal(pendulum.layout.cordLength, resizedLength);
+		assert.equal(pendulum.moving, false);
+		pendulum.resize(280, 800, 126);
+		pendulum.setLength(600);
+		pendulum.settle();
+		pendulum.returnToLength(126);
+		pendulum.step();
+		pendulum.settle();
+		assert.equal(pendulum.layout.cordLength, 126);
+		assert.equal(pendulum.moving, false);
+	} finally {
+		pendulum.dispose();
 	}
 });
 

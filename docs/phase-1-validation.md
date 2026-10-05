@@ -58,3 +58,23 @@ The dock-placement feedback listed above was received: the right-edge hanging po
 A new narrow-dock physics regression failed on the previous anchor and passed after centering. The full local gate now passes ten unit tests, plus the complete real-editor test on both Windows VS Code 1.90.0 and 1.138.0. The UI asserts balanced clearance at default size, maximum size and compact height and verifies a rightward nudge in addition to the existing click/drag checks.
 
 [Centered controls](phase-1-centered.png) and [compact placement](phase-1-centered-compact.png) show the result. The numerical resource table above remains the original, dated 0.0.2 capture; no new CPU or smoothness claim is inferred from this placement fix.
+
+## 2026-10-05 - Full pull and circular-drag feedback
+
+Gautham reported that a maximum downward pull returned halfway up on release, and a circular gesture could leave the charm off-screen. Source/probe evidence showed a fixed 320 px cap in both saved-state restoration and layout, plus a valid rapid corner-grab case that pushed the simulated body outside the view. That particular probe later recovered; it did not establish the duration of the user's stuck case.
+
+Version **0.0.4** uses the available panel height for the visible cord limit, preserves finite requested lengths, bounds the simulated body after physics steps, and accounts for the grabbed offset. Release uses the final pointer coordinates: deliberate vertical pulls park at their new length, while sideways/circular gestures retain the previous preference. The 126 px default and motion constants are unchanged.
+
+Type/lint/build and twelve unit tests passed, along with the full real-editor test on Windows VS Code 1.90.0 and 1.138.0. New UI cases check bottom parking and reload persistence, and complete circles in both directions that release capture, return in view and settle without refreshing. [Full pull](phase-1-full-pull.png) and [recovered circle](phase-1-circle-recovered.png) show the tested states. Earlier numerical resource captures remain dated 0.0.2 evidence; no new CPU or frame-rate claim is made.
+
+This continues Phase 1 on its existing branch and PR #7. Hosted checks must cover the updated commit before merge. Phase 2 has not started.
+
+## 2026-10-05 - Correction: pulls return to the resting position
+
+The 0.0.4 bottom-parking behavior was the assistant's mistaken interpretation. Gautham clarified: settings define the desired size and cord length; pulling in the view must return to that original resting position on release.
+
+Version **0.0.5** treats the drag length as temporary and eases the tether back over 350 ms without modifying the saved preference. Reduced motion returns immediately. Grabs, resize, hide and explicit settings changes cancel or complete the return safely. The centered anchor and drag-boundary safeguards remain. A dedicated view container is named **Charmlet**.
+
+Type/lint/build, fourteen unit tests and the full UI test on Windows VS Code 1.90.0 and 1.138.0 passed. UI cases stretch from both a chosen 50 px rest length and the 126 px default, then verify the same length and position after release and reload. [Stretched](phase-1-stretched-0.0.5.png) and [returned](phase-1-returned-0.0.5.png) show the two states.
+
+The meaning of the separate full-circle request is still being clarified. Circular input recovery is not a claim of a full 360-degree spin or orbit. This remains Phase 1 on PR #7; do not merge or start P2 until the remaining requested behavior is resolved.
