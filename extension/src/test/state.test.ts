@@ -12,8 +12,32 @@ test('missing or invalid saved values restore a usable charm', () => {
 
 test('hide and motion preferences survive a reload without trusting unknown fields', () => {
 	assert.deepEqual(restoreState({ cordLength: 180, hidden: true, reducedMotion: true, extra: 'ignored' }), {
-		version: 1, cordLength: 180, hidden: true, reducedMotion: true,
+		version: 1, cordLength: 180, size: 100, hidden: true, reducedMotion: true,
 	});
+});
+
+test('size persists and Phase 0 states gain the default without losing their parked length', () => {
+	assert.equal(restoreState({ cordLength: 210 }).size, 100);
+	assert.equal(restoreState({ cordLength: 210 }).cordLength, 210);
+	assert.equal(restoreState({ size: 140 }).size, 140);
+	assert.equal(restoreState({ size: 999 }).size, 140);
+	assert.equal(restoreState({ size: -1 }).size, 60);
+	assert.equal(restoreState({ size: Number.NaN }).size, 100);
+});
+
+test('every supported size fits the logical view without overwriting requested preferences', () => {
+	for (const size of [60, 100, 140]) {
+		for (const height of [80, 144, 240, 500]) {
+			const state = restoreState({ cordLength: 320, size });
+			const layout = getLayout(96, height, state.cordLength, state.size);
+			const bottom = layout.anchorY + layout.cordLength + layout.attachmentOffset + layout.charmHeight / 2;
+			assert.ok(bottom <= layout.height, `Size ${size}, height ${height}`);
+			assert.ok(layout.anchorX + layout.charmWidth / 2 <= layout.width);
+			assert.ok(layout.anchorX - layout.charmWidth / 2 >= 0);
+			assert.equal(state.cordLength, 320);
+			assert.equal(state.size, size);
+		}
+	}
 });
 
 test('resizing clamps the parked cord to keep the charm in the view', () => {
@@ -60,5 +84,35 @@ test('pulling extends the cord and releases without a stuck drag constraint', ()
 	pendulum.resize(180, 160, 220);
 	assert.ok(pendulum.position.y + 34 < 160);
 	assert.equal(pendulum.engine.world.constraints.length, 1);
+	pendulum.dispose();
+});
+
+test('size changes scale the body and attachment without accumulating walls or constraints', () => {
+	const pendulum = new Pendulum(280, 400, 126);
+	for (const size of [140, 60, 100]) {
+		pendulum.grab(pendulum.position);
+		pendulum.resize(280, 400, 126, size);
+		const radius = pendulum.body.circleRadius;
+		assert.ok(typeof radius === 'number');
+		assert.ok(Math.abs(radius - 34 * size / 100) < 0.001);
+		assert.equal(pendulum.tether.length, 126 + 32 * size / 100);
+		assert.equal(pendulum.engine.world.constraints.length, 1);
+		assert.equal(pendulum.engine.world.bodies.length, 4);
+		assert.equal(pendulum.moving, false);
+	}
+	pendulum.dispose();
+});
+
+test('reduced-motion dragging follows input without advancing the physics clock', () => {
+	const pendulum = new Pendulum(280, 400, 126);
+	const start = pendulum.position;
+	pendulum.grab(start);
+	pendulum.drag({ x: start.x - 40, y: start.y + 20 }, true);
+	assert.equal(pendulum.position.x, start.x - 40);
+	assert.equal(pendulum.position.y, start.y + 20);
+	assert.equal(pendulum.engine.timing.timestamp, 0);
+	pendulum.release();
+	pendulum.settle();
+	assert.equal(pendulum.moving, false);
 	pendulum.dispose();
 });

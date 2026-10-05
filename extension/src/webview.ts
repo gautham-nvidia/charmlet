@@ -1,5 +1,5 @@
-import { createElement, ArrowDown, Eye, EyeOff, Pause, Play, RotateCcw } from 'lucide';
-import { DEFAULT_STATE, clamp, restoreState, type CharmState } from './charm-state';
+import { createElement, ArrowDown, Eye, EyeOff, Pause, Play, RotateCcw, SlidersHorizontal } from 'lucide';
+import { DEFAULT_STATE, clamp, getLayout, restoreState, type CharmState } from './charm-state';
 import { Pendulum, type Point } from './pendulum';
 
 declare function acquireVsCodeApi(): {
@@ -26,6 +26,12 @@ const restore = element<HTMLButtonElement>('restore');
 const toggle = element<HTMLButtonElement>('toggle');
 const motion = element<HTMLButtonElement>('motion');
 const reset = element<HTMLButtonElement>('reset');
+const settingsToggle = element<HTMLButtonElement>('settings-toggle');
+const settings = element<HTMLDivElement>('settings');
+const sizeInput = element<HTMLInputElement>('size');
+const cordInput = element<HTMLInputElement>('cord-length');
+const sizeValue = element<HTMLOutputElement>('size-value');
+const cordValue = element<HTMLOutputElement>('cord-value');
 const phase = element<HTMLSpanElement>('phase');
 const lengthOutput = element<HTMLOutputElement>('length');
 const thread = document.getElementById('thread')!;
@@ -40,7 +46,7 @@ let transition: Animation | undefined;
 let frames = 0;
 let drag: { id: number; start: Point; latest: Point; cordLength: number; moved: boolean } | undefined;
 const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const pendulum = new Pendulum(280, 320, state.cordLength);
+const pendulum = new Pendulum(280, 320, state.cordLength, state.size);
 
 function reducedMotion() {
 	return state.reducedMotion || systemMotion.matches || document.body.classList.contains('vscode-reduce-motion');
@@ -60,25 +66,39 @@ function controls() {
 	motion.disabled = systemMotion.matches || document.body.classList.contains('vscode-reduce-motion');
 	motion.title = motion.disabled ? 'Motion disabled by system preference' : 'Motion';
 	restore.hidden = !state.hidden;
+	if (state.hidden && hanging.contains(document.activeElement)) {
+		restore.focus({ preventScroll: true });
+	}
 	hanging.inert = state.hidden;
 }
 
 function render() {
-	const { anchorX, anchorY, cordLength } = pendulum.layout;
+	const { anchorX, anchorY, cordLength, attachmentOffset } = pendulum.layout;
 	const { x: positionX, y: positionY } = pendulum.position;
 	const angle = pendulum.angle;
-	const hookX = positionX + Math.sin(angle) * 32;
-	const hookY = positionY - Math.cos(angle) * 32;
+	const hookX = positionX + Math.sin(angle) * attachmentOffset;
+	const hookY = positionY - Math.cos(angle) * attachmentOffset;
 	charm.style.transform = `translate(${positionX}px, ${positionY}px) rotate(${angle}rad)`;
 	anchor.style.left = `${anchorX}px`;
 	anchor.style.top = `${anchorY}px`;
 	restore.style.left = `${anchorX - 15}px`;
 	thread.setAttribute('d', `M ${anchorX} ${anchorY} Q ${anchorX + (hookX - anchorX) * 0.45} ${(anchorY + hookY) / 2} ${hookX} ${hookY}`);
 	lengthOutput.value = `${Math.round(cordLength)} px`;
-	phase.textContent = state.hidden ? 'Retracted' : drag ? 'Held' : pendulum.moving && !reducedMotion() ? 'Swinging' : 'Parked';
+	sizeInput.value = String(state.size);
+	sizeValue.value = `${state.size}%`;
+	cordInput.max = String(Math.floor(pendulum.layout.maximumCord / 2) * 2);
+	cordInput.value = String(cordLength);
+	cordValue.value = lengthOutput.value;
+	sizeInput.setAttribute('aria-valuetext', sizeValue.value);
+	cordInput.setAttribute('aria-valuetext', cordValue.value);
+	const status = state.hidden ? 'Retracted' : drag ? 'Held' : pendulum.moving && !reducedMotion() ? 'Swinging' : 'Parked';
+	if (phase.textContent !== status) {
+		phase.textContent = status;
+	}
 	stage.dataset.frames = String(frames);
 	stage.dataset.hidden = String(state.hidden);
 	stage.dataset.cord = String(Math.round(cordLength));
+	stage.dataset.size = String(state.size);
 	charm.dataset.positionX = positionX.toFixed(2);
 	charm.dataset.positionY = positionY.toFixed(2);
 }
@@ -114,7 +134,7 @@ function tick(time: number) {
 }
 
 function start() {
-	if (frameId === undefined && ready && visible && !document.hidden && !state.hidden && !reducedMotion()) {
+	if (frameId === undefined && pendulum.moving && ready && visible && !document.hidden && !state.hidden && !reducedMotion()) {
 		stage.dataset.running = 'true';
 		frameId = requestAnimationFrame(tick);
 	}
@@ -131,11 +151,13 @@ function nudge(direction = -1) {
 function showState(drop = false) {
 	transition?.cancel();
 	transition = undefined;
+	const restoreFocus = !state.hidden && document.activeElement === restore;
+	const canAnimate = visible && !document.hidden && !reducedMotion();
 	controls();
 	if (state.hidden) {
 		stop();
 		pendulum.settle();
-		if (!hanging.hidden && !reducedMotion()) {
+		if (!hanging.hidden && canAnimate) {
 			transition = hanging.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-110%)' }], { duration: 200, easing: 'ease-in' });
 			void transition.finished.then(() => { hanging.hidden = state.hidden; }).catch(() => {});
 		} else {
@@ -143,7 +165,10 @@ function showState(drop = false) {
 		}
 	} else {
 		hanging.hidden = false;
-		if (reducedMotion()) {
+		if (restoreFocus) {
+			charm.focus({ preventScroll: true });
+		}
+		if (!canAnimate) {
 			stop();
 			pendulum.settle();
 		} else if (drop) {
@@ -171,17 +196,21 @@ function cancelDrag() {
 	if (charm.hasPointerCapture(cancelled.id)) {
 		charm.releasePointerCapture(cancelled.id);
 	}
+	stop();
 	render();
 }
 
 function resize() {
 	cancelDrag();
 	const { width, height } = stage.getBoundingClientRect();
-	scale = Math.max(0.1, Math.min(1, width / 96, height / 144));
-	pendulum.resize(width / scale, height / scale, state.cordLength);
+	const layout = getLayout(width, height, state.cordLength, state.size);
+	scale = Math.max(0.01, Math.min(1, width / layout.minimumWidth, height / layout.minimumHeight));
+	pendulum.resize(width / scale, height / scale, state.cordLength, state.size);
 	rig.style.width = `${pendulum.layout.width}px`;
 	rig.style.height = `${pendulum.layout.height}px`;
 	rig.style.transform = `scale(${scale})`;
+	rig.style.setProperty('--charm-width', `${pendulum.layout.charmWidth}px`);
+	rig.style.setProperty('--charm-height', `${pendulum.layout.charmHeight}px`);
 	stop();
 	render();
 }
@@ -200,6 +229,7 @@ charm.addEventListener('pointerdown', event => {
 	drag = { id: event.pointerId, start: startPoint, latest: startPoint, cordLength: pendulum.layout.cordLength, moved: false };
 	charm.setPointerCapture(event.pointerId);
 	charm.classList.add('dragging');
+	render();
 });
 
 charm.addEventListener('pointermove', event => {
@@ -218,10 +248,8 @@ charm.addEventListener('pointermove', event => {
 		if (Math.abs(deltaY) > Math.abs(deltaX)) {
 			pendulum.setLength(drag.cordLength + deltaY);
 		}
-		pendulum.drag(current);
-		if (reducedMotion()) {
-			pendulum.settle();
-		} else {
+		pendulum.drag(current, reducedMotion());
+		if (!reducedMotion()) {
 			start();
 		}
 		render();
@@ -306,6 +334,46 @@ motion.addEventListener('click', () => {
 	save();
 });
 
+settingsToggle.addEventListener('click', () => {
+	cancelDrag();
+	settings.hidden = !settings.hidden;
+	settingsToggle.setAttribute('aria-expanded', String(!settings.hidden));
+	resize();
+});
+settings.addEventListener('keydown', event => {
+	if (event.key === 'Escape') {
+		event.stopPropagation();
+		settings.hidden = true;
+		settingsToggle.setAttribute('aria-expanded', 'false');
+		settingsToggle.focus();
+		resize();
+	}
+});
+sizeInput.addEventListener('input', () => {
+	state.size = Number(sizeInput.value);
+	resize();
+	save();
+});
+cordInput.addEventListener('input', () => {
+	state.cordLength = Number(cordInput.value);
+	resize();
+	save();
+});
+
+function synchronizeVisibility() {
+	cancelDrag();
+	transition?.cancel();
+	pendulum.settle();
+	stop();
+	hanging.hidden = state.hidden;
+	render();
+}
+
+function updateMotionPreference() {
+	cancelDrag();
+	showState();
+}
+
 window.addEventListener('message', event => {
 	const message: unknown = event.data;
 	if (!message || typeof message !== 'object' || !('type' in message)) {
@@ -314,6 +382,9 @@ window.addEventListener('message', event => {
 	if (message.type === 'state' && 'state' in message) {
 		cancelDrag();
 		state = restoreState(message.state);
+		if ('visible' in message) {
+			visible = message.visible === true;
+		}
 		api.setState(state);
 		ready = true;
 		stage.dataset.ready = 'true';
@@ -321,29 +392,17 @@ window.addEventListener('message', event => {
 		showState('drop' in message && message.drop === true);
 	} else if (message.type === 'visibility' && 'visible' in message) {
 		visible = message.visible === true;
-		if (!visible) {
-			cancelDrag();
-			transition?.cancel();
-			stop();
-		} else {
-			start();
-		}
+		synchronizeVisibility();
 	}
 });
 
-document.addEventListener('visibilitychange', () => {
-	if (document.hidden) {
-		cancelDrag();
-		stop();
-	} else {
-		start();
-	}
-});
-systemMotion.addEventListener('change', () => showState());
-new MutationObserver(() => showState()).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+document.addEventListener('visibilitychange', synchronizeVisibility);
+systemMotion.addEventListener('change', updateMotionPreference);
+new MutationObserver(updateMotionPreference).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 new ResizeObserver(resize).observe(stage);
 reset.replaceChildren(createElement(RotateCcw, { width: 15, height: 15 }));
 restore.replaceChildren(createElement(ArrowDown, { width: 14, height: 14 }));
+settingsToggle.replaceChildren(createElement(SlidersHorizontal, { width: 15, height: 15 }));
 controls();
 resize();
 api.postMessage({ type: 'ready' });

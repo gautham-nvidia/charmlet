@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-05T21:34:25.242Z",
+  "hostVersion": "1.90.0",
+  "electronVersion": "29.4.0",
+  "platform": "win32",
+  "arch": "x64",
+  "requestedHost": "1.90.0",
+  "scope": "All processes reported by the isolated VS Code host, including editor and automation overhead. Not extension-only CPU or memory.",
+  "cpuMeaning": "Electron percentCPUUsage since the preceding metrics call. Process identity is pid plus creationTime; a new process has no baseline.",
+  "memoryMeaning": "Electron workingSetSize in KB, per process. Shared pages can occur in multiple processes; do not sum as unique memory.",
+  "sampleDurationMs": 2000,
+  "samples": [
+    {
+      "mode": "active",
+      "intervalMs": 2023.004600000102,
+      "beforeFrames": 307,
+      "afterFrames": 429,
+      "frameDelta": 122,
+      "runningBefore": "true",
+      "runningAfter": "true",
+      "before": {
+        "monotonicMs": 49796.1081999999,
+        "processes": [
+          {
+            "pid": 13532,
+            "creationTime": 1791236005389.064,
+            "type": "Browser",
+            "cpuPercent": 0,
+            "workingSetKB": 118092
+          },
+          {
+            "pid": 26876,
+            "creationTime": 1791236005787.221,
+            "type": "GPU",
+            "cpuPercent": 0,
+            "workingSetKB": 550352
+          },
+          {
+            "pid": 37920,
+            "creationTime": 1791236005800.589,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 45160
+          },
+          {
+            "pid": 41860,
+            "creationTime": 1791236006149.779,
+            "type": "Tab",
+            "cpuPercent": 0,
+            "workingSetKB": 372620
+          },
+          {
+            "pid": 7300,
+            "creationTime": 1791236007085.163,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 91484
+          },
+          {
+            "pid": 20888,
+            "creationTime": 1791236008481.619,
+            "type": "Tab",
+            "cpuPercent": 0,
+            "workingSetKB": 123020
+          },
+          {
+            "pid": 9152,
+            "creationTime": 1791236042024.242,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 142172
+          },
+          {
+            "pid": 8052,
+            "creationTime": 1791236042154.582,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 106336
+          }
+        ]
+      },
+      "after": {
+        "monotonicMs": 51819.1128,
+        "processes": [
+          {
+            "pid": 13532,
+            "creationTime": 1791236005389.064,
+            "type": "Browser",
+            "cpuPercent": 0,
+            "workingSetKB": 118252
+          },
+          {
+            "pid": 26876,
+            "creationTime": 1791236005787.221,
+            "type": "GPU",
+            "cpuPercent": 2.027363177931711,
+            "workingSetKB": 459128
+          },
+          {
+            "pid": 37920,
+            "creationTime": 1791236005800.589,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 45160
+          },
+          {
+            "pid": 41860,
+            "creationTime": 1791236006149.779,
+            "type": "Tab",
+            "cpuPercent": 0,
+            "workingSetKB": 372612
+          },
+          {
+            "pid": 7300,
+            "creationTime": 1791236007085.163,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 91488
+          },
+          {
+            "pid": 20888,
+            "creationTime": 1791236008481.619,
+            "type": "Tab",
+            "cpuPercent": 0.9653962443398432,
+            "workingSetKB": 123448
+          },
+          {
+            "pid": 9152,
+            "creationTime": 1791236042024.242,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 142128
+          },
+          {
+            "pid": 8052,
+            "creationTime": 1791236042154.582,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 106336
+          }
+        ]
+      }
+    },
+    {
+      "mode": "settled",
+      "intervalMs": 2018.6144000000786,
+      "beforeFrames": 617,
+      "afterFrames": 617,
+      "frameDelta": 0,
+      "runningBefore": "false",
+      "runningAfter": "false",
+      "before": {
+        "monotonicMs": 55279.68879999989,
+        "processes": [
+          {
+            "pid": 13532,
+            "creationTime": 1791236005389.064,
+            "type": "Browser",
+            "cpuPercent": 0.14109548685158022,
+            "workingSetKB": 118256
+          },
+          {
+            "pid": 26876,
+            "creationTime": 1791236005787.221,
+            "type": "GPU",
+            "cpuPercent": 1.439174797624256,
+            "workingSetKB": 367828
+          },
+          {
+            "pid": 37920,
+            "creationTime": 1791236005800.589,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 45160
+          },
+          {
+            "pid": 41860,
+            "creationTime": 1791236006149.779,
+            "type": "Tab",
+            "cpuPercent": 0.8747990964614393,
+            "workingSetKB": 226076
+          },
+          {
+            "pid": 7300,
+            "creationTime": 1791236007085.163,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 91940
+          },
+          {
+            "pid": 20888,
+            "creationTime": 1791236008481.619,
+            "type": "Tab",
+            "cpuPercent": 1.298090857365939,
+            "workingSetKB": 126016
+          },
+          {
+            "pid": 9152,
+            "creationTime": 1791236042024.242,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 142128
+          },
+          {
+            "pid": 8052,
+            "creationTime": 1791236042154.582,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 106336
+          }
+        ]
+      },
+      "after": {
+        "monotonicMs": 57298.303199999966,
+        "processes": [
+          {
+            "pid": 13532,
+            "creationTime": 1791236005389.064,
+            "type": "Browser",
+            "cpuPercent": 0.048376434233561236,
+            "workingSetKB": 118264
+          },
+          {
+            "pid": 26876,
+            "creationTime": 1791236005787.221,
+            "type": "GPU",
+            "cpuPercent": 0,
+            "workingSetKB": 313468
+          },
+          {
+            "pid": 37920,
+            "creationTime": 1791236005800.589,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 45160
+          },
+          {
+            "pid": 41860,
+            "creationTime": 1791236006149.779,
+            "type": "Tab",
+            "cpuPercent": 1.4996806047975413,
+            "workingSetKB": 209972
+          },
+          {
+            "pid": 7300,
+            "creationTime": 1791236007085.163,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 91952
+          },
+          {
+            "pid": 20888,
+            "creationTime": 1791236008481.619,
+            "type": "Tab",
+            "cpuPercent": 0,
+            "workingSetKB": 125712
+          },
+          {
+            "pid": 9152,
+            "creationTime": 1791236042024.242,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 142128
+          },
+          {
+            "pid": 8052,
+            "creationTime": 1791236042154.582,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 106336
+          }
+        ]
+      }
+    },
+    {
+      "mode": "hidden",
+      "intervalMs": 2012.5242000001017,
+      "beforeFrames": 617,
+      "afterFrames": 617,
+      "frameDelta": 0,
+      "runningBefore": "false",
+      "runningAfter": "false",
+      "before": {
+        "monotonicMs": 57747.82819999987,
+        "processes": [
+          {
+            "pid": 13532,
+            "creationTime": 1791236005389.064,
+            "type": "Browser",
+            "cpuPercent": 0.6517803510645398,
+            "workingSetKB": 118160
+          },
+          {
+            "pid": 26876,
+            "creationTime": 1791236005787.221,
+            "type": "GPU",
+            "cpuPercent": 0.43451443394379485,
+            "workingSetKB": 321892
+          },
+          {
+            "pid": 37920,
+            "creationTime": 1791236005800.589,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 45160
+          },
+          {
+            "pid": 41860,
+            "creationTime": 1791236006149.779,
+            "type": "Tab",
+            "cpuPercent": 0.2172528670426358,
+            "workingSetKB": 209368
+          },
+          {
+            "pid": 7300,
+            "creationTime": 1791236007085.163,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 91972
+          },
+          {
+            "pid": 20888,
+            "creationTime": 1791236008481.619,
+            "type": "Tab",
+            "cpuPercent": 0.8690018019621365,
+            "workingSetKB": 125600
+          },
+          {
+            "pid": 9152,
+            "creationTime": 1791236042024.242,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 141820
+          },
+          {
+            "pid": 8052,
+            "creationTime": 1791236042154.582,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 106424
+          }
+        ]
+      },
+      "after": {
+        "monotonicMs": 59760.352399999974,
+        "processes": [
+          {
+            "pid": 13532,
+            "creationTime": 1791236005389.064,
+            "type": "Browser",
+            "cpuPercent": 0,
+            "workingSetKB": 118160
+          },
+          {
+            "pid": 26876,
+            "creationTime": 1791236005787.221,
+            "type": "GPU",
+            "cpuPercent": 0,
+            "workingSetKB": 318076
+          },
+          {
+            "pid": 37920,
+            "creationTime": 1791236005800.589,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 45160
+          },
+          {
+            "pid": 41860,
+            "creationTime": 1791236006149.779,
+            "type": "Tab",
+            "cpuPercent": 0,
+            "workingSetKB": 209176
+          },
+          {
+            "pid": 7300,
+            "creationTime": 1791236007085.163,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 91972
+          },
+          {
+            "pid": 20888,
+            "creationTime": 1791236008481.619,
+            "type": "Tab",
+            "cpuPercent": 0,
+            "workingSetKB": 125584
+          },
+          {
+            "pid": 9152,
+            "creationTime": 1791236042024.242,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 141820
+          },
+          {
+            "pid": 8052,
+            "creationTime": 1791236042154.582,
+            "type": "Utility",
+            "cpuPercent": 0,
+            "workingSetKB": 106424
+          }
+        ]
+      }
+    }
+  ]
+}
