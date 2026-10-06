@@ -72,6 +72,9 @@ button:disabled { opacity: 0.5; cursor: default; }
 #settings { display: grid; grid-template-columns: auto minmax(36px, 1fr) 48px; align-items: center; gap: 8px; padding: 4px 14px 12px; }
 #settings label { color: var(--quiet); font-size: 11px; }
 #settings output { text-align: right; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#charm-select { grid-column: 2 / -1; width: 100%; min-width: 0; padding: 4px 6px; color: var(--vscode-dropdown-foreground, var(--ink)); background: var(--vscode-dropdown-background, var(--surface)); border: 1px solid var(--vscode-dropdown-border, #88888880); border-radius: 3px; font: inherit; }
+#charm-description { grid-column: 1 / -1; margin: 0 0 2px; color: var(--quiet); font-size: 11px; line-height: 1.4; }
+select:focus-visible { outline: 1px solid var(--focus); outline-offset: 3px; }
 input[type="range"] { width: 100%; min-width: 0; margin: 0; accent-color: var(--vscode-focusBorder, #75c7aa); }
 input:focus-visible { outline: 1px solid var(--focus); outline-offset: 3px; }
 body.vscode-high-contrast button, body.vscode-high-contrast-light button { border: 1px solid var(--vscode-contrastBorder, currentColor); }

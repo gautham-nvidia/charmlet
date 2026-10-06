@@ -15,14 +15,14 @@
           <svg id="cord" aria-hidden="true"><path id="thread"></path></svg>
           <span id="anchor" aria-hidden="true"></span>
           <button id="charm" type="button" aria-label="Nudge terminal charm" title="Nudge charm" draggable="false">
-            <img src="__CHARM__" alt="" width="72" height="84" draggable="false">
+            <img id="charm-image" src="__CHARM__" alt="" width="72" height="84" draggable="false">
           </button>
         </div>
         <button id="restore" type="button" aria-label="Restore charm" title="Restore charm" hidden></button>
       </div>
     </div>
     <div class="tools" role="toolbar" aria-label="Charm controls">
-      <div class="identity"><span class="swatch"></span><span>Terminal</span></div>
+      <div class="identity"><span id="charm-swatch" class="swatch" aria-hidden="true"></span><span id="charm-name">Terminal</span></div>
       <div class="actions">
         <button id="settings-toggle" type="button" aria-label="Charm settings" title="Charm settings" aria-expanded="false" aria-controls="settings"></button>
         <button id="motion" type="button" role="switch" aria-checked="true" aria-label="Motion" title="Motion"></button>
@@ -31,6 +31,9 @@
       </div>
     </div>
     <div id="settings" hidden>
+      <label for="charm-select">Charm</label>
+      <select id="charm-select" aria-describedby="charm-description"></select>
+      <p id="charm-description"></p>
       <label for="size">Size</label>
       <input id="size" type="range" min="60" max="140" step="10" value="100">
       <output id="size-value" for="size">100%</output>

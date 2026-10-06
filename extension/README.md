@@ -1,9 +1,9 @@
 # Charmlet: Coding Charms
 
-An original terminal-keycap charm that drops in, swings when nudged, and returns to its resting cord length after a pull.
+Four original hanging charms that swing when nudged and return to their resting cord length after a pull.
 The hanging point is centered in the view to leave room for swings in either direction.
 
-**Phase 1 development build, version 0.0.5.** Charmlet lives in a dockable VS Code view, not over your code
+**Phase 2 development build, version 0.1.0.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 
 ## Try it
@@ -16,21 +16,28 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 1. Open the Command Palette and run **Charmlet: Show Charm**.
 2. For a right-side dock, run **View: Move View**, select **Charmlet**, then **New Secondary Side Bar Entry**.
 3. Click the keycap to nudge it. Pull downward and release to return to the resting position; pull upward at least 60 pixels to hide it.
-4. Open **Charm settings** to adjust **Size** (60-140%) and **Cord** (from 48 px up to the available panel height).
+4. Open **Charm settings** to choose **Terminal**, **Chip**, **Wafer** or **Circuit**, then adjust size and resting cord length.
+
+| Charm | Style |
+|---|---|
+| Terminal | Mint terminal keycap |
+| Chip | Violet chip with a bright core |
+| Wafer | Warm patterned wafer |
+| Circuit | Blue board with bright traces |
 
 | Control | Action |
 |---|---|
 | Drag sideways and release | Swing with momentum |
 | Eye / restore arrow | Hide or restore the last parked length |
 | Motion switch | Enable or disable animation |
-| Charm settings | Adjust size and cord; Escape closes settings and returns focus |
-| Reset arrow | Restore default size/cord and reveal the charm; keep the motion preference |
+| Charm settings | Choose a charm, size and resting cord; Escape closes settings and returns focus |
+| Reset arrow | Restore default size/cord and reveal the selected charm; keep its selection and the motion preference |
 | Status bar Charmlet item | Toggle or reveal the charm view |
 
 With the charm keyboard-focused: Enter/Space nudges, Left/Right swings, Up/Down adjusts the cord,
 and Escape hides. System reduced-motion preferences override the animation switch.
 
-Size, cord, visibility and motion choices are saved locally. Shrinking the panel temporarily shortens
+Charm choice, size, cord, visibility and motion choices are saved locally. Shrinking the panel temporarily shortens
 the visible cord; expanding it restores your requested length. Cancelling a drag keeps the previous
 parked length. The settings panel stays closed until you open it.
 
@@ -38,8 +45,10 @@ Size and Cord in settings define the resting appearance. A downward pull stretch
 
 ## Free and local
 
-One original placeholder charm is bundled. No login, runtime AI model, network API, telemetry,
-payments or audio. Three finished free charms and a gallery are later milestones, not included yet.
+All four charms are bundled and permanently free. They work offline without login, runtime AI, network
+APIs, telemetry, payments or audio. Changing the charm preserves size, resting cord, visibility and
+motion preferences. [Artwork provenance](https://github.com/gautham-nvidia/charmlet/blob/main/extension/ARTWORK.md)
+records the asset sources and license status.
 
 ## Current limits
 
@@ -47,7 +56,7 @@ payments or audio. Three finished free charms and a gallery are later milestones
 - The animation loop stops when settled or hidden. [Recorded measurements](https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-1-validation.md) include whole-editor overhead and do not promise zero CPU use.
 - macOS, Linux, Cursor, Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.
 - The dock occupies editor layout space. Explorer's initial slot can be too short; move or resize it.
-- Size, cord, visibility and motion preferences persist locally; cross-machine sync is not implemented.
+- Charm choice, size, cord, visibility and motion preferences persist locally; cross-machine sync is not implemented.
 - This is not yet published to VS Code Marketplace or Open VSX. The manifest publisher is not
 	evidence of a registered or verified Marketplace publisher.
 

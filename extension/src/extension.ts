@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { DEFAULT_STATE, restoreState, type CharmState } from './charm-state';
+import { resetState, restoreState, type CharmState } from './charm-state';
 
 export function activate(context: vscode.ExtensionContext) {
 	const status = vscode.window.createStatusBarItem('charmlet', vscode.StatusBarAlignment.Right, -100);
@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('charmlet.hide', () => provider.update({ ...provider.state, hidden: true })),
 		vscode.commands.registerCommand('charmlet.toggle', () => provider.toggle()),
 		vscode.commands.registerCommand('charmlet.reset', async () => {
-			await provider.update({ ...DEFAULT_STATE, reducedMotion: provider.state.reducedMotion });
+			await provider.update(resetState(provider.state));
 			await provider.show();
 		}),
 	);
