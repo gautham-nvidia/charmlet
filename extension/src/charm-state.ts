@@ -1,5 +1,8 @@
+import { getCharm, type CharmId } from './charm-catalog';
+
 export interface CharmState {
 	version: 1;
+	charmId: CharmId;
 	cordLength: number;
 	size: number;
 	hidden: boolean;
@@ -8,6 +11,7 @@ export interface CharmState {
 
 export const DEFAULT_STATE: Readonly<CharmState> = Object.freeze({
 	version: 1,
+	charmId: 'terminal',
 	cordLength: 126,
 	size: 100,
 	hidden: false,
@@ -25,6 +29,7 @@ export function restoreState(value: unknown): CharmState {
 	const candidate = value as Record<string, unknown>;
 	return {
 		version: 1,
+		charmId: getCharm(candidate.charmId).id,
 		cordLength: typeof candidate.cordLength === 'number' && Number.isFinite(candidate.cordLength)
 			? Math.max(48, candidate.cordLength)
 			: DEFAULT_STATE.cordLength,
@@ -36,6 +41,10 @@ export function restoreState(value: unknown): CharmState {
 			? candidate.reducedMotion
 			: DEFAULT_STATE.reducedMotion,
 	};
+}
+
+export function resetState(state: CharmState): CharmState {
+	return { ...DEFAULT_STATE, charmId: state.charmId, reducedMotion: state.reducedMotion };
 }
 
 export function getLayout(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size) {

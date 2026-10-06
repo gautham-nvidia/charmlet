@@ -1,8 +1,8 @@
 {
   "name": "charmlet",
   "displayName": "Charmlet: Coding Charms",
-  "description": "An interactive hanging charm with adjustable size and cord. Free, offline, docked-view extension.",
-  "version": "0.0.5",
+  "description": "Four free hanging coding charms with adjustable size and cord. Offline and interactive.",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.90.0"
   },

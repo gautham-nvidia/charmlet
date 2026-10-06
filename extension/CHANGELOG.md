@@ -3,6 +3,32 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.1.0 - 2026-10-05 (Phase 2 free collection)
+
+Tracking: [P2 #9](https://github.com/gautham-nvidia/charmlet/issues/9).
+
+### Added
+
+- Three original Silicon Pack charms: Chip, Wafer and Circuit, alongside the existing Terminal charm.
+- An accessible Charm picker in settings with names, descriptions and matching accent dots.
+- Saved selection with a Terminal fallback for legacy or unknown IDs, retaining the other preferences.
+- Artwork provenance and a prepared optional trial checklist.
+
+### Changed
+
+- Reset keeps the selected charm and motion preference while restoring default size/cord and visibility.
+- Local images and labels change only with selection/state updates, not on each animation frame.
+
+### Verified
+
+- Seventeen state/physics tests and complete Windows real-editor checks on VS Code 1.90.0 and 1.138.0.
+- All four images load; selection works by mouse and keyboard, survives reload and preserves hidden/motion/layout preferences.
+- The accepted Phase 1 gesture and accessibility checks remain passing.
+
+### Limits
+
+- Development package only. Coworker trial feedback, broader compatibility and registry publication are not claimed.
+
 ## 0.0.5 - 2026-10-05 (Phase 1 return to rest)
 
 Tracking: [P1 #2](https://github.com/gautham-nvidia/charmlet/issues/2).

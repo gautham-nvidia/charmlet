@@ -1,5 +1,6 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { CHARMS } from '../charm-catalog';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -228,6 +229,58 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 		expect(fits).toBe(true);
 		await window.screenshot({ path: testInfo.outputPath('compact-window.png') });
+
+		await test.step('the free collection loads, keeps preferences and remembers its selection', async () => {
+			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
+			frame = await readyFrame(window);
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			let picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
+			await expect(picker.locator('option')).toHaveCount(4);
+			for (const entry of CHARMS) {
+				await picker.selectOption(entry.id);
+				await expect(frame.locator('#stage')).toHaveAttribute('data-charm', entry.id);
+				await expect(frame.locator('#charm-name')).toHaveText(entry.name);
+				await expect(frame.locator('#charm')).toHaveAttribute('aria-label', `Nudge ${entry.name.toLowerCase()} charm`);
+				await expect.poll(() => frame.locator('#charm-image').evaluate(image => {
+					const img = image as HTMLImageElement;
+					return img.complete && img.naturalWidth === 72;
+				})).toBe(true);
+				await expect.poll(() => frame.locator('#charm-image').getAttribute('src')).toMatch(new RegExp(`${entry.file.replace('.', '\\.')}$`));
+				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
+				await expect(frame.locator('#stage')).toHaveAttribute('data-size', '100');
+				await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
+				await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`phase-2-${entry.id}.png`) });
+			}
+			await picker.focus();
+			await picker.press('Home');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
+			await picker.press('End');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'circuit');
+			await window.screenshot({ path: testInfo.outputPath('phase-2-collection.png') });
+			await picker.press('Escape');
+			await Promise.all([
+				window.waitForEvent('domcontentloaded'),
+				command(window, 'Developer: Reload Window'),
+			]);
+			frame = await readyFrame(window);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'circuit');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
+			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
+			await command(window, 'Charmlet: Reset Charm');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'circuit');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
+			await frame.getByRole('button', { name: 'Hide charm', exact: true }).click();
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
+			await picker.selectOption('chip');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'chip');
+			await picker.selectOption('terminal');
+			await picker.press('Escape');
+			await frame.locator('#restore').click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
+		});
 
 		await test.step('size and cord controls persist across reload', async () => {
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));

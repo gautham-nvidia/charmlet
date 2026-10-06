@@ -2,17 +2,18 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-05:** Phase 1 development build **0.0.5**, with size/cord controls and real-editor
-checks passing on Windows / VS Code **1.90.0 and 1.138.0**. One original terminal-keycap charm is
-bundled. No telemetry, account, payment or runtime AI is required.
+**Status, 2026-10-05:** Phase 2 development build **0.1.0**, with **four free original charms**, a saved
+Charm picker and real-editor checks passing on Windows / VS Code **1.90.0 and 1.138.0**. No telemetry,
+account, payment or runtime AI is required.
 
-[Phase 1 tracking](https://github.com/gautham-nvidia/charmlet/issues/2) and the
-[dated validation record](docs/phase-1-validation.md) show the checks and remaining review items.
+[Phase 2 tracking](https://github.com/gautham-nvidia/charmlet/issues/9) and the
+[dated validation record](docs/phase-2-validation.md) show the checks and remaining review items.
 
-![Charmlet returned to its resting position after a pull](docs/phase-1-returned-0.0.5.png)
+![Choose a free charm in Charmlet settings](docs/phase-2/collection.png)
 
-The hanging point is centered in the panel so the charm has room to swing both ways. Your saved
-size and cord length are preserved when upgrading from 0.0.2.
+Choose **Terminal**, **Chip**, **Wafer** or **Circuit** in Charm settings. Your selection and resting
+preferences are saved locally. Pulling is temporary: releasing returns the charm to its selected
+resting length and position.
 
 ## Run the demo
 
@@ -23,7 +24,7 @@ Use Node.js 24, npm, and desktop VS Code. The source lives in [extension/](exten
 ```powershell
 npm.cmd --prefix extension ci
 npm.cmd --prefix extension run compile
-code.cmd --new-window --extensionDevelopmentPath "$PWD\extension" --user-data-dir "$env:TEMP\charmlet-phase1-demo" --extensions-dir "$env:TEMP\charmlet-phase1-demo-extensions" .
+code.cmd --new-window --extensionDevelopmentPath "$PWD\extension" --user-data-dir "$env:TEMP\charmlet-phase2-demo" --extensions-dir "$env:TEMP\charmlet-phase2-demo-extensions" .
 ```
 
 This opens an isolated **Extension Development Host**; your normal extensions and pane layout remain
@@ -32,7 +33,7 @@ unchanged. After rebuilding, reload that demo window to load the updated code.
 1. In the demo window, press **Ctrl+Shift+P**, then run **Charmlet: Show Charm**.
 2. Run **View: Move View**, choose **Charmlet**, then **New Secondary Side Bar Entry** for a right dock.
 3. Click to nudge; pull downward to stretch, then release to return to the resting position. Pull upward to retract; the eye restores it.
-4. Open **Charm settings** below the charm to adjust its size and cord length. Escape closes settings.
+4. Open **Charm settings** to choose a charm, size and resting cord length. Escape closes settings.
 
 Motion and reset controls live below the charm. Tab to the charm for Enter/Space, arrow-key and Escape
 controls. See [extension/README.md](extension/README.md) for the full controls and limitations.
@@ -46,11 +47,11 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs fourteen state/physics tests and one real-editor interaction
+`test` builds and lints both bundles, runs seventeen state/physics tests and one real-editor interaction
 regression. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.
-See the [validation record](docs/phase-1-validation.md) for the two-version commands and measurements.
+See the [validation record](docs/phase-2-validation.md) for collection checks and screenshots.
 
 The VSIX is written under `extension/` and ignored by Git. Install it using **Extensions: Install from
 VSIX...** for manual testing. Packaging uses `--skip-license` because the project's own license decision
@@ -69,6 +70,9 @@ artifacts tied to the commit. CI does not publish to extension registries.
 | [Phase 0 issue #3](https://github.com/gautham-nvidia/charmlet/issues/3) | Prototype delivery and acceptance checks |
 | [Phase 1 issue #2](https://github.com/gautham-nvidia/charmlet/issues/2) | Free-core polish, accessibility and compatibility checks |
 | [Phase 1 validation](docs/phase-1-validation.md) | Windows compatibility, interaction evidence and resource captures |
+| [Phase 2 issue #9](https://github.com/gautham-nvidia/charmlet/issues/9) | Free collection, saved selection and trial package |
+| [Phase 2 validation](docs/phase-2-validation.md) | Collection screenshots and Windows checks |
+| [Artwork provenance](extension/ARTWORK.md) | Asset origins, shared geometry and license status |
 | [extension/CHANGELOG.md](extension/CHANGELOG.md) | User-visible changes by version and date |
 | [PLAN.md](PLAN.md) | Design research, constraints and clearly marked historical proposals |
 
@@ -87,11 +91,10 @@ git log --all --graph --date=iso-strict --format="%h %ad %s"
 git log --follow --date=short --format="%h %ad %s" -- PROJECT_LOG.md
 ```
 
-Next: build the three-charm free collection in Phase 2, on a new phase branch after the Phase 1
-refinement is merged. Broader compatibility and dual-registry publishing follow; status-bar motivation
-and paid cosmetics remain later features. Publishing requires its own approval and identity/license
-decisions. Windows VS Code 1.90.0 and 1.138.0 are tested; macOS/Linux, Cursor/Devin Desktop and
-remote/browser hosts remain unverified.
+Next: try the free collection and finish Phase 2 integration before starting Phase 3 compatibility and
+release work. The optional full-circle idea is tracked separately in [#8](https://github.com/gautham-nvidia/charmlet/issues/8).
+Registry publication still requires its own approval and identity/license decisions. Other operating
+systems, Cursor/Devin Desktop and remote/browser hosts remain unverified.
 
 ## Ownership and licenses
 

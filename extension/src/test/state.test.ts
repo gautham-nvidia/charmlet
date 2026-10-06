@@ -1,6 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { DEFAULT_STATE, getLayout, restoreState } from '../charm-state';
+import { DEFAULT_STATE, getLayout, resetState, restoreState } from '../charm-state';
+import { CHARMS } from '../charm-catalog';
 import { Pendulum } from '../pendulum';
 
 test('missing or invalid saved values restore a usable charm', () => {
@@ -12,8 +13,33 @@ test('missing or invalid saved values restore a usable charm', () => {
 
 test('hide and motion preferences survive a reload without trusting unknown fields', () => {
 	assert.deepEqual(restoreState({ cordLength: 180, hidden: true, reducedMotion: true, extra: 'ignored' }), {
-		version: 1, cordLength: 180, size: 100, hidden: true, reducedMotion: true,
+		version: 1, charmId: 'terminal', cordLength: 180, size: 100, hidden: true, reducedMotion: true,
 	});
+});
+
+test('legacy and unknown charm selections retain the other preferences', () => {
+	for (const charmId of [undefined, 'missing', '../outside.svg', null]) {
+		const state = restoreState({ charmId, cordLength: 210, size: 80, hidden: true, reducedMotion: true });
+		assert.equal(state.charmId, 'terminal');
+		assert.equal(state.cordLength, 210);
+		assert.equal(state.size, 80);
+		assert.equal(state.hidden, true);
+		assert.equal(state.reducedMotion, true);
+	}
+});
+
+test('every bundled selection survives saved-state restoration', () => {
+	assert.equal(CHARMS.length, 4);
+	assert.equal(new Set(CHARMS.map(charm => charm.id)).size, CHARMS.length);
+	for (const charm of CHARMS) {
+		const requested = { ...DEFAULT_STATE, charmId: charm.id, cordLength: 210, size: 80 };
+		assert.deepEqual(restoreState(JSON.parse(JSON.stringify(requested))), requested);
+	}
+});
+
+test('reset retains the selected charm and motion preference', () => {
+	const state = restoreState({ charmId: 'wafer', cordLength: 700, size: 140, hidden: true, reducedMotion: true });
+	assert.deepEqual(resetState(state), { ...DEFAULT_STATE, charmId: 'wafer', reducedMotion: true });
 });
 
 test('size persists and Phase 0 states gain the default without losing their parked length', () => {

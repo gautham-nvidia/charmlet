@@ -9,8 +9,8 @@ and next action. Current milestone status is summarized below; entries preserve 
 | ID | Status | Scope / next gate | Tracking |
 |---|---|---|---|
 | P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
-| P1 | Free core and placement feedback addressed; integration tracked in #2 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
-| P2 | Planned | Three finished free originals, switching UI, generic Silicon coworker trial | [Roadmap #1](https://github.com/gautham-nvidia/charmlet/issues/1) |
+| P1 | Accepted and merged in PR #7 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
+| P2 | Implementation verified; packaging/integration tracked in #9 | Four free charms, saved picker, artwork provenance and prepared trial checklist | [#9](https://github.com/gautham-nvidia/charmlet/issues/9) |
 | P3 | Planned | Cross-editor/OS/remote tests; approved identity and license; Marketplace + Open VSX | Roadmap #1 |
 | F1 | Deferred | Quiet opt-in coding motivation in the status bar | Roadmap #1 |
 | F2 | Deferred | Cosmetic-only paid packs and explicit celebration commands | Roadmap #1 |
@@ -150,3 +150,19 @@ Version **0.0.5** treats the drag length as temporary and eases the tether back 
 Type/lint/build, fourteen unit tests and the full UI test on Windows VS Code 1.90.0 and 1.138.0 passed. UI cases stretch from both a chosen 50 px rest length and the 126 px default, then verify the same length and position after release and reload. [Stretched](docs/phase-1-stretched-0.0.5.png) and [returned](docs/phase-1-returned-0.0.5.png) show the two states.
 
 The meaning of the separate full-circle request is still being clarified. Circular input recovery is not a claim of a full 360-degree spin or orbit. This remains Phase 1 on PR #7; do not merge or start P2 until the remaining requested behavior is resolved.
+
+## 2026-10-05 - Phase 1 accepted; Phase 2 started
+
+Gautham accepted the 0.0.5 interaction and requested the next phase. This supersedes the earlier hold for full-circle clarification. PR #7 merged with merge commit 57e13249feb440b04b523169d9c18bc29d1ae240 after CI run 37389648535 passed on the reviewed head. Phase 1 issue #2 is closed. Optional full-circle exploration is tracked separately in issue #8 and is not implemented.
+
+Local main was fast-forwarded to that merge before creating `feat/phase-2-free-collection`. Phase 2 is tracked in [#9](https://github.com/gautham-nvidia/charmlet/issues/9): three new original Silicon Pack designs alongside Terminal, an accessible picker, saved selection and a development trial package. Actual coworker distribution/feedback is not automated.
+
+## 2026-10-05 - Phase 2 free collection implementation
+
+On `feat/phase-2-free-collection`, development version **0.1.0** retains Terminal and adds original Chip, Wafer and Circuit SVGs. The settings picker saves selection, uses only catalogued local resources and preserves existing preferences. Both Reset paths keep the selected charm. Existing saved states fall back to Terminal without losing their layout/motion choices.
+
+The 72x84 canvas and attachment point match the accepted renderer. The artwork and settings UI were reviewed from real-editor captures, preserved in [Phase 2 validation](docs/phase-2-validation.md). [ARTWORK.md](extension/ARTWORK.md) records provenance and the pending project license. A [trial checklist](docs/phase-2-trial.md) is prepared; no coworker outreach or feedback is recorded.
+
+Windows PC verification: type/lint/build passed, **17 unit tests passed**, and the complete UI suite passed on **VS Code 1.90.0 and 1.138.0**. Coverage includes every asset, keyboard switching, reload, reset, hidden preferences and the Phase 1 interaction suite. Hosted checks and merge evidence will be recorded in the phase PR and issue #9.
+
+Development VSIX: extension/charmlet-0.1.0.vsix built locally; all four charms and artwork provenance are included. Phase 3 and registry publication have not started.

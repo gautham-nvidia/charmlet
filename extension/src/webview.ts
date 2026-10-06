@@ -1,5 +1,6 @@
 import { createElement, ArrowDown, Eye, EyeOff, Pause, Play, RotateCcw, SlidersHorizontal } from 'lucide';
-import { DEFAULT_STATE, clamp, getLayout, restoreState, type CharmState } from './charm-state';
+import { resetState, clamp, getLayout, restoreState, type CharmState } from './charm-state';
+import { CHARMS, getCharm } from './charm-catalog';
 import { Pendulum, type Point } from './pendulum';
 
 declare function acquireVsCodeApi(): {
@@ -35,6 +36,12 @@ const cordValue = element<HTMLOutputElement>('cord-value');
 const phase = element<HTMLSpanElement>('phase');
 const lengthOutput = element<HTMLOutputElement>('length');
 const thread = document.getElementById('thread')!;
+const charmImage = element<HTMLImageElement>('charm-image');
+const charmName = element<HTMLSpanElement>('charm-name');
+const charmSwatch = element<HTMLSpanElement>('charm-swatch');
+const charmSelect = element<HTMLSelectElement>('charm-select');
+const charmDescription = element<HTMLParagraphElement>('charm-description');
+const mediaRoot = new URL('.', charmImage.src);
 let state = restoreState(api.getState());
 let visible = true;
 let ready = false;
@@ -55,6 +62,21 @@ function reducedMotion() {
 function save() {
 	api.setState(state);
 	api.postMessage({ type: 'save', state });
+}
+
+function applyCharm() {
+	const selected = getCharm(state.charmId);
+	const source = new URL(selected.file, mediaRoot).toString();
+	if (charmImage.src !== source) {
+		charmImage.src = source;
+	}
+	charmName.textContent = selected.name;
+	charmSwatch.style.backgroundColor = selected.accent;
+	charmDescription.textContent = selected.description;
+	charmSelect.value = selected.id;
+	charm.setAttribute('aria-label', `Nudge ${selected.name.toLowerCase()} charm`);
+	charm.title = `Nudge ${selected.name} charm`;
+	stage.dataset.charm = selected.id;
 }
 
 function controls() {
@@ -323,7 +345,8 @@ toggle.addEventListener('click', toggleHidden);
 restore.addEventListener('click', toggleHidden);
 reset.addEventListener('click', () => {
 	cancelDrag();
-	state = { ...DEFAULT_STATE, reducedMotion: state.reducedMotion };
+	state = resetState(state);
+	applyCharm();
 	resize();
 	showState(true);
 	save();
@@ -349,6 +372,13 @@ settings.addEventListener('keydown', event => {
 		settingsToggle.focus();
 		resize();
 	}
+});
+charmSelect.addEventListener('change', () => {
+	cancelDrag();
+	state.charmId = getCharm(charmSelect.value).id;
+	applyCharm();
+	resize();
+	save();
 });
 sizeInput.addEventListener('input', () => {
 	state.size = Number(sizeInput.value);
@@ -383,6 +413,7 @@ window.addEventListener('message', event => {
 	if (message.type === 'state' && 'state' in message) {
 		cancelDrag();
 		state = restoreState(message.state);
+		applyCharm();
 		if ('visible' in message) {
 			visible = message.visible === true;
 		}
@@ -404,6 +435,13 @@ new ResizeObserver(resize).observe(stage);
 reset.replaceChildren(createElement(RotateCcw, { width: 15, height: 15 }));
 restore.replaceChildren(createElement(ArrowDown, { width: 14, height: 14 }));
 settingsToggle.replaceChildren(createElement(SlidersHorizontal, { width: 15, height: 15 }));
+for (const entry of CHARMS) {
+	const option = document.createElement('option');
+	option.value = entry.id;
+	option.textContent = entry.name;
+	charmSelect.append(option);
+}
+applyCharm();
 controls();
 resize();
 api.postMessage({ type: 'ready' });
