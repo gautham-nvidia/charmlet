@@ -1,6 +1,6 @@
 # Charmlet artwork
 
-Four original charms are bundled for offline use. Chip, Wafer and Circuit form the generic Silicon Pack; Terminal remains the original starter charm.
+Ten original charms are bundled for offline use. The original Terminal/Chip/Wafer/Circuit records appear below; the dated expansion records six additional defaults and six optional gallery designs.
 
 | Charm | Asset | Origin / authoring record |
 |---|---|---|
@@ -20,3 +20,13 @@ The four images were loaded in real Windows VS Code 1.90.0 and 1.138.0 views and
 ## License status
 
 The project's source/art license is still pending. This provenance record does not grant a separate reuse license or imply company endorsement. Third-party code and icon notices remain in `THIRD_PARTY_NOTICES.md`; no new third-party artwork or dependency was introduced for this collection.
+
+## 2026-10-06 - Expanded bundled collection and gallery extras
+
+Six bundled SVGs were added under `media/`: Transistor, Memory Stack, Evil Eye, Drishti Doll, Hamsa, and Lemon & Chilies. Six extra SVGs were added under `website/assets/`: Probe Card, Logic Gate, FinFET, Photon Link, Lotus, and Sunrise. All twelve are original source markup created for this project with coding-assistant assistance; no external artwork, logo, photograph, confidential reference material, or image-generation service was copied into the files.
+
+The gallery pack exporter uses existing Microsoft Edge canvas rendering to create one 288×336 PNG from each trusted extra SVG. Those PNGs are data-only pack payloads validated by the same parser used by the extension; they are not executable SVG or script content.
+
+The grouped good-luck motifs are stylized cultural illustrations. They are not claimed to have supernatural function and are not engineering diagrams. Drishti Doll's broad features—wide eyes, curled moustache, and fangs—were informed by public descriptions, including [Documenting TN's own way of dealing with drishti](https://www.newindianexpress.com/cities/chennai/2026/Jan/31/documenting-tns-own-way-of-dealing-with-drishti); no photograph or published artwork was copied.
+
+The 80 coding messages are original and unattributed. The earlier Terminal authoring-tool history remains unknown as recorded above. The source/art license is still pending; provenance does not itself grant reuse rights.

@@ -3,6 +3,35 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.3.1 - 2026-10-06 (Phase 3 collection, messages and gallery)
+
+Tracking: [feedback/gallery #13](https://github.com/gautham-nvidia/charmlet/issues/13), [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).
+
+### Added
+
+- Six new bundled originals for ten defaults across Silicon & Code and Good Luck.
+- Eighty original coding messages below the stage, with manual Next, saved visibility and five-minute automatic rotation.
+- Data-only `.charmlet.json` import/removal for validated static PNG charm packs.
+- A static companion gallery with six free extra packs and a real development-VSIX download.
+
+### Changed
+
+- Hanging is the compact default layout; Orbit remains available for complete fixed-peg loops.
+- Compact layouts reserve downward pull room and finish deliberate upward retraction before the pointer leaves the view.
+- The restore arrow remains a full-size view-pixel target in scaled panes.
+- Saved Cord remains the resting preference when the visible length is temporarily clamped to current space.
+- Save acknowledgement and shutdown draining make reload persistence explicit.
+
+### Verified
+
+- Twenty-seven unit tests: state/physics/catalogue, pack validation/storage and message timers.
+- Complete real-editor suites on Windows VS Code 1.90.0 and 1.140.0, including compact recovery, message persistence, full orbit and real Probe Card import/reload/removal.
+- Installed-Edge gallery checks at desktop and 375×812 mobile sizes, with real pack/VSIX downloads, no horizontal overflow and no page/console errors.
+
+### Limits
+
+- Other Phase 3 compatibility, publisher, license, listing and registry-publication gates remain open. No checkout or public deployment.
+
 ## 0.2.0 - 2026-10-06 (Phase 3 full-circle orbit)
 
 Tracking: [orbit #8](https://github.com/gautham-nvidia/charmlet/issues/8), [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).

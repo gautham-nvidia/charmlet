@@ -1,7 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { DEFAULT_STATE, getLayout, resetState, restoreState } from '../charm-state';
+import { DEFAULT_STATE, getLayout, resetState, restoreState, type LayoutMode } from '../charm-state';
 import { CHARMS } from '../charm-catalog';
+import { MESSAGES } from '../messages';
+import { MESSAGE_ROTATION_MS, MessageRotation } from '../message-rotation';
 import { Pendulum } from '../pendulum';
 
 test('missing or invalid saved values restore a usable charm', () => {
@@ -9,18 +11,26 @@ test('missing or invalid saved values restore a usable charm', () => {
 	assert.deepEqual(restoreState({ cordLength: Number.NaN, hidden: 'yes' }), DEFAULT_STATE);
 	assert.equal(restoreState({ cordLength: 9999 }).cordLength, 9999);
 	assert.equal(restoreState({ cordLength: -10 }).cordLength, 48);
+	assert.equal(restoreState({ messageIndex: -1 }).messageIndex, 0);
+	assert.equal(restoreState({ messageIndex: MESSAGES.length }).messageIndex, 0);
+	assert.equal(restoreState({ messageIndex: 1.5 }).messageIndex, 0);
 });
 
 test('hide and motion preferences survive a reload without trusting unknown fields', () => {
 	assert.deepEqual(restoreState({ cordLength: 180, hidden: true, reducedMotion: true, extra: 'ignored' }), {
-		version: 1, charmId: 'terminal', cordLength: 180, size: 100, hidden: true, reducedMotion: true,
+		version: 1, charmId: 'terminal', layoutMode: 'hanging', showMessages: true, rotateMessages: true, messageIndex: 0,
+		cordLength: 180, size: 100, hidden: true, reducedMotion: true,
 	});
 });
 
 test('legacy and unknown charm selections retain the other preferences', () => {
 	for (const charmId of [undefined, 'missing', '../outside.svg', null]) {
-		const state = restoreState({ charmId, cordLength: 210, size: 80, hidden: true, reducedMotion: true });
+		const state = restoreState({ charmId, layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: MESSAGES.length - 1, cordLength: 210, size: 80, hidden: true, reducedMotion: true });
 		assert.equal(state.charmId, 'terminal');
+		assert.equal(state.layoutMode, 'orbit');
+		assert.equal(state.showMessages, false);
+		assert.equal(state.rotateMessages, false);
+		assert.equal(state.messageIndex, MESSAGES.length - 1);
 		assert.equal(state.cordLength, 210);
 		assert.equal(state.size, 80);
 		assert.equal(state.hidden, true);
@@ -29,8 +39,12 @@ test('legacy and unknown charm selections retain the other preferences', () => {
 });
 
 test('every bundled selection survives saved-state restoration', () => {
-	assert.equal(CHARMS.length, 4);
+	assert.equal(CHARMS.length, 10);
 	assert.equal(new Set(CHARMS.map(charm => charm.id)).size, CHARMS.length);
+	assert.deepEqual(new Set(CHARMS.map(charm => charm.group)), new Set(['Silicon & Code', 'Good Luck']));
+	assert.equal(MESSAGES.length, 80);
+	assert.equal(new Set(MESSAGES).size, MESSAGES.length);
+	assert.ok(MESSAGES.every(message => message.trim().length > 0));
 	for (const charm of CHARMS) {
 		const requested = { ...DEFAULT_STATE, charmId: charm.id, cordLength: 210, size: 80 };
 		assert.deepEqual(restoreState(JSON.parse(JSON.stringify(requested))), requested);
@@ -38,8 +52,56 @@ test('every bundled selection survives saved-state restoration', () => {
 });
 
 test('reset retains the selected charm and motion preference', () => {
-	const state = restoreState({ charmId: 'wafer', cordLength: 700, size: 140, hidden: true, reducedMotion: true });
-	assert.deepEqual(resetState(state), { ...DEFAULT_STATE, charmId: 'wafer', reducedMotion: true });
+	const state = restoreState({ charmId: 'wafer', layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: 5, cordLength: 700, size: 140, hidden: true, reducedMotion: true });
+	assert.deepEqual(resetState(state), {
+		...DEFAULT_STATE, charmId: 'wafer', reducedMotion: true, layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: 5,
+	});
+});
+
+test('automatic message rotation advances, reschedules and obeys enable and stop', context => {
+	context.mock.timers.enable({ apis: ['setTimeout'] });
+	try {
+		let calls = 0;
+		let rotation: MessageRotation;
+		rotation = new MessageRotation(() => {
+			calls++;
+			rotation.update(true);
+		});
+		rotation.update(true);
+		context.mock.timers.tick(MESSAGE_ROTATION_MS - 1);
+		assert.equal(calls, 0);
+		context.mock.timers.tick(1);
+		assert.equal(calls, 1);
+		rotation.update(false);
+		context.mock.timers.tick(2 * MESSAGE_ROTATION_MS);
+		assert.equal(calls, 1);
+		rotation.update(true);
+		context.mock.timers.tick(MESSAGE_ROTATION_MS);
+		assert.equal(calls, 2);
+		rotation.stop();
+		context.mock.timers.tick(2 * MESSAGE_ROTATION_MS);
+		assert.equal(calls, 2);
+	} finally {
+		context.mock.timers.reset();
+	}
+});
+
+test('manual message changes restart the automatic countdown', context => {
+	context.mock.timers.enable({ apis: ['setTimeout'] });
+	try {
+		let calls = 0;
+		const rotation = new MessageRotation(() => { calls++; });
+		rotation.update(true);
+		context.mock.timers.tick(MESSAGE_ROTATION_MS - 100);
+		rotation.update(true);
+		context.mock.timers.tick(100);
+		assert.equal(calls, 0);
+		context.mock.timers.tick(MESSAGE_ROTATION_MS - 100);
+		assert.equal(calls, 1);
+		rotation.stop();
+	} finally {
+		context.mock.timers.reset();
+	}
 });
 
 test('size persists and Phase 0 states gain the default without losing their parked length', () => {
@@ -52,30 +114,68 @@ test('size persists and Phase 0 states gain the default without losing their par
 });
 
 test('every supported size fits the logical view without overwriting requested preferences', () => {
-	for (const size of [60, 100, 140]) {
-		for (const height of [80, 144, 240, 500]) {
-			const state = restoreState({ cordLength: 320, size });
-			const layout = getLayout(96, height, state.cordLength, state.size);
-			const bottom = layout.anchorY + layout.cordLength + layout.attachmentOffset + layout.charmHeight / 2;
-			assert.ok(bottom <= layout.height, `Size ${size}, height ${height}`);
-			assert.ok(layout.anchorX + layout.charmWidth / 2 <= layout.width);
-			assert.ok(layout.anchorX - layout.charmWidth / 2 >= 0);
-			assert.ok(layout.anchorX - layout.orbitRadius - layout.visualRadius >= -0.001);
-			assert.ok(layout.anchorX + layout.orbitRadius + layout.visualRadius <= layout.width + 0.001);
-			assert.ok(layout.anchorY - layout.orbitRadius - layout.visualRadius >= -0.001);
-			assert.ok(layout.anchorY + layout.orbitRadius + layout.visualRadius <= layout.height + 0.001);
-			assert.equal(state.cordLength, 320);
-			assert.equal(state.size, size);
+	for (const mode of ['hanging', 'orbit'] as LayoutMode[]) {
+		for (const size of [60, 100, 140]) {
+			for (const height of [80, 144, 240, 500]) {
+				const state = restoreState({ cordLength: 320, size });
+				const layout = getLayout(96, height, state.cordLength, state.size, mode);
+				const bottom = layout.anchorY + layout.cordLength + layout.attachmentOffset + layout.visualRadius;
+				assert.ok(bottom <= layout.height, `Mode ${mode}, size ${size}, height ${height}`);
+				assert.ok(layout.anchorX + layout.charmWidth / 2 <= layout.width);
+				assert.ok(layout.anchorX - layout.charmWidth / 2 >= 0);
+				if (mode === 'orbit') {
+					assert.ok(layout.anchorX - layout.orbitRadius - layout.visualRadius >= -0.001);
+					assert.ok(layout.anchorX + layout.orbitRadius + layout.visualRadius <= layout.width + 0.001);
+					assert.ok(layout.anchorY - layout.orbitRadius - layout.visualRadius >= -0.001);
+					assert.ok(layout.anchorY + layout.orbitRadius + layout.visualRadius <= layout.height + 0.001);
+				}
+				assert.equal(state.cordLength, 320);
+				assert.equal(state.size, size);
+			}
 		}
 	}
 });
 
 test('resizing clamps the parked cord to keep the charm in the view', () => {
-	for (const height of [144, 200, 400, 800]) {
-		const layout = getLayout(280, height, 320);
-		assert.ok(layout.anchorY + layout.cordLength + layout.attachmentOffset + layout.visualRadius <= layout.height);
-		assert.ok(layout.anchorX + 40 <= layout.width);
-		assert.ok(layout.cordLength >= 48);
+	for (const mode of ['hanging', 'orbit'] as LayoutMode[]) {
+		for (const height of [144, 200, 400, 800]) {
+			const layout = getLayout(280, height, 320, DEFAULT_STATE.size, mode);
+			assert.ok(layout.anchorY + layout.cordLength + layout.attachmentOffset + layout.visualRadius <= layout.height);
+			assert.ok(layout.anchorX + 40 <= layout.width);
+			assert.ok(layout.cordLength >= 48);
+		}
+	}
+});
+
+test('compact panels keep downward pull room and return to the visible rest', () => {
+	for (const size of [60, 100, 140]) {
+		for (const mode of ['hanging', 'orbit'] as LayoutMode[]) {
+			const requestedPreference = 126;
+			const pendulum = new Pendulum(180, 120, requestedPreference, size, mode);
+			try {
+				const restingLength = pendulum.layout.cordLength;
+				const resting = pendulum.position;
+				pendulum.grab(resting);
+				pendulum.drag({
+					x: pendulum.layout.anchorX,
+					y: pendulum.layout.anchorY + pendulum.layout.maximumDragCord + pendulum.layout.attachmentOffset,
+				}, true);
+				assert.ok(pendulum.layout.cordLength >= restingLength + 31, `Mode ${mode}, size ${size}`);
+				assert.ok(pendulum.position.x - pendulum.layout.visualRadius >= -0.001);
+				assert.ok(pendulum.position.x + pendulum.layout.visualRadius <= pendulum.layout.width + 0.001);
+				assert.ok(pendulum.position.y - pendulum.layout.visualRadius >= -0.001);
+				assert.ok(pendulum.position.y + pendulum.layout.visualRadius <= pendulum.layout.height + 0.001);
+				assert.equal(pendulum.engine.world.constraints.length, 2);
+				pendulum.release();
+				assert.equal(pendulum.engine.world.constraints.length, 1);
+				pendulum.returnToLength(requestedPreference, true);
+				assert.equal(pendulum.layout.cordLength, restingLength);
+				assert.deepEqual(pendulum.position, resting);
+				assert.equal(requestedPreference, 126);
+			} finally {
+				pendulum.dispose();
+			}
+		}
 	}
 });
 
@@ -134,7 +234,7 @@ test('long saved cords use tall views and survive temporary clamping', () => {
 	pendulum.setLength(9999);
 	pendulum.settle();
 	assert.ok(pendulum.layout.cordLength > 320);
-	assert.ok(Math.abs(pendulum.position.y + pendulum.layout.visualRadius + pendulum.layout.edgePadding - pendulum.layout.height) < 0.001);
+	assert.ok(Math.abs(pendulum.position.y + pendulum.layout.visualRadius + pendulum.layout.edgePadding + pendulum.layout.pullAllowance - pendulum.layout.height) < 0.001);
 	pendulum.dispose();
 });
 
@@ -294,7 +394,7 @@ test('complete peg orbits stay visible in both directions and return from above'
 	for (const size of [60, 100, 140]) {
 		for (const immediate of [false, true]) {
 			for (const direction of [-1, 1]) {
-				const p = new Pendulum(340, 800, 126, size);
+				const p = new Pendulum(340, 800, 126, size, 'orbit');
 				try {
 					const peg = { x: p.layout.anchorX, y: p.layout.anchorY };
 					const resting = p.position;
@@ -343,7 +443,7 @@ test('complete peg orbits stay visible in both directions and return from above'
 });
 
 test('long resting cords recover visibly from every orbit quadrant', () => {
-	const p = new Pendulum(340, 1200, 700);
+	const p = new Pendulum(340, 1200, 700, DEFAULT_STATE.size, 'orbit');
 	try {
 		const resting = p.position;
 		for (const angle of [0, Math.PI / 2, Math.PI, -Math.PI / 2]) {

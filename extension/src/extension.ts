@@ -1,16 +1,90 @@
 import * as vscode from 'vscode';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { CHARMS, type CharmDefinition } from './charm-catalog';
+import { installPack, loadPacks, MAX_PACK_BYTES, packCharms, removePack, type CharmPack } from './charm-packs';
 import { resetState, restoreState, type CharmState } from './charm-state';
 
-export function activate(context: vscode.ExtensionContext) {
+let flushWrites: (() => Promise<void>) | undefined;
+
+export async function deactivate() {
+	await flushWrites?.();
+}
+
+export async function activate(context: vscode.ExtensionContext) {
+	const packDirectory = vscode.Uri.joinPath(context.globalStorageUri, 'packs').fsPath;
+	let packs: CharmPack[] = [];
+	try {
+		const loaded = await loadPacks(packDirectory);
+		packs = loaded.packs;
+		if (loaded.invalid.length) {
+			console.warn(`Charmlet ignored ${loaded.invalid.length} invalid stored pack file(s).`);
+		}
+	} catch (error) {
+		console.warn(`Charmlet could not load stored packs: ${error instanceof Error ? error.message : 'unknown error'}`);
+	}
+
 	const status = vscode.window.createStatusBarItem('charmlet', vscode.StatusBarAlignment.Right, -100);
 	status.name = 'Charmlet';
 	status.command = 'charmlet.toggle';
 	const provider = new CharmletView(context, state => {
 		status.text = state.hidden ? '$(circle-outline) Charmlet' : '$(sparkle) Charmlet';
 		status.tooltip = state.hidden ? 'Charmlet: Show charm' : 'Charmlet: Hide or restore charm';
-	});
+	}, [...CHARMS, ...packCharms(packs)]);
+	flushWrites = () => provider.flush();
+
+	const refreshCatalogue = async (selectedId?: string) => {
+		await provider.setCatalogue([...CHARMS, ...packCharms(packs)], selectedId);
+	};
+	const importPack = async () => {
+		try {
+			const selected = await vscode.window.showOpenDialog({
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				filters: { 'Charmlet Pack': ['json'] },
+				openLabel: 'Import Charm Pack',
+			});
+			if (!selected?.[0]) { return; }
+			const info = await vscode.workspace.fs.stat(selected[0]);
+			if ((info.type & vscode.FileType.File) === 0 || info.size > MAX_PACK_BYTES) {
+				throw new Error('Choose a bounded Charmlet pack JSON file (maximum 2 MiB).');
+			}
+			const input = await vscode.workspace.fs.readFile(selected[0]);
+			const installed = await installPack(packDirectory, input);
+			if (!installed.added) {
+				void vscode.window.showInformationMessage(`${installed.pack.name} is already installed.`);
+				return;
+			}
+			packs = [...packs, installed.pack];
+			await refreshCatalogue(`pack:${installed.pack.id}:${installed.pack.charms[0].id}`);
+			await provider.show();
+			void vscode.window.showInformationMessage(`Imported ${installed.pack.name}.`);
+		} catch (error) {
+			void vscode.window.showErrorMessage(`Charmlet could not import the pack: ${error instanceof Error ? error.message : 'unknown error'}`);
+		}
+	};
+	const removeInstalledPack = async () => {
+		if (!packs.length) {
+			void vscode.window.showInformationMessage('No imported Charmlet packs are installed.');
+			return;
+		}
+		const selected = await vscode.window.showQuickPick(packs.map(pack => ({
+			label: pack.name,
+			description: `${pack.author} · ${pack.charms.length} ${pack.charms.length === 1 ? 'charm' : 'charms'}`,
+			pack,
+		})), { placeHolder: 'Choose an imported charm pack to remove' });
+		if (!selected) { return; }
+		try {
+			await removePack(packDirectory, selected.pack.id);
+			packs = packs.filter(pack => pack.id !== selected.pack.id);
+			await refreshCatalogue();
+			void vscode.window.showInformationMessage(`Removed ${selected.pack.name}.`);
+		} catch (error) {
+			void vscode.window.showErrorMessage(`Charmlet could not remove the pack: ${error instanceof Error ? error.message : 'unknown error'}`);
+		}
+	};
+
 	context.subscriptions.push(
 		status,
 		vscode.window.registerWebviewViewProvider('charmlet.view', provider),
@@ -21,6 +95,8 @@ export function activate(context: vscode.ExtensionContext) {
 			await provider.update(resetState(provider.state));
 			await provider.show();
 		}),
+		vscode.commands.registerCommand('charmlet.importPack', importPack),
+		vscode.commands.registerCommand('charmlet.removePack', removeInstalledPack),
 	);
 	status.show();
 	return { getState: () => ({ ...provider.state }), isVisible: () => provider.visible };
@@ -28,12 +104,30 @@ export function activate(context: vscode.ExtensionContext) {
 
 class CharmletView implements vscode.WebviewViewProvider {
 	state: CharmState;
+	catalogue: readonly CharmDefinition[];
 	private view?: vscode.WebviewView;
 	private dropOnReady = false;
+	private readonly pendingWrites = new Set<Promise<void>>();
 
-	constructor(private readonly context: vscode.ExtensionContext, private readonly changed: (state: CharmState) => void) {
-		this.state = restoreState(context.globalState.get('charmlet.state'));
+	constructor(
+		private readonly context: vscode.ExtensionContext,
+		private readonly changed: (state: CharmState) => void,
+		catalogue: readonly CharmDefinition[],
+	) {
+		this.catalogue = catalogue;
+		this.state = restoreState(context.globalState.get('charmlet.state'), catalogue);
 		changed(this.state);
+	}
+
+	private persist(snapshot: CharmState) {
+		const operation = Promise.resolve(this.context.globalState.update('charmlet.state', snapshot));
+		this.pendingWrites.add(operation);
+		void operation.then(() => this.pendingWrites.delete(operation), () => this.pendingWrites.delete(operation));
+		return operation;
+	}
+
+	async flush() {
+		while (this.pendingWrites.size) { await Promise.all([...this.pendingWrites]); }
 	}
 
 	get visible() {
@@ -59,12 +153,24 @@ class CharmletView implements vscode.WebviewViewProvider {
 				return;
 			}
 			if (message.type === 'ready') {
-				await view.webview.postMessage({ type: 'state', state: this.state, drop: this.dropOnReady, visible: view.visible });
+				await this.flush();
+				await view.webview.postMessage({ type: 'state', state: this.state, catalogue: this.catalogue, drop: this.dropOnReady, visible: view.visible });
 				this.dropOnReady = false;
 			} else if (message.type === 'save' && 'state' in message) {
-				this.state = restoreState(message.state);
+				const revision = 'revision' in message && Number.isSafeInteger(message.revision) && Number(message.revision) >= 0
+					? Number(message.revision) : undefined;
+				this.state = restoreState(message.state, this.catalogue);
 				this.changed(this.state);
-				await this.context.globalState.update('charmlet.state', this.state);
+				try {
+					await this.persist({ ...this.state });
+					if (revision !== undefined) { await view.webview.postMessage({ type: 'saved', revision }); }
+				} catch {
+					if (revision !== undefined) { await view.webview.postMessage({ type: 'save-error', revision }); }
+					void vscode.window.showErrorMessage('Charmlet could not save its settings.');
+				}
+			} else if (message.type === 'command' && 'command' in message
+				&& (message.command === 'charmlet.importPack' || message.command === 'charmlet.removePack')) {
+				await vscode.commands.executeCommand(message.command);
 			}
 		});
 		const visibility = view.onDidChangeVisibility(() => {
@@ -79,11 +185,19 @@ class CharmletView implements vscode.WebviewViewProvider {
 		});
 	}
 
-	async update(state: CharmState, drop = false) {
-		this.state = restoreState(state);
+	async setCatalogue(catalogue: readonly CharmDefinition[], selectedId?: string) {
+		this.catalogue = catalogue;
+		this.state = restoreState({ ...this.state, charmId: selectedId ?? this.state.charmId }, catalogue);
 		this.changed(this.state);
+		await this.persist({ ...this.state });
+		await this.view?.webview.postMessage({ type: 'catalogue', catalogue: this.catalogue, state: this.state });
+	}
+
+	async update(state: CharmState, drop = false) {
+		this.state = restoreState(state, this.catalogue);
+		this.changed(this.state);
+		await this.persist({ ...this.state });
 		await this.view?.webview.postMessage({ type: 'state', state: this.state, drop });
-		await this.context.globalState.update('charmlet.state', this.state);
 	}
 
 	async show() {
