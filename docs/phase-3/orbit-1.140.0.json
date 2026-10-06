@@ -1,0 +1,1774 @@
+{
+  "schemaVersion": 1,
+  "hostVersion": "1.140.0",
+  "observations": [
+    {
+      "direction": -1,
+      "geometry": {
+        "left": 0,
+        "top": 0,
+        "scale": 1,
+        "anchorX": 145,
+        "anchorY": 111.31726674375733,
+        "radius": 48
+      },
+      "travel": 9.432762614359174,
+      "quadrants": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "samples": [
+        {
+          "step": 1,
+          "angle": 0.105749,
+          "x": 139.93,
+          "y": 159.05,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 2,
+          "angle": 0.19468,
+          "x": 135.71,
+          "y": 158.41,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 3,
+          "angle": 0.302376,
+          "x": 130.71,
+          "y": 157.14,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 4,
+          "angle": 0.399701,
+          "x": 126.32,
+          "y": 155.53,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 5,
+          "angle": 0.489189,
+          "x": 122.44,
+          "y": 153.69,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 6,
+          "angle": 0.596824,
+          "x": 118.02,
+          "y": 151.02,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 7,
+          "angle": 0.69431,
+          "x": 114.29,
+          "y": 148.2,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 8,
+          "angle": 0.792407,
+          "x": 110.82,
+          "y": 145.02,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 9,
+          "angle": 0.890632,
+          "x": 107.68,
+          "y": 141.5,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 10,
+          "angle": 0.988758,
+          "x": 104.9,
+          "y": 137.7,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 11,
+          "angle": 1.078075,
+          "x": 102.71,
+          "y": 134.02,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 12,
+          "angle": 1.176287,
+          "x": 100.69,
+          "y": 129.77,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 13,
+          "angle": 1.27438,
+          "x": 99.09,
+          "y": 125.34,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 14,
+          "angle": 1.382138,
+          "x": 97.85,
+          "y": 120.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 15,
+          "angle": 1.470759,
+          "x": 97.23,
+          "y": 116.11,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 16,
+          "angle": 1.568945,
+          "x": 97,
+          "y": 111.41,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 17,
+          "angle": 1.676775,
+          "x": 97.26,
+          "y": 106.24,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 18,
+          "angle": 1.774119,
+          "x": 97.99,
+          "y": 101.62,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 19,
+          "angle": 1.872284,
+          "x": 99.16,
+          "y": 97.06,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 20,
+          "angle": 1.970525,
+          "x": 100.78,
+          "y": 92.64,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 21,
+          "angle": 2.068642,
+          "x": 102.82,
+          "y": 88.39,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 22,
+          "angle": 2.166931,
+          "x": 105.28,
+          "y": 84.36,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 23,
+          "angle": 2.265069,
+          "x": 108.11,
+          "y": 80.6,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 24,
+          "angle": 2.354303,
+          "x": 110.99,
+          "y": 77.44,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 25,
+          "angle": 2.462107,
+          "x": 114.83,
+          "y": 73.98,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 26,
+          "angle": 2.559594,
+          "x": 118.61,
+          "y": 71.22,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 27,
+          "angle": 2.657764,
+          "x": 122.67,
+          "y": 68.82,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 28,
+          "angle": 2.747117,
+          "x": 126.55,
+          "y": 67,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 29,
+          "angle": 2.845224,
+          "x": 130.98,
+          "y": 65.4,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 30,
+          "angle": 2.953094,
+          "x": 136,
+          "y": 64.16,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 31,
+          "angle": 3.050579,
+          "x": 140.64,
+          "y": 63.51,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 32,
+          "angle": -3.134387,
+          "x": 145.35,
+          "y": 63.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 33,
+          "angle": -3.035819,
+          "x": 150.07,
+          "y": 63.58,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 34,
+          "angle": -2.938016,
+          "x": 154.7,
+          "y": 64.31,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 35,
+          "angle": -2.83987,
+          "x": 159.26,
+          "y": 65.48,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 36,
+          "angle": -2.741617,
+          "x": 163.69,
+          "y": 67.1,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 37,
+          "angle": -2.643489,
+          "x": 167.93,
+          "y": 69.15,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 38,
+          "angle": -2.545309,
+          "x": 171.95,
+          "y": 71.6,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 39,
+          "angle": -2.455944,
+          "x": 175.39,
+          "y": 74.16,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 40,
+          "angle": -2.35782,
+          "x": 178.89,
+          "y": 77.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 41,
+          "angle": -2.250013,
+          "x": 182.35,
+          "y": 81.17,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 42,
+          "angle": -2.152645,
+          "x": 185.1,
+          "y": 84.94,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 43,
+          "angle": -2.054355,
+          "x": 187.5,
+          "y": 89,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 44,
+          "angle": -1.956231,
+          "x": 189.48,
+          "y": 93.27,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 45,
+          "angle": -1.857996,
+          "x": 191.03,
+          "y": 97.72,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 46,
+          "angle": -1.75984,
+          "x": 192.14,
+          "y": 102.3,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 47,
+          "angle": -1.670578,
+          "x": 192.76,
+          "y": 106.54,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 48,
+          "angle": -1.572388,
+          "x": 193,
+          "y": 111.24,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 49,
+          "angle": -1.474184,
+          "x": 192.78,
+          "y": 115.95,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 50,
+          "angle": -1.366335,
+          "x": 192,
+          "y": 121.06,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 51,
+          "angle": -1.268948,
+          "x": 190.83,
+          "y": 125.59,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 52,
+          "angle": -1.179668,
+          "x": 189.37,
+          "y": 129.62,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 53,
+          "angle": -1.081447,
+          "x": 187.37,
+          "y": 133.88,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 54,
+          "angle": -0.983293,
+          "x": 184.95,
+          "y": 137.92,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 55,
+          "angle": -0.885153,
+          "x": 182.15,
+          "y": 141.71,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 56,
+          "angle": -0.786941,
+          "x": 178.99,
+          "y": 145.21,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 57,
+          "angle": -0.679268,
+          "x": 175.15,
+          "y": 148.66,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 58,
+          "angle": -0.58178,
+          "x": 171.38,
+          "y": 151.42,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 59,
+          "angle": -0.483709,
+          "x": 167.32,
+          "y": 153.81,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 60,
+          "angle": -0.385529,
+          "x": 163.05,
+          "y": 155.79,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 61,
+          "angle": -0.287323,
+          "x": 158.6,
+          "y": 157.35,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 62,
+          "angle": -0.197985,
+          "x": 154.44,
+          "y": 158.38,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 63,
+          "angle": -0.099787,
+          "x": 149.78,
+          "y": 159.08,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 64,
+          "angle": -0.001721,
+          "x": 145.08,
+          "y": 159.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 65,
+          "angle": 0.096493,
+          "x": 140.38,
+          "y": 159.09,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 66,
+          "angle": 0.194677,
+          "x": 135.71,
+          "y": 158.41,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 67,
+          "angle": 0.292816,
+          "x": 131.14,
+          "y": 157.27,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 68,
+          "angle": 0.400449,
+          "x": 126.29,
+          "y": 155.52,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 69,
+          "angle": 0.48918,
+          "x": 122.44,
+          "y": 153.69,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 70,
+          "angle": 0.587258,
+          "x": 118.4,
+          "y": 151.28,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 71,
+          "angle": 0.685484,
+          "x": 114.61,
+          "y": 148.47,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 72,
+          "angle": 0.793159,
+          "x": 110.8,
+          "y": 144.99,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 73,
+          "angle": 0.881794,
+          "x": 107.95,
+          "y": 141.83,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 74,
+          "angle": 0.989513,
+          "x": 104.88,
+          "y": 137.67,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 75,
+          "angle": 1.078068,
+          "x": 102.71,
+          "y": 134.02,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 76,
+          "angle": 1.176287,
+          "x": 100.69,
+          "y": 129.77,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 77,
+          "angle": 1.27438,
+          "x": 99.09,
+          "y": 125.34,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 78,
+          "angle": 1.372525,
+          "x": 97.94,
+          "y": 120.77,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 79,
+          "angle": 1.470755,
+          "x": 97.23,
+          "y": 116.11,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 80,
+          "angle": 1.57858,
+          "x": 97,
+          "y": 110.94,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 81,
+          "angle": 1.67601,
+          "x": 97.26,
+          "y": 106.28,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 82,
+          "angle": 1.774121,
+          "x": 97.99,
+          "y": 101.62,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 83,
+          "angle": 1.872292,
+          "x": 99.16,
+          "y": 97.06,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 84,
+          "angle": 1.970524,
+          "x": 100.78,
+          "y": 92.64,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 85,
+          "angle": 2.068642,
+          "x": 102.82,
+          "y": 88.39,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 86,
+          "angle": 2.166931,
+          "x": 105.28,
+          "y": 84.36,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 87,
+          "angle": 2.265069,
+          "x": 108.11,
+          "y": 80.6,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 88,
+          "angle": 2.363201,
+          "x": 111.3,
+          "y": 77.14,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 89,
+          "angle": 2.452434,
+          "x": 114.47,
+          "y": 74.27,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 90,
+          "angle": 2.550676,
+          "x": 118.26,
+          "y": 71.45,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 91,
+          "angle": 2.65854,
+          "x": 122.7,
+          "y": 68.8,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 92,
+          "angle": 2.747111,
+          "x": 126.55,
+          "y": 67,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 93,
+          "angle": 2.845224,
+          "x": 130.98,
+          "y": 65.4,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 94,
+          "angle": 2.943398,
+          "x": 135.55,
+          "y": 64.25,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 95,
+          "angle": 3.041656,
+          "x": 140.21,
+          "y": 63.55,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 96,
+          "angle": -3.133608,
+          "x": 145.38,
+          "y": 63.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        }
+      ]
+    },
+    {
+      "direction": 1,
+      "geometry": {
+        "left": 0,
+        "top": 0,
+        "scale": 1,
+        "anchorX": 145,
+        "anchorY": 111.31726674375733,
+        "radius": 48
+      },
+      "travel": -9.42306130717958,
+      "quadrants": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "samples": [
+        {
+          "step": 1,
+          "angle": -0.105609,
+          "x": 150.06,
+          "y": 159.05,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 2,
+          "angle": -0.203384,
+          "x": 154.69,
+          "y": 158.33,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 3,
+          "angle": -0.301497,
+          "x": 159.25,
+          "y": 157.15,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 4,
+          "angle": -0.399719,
+          "x": 163.68,
+          "y": 155.53,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 5,
+          "angle": -0.497885,
+          "x": 167.92,
+          "y": 153.49,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 6,
+          "angle": -0.587161,
+          "x": 171.59,
+          "y": 151.28,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 7,
+          "angle": -0.685382,
+          "x": 175.38,
+          "y": 148.48,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 8,
+          "angle": -0.783496,
+          "x": 178.88,
+          "y": 145.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 9,
+          "angle": -0.881708,
+          "x": 182.05,
+          "y": 141.84,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 10,
+          "angle": -0.979848,
+          "x": 184.86,
+          "y": 138.06,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 11,
+          "angle": -1.078003,
+          "x": 187.29,
+          "y": 134.03,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 12,
+          "angle": -1.176238,
+          "x": 189.31,
+          "y": 129.77,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 13,
+          "angle": -1.274342,
+          "x": 190.91,
+          "y": 125.34,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 14,
+          "angle": -1.372499,
+          "x": 192.06,
+          "y": 120.77,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 15,
+          "angle": -1.470742,
+          "x": 192.76,
+          "y": 116.11,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 16,
+          "angle": -1.57858,
+          "x": 193,
+          "y": 110.94,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 17,
+          "angle": -1.676026,
+          "x": 192.73,
+          "y": 106.28,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 18,
+          "angle": -1.774147,
+          "x": 192.01,
+          "y": 101.62,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 19,
+          "angle": -1.872331,
+          "x": 190.83,
+          "y": 97.06,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 20,
+          "angle": -1.970574,
+          "x": 189.21,
+          "y": 92.64,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 21,
+          "angle": -2.068704,
+          "x": 187.17,
+          "y": 88.39,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 22,
+          "angle": -2.167004,
+          "x": 184.72,
+          "y": 84.36,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 23,
+          "angle": -2.265152,
+          "x": 181.89,
+          "y": 80.6,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 24,
+          "angle": -2.363293,
+          "x": 178.7,
+          "y": 77.14,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 25,
+          "angle": -2.452535,
+          "x": 175.52,
+          "y": 74.27,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 26,
+          "angle": -2.550784,
+          "x": 171.74,
+          "y": 71.45,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 27,
+          "angle": -2.648966,
+          "x": 167.7,
+          "y": 69.02,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 28,
+          "angle": -2.747106,
+          "x": 163.45,
+          "y": 67,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 29,
+          "angle": -2.845347,
+          "x": 159.01,
+          "y": 65.4,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 30,
+          "angle": -2.943526,
+          "x": 154.45,
+          "y": 64.25,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 31,
+          "angle": -3.041786,
+          "x": 149.78,
+          "y": 63.55,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 32,
+          "angle": -3.139876,
+          "x": 145.08,
+          "y": 63.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 33,
+          "angle": 3.045066,
+          "x": 140.37,
+          "y": 63.53,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 34,
+          "angle": 2.937133,
+          "x": 135.25,
+          "y": 64.31,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 35,
+          "angle": 2.839749,
+          "x": 130.73,
+          "y": 65.48,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 36,
+          "angle": 2.741634,
+          "x": 126.31,
+          "y": 67.1,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 37,
+          "angle": 2.643365,
+          "x": 122.06,
+          "y": 69.15,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 38,
+          "angle": 2.554099,
+          "x": 118.39,
+          "y": 71.36,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 39,
+          "angle": 2.446163,
+          "x": 114.24,
+          "y": 74.46,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 40,
+          "angle": 2.348838,
+          "x": 110.81,
+          "y": 77.62,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 41,
+          "angle": 2.25071,
+          "x": 107.67,
+          "y": 81.14,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 42,
+          "angle": 2.152562,
+          "x": 104.89,
+          "y": 84.94,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 43,
+          "angle": 2.063172,
+          "x": 102.7,
+          "y": 88.62,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 44,
+          "angle": 1.965063,
+          "x": 100.68,
+          "y": 92.88,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 45,
+          "angle": 1.866842,
+          "x": 99.08,
+          "y": 97.31,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 46,
+          "angle": 1.759058,
+          "x": 97.85,
+          "y": 102.33,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 47,
+          "angle": 1.661727,
+          "x": 97.19,
+          "y": 106.96,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 48,
+          "angle": 1.563529,
+          "x": 97,
+          "y": 111.67,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 49,
+          "angle": 1.465341,
+          "x": 97.26,
+          "y": 116.37,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 50,
+          "angle": 1.367111,
+          "x": 97.99,
+          "y": 121.03,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 51,
+          "angle": 1.268979,
+          "x": 99.17,
+          "y": 125.59,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 52,
+          "angle": 1.170898,
+          "x": 100.79,
+          "y": 130,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 53,
+          "angle": 1.081496,
+          "x": 102.63,
+          "y": 133.88,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 54,
+          "angle": 0.973774,
+          "x": 105.3,
+          "y": 138.3,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 55,
+          "angle": 0.876421,
+          "x": 108.12,
+          "y": 142.03,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 56,
+          "angle": 0.778213,
+          "x": 111.3,
+          "y": 145.5,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 57,
+          "angle": 0.688918,
+          "x": 114.49,
+          "y": 148.37,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 58,
+          "angle": 0.581128,
+          "x": 118.65,
+          "y": 151.44,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 59,
+          "angle": 0.483826,
+          "x": 122.67,
+          "y": 153.81,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 60,
+          "angle": 0.394333,
+          "x": 126.56,
+          "y": 155.63,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 61,
+          "angle": 0.286708,
+          "x": 131.43,
+          "y": 157.36,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 62,
+          "angle": 0.189323,
+          "x": 135.97,
+          "y": 158.46,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 63,
+          "angle": 0.091109,
+          "x": 140.63,
+          "y": 159.12,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 64,
+          "angle": 0.001713,
+          "x": 144.92,
+          "y": 159.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 65,
+          "angle": -0.096366,
+          "x": 149.62,
+          "y": 159.09,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 66,
+          "angle": -0.204106,
+          "x": 154.73,
+          "y": 158.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 67,
+          "angle": -0.301497,
+          "x": 159.25,
+          "y": 157.15,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 68,
+          "angle": -0.390908,
+          "x": 163.29,
+          "y": 155.7,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 69,
+          "angle": -0.489064,
+          "x": 167.55,
+          "y": 153.69,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 70,
+          "angle": -0.587151,
+          "x": 171.59,
+          "y": 151.28,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 71,
+          "angle": -0.685383,
+          "x": 175.38,
+          "y": 148.48,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 72,
+          "angle": -0.783496,
+          "x": 178.88,
+          "y": 145.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 73,
+          "angle": -0.891294,
+          "x": 182.34,
+          "y": 141.48,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 74,
+          "angle": -0.988679,
+          "x": 185.09,
+          "y": 137.71,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 75,
+          "angle": -1.078014,
+          "x": 187.29,
+          "y": 134.02,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 76,
+          "angle": -1.176237,
+          "x": 189.31,
+          "y": 129.77,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 77,
+          "angle": -1.283945,
+          "x": 191.04,
+          "y": 124.9,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 78,
+          "angle": -1.372503,
+          "x": 192.06,
+          "y": 120.77,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 79,
+          "angle": -1.470741,
+          "x": 192.76,
+          "y": 116.11,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 80,
+          "angle": -1.568946,
+          "x": 193,
+          "y": 111.41,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 81,
+          "angle": -1.667151,
+          "x": 192.78,
+          "y": 106.7,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 82,
+          "angle": -1.765273,
+          "x": 192.1,
+          "y": 102.04,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 83,
+          "angle": -1.863439,
+          "x": 190.96,
+          "y": 97.47,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 84,
+          "angle": -1.961672,
+          "x": 189.38,
+          "y": 93.03,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 85,
+          "angle": -2.069467,
+          "x": 187.15,
+          "y": 88.36,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 86,
+          "angle": -2.158093,
+          "x": 184.96,
+          "y": 84.72,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 87,
+          "angle": -2.256243,
+          "x": 182.16,
+          "y": 80.93,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 88,
+          "angle": -2.354383,
+          "x": 179,
+          "y": 77.44,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 89,
+          "angle": -2.452522,
+          "x": 175.52,
+          "y": 74.27,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 90,
+          "angle": -2.550785,
+          "x": 171.74,
+          "y": 71.45,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 91,
+          "angle": -2.648966,
+          "x": 167.7,
+          "y": 69.02,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 92,
+          "angle": -2.747106,
+          "x": 163.45,
+          "y": 67,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 93,
+          "angle": -2.845347,
+          "x": 159.01,
+          "y": 65.4,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 94,
+          "angle": -2.943526,
+          "x": 154.45,
+          "y": 64.25,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 95,
+          "angle": -3.041786,
+          "x": 149.78,
+          "y": 63.55,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        },
+        {
+          "step": 96,
+          "angle": -3.139876,
+          "x": 145.08,
+          "y": 63.32,
+          "anchorX": 145,
+          "anchorY": 111.31726674375733,
+          "inside": true
+        }
+      ]
+    }
+  ]
+}

@@ -11,7 +11,7 @@ export class Pendulum {
 	private pointer?: Constraint;
 	private walls: Body[] = [];
 	private quietFrames = 0;
-	private returnMotion?: { from: number; target: number; elapsed: number };
+	private returnMotion?: { from: number; target: number; elapsed: number; fromAngle?: number };
 
 	constructor(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size) {
 		this.layout = getLayout(width, height, cordLength, size);
@@ -58,9 +58,9 @@ export class Pendulum {
 			Composite.remove(this.engine.world, wall);
 		}
 		this.walls = [
-			Bodies.rectangle(-40, height / 2, 80, height + 200, { isStatic: true }),
-			Bodies.rectangle(this.layout.width + 40, height / 2, 80, height + 200, { isStatic: true }),
-			Bodies.rectangle(width / 2, this.layout.height + 40, width + 200, 80, { isStatic: true }),
+			Bodies.rectangle(-40, this.layout.height / 2, 80, this.layout.height + 200, { isStatic: true }),
+			Bodies.rectangle(this.layout.width + 40, this.layout.height / 2, 80, this.layout.height + 200, { isStatic: true }),
+			Bodies.rectangle(this.layout.width / 2, this.layout.height + 40, this.layout.width + 200, 80, { isStatic: true }),
 		];
 		Composite.add(this.engine.world, this.walls);
 		this.settle();
@@ -76,14 +76,15 @@ export class Pendulum {
 	returnToLength(length: number, immediate = false) {
 		this.release();
 		const target = clamp(length, 48, this.layout.maximumCord);
-		if (immediate || Math.abs(target - this.layout.cordLength) < 0.001) {
+		const angle = this.angle;
+		const needsArc = this.body.position.y < this.layout.anchorY
+			|| target + this.layout.attachmentOffset > this.radiusLimit(angle) + 0.01;
+		if (immediate || (!needsArc && Math.abs(target - this.layout.cordLength) < 0.001)) {
 			this.setLength(target);
-			if (immediate) {
-				this.settle();
-			}
+			if (immediate) { this.settle(); }
 			return;
 		}
-		this.returnMotion = { from: this.layout.cordLength, target, elapsed: 0 };
+		this.returnMotion = { from: this.layout.cordLength, target, elapsed: 0, fromAngle: needsArc ? angle : undefined };
 		this.wake();
 	}
 
@@ -111,21 +112,23 @@ export class Pendulum {
 	}
 
 	drag(point: Point, immediate = false) {
-		if (this.pointer) {
-			this.pointer.pointA = {
-				x: clamp(point.x - this.pointer.pointB.x, this.layout.bodyRadius, this.layout.width - this.layout.bodyRadius) + this.pointer.pointB.x,
-				y: clamp(point.y - this.pointer.pointB.y, this.layout.bodyRadius, this.layout.height - this.layout.bodyRadius) + this.pointer.pointB.y,
-			};
-			if (immediate) {
-				Body.setPosition(this.body, {
-					x: this.pointer.pointA.x - this.pointer.pointB.x,
-					y: this.pointer.pointA.y - this.pointer.pointB.y,
-				});
-				Body.setVelocity(this.body, { x: 0, y: 0 });
-				Sleeping.set(this.body, true);
-			} else {
-				this.wake();
-			}
+		if (!this.pointer) { return; }
+		const requested = { x: point.x - this.pointer.pointB.x, y: point.y - this.pointer.pointB.y };
+		const dx = requested.x - this.layout.anchorX;
+		const dy = requested.y - this.layout.anchorY;
+		const distance = Math.hypot(dx, dy);
+		const angle = distance > 0.001 ? -Math.atan2(dx, dy) : this.angle;
+		const radius = clamp(distance, this.layout.orbitRadius, this.radiusLimit(angle));
+		const target = radius === distance ? requested : this.positionAt(angle, radius);
+		this.layout.cordLength = radius - this.layout.attachmentOffset;
+		this.tether.length = radius;
+		this.pointer.pointA = { x: target.x + this.pointer.pointB.x, y: target.y + this.pointer.pointB.y };
+		if (immediate) {
+			Body.setPosition(this.body, target);
+			Body.setVelocity(this.body, { x: 0, y: 0 });
+			Sleeping.set(this.body, true);
+		} else {
+			this.wake();
 		}
 	}
 
@@ -147,6 +150,22 @@ export class Pendulum {
 			motion.elapsed += 1000 / 60;
 			const progress = Math.min(1, motion.elapsed / 350);
 			const eased = progress * progress * (3 - 2 * progress);
+			if (motion.fromAngle !== undefined) {
+				const angle = motion.fromAngle * (1 - eased);
+				const desired = motion.from + (motion.target - motion.from) * eased;
+				const radius = Math.min(desired + this.layout.attachmentOffset, this.radiusLimit(angle));
+				this.layout.cordLength = radius - this.layout.attachmentOffset;
+				this.tether.length = radius;
+				Body.setPosition(this.body, this.positionAt(angle, radius));
+				Body.setVelocity(this.body, { x: 0, y: 0 });
+				Sleeping.set(this.body, false);
+				if (progress === 1) {
+					this.returnMotion = undefined;
+					this.setLength(motion.target);
+					this.settle();
+				}
+				return;
+			}
 			this.layout.cordLength = progress === 1 ? motion.target : motion.from + (motion.target - motion.from) * eased;
 			this.tether.length = this.layout.cordLength + this.layout.attachmentOffset;
 			Sleeping.set(this.body, false);
@@ -156,10 +175,13 @@ export class Pendulum {
 		}
 		Engine.update(this.engine, 1000 / 60);
 		this.constrainPosition();
+		if (!this.pointer && this.body.position.y < this.layout.anchorY && this.returnMotion?.fromAngle === undefined) {
+			this.returnToLength(this.returnMotion?.target ?? this.layout.cordLength);
+		}
 		const resting = !this.pointer && !this.returnMotion && this.body.speed < 0.12
 			&& Math.abs(this.body.position.x - this.layout.anchorX) < 0.8;
 		this.quietFrames = resting ? this.quietFrames + 1 : 0;
-		if (!this.returnMotion && (this.quietFrames > 30 || this.body.isSleeping)) {
+		if (!this.pointer && !this.returnMotion && (this.quietFrames > 30 || this.body.isSleeping)) {
 			this.settle();
 		}
 	}
@@ -184,12 +206,30 @@ export class Pendulum {
 		Engine.clear(this.engine);
 	}
 
+	private radiusLimit(angle: number) {
+		const { anchorX, anchorY, width, height, visualRadius, edgePadding, orbitRadius } = this.layout;
+		const inset = visualRadius + edgePadding;
+		const dx = -Math.sin(angle);
+		const dy = Math.cos(angle);
+		let limit = Number.POSITIVE_INFINITY;
+		if (dx > 0.000001) { limit = Math.min(limit, (width - inset - anchorX) / dx); }
+		if (dx < -0.000001) { limit = Math.min(limit, (inset - anchorX) / dx); }
+		if (dy > 0.000001) { limit = Math.min(limit, (height - inset - anchorY) / dy); }
+		if (dy < -0.000001) { limit = Math.min(limit, (inset - anchorY) / dy); }
+		return Math.max(orbitRadius, limit);
+	}
+
+	private positionAt(angle: number, radius: number): Point {
+		return { x: this.layout.anchorX - Math.sin(angle) * radius, y: this.layout.anchorY + Math.cos(angle) * radius };
+	}
+
 	private constrainPosition() {
 		const { x, y } = this.body.position;
-		const { bodyRadius, width, height } = this.layout;
+		const { visualRadius, edgePadding, width, height } = this.layout;
+		const inset = visualRadius + edgePadding;
 		const position = {
-			x: clamp(x, bodyRadius, width - bodyRadius),
-			y: clamp(y, bodyRadius, height - bodyRadius),
+			x: clamp(x, inset, width - inset),
+			y: clamp(y, inset, height - inset),
 		};
 		if (position.x !== x || position.y !== y) {
 			const velocity = { ...this.body.velocity };

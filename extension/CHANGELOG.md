@@ -3,6 +3,32 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.2.0 - 2026-10-06 (Phase 3 full-circle orbit)
+
+Tracking: [orbit #8](https://github.com/gautham-nvidia/charmlet/issues/8), [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).
+
+### Added
+
+- Complete charm-and-cord orbits around the fixed peg in either direction.
+- Above-peg clearance and bounds that account for the rotated artwork.
+- Rendered-motion evidence checking full turns, all quadrants, a stationary peg and visible recovery.
+
+### Changed
+
+- Held cord length follows radial dragging while settings retain the chosen resting length.
+- Upper or constrained releases return along a bounded arc; ordinary lower-half swing behavior remains.
+- Orbit gestures ending above the peg avoid accidental hiding, and held positions no longer auto-settle when the physics body sleeps.
+- Small panels scale the logical play area to fit the orbit.
+
+### Verified
+
+- Nineteen unit tests and complete real-editor suites on Windows VS Code 1.90.0 and 1.140.0.
+- Existing selection, return-to-rest, cancellation and accessibility behavior remains covered.
+
+### Limits
+
+- Other Phase 3 compatibility and release gates remain open. No registry publication.
+
 ## 0.1.0 - 2026-10-05 (Phase 2 free collection)
 
 Tracking: [P2 #9](https://github.com/gautham-nvidia/charmlet/issues/9).

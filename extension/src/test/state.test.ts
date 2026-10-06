@@ -60,6 +60,10 @@ test('every supported size fits the logical view without overwriting requested p
 			assert.ok(bottom <= layout.height, `Size ${size}, height ${height}`);
 			assert.ok(layout.anchorX + layout.charmWidth / 2 <= layout.width);
 			assert.ok(layout.anchorX - layout.charmWidth / 2 >= 0);
+			assert.ok(layout.anchorX - layout.orbitRadius - layout.visualRadius >= -0.001);
+			assert.ok(layout.anchorX + layout.orbitRadius + layout.visualRadius <= layout.width + 0.001);
+			assert.ok(layout.anchorY - layout.orbitRadius - layout.visualRadius >= -0.001);
+			assert.ok(layout.anchorY + layout.orbitRadius + layout.visualRadius <= layout.height + 0.001);
 			assert.equal(state.cordLength, 320);
 			assert.equal(state.size, size);
 		}
@@ -69,7 +73,7 @@ test('every supported size fits the logical view without overwriting requested p
 test('resizing clamps the parked cord to keep the charm in the view', () => {
 	for (const height of [144, 200, 400, 800]) {
 		const layout = getLayout(280, height, 320);
-		assert.ok(layout.anchorY + layout.cordLength + 64 <= layout.height);
+		assert.ok(layout.anchorY + layout.cordLength + layout.attachmentOffset + layout.visualRadius <= layout.height);
 		assert.ok(layout.anchorX + 40 <= layout.width);
 		assert.ok(layout.cordLength >= 48);
 	}
@@ -122,15 +126,15 @@ test('opposite nudges have balanced travel in a narrow dock', () => {
 test('long saved cords use tall views and survive temporary clamping', () => {
 	const state = restoreState({ cordLength: 700 });
 	assert.equal(state.cordLength, 700);
-	assert.equal(getLayout(280, 900, state.cordLength).cordLength, 700);
+	assert.equal(getLayout(280, 1000, state.cordLength).cordLength, 700);
 	assert.ok(getLayout(280, 240, state.cordLength).cordLength < 700);
 	assert.equal(state.cordLength, 700);
-	assert.equal(getLayout(280, 900, state.cordLength).cordLength, 700);
-	const pendulum = new Pendulum(280, 900, 126);
+	assert.equal(getLayout(280, 1000, state.cordLength).cordLength, 700);
+	const pendulum = new Pendulum(280, 1000, 126);
 	pendulum.setLength(9999);
 	pendulum.settle();
 	assert.ok(pendulum.layout.cordLength > 320);
-	assert.ok(Math.abs(pendulum.position.y + pendulum.layout.charmHeight / 2 - (pendulum.layout.height - 10)) < 0.001);
+	assert.ok(Math.abs(pendulum.position.y + pendulum.layout.visualRadius + pendulum.layout.edgePadding - pendulum.layout.height) < 0.001);
 	pendulum.dispose();
 });
 
@@ -152,11 +156,6 @@ test('rapid circular drags keep the body in view and recover after release', () 
 			for (let step = 1; step <= 16; step++) {
 				const theta = 2 * Math.PI * step / 16;
 				const point = { x: start.x + 160 * (Math.cos(theta) - 1), y: start.y + 160 * Math.sin(theta) };
-				const dx = point.x - start.x;
-				const dy = point.y - start.y;
-				if (Math.abs(dy) > Math.abs(dx)) {
-					pendulum.setLength(126 + dy);
-				}
 				pendulum.drag(point, immediate);
 				if (!immediate) {
 					pendulum.step();
@@ -185,17 +184,18 @@ test('a stretched cord eases back to its resting length before settling', () => 
 	const pendulum = new Pendulum(280, 800, 126);
 	try {
 		const resting = pendulum.position;
-		pendulum.setLength(600);
+		const stretchedLength = pendulum.layout.maximumCord;
+		pendulum.setLength(stretchedLength);
 		pendulum.settle();
 		pendulum.returnToLength(126);
-		assert.equal(pendulum.layout.cordLength, 600);
+		assert.equal(pendulum.layout.cordLength, stretchedLength);
 		assert.equal(pendulum.moving, true);
-		let previous = 600;
+		let previous = stretchedLength;
 		for (let step = 0; step < 30; step++) {
 			pendulum.step();
 			assert.ok(pendulum.layout.cordLength <= previous && pendulum.layout.cordLength >= 126);
 			if (step === 0) {
-				assert.ok(pendulum.layout.cordLength > 126 && pendulum.layout.cordLength < 600);
+				assert.ok(pendulum.layout.cordLength > 126 && pendulum.layout.cordLength < stretchedLength);
 				assert.ok(pendulum.position.y > resting.y);
 			}
 			previous = pendulum.layout.cordLength;
@@ -254,23 +254,22 @@ test('return motion respects reduced motion, grabs, resize and immediate settlin
 	}
 });
 
-test('pulling extends the cord and releases without a stuck drag constraint', () => {
-	const pendulum = new Pendulum(280, 400, 128);
-	pendulum.grab(pendulum.position);
-	pendulum.setLength(220);
-	pendulum.drag({ x: 210, y: 264 });
-	for (let frame = 0; frame < 60; frame++) {
-		pendulum.step();
-	}
-	assert.ok(pendulum.position.y > 220);
-	pendulum.release();
-	for (let frame = 0; frame < 1500; frame++) {
-		pendulum.step();
-	}
-	assert.equal(pendulum.moving, false);
+test('a downward pull returns to rest without a stuck drag constraint', () => {
+	const pendulum = new Pendulum(280, 800, 128);
+	const resting = pendulum.position;
+	pendulum.grab(resting);
+	pendulum.drag({ x: pendulum.layout.anchorX, y: pendulum.layout.anchorY + 220 + pendulum.layout.attachmentOffset });
+	for (let frame = 0; frame < 60; frame++) { pendulum.step(); }
+	assert.ok(pendulum.position.y > resting.y + 80);
 	assert.equal(pendulum.layout.cordLength, 220);
-	pendulum.resize(180, 160, 220);
-	assert.ok(pendulum.position.y + 34 < 160);
+	pendulum.release();
+	pendulum.returnToLength(128);
+	for (let frame = 0; frame < 1500; frame++) { pendulum.step(); }
+	assert.equal(pendulum.moving, false);
+	assert.equal(pendulum.layout.cordLength, 128);
+	assert.deepEqual(pendulum.position, resting);
+	pendulum.resize(180, 160, 128);
+	assert.ok(pendulum.position.y + pendulum.layout.visualRadius <= pendulum.layout.height);
 	assert.equal(pendulum.engine.world.constraints.length, 1);
 	pendulum.dispose();
 });
@@ -283,12 +282,87 @@ test('size changes scale the body and attachment without accumulating walls or c
 		const radius = pendulum.body.circleRadius;
 		assert.ok(typeof radius === 'number');
 		assert.ok(Math.abs(radius - 34 * size / 100) < 0.001);
-		assert.equal(pendulum.tether.length, 126 + 32 * size / 100);
+		assert.equal(pendulum.tether.length, pendulum.layout.cordLength + pendulum.layout.attachmentOffset);
 		assert.equal(pendulum.engine.world.constraints.length, 1);
 		assert.equal(pendulum.engine.world.bodies.length, 4);
 		assert.equal(pendulum.moving, false);
 	}
 	pendulum.dispose();
+});
+
+test('complete peg orbits stay visible in both directions and return from above', () => {
+	for (const size of [60, 100, 140]) {
+		for (const immediate of [false, true]) {
+			for (const direction of [-1, 1]) {
+				const p = new Pendulum(340, 800, 126, size);
+				try {
+					const peg = { x: p.layout.anchorX, y: p.layout.anchorY };
+					const resting = p.position;
+					const radius = p.layout.orbitRadius;
+					const inside = () => {
+						const { x, y } = p.position;
+						const r = p.layout.visualRadius;
+						assert.ok(x - r >= -0.001 && x + r <= p.layout.width + 0.001);
+						assert.ok(y - r >= -0.001 && y + r <= p.layout.height + 0.001);
+					};
+					p.grab(p.position);
+					p.drag({ x: peg.x, y: peg.y + radius }, immediate);
+					if (!immediate) { for (let i = 0; i < 12; i++) { p.step(); } }
+					let previous = p.angle;
+					let travel = 0;
+					const quadrants = new Set<number>();
+					for (let step = 1; step <= 72; step++) {
+						const theta = direction * 2 * Math.PI * step / 72;
+						p.drag({ x: peg.x + Math.sin(theta) * radius, y: peg.y + Math.cos(theta) * radius }, immediate);
+						if (!immediate) { for (let i = 0; i < 4; i++) { p.step(); inside(); } }
+						inside();
+						const delta = p.angle - previous;
+						travel += Math.atan2(Math.sin(delta), Math.cos(delta));
+						previous = p.angle;
+						const pos = p.position;
+						quadrants.add((pos.x >= peg.x ? 1 : 0) + (pos.y >= peg.y ? 2 : 0));
+						assert.equal(p.layout.anchorX, peg.x);
+						assert.equal(p.layout.anchorY, peg.y);
+					}
+					assert.ok(-direction * travel > 2 * Math.PI - 0.2, `size=${size}, immediate=${immediate}, travel=${travel}`);
+					assert.equal(quadrants.size, 4);
+					p.drag({ x: peg.x, y: peg.y - radius }, immediate);
+					if (!immediate) { for (let i = 0; i < 180; i++) { p.step(); inside(); } }
+					assert.ok(p.position.y < peg.y, 'holding above the peg must not auto-settle');
+					p.release();
+					p.returnToLength(126, immediate);
+					for (let i = 0; i < 1500; i++) { p.step(); inside(); }
+					assert.equal(p.moving, false);
+					assert.equal(p.layout.cordLength, 126);
+					assert.deepEqual(p.position, resting);
+					assert.equal(p.engine.world.constraints.length, 1);
+				} finally { p.dispose(); }
+			}
+		}
+	}
+});
+
+test('long resting cords recover visibly from every orbit quadrant', () => {
+	const p = new Pendulum(340, 1200, 700);
+	try {
+		const resting = p.position;
+		for (const angle of [0, Math.PI / 2, Math.PI, -Math.PI / 2]) {
+			p.grab(p.position);
+			p.drag({ x: p.layout.anchorX + Math.sin(angle) * p.layout.orbitRadius, y: p.layout.anchorY + Math.cos(angle) * p.layout.orbitRadius }, true);
+			p.release();
+			p.returnToLength(700);
+			for (let i = 0; i < 1500; i++) {
+				p.step();
+				assert.ok(p.position.x - p.layout.visualRadius >= -0.001);
+				assert.ok(p.position.x + p.layout.visualRadius <= p.layout.width + 0.001);
+				assert.ok(p.position.y - p.layout.visualRadius >= -0.001);
+				assert.ok(p.position.y + p.layout.visualRadius <= p.layout.height + 0.001);
+			}
+			assert.deepEqual(p.position, resting);
+			assert.equal(p.layout.cordLength, 700);
+			assert.equal(p.moving, false);
+		}
+	} finally { p.dispose(); }
 });
 
 test('reduced-motion dragging follows input without advancing the physics clock', () => {
