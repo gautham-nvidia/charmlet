@@ -42,11 +42,11 @@ For a custom host, use its verified executable path with `CHARMLET_TEST_HOST` an
 |---|---|
 | Full-circle interaction | Implemented and locally verified in 0.2.0; see the orbit validation record and updated PR #12 checks |
 | Cursor / Devin Desktop | Run the complete interaction suite with an authorized authenticated test setup, or collect explicit manual verification from the owner's already configured editor; do not copy credentials or bypass onboarding |
-| macOS / Linux CI | Make keyboard shortcuts and executable selection portable; use a virtual display on headless Linux and run the real suite before claiming support |
+| macOS / Linux CI | Portable modifiers/executable selection and six Windows/Linux/macOS jobs are prepared; Linux uses Xvfb. Support remains unverified until actual hosted results are reviewed |
 | Remote / browser | Exercise real Remote-SSH/WSL placement; decide whether a browser bundle is in scope |
-| Publisher | Confirm the intended personal publisher and actual ownership for Marketplace/Open VSX; the manifest value alone is not proof |
+| Publisher | Confirm personal publisher/namespace ownership and approve publication; manifest identity and validated URL syntax are not proof of a live listing |
 | License | Owner must choose the source/art license; current public visibility and permanently free pricing do not grant a reuse license |
-| Listing | Prepare a suitable PNG marketplace icon and review the README/media; the existing SVG is the native view icon |
+| Listing | Original 256×256 PNG icon and manual/store instructions are prepared; owner review and live identity-matching Marketplace/Open VSX listings remain |
 | Publication | Package and review a release candidate, then obtain explicit publishing approval before namespace/account changes or registry uploads |
 
 Official [VS Code CI guidance](https://code.visualstudio.com/api/working-with-extensions/continuous-integration) uses Xvfb for headless Linux editor tests. The local `@vscode/test-electron` launcher source also includes `--no-sandbox` and `--disable-gpu-sandbox`; this repository's direct Playwright launch does not inherit that helper's launch arguments. These are preparation facts, not Linux execution evidence.
@@ -60,3 +60,13 @@ The owner clarified that the charm and cord must orbit the fixed top peg. Versio
 Type/lint/build, **19 unit tests**, and both complete local UI suites on **Windows VS Code 1.90.0 and 1.140.0** passed. The [orbit validation record](full-circle-validation.md) contains screenshots and independently checked rendered-motion evidence. The earlier unresolved-motion entry is superseded by this implementation.
 
 The macOS/Linux/remote/browser, authenticated-fork, publisher/license, listing and publication gates remain open. No new fork pass is inferred from the official VS Code results. Updated hosted checks and integration are tracked in PR #12.
+
+## 2026-10-06 - Version 0.3.2 release preparation
+
+Version **0.3.2** prepares release-facing assets and automation without changing the charm, message or importer behavior accepted in 0.3.1. The website distinguishes the currently available manual `.vsix` installation from future official store installation and from data-only `.charmlet.json` artwork packs. Committed store URLs remain null; identity validation does not prove a listing exists.
+
+An original 256×256 PNG Marketplace icon and light gallery banner are prepared. The real-editor test uses portable macOS/Windows/Linux modifiers and Linux sandbox flags. CI is configured for VS Code 1.90.0 and 1.140.0 across Windows, Ubuntu 24.04 and macOS 15, with Xvfb on Linux. These are preparation facts only: macOS/Linux support must remain unverified until the owner reviews actual hosted runs.
+
+Local Windows preparation checks passed: icon export/dimensions, compile/type/lint, 27 units, VS Code 1.140.0 UI, package, gallery build and extended installed-Edge website validation. No local 1.90.0 repeat was required for this preparation slice; the existing 0.3.1 evidence remains historical.
+
+The [paid artwork plan](paid-artwork-plan.md) is a non-live proposal. The free extension, importer, ten defaults and current six extras remain free. No account, checkout, payment provider, public website, store listing, source/art license or registry publication was created. Phase 3 remains open; a paid-commerce phase must not start until the current release-readiness decisions and merge are complete.

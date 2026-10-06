@@ -3,7 +3,7 @@
 Ten original hanging charms with compact pull/return behavior, an optional fixed-peg Orbit layout and 80 coding messages.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Phase 3 development build, version 0.3.1.** Charmlet lives in a dockable VS Code view, not over your code
+**Phase 3 release-preparation build, version 0.3.2.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 
 ## Try it

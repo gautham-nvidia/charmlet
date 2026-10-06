@@ -4,6 +4,9 @@ import { CHARMS } from '../charm-catalog';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
+const primaryModifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+const endOfDocument = process.platform === 'darwin' ? 'Meta+ArrowDown' : 'Control+End';
+
 function commandInput(window: Page) {
 	const widget = window.locator('.quick-input-widget');
 	return widget.getByRole('combobox').or(widget.getByRole('textbox'));
@@ -18,7 +21,7 @@ async function command(window: Page, title: string) {
 			}
 		}
 	}
-	await window.keyboard.press('Control+Shift+P');
+	await window.keyboard.press(`${primaryModifier}+Shift+P`);
 	const input = commandInput(window);
 	await expect(input).toBeVisible();
 	await input.fill('>');
@@ -106,13 +109,19 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			environment[key] = value;
 		}
 	}
+	const executablePath = process.env.VSCODE_EXECUTABLE
+		?? (process.platform === 'win32' ? 'C:\\Program Files\\Microsoft VS Code\\Code.exe' : undefined);
+	if (!executablePath) {
+		throw new Error('Set VSCODE_TEST_VERSION or VSCODE_EXECUTABLE for this desktop editor.');
+	}
 	const app = await electron.launch({
-		executablePath: process.env.VSCODE_EXECUTABLE ?? 'C:\\Program Files\\Microsoft VS Code\\Code.exe',
+		executablePath,
 		args: [
 			'--new-window',
 			`--user-data-dir=${join(profile, 'user')}`,
 			`--extensions-dir=${join(profile, 'extensions')}`,
 			`--extensionDevelopmentPath=${resolve('.')}`,
+			...(process.platform === 'linux' ? ['--no-sandbox', '--disable-gpu-sandbox'] : []),
 			'--skip-welcome', '--skip-release-notes', '--disable-workspace-trust',
 			'--disable-telemetry', '--disable-updates',
 			scratchFile,
@@ -132,7 +141,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await window.waitForLoadState('domcontentloaded');
 		await expect(window.locator('.monaco-workbench')).toBeVisible({ timeout: 30000 });
 		await expect(window.locator('.part.editor .view-lines').first()).toContainText('Hello, Charmlet!', { timeout: 30000 });
-		await window.keyboard.press('Control+Shift+P');
+		await window.keyboard.press(`${primaryModifier}+Shift+P`);
 		const input = commandInput(window);
 		await expect(input).toBeVisible();
 		await input.fill('>');
@@ -157,7 +166,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		const charmImage = charmFrame.locator('#charm img');
 		await expect(charmImage).toBeVisible();
 		await expect.poll(() => charmImage.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(72);
-		await window.keyboard.press('Control+Shift+P');
+		await window.keyboard.press(`${primaryModifier}+Shift+P`);
 		await input.fill('>');
 		await input.pressSequentially('View: Move View', { delay: 30 });
 		await expect(window.locator('.quick-input-list')).toContainText('View: Move View');
@@ -225,11 +234,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 		await command(window, 'Charmlet: Show Charm');
 		await expect(window.locator('.part.editor .monaco-editor.focused')).toBeVisible();
-		await window.keyboard.press('Control+End');
+		await window.keyboard.press(endOfDocument);
 		await window.keyboard.press('Enter');
 		await window.keyboard.type('const charmletTrial = true;');
 		await expect(window.locator('.part.editor .monaco-editor.focused .view-lines')).toContainText('const charmletTrial = true;');
-		await window.keyboard.press('Control+S');
+		await window.keyboard.press(`${primaryModifier}+S`);
 		await expect.poll(() => readFileSync(scratchFile, 'utf8')).toContain('const charmletTrial = true;');
 		await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 650));
 		frame = await readyFrame(window);
@@ -395,7 +404,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 
 		await test.step('collapsing the view during a drag preserves preferences', async () => {
 			await beginDrag(window, frame, 0, 40);
-			await window.keyboard.press('Control+Alt+B');
+			await window.keyboard.press(`${primaryModifier}+Alt+B`);
 			await window.mouse.up();
 			await expect.poll(async () => {
 				try {
@@ -407,7 +416,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 					throw error;
 				}
 			}).toBe(true);
-			await window.keyboard.press('Control+Alt+B');
+			await window.keyboard.press(`${primaryModifier}+Alt+B`);
 			frame = await readyFrame(window);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');

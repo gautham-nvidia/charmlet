@@ -3,6 +3,31 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.3.2 - 2026-10-06 (Phase 3 release preparation)
+
+Tracking: [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).
+
+### Added
+
+- Original 256×256 Marketplace PNG icon and light gallery-banner metadata.
+- Clear website instructions for current manual VSIX installation versus future verified Marketplace/Open VSX listings.
+- Strict nullable store-link configuration tied to the extension publisher/name identity.
+- Portable Windows/macOS keyboard shortcuts and Linux test-launch preparation.
+- A non-live paid-artwork proposal covering original collections, hosted fulfillment, rights boundaries and owner decisions.
+
+### Changed
+
+- CI is prepared as six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code 1.90.0 and 1.140.0; Linux uses Xvfb.
+- Gallery checks cover installation copy, null store state and synthetic matching-link rendering without external navigation.
+
+### Verified
+
+- Local 0.3.2 icon export, extension checks, current Windows UI, package, gallery build and website checks are recorded in the project log.
+
+### Limits
+
+- Linux/macOS support remains unverified until hosted results are reviewed. Publisher, license, listing, public hosting and registry publication remain owner gates. No paid product, checkout or deployment.
+
 ## 0.3.1 - 2026-10-06 (Phase 3 collection, messages and gallery)
 
 Tracking: [feedback/gallery #13](https://github.com/gautham-nvidia/charmlet/issues/13), [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).

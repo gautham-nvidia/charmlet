@@ -2,7 +2,7 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-06:** Phase 3 development build **0.3.1**, with **ten free original charms**, 80 rotating
+**Status, 2026-10-06:** Phase 3 release-preparation build **0.3.2**, with **ten free original charms**, 80 rotating
 coding messages, a free extra-charm gallery/importer, and real-editor checks passing on Windows /
 VS Code **1.90.0 and 1.140.0**. No telemetry, account, payment or runtime AI is required.
 
@@ -71,14 +71,18 @@ The VSIX is written under `extension/` and ignored by Git. Install it using **Ex
 VSIX...** for manual testing. Packaging uses `--skip-license` because the project's own license decision
 is still open, not because third-party licenses are waived. Required notices ship in the package.
 
-[CI](.github/workflows/ci.yml) builds, tests and packages on Windows with VS Code **1.90.0 and 1.140.0**
-for each PR and `main` update. Screenshots, resource snapshots and the VSIX are retained as workflow
-artifacts tied to the commit. CI does not publish to extension registries.
+[CI](.github/workflows/ci.yml) prepares six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code
+**1.90.0 and 1.140.0**. Linux uses Xvfb; screenshots, resource snapshots, the VSIX and static gallery are
+retained as workflow artifacts. Windows is verified; Linux/macOS support remains unverified until the
+owner reviews actual hosted results. CI does not deploy or publish to extension registries.
 
 ## Companion gallery
 
 The source under [website/](website/) builds a static local gallery with six free extra charms and real
-pack/VSIX downloads. It is a development preview, not a public URL or Marketplace listing.
+pack/VSIX downloads. A `.vsix` installs the extension; a `.charmlet.json` adds artwork only after Charmlet
+is installed. Store links are driven by validated `website/distribution.json` values and remain null until
+the owner verifies a live identity-matching listing. URL validation is not proof of publication. This is
+a development preview, not a public URL or Marketplace/Open VSX listing.
 
 **On the Windows PC (PowerShell), from the repository root, after locked dependencies are installed:**
 
@@ -111,6 +115,7 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Gallery validation](docs/phase-3-gallery-validation.md) | Compact, message, import, orbit and website evidence |
 | [Website guide](website/README.md) | Build, preview and reusable browser check |
 | [Charm pack format](docs/charm-packs.md) | Validated data-only import format and limits |
+| [Paid artwork proposal](docs/paid-artwork-plan.md) | Non-live collection, rights, fulfillment and owner-decision plan |
 | [Artwork provenance](extension/ARTWORK.md) | Asset origins, shared geometry and license status |
 | [extension/CHANGELOG.md](extension/CHANGELOG.md) | User-visible changes by version and date |
 | [PLAN.md](PLAN.md) | Design research, constraints and clearly marked historical proposals |
