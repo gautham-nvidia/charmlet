@@ -1,0 +1,22 @@
+{
+  "url": "http://127.0.0.1:4173/",
+  "extras": 6,
+  "included": 10,
+  "downloadedPack": "probe-card",
+  "packBytes": 34622,
+  "vsixBytes": 63774,
+  "desktopOverflow": {
+    "width": 1440,
+    "scroll": 1440
+  },
+  "mobileOverflow": {
+    "width": 375,
+    "scroll": 375
+  },
+  "imageCounts": {
+    "desktop": 9,
+    "included": 13,
+    "mobile": 9
+  },
+  "errors": []
+}

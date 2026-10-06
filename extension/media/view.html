@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src __CSP__; style-src __CSP__; script-src 'nonce-__NONCE__';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src __CSP__ data:; style-src __CSP__; script-src 'nonce-__NONCE__';">
   <link rel="stylesheet" href="__STYLE__">
   <title>Charmlet</title>
 </head>
 <body>
   <main id="app" aria-label="Charmlet">
-    <div id="stage" data-ready="false" data-running="false">
+    <div id="stage" data-ready="false" data-running="false" data-persisted="true">
       <div id="rig">
         <div id="hanging" hidden>
           <svg id="cord" aria-hidden="true"><path id="thread"></path></svg>
@@ -18,13 +18,18 @@
             <img id="charm-image" src="__CHARM__" alt="" width="72" height="84" draggable="false">
           </button>
         </div>
-        <button id="restore" type="button" aria-label="Restore charm" title="Restore charm" hidden></button>
       </div>
+      <button id="restore" type="button" aria-label="Restore charm" title="Restore charm" hidden></button>
+    </div>
+    <div id="message-card" class="message-card">
+      <blockquote id="message-text"></blockquote>
+      <button id="next-message" type="button" aria-label="Next coding message" title="Next coding message"></button>
     </div>
     <div class="tools" role="toolbar" aria-label="Charm controls">
       <div class="identity"><span id="charm-swatch" class="swatch" aria-hidden="true"></span><span id="charm-name">Terminal</span></div>
       <div class="actions">
         <button id="settings-toggle" type="button" aria-label="Charm settings" title="Charm settings" aria-expanded="false" aria-controls="settings"></button>
+        <button id="layout-mode" type="button" aria-label="Orbit layout" title="Orbit layout" aria-pressed="false"></button>
         <button id="motion" type="button" role="switch" aria-checked="true" aria-label="Motion" title="Motion"></button>
         <button id="reset" type="button" aria-label="Reset position" title="Reset position"></button>
         <button id="toggle" type="button" aria-label="Hide charm" title="Hide charm"></button>
@@ -40,6 +45,12 @@
       <label for="cord-length">Cord</label>
       <input id="cord-length" type="range" min="48" step="2" value="126">
       <output id="cord-value" for="cord-length">126 px</output>
+      <label class="message-choice"><input id="show-messages" type="checkbox" checked> Show coding messages</label>
+      <label class="message-choice"><input id="rotate-messages" type="checkbox" checked> Rotate messages automatically</label>
+      <div class="pack-actions">
+        <button id="import-pack" type="button">Import charm pack</button>
+        <button id="remove-pack" type="button">Remove charm pack</button>
+      </div>
     </div>
     <div class="readout"><span id="phase" role="status" aria-live="polite">Parked</span><output id="length">126 px</output></div>
   </main>

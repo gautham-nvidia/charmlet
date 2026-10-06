@@ -1,6 +1,8 @@
-import { createElement, ArrowDown, Eye, EyeOff, Pause, Play, RotateCcw, SlidersHorizontal } from 'lucide';
+import { createElement, ArrowDown, ArrowRight, Eye, EyeOff, Orbit, Pause, Play, RotateCcw, SlidersHorizontal } from 'lucide';
 import { resetState, clamp, getLayout, restoreState, type CharmState } from './charm-state';
-import { CHARMS, getCharm } from './charm-catalog';
+import { CHARMS, getCharm, type CharmDefinition } from './charm-catalog';
+import { MESSAGES } from './messages';
+import { MessageRotation } from './message-rotation';
 import { Pendulum, type Point } from './pendulum';
 
 declare function acquireVsCodeApi(): {
@@ -28,6 +30,7 @@ const toggle = element<HTMLButtonElement>('toggle');
 const motion = element<HTMLButtonElement>('motion');
 const reset = element<HTMLButtonElement>('reset');
 const settingsToggle = element<HTMLButtonElement>('settings-toggle');
+const layoutMode = element<HTMLButtonElement>('layout-mode');
 const settings = element<HTMLDivElement>('settings');
 const sizeInput = element<HTMLInputElement>('size');
 const cordInput = element<HTMLInputElement>('cord-length');
@@ -41,8 +44,17 @@ const charmName = element<HTMLSpanElement>('charm-name');
 const charmSwatch = element<HTMLSpanElement>('charm-swatch');
 const charmSelect = element<HTMLSelectElement>('charm-select');
 const charmDescription = element<HTMLParagraphElement>('charm-description');
+const showMessages = element<HTMLInputElement>('show-messages');
+const rotateMessages = element<HTMLInputElement>('rotate-messages');
+const messageCard = element<HTMLDivElement>('message-card');
+const messageText = element<HTMLElement>('message-text');
+const nextMessage = element<HTMLButtonElement>('next-message');
+const importPack = element<HTMLButtonElement>('import-pack');
+const removePack = element<HTMLButtonElement>('remove-pack');
 const mediaRoot = new URL('.', charmImage.src);
-let state = restoreState(api.getState());
+let charms: readonly CharmDefinition[] = CHARMS;
+let state = restoreState(api.getState(), charms);
+let saveRevision = 0;
 let visible = true;
 let ready = false;
 let scale = 1;
@@ -51,22 +63,24 @@ let previousTime = 0;
 let accumulatedTime = 0;
 let transition: Animation | undefined;
 let frames = 0;
-let drag: { id: number; start: Point; moved: boolean; lastAngle: number; angularTravel: number; maxSideways: number; orbitalGesture: boolean } | undefined;
+let drag: { id: number; start: Point; screenStart: Point; moved: boolean; lastAngle: number; angularTravel: number; maxSideways: number; orbitalGesture: boolean; hideDistance: number; orbitSideDistance: number } | undefined;
 const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const pendulum = new Pendulum(280, 320, state.cordLength, state.size);
+const pendulum = new Pendulum(280, 320, state.cordLength, state.size, state.layoutMode);
 
 function reducedMotion() {
 	return state.reducedMotion || systemMotion.matches || document.body.classList.contains('vscode-reduce-motion');
 }
 
 function save() {
+	const revision = ++saveRevision;
+	stage.dataset.persisted = 'false';
 	api.setState(state);
-	api.postMessage({ type: 'save', state });
+	api.postMessage({ type: 'save', state, revision });
 }
 
 function applyCharm() {
-	const selected = getCharm(state.charmId);
-	const source = new URL(selected.file, mediaRoot).toString();
+	const selected = getCharm(state.charmId, charms);
+	const source = selected.source ?? new URL(selected.file, mediaRoot).toString();
 	if (charmImage.src !== source) {
 		charmImage.src = source;
 	}
@@ -75,11 +89,56 @@ function applyCharm() {
 	charmDescription.textContent = selected.description;
 	charmSelect.value = selected.id;
 	charm.setAttribute('aria-label', `Nudge ${selected.name.toLowerCase()} charm`);
-	charm.title = `Nudge ${selected.name} charm; drag around the peg for a full loop`;
 	stage.dataset.charm = selected.id;
 }
 
+function updateMessage() {
+	messageCard.hidden = !state.showMessages;
+	showMessages.checked = state.showMessages;
+	rotateMessages.checked = state.rotateMessages;
+	const message = MESSAGES[state.messageIndex];
+	messageText.textContent = message;
+	messageText.title = message;
+}
+
+function advanceMessage() {
+	state.messageIndex = (state.messageIndex + 1) % MESSAGES.length;
+	updateMessage();
+	save();
+	scheduleMessages();
+}
+
+const messageRotation = new MessageRotation(advanceMessage);
+
+function scheduleMessages() {
+	const enabled = ready && visible && !document.hidden && state.showMessages && state.rotateMessages && settings.hidden && !drag;
+	messageRotation.update(enabled);
+	messageCard.dataset.rotation = enabled ? 'active' : 'paused';
+}
+
+function populateCharms() {
+	charmSelect.replaceChildren();
+	const groups = new Map<string, HTMLOptGroupElement>();
+	for (const entry of charms) {
+		let group = groups.get(entry.group);
+		if (!group) {
+			group = document.createElement('optgroup');
+			group.label = entry.group;
+			groups.set(entry.group, group);
+			charmSelect.append(group);
+		}
+		const option = document.createElement('option');
+		option.value = entry.id;
+		option.textContent = entry.name;
+		group.append(option);
+	}
+}
+
 function controls() {
+	const selected = getCharm(state.charmId, charms);
+	charm.title = state.layoutMode === 'orbit'
+		? `Nudge ${selected.name} charm; drag around the peg for a full loop`
+		: `Nudge ${selected.name} charm; pull up to retract. Use Orbit layout for full loops.`;
 	toggle.replaceChildren(createElement(state.hidden ? Eye : EyeOff, { width: 16, height: 16 }));
 	toggle.title = state.hidden ? 'Restore charm' : 'Hide charm';
 	toggle.setAttribute('aria-label', toggle.title);
@@ -87,6 +146,8 @@ function controls() {
 	motion.setAttribute('aria-checked', String(!reducedMotion()));
 	motion.disabled = systemMotion.matches || document.body.classList.contains('vscode-reduce-motion');
 	motion.title = motion.disabled ? 'Motion disabled by system preference' : 'Motion';
+	layoutMode.setAttribute('aria-pressed', String(state.layoutMode === 'orbit'));
+	layoutMode.title = state.layoutMode === 'orbit' ? 'Switch to compact hanging layout' : 'Switch to orbit layout';
 	restore.hidden = !state.hidden;
 	if (state.hidden && hanging.contains(document.activeElement)) {
 		restore.focus({ preventScroll: true });
@@ -103,15 +164,15 @@ function render() {
 	charm.style.transform = `translate(${positionX}px, ${positionY}px) rotate(${angle}rad)`;
 	anchor.style.left = `${anchorX}px`;
 	anchor.style.top = `${anchorY}px`;
-	restore.style.left = `${anchorX - 15}px`;
+	restore.style.left = `${anchorX * scale - 15}px`;
+	restore.style.top = `${Math.max(4, anchorY * scale - 14)}px`;
 	thread.setAttribute('d', `M ${anchorX} ${anchorY} Q ${anchorX + (hookX - anchorX) * 0.45} ${(anchorY + hookY) / 2} ${hookX} ${hookY}`);
 	lengthOutput.value = `${Math.round(cordLength)} px`;
 	sizeInput.value = String(state.size);
 	sizeValue.value = `${state.size}%`;
-	cordInput.max = String(Math.floor(pendulum.layout.maximumCord / 2) * 2);
-	const restingCord = clamp(state.cordLength, 48, pendulum.layout.maximumCord);
-	cordInput.value = String(restingCord);
-	cordValue.value = `${Math.round(restingCord)} px`;
+	cordInput.max = String(Math.max(320, Math.floor(pendulum.layout.maximumCord / 2) * 2, Math.ceil(state.cordLength / 2) * 2));
+	cordInput.value = String(state.cordLength);
+	cordValue.value = `${Math.round(state.cordLength)} px`;
 	sizeInput.setAttribute('aria-valuetext', sizeValue.value);
 	cordInput.setAttribute('aria-valuetext', cordValue.value);
 	const status = state.hidden ? 'Retracted' : drag ? 'Held' : pendulum.moving && !reducedMotion() ? 'Swinging' : 'Parked';
@@ -122,6 +183,7 @@ function render() {
 	stage.dataset.hidden = String(state.hidden);
 	stage.dataset.cord = String(Math.round(cordLength));
 	stage.dataset.size = String(state.size);
+	stage.dataset.layout = state.layoutMode;
 	stage.dataset.anchorX = String(anchorX);
 	stage.dataset.anchorY = String(anchorY);
 	stage.dataset.orbitRadius = String(pendulum.layout.orbitRadius);
@@ -208,31 +270,36 @@ function showState(drop = false) {
 		}
 	}
 	render();
+	scheduleMessages();
+}
+
+function finishDrag() {
+	const completed = drag;
+	if (!completed) { return undefined; }
+	drag = undefined;
+	pendulum.release();
+	charm.classList.remove('dragging');
+	if (charm.hasPointerCapture(completed.id)) { charm.releasePointerCapture(completed.id); }
+	scheduleMessages();
+	return completed;
 }
 
 function cancelDrag() {
-	if (!drag) {
-		return;
-	}
-	const cancelled = drag;
-	drag = undefined;
-	pendulum.release();
+	const cancelled = finishDrag();
+	if (!cancelled) { return; }
 	pendulum.setLength(state.cordLength);
 	pendulum.settle();
-	charm.classList.remove('dragging');
-	if (charm.hasPointerCapture(cancelled.id)) {
-		charm.releasePointerCapture(cancelled.id);
-	}
 	stop();
 	render();
+	scheduleMessages();
 }
 
 function resize() {
 	cancelDrag();
 	const { width, height } = stage.getBoundingClientRect();
-	const layout = getLayout(width, height, state.cordLength, state.size);
+	const layout = getLayout(width, height, state.cordLength, state.size, state.layoutMode);
 	scale = Math.max(0.01, Math.min(1, width / layout.minimumWidth, height / layout.minimumHeight));
-	pendulum.resize(width / scale, height / scale, state.cordLength, state.size);
+	pendulum.resize(width / scale, height / scale, state.cordLength, state.size, state.layoutMode);
 	rig.style.width = `${pendulum.layout.width}px`;
 	rig.style.height = `${pendulum.layout.height}px`;
 	rig.style.transform = `scale(${scale})`;
@@ -254,14 +321,17 @@ charm.addEventListener('pointerdown', event => {
 	transition?.cancel();
 	const startPoint = point(event);
 	drag = {
-		id: event.pointerId, start: startPoint, moved: false,
+		id: event.pointerId, start: startPoint, screenStart: { x: event.clientX, y: event.clientY }, moved: false,
 		lastAngle: Math.atan2(startPoint.y - pendulum.layout.anchorY, startPoint.x - pendulum.layout.anchorX),
 		angularTravel: 0, maxSideways: 0, orbitalGesture: false,
+		hideDistance: clamp((pendulum.layout.cordLength + pendulum.layout.attachmentOffset) * scale * 0.65, 24, 60),
+		orbitSideDistance: Math.max(6, pendulum.layout.charmWidth * scale * 0.5),
 	};
 	pendulum.grab(startPoint);
 	charm.setPointerCapture(event.pointerId);
 	charm.classList.add('dragging');
 	render();
+	scheduleMessages();
 });
 
 charm.addEventListener('pointermove', event => {
@@ -269,8 +339,8 @@ charm.addEventListener('pointermove', event => {
 		return;
 	}
 	const current = point(event);
-	const deltaX = current.x - drag.start.x;
-	const deltaY = current.y - drag.start.y;
+	const deltaX = event.clientX - drag.screenStart.x;
+	const deltaY = event.clientY - drag.screenStart.y;
 	if (!drag.moved && Math.hypot(deltaX, deltaY) > 6) {
 		drag.moved = true;
 	}
@@ -280,7 +350,19 @@ charm.addEventListener('pointermove', event => {
 		drag.angularTravel += Math.atan2(Math.sin(difference), Math.cos(difference));
 		drag.lastAngle = angle;
 		drag.maxSideways = Math.max(drag.maxSideways, Math.abs(deltaX));
-		drag.orbitalGesture ||= Math.abs(drag.angularTravel) > Math.PI / 6 && drag.maxSideways > 12;
+		drag.orbitalGesture ||= state.layoutMode === 'orbit'
+			&& Math.abs(drag.angularTravel) > Math.PI / 6
+			&& drag.maxSideways > drag.orbitSideDistance;
+		const upward = !drag.orbitalGesture && deltaY < -drag.hideDistance && -deltaY > Math.abs(deltaX);
+		const leavingTop = event.clientY <= stage.getBoundingClientRect().top + 4;
+		if (upward && (state.layoutMode === 'hanging' || leavingTop)) {
+			finishDrag();
+			state.hidden = true;
+			showState();
+			save();
+			render();
+			return;
+		}
 		pendulum.drag(current, reducedMotion());
 		if (!reducedMotion()) {
 			start();
@@ -293,15 +375,11 @@ charm.addEventListener('pointerup', event => {
 	if (!drag || drag.id !== event.pointerId) {
 		return;
 	}
-	const completed = drag;
-	drag = undefined;
-	pendulum.release();
-	charm.classList.remove('dragging');
-	charm.releasePointerCapture(event.pointerId);
-	const end = point(event);
-	const deltaY = end.y - completed.start.y;
-	const deltaX = end.x - completed.start.x;
-	if (completed.moved && !completed.orbitalGesture && deltaY < -60 && -deltaY > Math.abs(deltaX)) {
+	const completed = finishDrag();
+	if (!completed) { return; }
+	const deltaY = event.clientY - completed.screenStart.y;
+	const deltaX = event.clientX - completed.screenStart.x;
+	if (completed.moved && !completed.orbitalGesture && deltaY < -completed.hideDistance && -deltaY > Math.abs(deltaX)) {
 		state.hidden = true;
 		showState();
 	} else {
@@ -322,6 +400,11 @@ charm.addEventListener('pointerup', event => {
 charm.addEventListener('pointercancel', cancelDrag);
 charm.addEventListener('lostpointercapture', cancelDrag);
 window.addEventListener('blur', cancelDrag);
+window.addEventListener('pointermove', event => {
+	if (drag && event.pointerId === drag.id && event.buttons === 0) {
+		cancelDrag();
+	}
+}, true);
 charm.addEventListener('click', event => { if (event.detail === 0) { nudge(); } });
 charm.addEventListener('keydown', event => {
 	if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
@@ -330,7 +413,7 @@ charm.addEventListener('keydown', event => {
 	} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
 		event.preventDefault();
 		cancelDrag();
-		state.cordLength = clamp(pendulum.layout.cordLength + (event.key === 'ArrowDown' ? 20 : -20), 48, pendulum.layout.maximumCord);
+		state.cordLength = clamp(state.cordLength + (event.key === 'ArrowDown' ? 20 : -20), 48, Number(cordInput.max));
 		pendulum.setLength(state.cordLength);
 		showState();
 		save();
@@ -359,8 +442,16 @@ reset.addEventListener('click', () => {
 	cancelDrag();
 	state = resetState(state);
 	applyCharm();
+	updateMessage();
 	resize();
 	showState(true);
+	save();
+});
+layoutMode.addEventListener('click', () => {
+	cancelDrag();
+	state.layoutMode = state.layoutMode === 'orbit' ? 'hanging' : 'orbit';
+	resize();
+	showState();
 	save();
 });
 motion.addEventListener('click', () => {
@@ -375,6 +466,7 @@ settingsToggle.addEventListener('click', () => {
 	settings.hidden = !settings.hidden;
 	settingsToggle.setAttribute('aria-expanded', String(!settings.hidden));
 	resize();
+	scheduleMessages();
 });
 settings.addEventListener('keydown', event => {
 	if (event.key === 'Escape') {
@@ -383,15 +475,32 @@ settings.addEventListener('keydown', event => {
 		settingsToggle.setAttribute('aria-expanded', 'false');
 		settingsToggle.focus();
 		resize();
+		scheduleMessages();
 	}
 });
 charmSelect.addEventListener('change', () => {
 	cancelDrag();
-	state.charmId = getCharm(charmSelect.value).id;
+	state.charmId = getCharm(charmSelect.value, charms).id;
 	applyCharm();
 	resize();
 	save();
 });
+showMessages.addEventListener('change', () => {
+	state.showMessages = showMessages.checked;
+	updateMessage();
+	resize();
+	save();
+	scheduleMessages();
+});
+rotateMessages.addEventListener('change', () => {
+	state.rotateMessages = rotateMessages.checked;
+	updateMessage();
+	save();
+	scheduleMessages();
+});
+nextMessage.addEventListener('click', advanceMessage);
+importPack.addEventListener('click', () => api.postMessage({ type: 'command', command: 'charmlet.importPack' }));
+removePack.addEventListener('click', () => api.postMessage({ type: 'command', command: 'charmlet.removePack' }));
 sizeInput.addEventListener('input', () => {
 	state.size = Number(sizeInput.value);
 	resize();
@@ -410,6 +519,7 @@ function synchronizeVisibility() {
 	stop();
 	hanging.hidden = state.hidden;
 	render();
+	scheduleMessages();
 }
 
 function updateMotionPreference() {
@@ -424,8 +534,13 @@ window.addEventListener('message', event => {
 	}
 	if (message.type === 'state' && 'state' in message) {
 		cancelDrag();
-		state = restoreState(message.state);
+		if ('catalogue' in message && Array.isArray(message.catalogue)) {
+			charms = message.catalogue as CharmDefinition[];
+			populateCharms();
+		}
+		state = restoreState(message.state, charms);
 		applyCharm();
+		updateMessage();
 		if ('visible' in message) {
 			visible = message.visible === true;
 		}
@@ -434,6 +549,20 @@ window.addEventListener('message', event => {
 		stage.dataset.ready = 'true';
 		resize();
 		showState('drop' in message && message.drop === true);
+	} else if (message.type === 'catalogue' && 'catalogue' in message && Array.isArray(message.catalogue) && 'state' in message) {
+		cancelDrag();
+		charms = message.catalogue as CharmDefinition[];
+		populateCharms();
+		state = restoreState(message.state, charms);
+		api.setState(state);
+		applyCharm();
+		updateMessage();
+		resize();
+		showState();
+	} else if (message.type === 'saved' && 'revision' in message && message.revision === saveRevision) {
+		stage.dataset.persisted = 'true';
+	} else if (message.type === 'save-error' && 'revision' in message && message.revision === saveRevision) {
+		stage.dataset.persisted = 'error';
 	} else if (message.type === 'visibility' && 'visible' in message) {
 		visible = message.visible === true;
 		synchronizeVisibility();
@@ -441,19 +570,18 @@ window.addEventListener('message', event => {
 });
 
 document.addEventListener('visibilitychange', synchronizeVisibility);
+window.addEventListener('pagehide', () => messageRotation.stop());
 systemMotion.addEventListener('change', updateMotionPreference);
 new MutationObserver(updateMotionPreference).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 new ResizeObserver(resize).observe(stage);
 reset.replaceChildren(createElement(RotateCcw, { width: 15, height: 15 }));
 restore.replaceChildren(createElement(ArrowDown, { width: 14, height: 14 }));
 settingsToggle.replaceChildren(createElement(SlidersHorizontal, { width: 15, height: 15 }));
-for (const entry of CHARMS) {
-	const option = document.createElement('option');
-	option.value = entry.id;
-	option.textContent = entry.name;
-	charmSelect.append(option);
-}
+layoutMode.replaceChildren(createElement(Orbit, { width: 16, height: 16 }));
+nextMessage.replaceChildren(createElement(ArrowRight, { width: 14, height: 14 }));
+populateCharms();
 applyCharm();
+updateMessage();
 controls();
 resize();
 api.postMessage({ type: 'ready' });

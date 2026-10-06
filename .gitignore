@@ -4,6 +4,7 @@ extension/out/
 extension/dist/
 extension/test-results/
 extension/playwright-report/
+website/dist/
 **/*.vsix
 **/.env
 **/.env.*

@@ -1,5 +1,5 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
-import { mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { CHARMS } from '../charm-catalog';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -10,6 +10,14 @@ function commandInput(window: Page) {
 }
 
 async function command(window: Page, title: string) {
+	if (title === 'Developer: Reload Window') {
+		for (const frame of window.frames()) {
+			if (!frame.isDetached() && await frame.locator('#stage[data-ready="true"]').count()) {
+				await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true', { timeout: 10000 });
+				break;
+			}
+		}
+	}
 	await window.keyboard.press('Control+Shift+P');
 	const input = commandInput(window);
 	await expect(input).toBeVisible();
@@ -59,7 +67,7 @@ async function browserFrames(window: Page, count = 12) {
 	}), count);
 }
 
-async function beginDrag(window: Page, frame: Frame, deltaX: number, deltaY: number, grabFraction = 0.5) {
+async function beginDrag(window: Page, frame: Frame, deltaX: number, deltaY: number, grabFraction = 0.5, expectedPhase: 'Held' | 'Retracted' = 'Held') {
 	await expect(frame.locator('#charm')).toBeVisible();
 	await frame.locator('#charm').evaluate(charm => {
 		charm.addEventListener('pointerdown', event => {
@@ -78,17 +86,17 @@ async function beginDrag(window: Page, frame: Frame, deltaX: number, deltaY: num
 		await window.mouse.move(startX + deltaX * step / 12, startY + deltaY * step / 12);
 		await browserFrames(window, 1);
 	}
-	await expect(frame.locator('#phase')).toHaveText('Held');
+	await expect(frame.locator('#phase')).toHaveText(expectedPhase);
 	return { x: startX, y: startY };
 }
 
-async function dragCharm(window: Page, frame: Frame, deltaX: number, deltaY: number) {
-	await beginDrag(window, frame, deltaX, deltaY);
+async function dragCharm(window: Page, frame: Frame, deltaX: number, deltaY: number, expectedPhase: 'Held' | 'Retracted' = 'Held') {
+	await beginDrag(window, frame, deltaX, deltaY, 0.5, expectedPhase);
 	await window.mouse.up();
 }
 
 test('real-editor charm supports docking, gestures, focus, persistence and reduced motion', async ({}, testInfo) => {
-	test.setTimeout(180000);
+	test.setTimeout(300000);
 	const profile = mkdtempSync(join(tmpdir(), 'charmlet-ui-'));
 	const scratchFile = join(profile, 'charmlet-trial.ts');
 	writeFileSync(scratchFile, "export const greeting = 'Hello, Charmlet!';\n");
@@ -192,7 +200,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await frame.locator('#restore').click();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
-		await dragCharm(window, frame, 0, -80);
+		await dragCharm(window, frame, 0, -80, 'Retracted');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
 		await expect(frame.locator('#restore')).toBeVisible();
 		await frame.locator('#restore').click();
@@ -234,11 +242,16 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await window.screenshot({ path: testInfo.outputPath('compact-window.png') });
 
 		await test.step('the free collection loads, keeps preferences and remembers its selection', async () => {
+			const lastCharm = CHARMS[CHARMS.length - 1];
+			expect(lastCharm.name).toBe('Lemon & Chilies');
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
 			frame = await readyFrame(window);
 			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
 			let picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
-			await expect(picker.locator('option')).toHaveCount(4);
+			await expect(picker.locator('option')).toHaveCount(10);
+			await expect(picker.locator('optgroup')).toHaveCount(2);
+			await expect(picker.locator('optgroup').nth(0)).toHaveAttribute('label', 'Silicon & Code');
+			await expect(picker.locator('optgroup').nth(1)).toHaveAttribute('label', 'Good Luck');
 			for (const entry of CHARMS) {
 				await picker.selectOption(entry.id);
 				await expect(frame.locator('#stage')).toHaveAttribute('data-charm', entry.id);
@@ -258,19 +271,20 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await picker.press('Home');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
 			await picker.press('End');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'circuit');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
 			await window.screenshot({ path: testInfo.outputPath('phase-2-collection.png') });
 			await picker.press('Escape');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
 			await Promise.all([
 				window.waitForEvent('domcontentloaded'),
 				command(window, 'Developer: Reload Window'),
 			]);
 			frame = await readyFrame(window);
-			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'circuit');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
 			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
 			await command(window, 'Charmlet: Reset Charm');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'circuit');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
 			await frame.getByRole('button', { name: 'Hide charm', exact: true }).click();
 			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
@@ -300,9 +314,19 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			const maximumCord = (await frame.getByRole('slider', { name: 'Cord', exact: true }).getAttribute('max'))!;
 			expect(Number(maximumCord)).toBeGreaterThan(48);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('End');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
+			await expect(frame.getByRole('slider', { name: 'Cord', exact: true })).toHaveValue(maximumCord);
+			expect(Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThanOrEqual(Number(maximumCord));
+			await expect.poll(() => frame.locator('#charm').evaluate(charm => {
+				const bounds = charm.getBoundingClientRect();
+				const stage = document.getElementById('stage')!.getBoundingClientRect();
+				return bounds.left >= stage.left - 1 && bounds.right <= stage.right + 1
+					&& bounds.top >= stage.top - 1 && bounds.bottom <= stage.bottom + 1;
+			})).toBe(true);
 			await expectBalancedSwingRoom(frame);
 			await window.screenshot({ path: testInfo.outputPath('phase-1-settings.png') });
+			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Escape');
+			await expect(frame.locator('#settings')).toBeHidden();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
 			await Promise.all([
 				window.waitForEvent('domcontentloaded'),
 				command(window, 'Developer: Reload Window'),
@@ -310,8 +334,10 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			frame = await readyFrame(window);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
+			await expect(frame.locator('#cord-length')).toHaveValue(maximumCord);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 500));
 			frame = await readyFrame(window);
+			await expect(frame.locator('#cord-length')).toHaveValue(maximumCord);
 			await expect.poll(() => frame.locator('#charm').evaluate(charm => {
 				const bounds = charm.getBoundingClientRect();
 				const stage = document.getElementById('stage')!.getBoundingClientRect();
@@ -465,6 +491,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 
 		await test.step('circular drags release and recover without refreshing the editor', async () => {
+			const layoutToggle = frame.getByRole('button', { name: 'Orbit layout', exact: true });
+			if (await layoutToggle.getAttribute('aria-pressed') !== 'true') {
+				await layoutToggle.click();
+			}
+			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'orbit');
 			for (const direction of [-1, 1]) {
 				await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
 				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
@@ -500,7 +531,119 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await window.screenshot({ path: testInfo.outputPath('phase-1-circle-recovered.png') });
 		});
 
+		await test.step('compact hanging layout keeps pull room, hide/restore and messages usable', async () => {
+			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 340));
+			frame = await readyFrame(window);
+			await expect.poll(() => frame.locator('#stage').evaluate(stage => stage.clientHeight)).toBeLessThan(200);
+			const layoutToggle = frame.getByRole('button', { name: 'Orbit layout', exact: true });
+			if (await layoutToggle.getAttribute('aria-pressed') === 'true') {
+				await layoutToggle.click();
+			}
+			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'hanging');
+			await expect(frame.locator('#settings')).toBeHidden();
+			await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+			await expect(frame.locator('#message-card')).toBeVisible();
+			const messagePlacement = () => frame.locator('#message-card').evaluate(card => {
+				const stage = document.getElementById('stage')!.getBoundingClientRect();
+				const message = card.getBoundingClientRect();
+				const tools = document.querySelector('.tools')!.getBoundingClientRect();
+				return { stageBottom: stage.bottom, messageTop: message.top, messageBottom: message.bottom, toolsTop: tools.top };
+			});
+			let placement = await messagePlacement();
+			expect(placement.messageTop).toBeGreaterThanOrEqual(placement.stageBottom - 1);
+			expect(placement.messageBottom).toBeLessThanOrEqual(placement.toolsTop + 1);
+			await expect(frame.locator('#message-card')).toHaveAttribute('data-rotation', 'active');
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await expect(frame.locator('#settings')).toBeVisible();
+			await expect(frame.locator('#message-card')).toHaveAttribute('data-rotation', 'paused');
+			placement = await messagePlacement();
+			expect(placement.messageTop).toBeGreaterThanOrEqual(placement.stageBottom - 1);
+			expect(placement.messageBottom).toBeLessThanOrEqual(placement.toolsTop + 1);
+			const rotateMessages = frame.getByRole('checkbox', { name: 'Rotate messages automatically', exact: true });
+			await expect(rotateMessages).toBeChecked();
+			await rotateMessages.uncheck();
+			await rotateMessages.press('Escape');
+			await expect(frame.locator('#settings')).toBeHidden();
+			await Promise.all([
+				window.waitForEvent('domcontentloaded'),
+				command(window, 'Developer: Reload Window'),
+			]);
+			frame = await readyFrame(window);
+			await expect(frame.locator('#rotate-messages')).not.toBeChecked();
+			await expect(frame.locator('#message-card')).toHaveAttribute('data-rotation', 'paused');
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			const restoredRotateMessages = frame.getByRole('checkbox', { name: 'Rotate messages automatically', exact: true });
+			await restoredRotateMessages.check();
+			await restoredRotateMessages.press('Escape');
+			await expect(frame.locator('#settings')).toBeHidden();
+			await expect(frame.locator('#message-card')).toHaveAttribute('data-rotation', 'active');
+			const restingCord = Number(await frame.locator('#stage').getAttribute('data-cord'));
+			const restingBounds = await frame.locator('#charm').boundingBox();
+			if (!restingBounds) { throw new Error('Compact feedback test requires a visible charm.'); }
+			await beginDrag(window, frame, 0, 80);
+			const pulledBounds = await frame.locator('#charm').boundingBox();
+			if (!pulledBounds) { throw new Error('Compact feedback pull lost the visible charm.'); }
+			expect(pulledBounds.y - restingBounds.y).toBeGreaterThan(8);
+			await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeGreaterThan(restingCord + 10);
+			await window.mouse.up();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', String(restingCord));
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+			await expect.poll(async () => {
+				const bounds = await frame.locator('#charm').boundingBox();
+				return bounds ? Math.abs(bounds.y - restingBounds.y) : Number.POSITIVE_INFINITY;
+			}).toBeLessThan(1);
+			await beginDrag(window, frame, 8, -70, 0.5, 'Retracted');
+			await window.mouse.up();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
+			await expect(frame.locator('#restore')).toBeVisible();
+			const restoreBounds = await frame.locator('#restore').boundingBox();
+			expect(restoreBounds!.width).toBeGreaterThanOrEqual(26);
+			expect(restoreBounds!.height).toBeGreaterThanOrEqual(24);
+			await frame.locator('#restore').click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+			await expect.poll(() => frame.locator('#hanging').evaluate(node => node.getAnimations().every(animation => animation.playState === 'finished'))).toBe(true);
+			const heldPoint = await beginDrag(window, frame, -20, 0);
+			const compactStageBounds = await frame.locator('#stage').boundingBox();
+			if (!compactStageBounds) { throw new Error('Missed-release recovery requires a visible stage.'); }
+			await window.mouse.move(compactStageBounds.x - 20, heldPoint.y);
+			await window.mouse.up();
+			await window.mouse.move(compactStageBounds.x + 10, heldPoint.y);
+			await expect(frame.locator('#charm')).not.toHaveClass(/dragging/);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', String(restingCord));
+			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
+			const originalMessage = await frame.locator('#message-text').textContent();
+			await frame.getByRole('button', { name: 'Next coding message', exact: true }).click();
+			await expect(frame.locator('#message-text')).not.toHaveText(originalMessage!);
+			const chosenMessage = await frame.locator('#message-text').textContent();
+			await Promise.all([
+				window.waitForEvent('domcontentloaded'),
+				command(window, 'Developer: Reload Window'),
+			]);
+			frame = await readyFrame(window);
+			await expect(frame.locator('#message-text')).toHaveText(chosenMessage!);
+			await expect(frame.locator('#settings')).toBeHidden();
+			await expect(frame.locator('#message-card')).toBeVisible();
+			await window.screenshot({ path: testInfo.outputPath('compact-feedback.png') });
+			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
+			frame = await readyFrame(window);
+			await expect.poll(() => frame.locator('#stage').evaluate(stage => stage.clientHeight)).toBeGreaterThan(350);
+		});
+
 		await test.step('charm and cord complete peg orbits and recover from an upper release', async () => {
+			const layoutToggle = frame.getByRole('button', { name: 'Orbit layout', exact: true });
+			if (await layoutToggle.getAttribute('aria-pressed') !== 'true') {
+				await layoutToggle.click();
+			}
+			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'orbit');
+			await Promise.all([
+				window.waitForEvent('domcontentloaded'),
+				command(window, 'Developer: Reload Window'),
+			]);
+			frame = await readyFrame(window);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'orbit');
 			const observations = [];
 			for (const direction of [-1, 1]) {
 				await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
@@ -564,6 +707,71 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			writeFileSync(path, `${JSON.stringify({ schemaVersion: 1, hostVersion: await app.evaluate(({ app: host }) => host.getVersion()), observations }, null, 2)}\n`);
 			await testInfo.attach('orbit-observations.json', { path, contentType: 'application/json' });
 			await window.screenshot({ path: testInfo.outputPath('orbit-returned.png') });
+		});
+
+		await test.step('a downloaded PNG pack imports, persists and removes through supported commands', async () => {
+			const sourcePack = resolve('../website/packs/probe-card.charmlet.json');
+			const selectedPack = join(profile, 'probe-card.charmlet.json');
+			copyFileSync(sourcePack, selectedPack);
+			const restingCord = (await frame.locator('#stage').getAttribute('data-cord'))!;
+			const layout = (await frame.locator('#stage').getAttribute('data-layout'))!;
+			const message = (await frame.locator('#message-text').textContent())!;
+			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'true');
+			await app.evaluate(({ dialog }, path) => {
+				const holder = globalThis as typeof globalThis & { __charmletOpenDialog?: typeof dialog.showOpenDialog };
+				holder.__charmletOpenDialog = dialog.showOpenDialog;
+				dialog.showOpenDialog = (() => Promise.resolve({ canceled: false, filePaths: [path] })) as typeof dialog.showOpenDialog;
+			}, selectedPack);
+			try {
+				await command(window, 'Charmlet: Import Charm Pack');
+				await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'pack:probe-card:probe-card');
+			} finally {
+				await app.evaluate(({ dialog }) => {
+					const holder = globalThis as typeof globalThis & { __charmletOpenDialog?: typeof dialog.showOpenDialog };
+					if (holder.__charmletOpenDialog) {
+						dialog.showOpenDialog = holder.__charmletOpenDialog;
+						delete holder.__charmletOpenDialog;
+					}
+				});
+			}
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			const importedPicker = frame.getByRole('combobox', { name: 'Charm', exact: true });
+			await expect(importedPicker).toHaveValue('pack:probe-card:probe-card');
+			await expect(importedPicker.locator('option')).toHaveCount(11);
+			await importedPicker.press('Escape');
+			await expect(frame.locator('#settings')).toBeHidden();
+			await expect(frame.locator('#charm-name')).toHaveText('Probe Card');
+			await expect(frame.locator('#charm-image')).toHaveAttribute('src', /^data:image\/png;base64,/);
+			await expect.poll(() => frame.locator('#charm-image').evaluate(image => {
+				const img = image as HTMLImageElement;
+				return img.complete && img.naturalWidth === 288;
+			})).toBe(true);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', restingCord);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', layout);
+			await expect(frame.locator('#message-text')).toHaveText(message);
+			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'true');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+			await expect.poll(() => frame.locator('#hanging').evaluate(node => node.getAnimations().every(animation => animation.playState === 'finished'))).toBe(true);
+			const startX = Number(await frame.locator('#charm').getAttribute('data-position-x'));
+			await frame.locator('#charm').click();
+			await expect.poll(async () => Math.abs(Number(await frame.locator('#charm').getAttribute('data-position-x')) - startX)).toBeGreaterThan(3);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+			await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true', { timeout: 10000 });
+			await Promise.all([
+				window.waitForEvent('domcontentloaded'),
+				command(window, 'Developer: Reload Window'),
+			]);
+			frame = await readyFrame(window);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'pack:probe-card:probe-card');
+			await expect(frame.locator('#charm-name')).toHaveText('Probe Card');
+			await expect(frame.locator('#charm-image')).toHaveAttribute('src', /^data:image\/png;base64,/);
+			await expect.poll(() => frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(288);
+			await window.screenshot({ path: testInfo.outputPath('imported-probe-card.png') });
+			await command(window, 'Charmlet: Remove Charm Pack');
+			await window.locator('.quick-input-list').getByText('Probe Card', { exact: true }).click();
+			await expect(frame.locator('#charm-select option')).toHaveCount(10);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
+			await expect(frame.locator('#charm-name')).toHaveText('Terminal');
 		});
 
 		await test.step('record visible, settled and hidden resource snapshots', async () => {

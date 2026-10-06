@@ -2,21 +2,23 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-06:** Phase 3 development build **0.2.0**, with **four free original charms**, a saved
-Charm picker and real-editor checks passing on Windows / VS Code **1.90.0 and 1.140.0**. No telemetry,
-account, payment or runtime AI is required.
+**Status, 2026-10-06:** Phase 3 development build **0.3.1**, with **ten free original charms**, 80 rotating
+coding messages, a free extra-charm gallery/importer, and real-editor checks passing on Windows /
+VS Code **1.90.0 and 1.140.0**. No telemetry, account, payment or runtime AI is required.
 
-[Phase 3 tracking](https://github.com/gautham-nvidia/charmlet/issues/11) and the
-[dated validation record](docs/full-circle-validation.md) show the checks and remaining review items.
+[Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13) and the
+[dated validation record](docs/phase-3-gallery-validation.md) show the checks and remaining review items.
 
-![Charmlet at rest with space for a complete orbit](docs/phase-3/orbit-returned.png)
+![Compact Charmlet view with message, controls and restore-ready layout](docs/phase-3-gallery/compact-feedback.png)
 
-Choose **Terminal**, **Chip**, **Wafer** or **Circuit** in Charm settings. Your selection and resting
-preferences are saved locally. Pulling is temporary: releasing returns the charm to its selected
-resting length and position.
+Choose among ten bundled charms in the grouped picker. The default **Hanging** layout keeps the peg near
+the top and reserves pull room; the Orbit toolbar toggle reserves space for full fixed-peg loops. A
+straight upward pull retracts the charm and the arrow restores it. The Cord setting is the saved resting
+preference, while the visible cord may temporarily shorten to fit the current panel.
 
-Drag the charm around the fixed peg for a complete loop. The peg leaves clearance above it, and the
-temporary cord adapts to the panel's available space. Release returns to your selected resting length.
+Eighty original coding messages sit directly below the charm. Use **Next coding message**, or enable/disable
+saved automatic five-minute rotation in settings. Rotation pauses while the view is unavailable, settings
+are open or a drag is active.
 
 ## Run the demo
 
@@ -35,8 +37,17 @@ unchanged. After rebuilding, reload that demo window to load the updated code.
 
 1. In the demo window, press **Ctrl+Shift+P**, then run **Charmlet: Show Charm**.
 2. Run **View: Move View**, choose **Charmlet**, then **New Secondary Side Bar Entry** for a right dock.
-3. Click to nudge, pull and release to return to rest, or drag around the peg for a full loop. A straight upward pull hides the charm; the eye restores it.
+3. Click to nudge or pull and release to return to rest. Switch on **Orbit layout** before dragging a full loop. A straight upward pull retracts the charm; the restore arrow brings it back.
 4. Open **Charm settings** to choose a charm, size and resting cord length. Escape closes settings.
+
+| Group | Bundled charms |
+|---|---|
+| Silicon & Code | Terminal, Chip, Wafer, Circuit, Transistor, Memory Stack |
+| Good Luck | Evil Eye, Drishti Doll, Hamsa, Lemon & Chilies |
+
+Extra free charms use validated `.charmlet.json` files. Run **Charmlet: Import Charm Pack** to add one and
+**Charmlet: Remove Charm Pack** to remove an imported pack. Imported PNG artwork is stored separately
+from extension files, survives updates and works offline.
 
 Motion and reset controls live below the charm. Tab to the charm for Enter/Space, arrow-key and Escape
 controls. See [extension/README.md](extension/README.md) for the full controls and limitations.
@@ -50,11 +61,11 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs nineteen state/physics tests and one real-editor interaction
+`test` builds and lints both bundles, runs twenty-seven state/physics, pack and timer tests and one real-editor interaction
 regression. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.
-See the [validation record](docs/phase-2-validation.md) for collection checks and screenshots.
+See the [validation record](docs/phase-3-gallery-validation.md) for compact, gallery, import and message checks.
 
 The VSIX is written under `extension/` and ignored by Git. Install it using **Extensions: Install from
 VSIX...** for manual testing. Packaging uses `--skip-license` because the project's own license decision
@@ -63,6 +74,24 @@ is still open, not because third-party licenses are waived. Required notices shi
 [CI](.github/workflows/ci.yml) builds, tests and packages on Windows with VS Code **1.90.0 and 1.140.0**
 for each PR and `main` update. Screenshots, resource snapshots and the VSIX are retained as workflow
 artifacts tied to the commit. CI does not publish to extension registries.
+
+## Companion gallery
+
+The source under [website/](website/) builds a static local gallery with six free extra charms and real
+pack/VSIX downloads. It is a development preview, not a public URL or Marketplace listing.
+
+**On the Windows PC (PowerShell), from the repository root, after locked dependencies are installed:**
+
+```powershell
+npm.cmd --prefix extension run compile
+npm.cmd --prefix extension run test:unit
+npm.cmd --prefix extension run package:vsix
+node website/build.mjs
+node website/server.mjs
+```
+
+Leave the server terminal running and visit `http://127.0.0.1:4173`. In a separate PowerShell terminal,
+run `node website/check.mjs` to verify filters, images, downloads, overflow, keyboard focus and browser errors.
 
 ## Traceability and workflow
 
@@ -78,6 +107,10 @@ artifacts tied to the commit. CI does not publish to extension registries.
 | [Phase 3 issue #11](https://github.com/gautham-nvidia/charmlet/issues/11) | Compatibility and release readiness |
 | [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
 | [Full-circle validation](docs/full-circle-validation.md) | Orbit screenshots and rendered-motion evidence |
+| [Gallery and compact feedback #13](https://github.com/gautham-nvidia/charmlet/issues/13) | Ten defaults, messages, packs and companion gallery |
+| [Gallery validation](docs/phase-3-gallery-validation.md) | Compact, message, import, orbit and website evidence |
+| [Website guide](website/README.md) | Build, preview and reusable browser check |
+| [Charm pack format](docs/charm-packs.md) | Validated data-only import format and limits |
 | [Artwork provenance](extension/ARTWORK.md) | Asset origins, shared geometry and license status |
 | [extension/CHANGELOG.md](extension/CHANGELOG.md) | User-visible changes by version and date |
 | [PLAN.md](PLAN.md) | Design research, constraints and clearly marked historical proposals |
@@ -97,9 +130,10 @@ git log --all --graph --date=iso-strict --format="%h %ad %s"
 git log --follow --date=short --format="%h %ad %s" -- PROJECT_LOG.md
 ```
 
-Phase 3 is in progress: [compatibility and release readiness](docs/phase-3-readiness.md). The requested
-full-circle orbit is implemented and locally verified. Broader host/platform testing and publisher,
-license and listing decisions remain open; registry publication still requires explicit approval.
+Phase 3 is in progress: [compatibility and release readiness](docs/phase-3-readiness.md). The full-circle
+orbit and free gallery/import flow are implemented and locally verified. Broader host/platform testing,
+publisher, license and listing decisions remain open; registry publication still requires explicit
+approval. Optional paid artwork remains later work and no checkout is implemented.
 
 ## Ownership and licenses
 

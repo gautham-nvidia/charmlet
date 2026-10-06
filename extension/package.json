@@ -1,8 +1,9 @@
 {
   "name": "charmlet",
   "displayName": "Charmlet: Coding Charms",
-  "description": "Four free hanging coding charms with adjustable size and cord. Offline and interactive.",
-  "version": "0.2.0",
+  "description": "Ten free charms, coding messages and extra charm packs. Offline and interactive.",
+  "version": "0.3.1",
+  "pricing": "Free",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -62,6 +63,16 @@
         "command": "charmlet.reset",
         "title": "Reset Charm",
         "category": "Charmlet"
+      },
+      {
+        "command": "charmlet.importPack",
+        "title": "Import Charm Pack",
+        "category": "Charmlet"
+      },
+      {
+        "command": "charmlet.removePack",
+        "title": "Remove Charm Pack",
+        "category": "Charmlet"
       }
     ]
   },
@@ -77,7 +88,7 @@
     "pretest": "npm run compile",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "test:unit": "npm run compile-tests && node --test out/test/state.test.js",
+    "test:unit": "npm run compile-tests && node --test out/test/state.test.js out/test/packs.test.js",
     "test:ui": "playwright test",
     "test": "npm run test:unit && npm run test:ui",
     "package:vsix": "vsce package --no-dependencies --skip-license"

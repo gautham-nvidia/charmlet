@@ -11,8 +11,8 @@ and next action. Current milestone status is summarized below; entries preserve 
 | P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
 | P1 | Accepted and merged in PR #7 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
 | P2 | Merged in PR #10 | Four free charms, saved picker, artwork provenance and prepared trial checklist | [#9](https://github.com/gautham-nvidia/charmlet/issues/9) |
-| P3 | Orbit implemented; remaining readiness gates open | Cross-editor/OS/remote tests; approved identity and license; Marketplace + Open VSX | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [readiness](docs/phase-3-readiness.md) |
-| F1 | Deferred | Quiet opt-in coding motivation in the status bar | Roadmap #1 |
+| P3 | Orbit, collection, messages and gallery implemented; remaining readiness gates open | Ten defaults, free pack import/gallery, 80 messages; cross-editor/OS/remote tests, identity, license and registries remain | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [#13](https://github.com/gautham-nvidia/charmlet/issues/13), [readiness](docs/phase-3-readiness.md) |
+| F1 | Delivered in the charm view (0.3.1) | 80 optional coding messages below the charm, with Next and saved visibility/rotation | [#13](https://github.com/gautham-nvidia/charmlet/issues/13) |
 | F2 | Deferred | Cosmetic-only paid packs and explicit celebration commands | Roadmap #1 |
 
 ## 2026-09-17 - Identity and personal repository
@@ -184,3 +184,11 @@ Gautham confirmed the requested motion: the charm and cord make a complete loop 
 The code and screenshots were reviewed. Type/lint/build and **19 unit tests passed**. Complete UI runs passed on **Windows VS Code 1.90.0 and 1.140.0**, with actual rendered angular travel exceeding a full turn in both directions, all four quadrants visited, fixed peg coordinates and every captured position within the view. Upper release recovered to the resting setting without refresh. Frozen captures and scope are in [full-circle validation](docs/full-circle-validation.md).
 
 Package: extension/charmlet-0.2.0.vsix built locally. PR #12 will carry the reviewed feature and new hosted checks. Other P3 readiness gates remain open; no public registry release or next phase has started.
+
+## 2026-10-06 - Ten-charms collection, messages, packs and gallery
+
+Gautham required the companion webpage and additional downloads in the current work, with ten charms bundled by default. He then requested 50–100 rotating messages directly below the stage and above the controls. Development version **0.3.1** now includes ten grouped original SVGs, 80 original messages, compact Hanging and optional Orbit layouts, validated static-PNG pack import/removal, six free website extras and a dependency-free local gallery.
+
+The implementation, artwork and screenshots were reviewed. Compile/type/lint passed; **27 unit tests** passed. Complete Windows UI suites passed on **VS Code 1.90.0 and 1.140.0**, including preference-versus-visible-fit behavior, compact pull/retract/restore, message position/rotation persistence, fixed-peg loops and real Probe Card import/reload/removal. The installed-Edge gallery check passed at 1440 px and 375×812 with real pack/VSIX downloads and no console/page errors. Frozen scope and evidence are in [Phase 3 gallery validation](docs/phase-3-gallery-validation.md).
+
+The UI tests distinguish the saved Cord preference from the visible length that current space can fit. The gallery/import path is real and free; paid checkout is absent. Package: extension/charmlet-0.3.1.vsix rebuilt locally with current documentation. Hosted integration remains for the current Phase 3 PR. Other Phase 3 operating-system, authenticated-fork, remote/browser, publisher, license, listing and registry-publication gates remain open.

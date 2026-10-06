@@ -1,0 +1,12 @@
+[
+ {"id":"terminal","name":"Terminal","file":"keycap.svg","description":"A little command-line companion.","accent":"#85d8bc","group":"Silicon & Code"},
+ {"id":"chip","name":"Chip","file":"chip.svg","description":"A tiny chip with a bright core.","accent":"#b0a6f2","group":"Silicon & Code"},
+ {"id":"wafer","name":"Wafer","file":"wafer.svg","description":"A little wafer of possibilities.","accent":"#efbc87","group":"Silicon & Code"},
+ {"id":"circuit","name":"Circuit","file":"circuit.svg","description":"Small traces, bright connections.","accent":"#88cee0","group":"Silicon & Code"},
+ {"id":"transistor","name":"Transistor","file":"transistor.svg","description":"Three little legs. Plenty of potential.","accent":"#e6ae73","group":"Silicon & Code"},
+ {"id":"memory-stack","name":"Memory Stack","file":"memory-stack.svg","description":"A stack of bright ideas, inspired by HBM.","accent":"#9eb5ec","group":"Silicon & Code"},
+ {"id":"evil-eye","name":"Evil Eye","file":"evil-eye.svg","description":"A blue-eyed good-luck companion.","accent":"#6e9fed","group":"Good Luck"},
+ {"id":"drishti","name":"Drishti Doll","file":"drishti.svg","description":"A Tamil-inspired Drishti Bommai for your desk.","accent":"#e99379","group":"Good Luck"},
+ {"id":"hamsa","name":"Hamsa","file":"hamsa.svg","description":"A little hand with a watchful blue eye.","accent":"#e1c68f","group":"Good Luck"},
+ {"id":"lemon-chilies","name":"Lemon & Chilies","file":"lemon-chilies.svg","description":"A bright little bundle of good wishes.","accent":"#d5c563","group":"Good Luck"}
+]

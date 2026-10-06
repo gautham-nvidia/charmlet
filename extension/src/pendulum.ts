@@ -1,5 +1,5 @@
 import { Bodies, Body, Composite, Constraint, Engine, Sleeping } from 'matter-js';
-import { DEFAULT_STATE, clamp, getLayout } from './charm-state';
+import { DEFAULT_STATE, clamp, getLayout, type LayoutMode } from './charm-state';
 
 export type Point = { x: number; y: number };
 
@@ -13,8 +13,8 @@ export class Pendulum {
 	private quietFrames = 0;
 	private returnMotion?: { from: number; target: number; elapsed: number; fromAngle?: number };
 
-	constructor(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size) {
-		this.layout = getLayout(width, height, cordLength, size);
+	constructor(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode) {
+		this.layout = getLayout(width, height, cordLength, size, mode);
 		this.body = Bodies.circle(this.layout.anchorX, this.layout.anchorY + this.layout.cordLength + this.layout.attachmentOffset, this.layout.bodyRadius, {
 			frictionAir: 0.025,
 			restitution: 0.2,
@@ -29,7 +29,7 @@ export class Pendulum {
 			damping: 0.08,
 		});
 		Composite.add(this.engine.world, [this.body, this.tether]);
-		this.resize(width, height, cordLength, size);
+		this.resize(width, height, cordLength, size, mode);
 	}
 
 	get moving() {
@@ -44,11 +44,11 @@ export class Pendulum {
 		return -Math.atan2(this.body.position.x - this.layout.anchorX, this.body.position.y - this.layout.anchorY);
 	}
 
-	resize(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size) {
+	resize(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode) {
 		this.returnMotion = undefined;
 		this.release();
 		const previousRadius = this.layout.bodyRadius;
-		this.layout = getLayout(width, height, cordLength, size);
+		this.layout = getLayout(width, height, cordLength, size, mode);
 		const ratio = this.layout.bodyRadius / previousRadius;
 		Body.scale(this.body, ratio, ratio);
 		Body.setInertia(this.body, Infinity);
@@ -114,6 +114,11 @@ export class Pendulum {
 	drag(point: Point, immediate = false) {
 		if (!this.pointer) { return; }
 		const requested = { x: point.x - this.pointer.pointB.x, y: point.y - this.pointer.pointB.y };
+		if (this.layout.mode === 'hanging') {
+			const inset = this.layout.visualRadius + this.layout.edgePadding;
+			requested.x = clamp(requested.x, inset, this.layout.width - inset);
+			requested.y = clamp(requested.y, inset, this.layout.height - inset);
+		}
 		const dx = requested.x - this.layout.anchorX;
 		const dy = requested.y - this.layout.anchorY;
 		const distance = Math.hypot(dx, dy);
@@ -157,6 +162,7 @@ export class Pendulum {
 				this.layout.cordLength = radius - this.layout.attachmentOffset;
 				this.tether.length = radius;
 				Body.setPosition(this.body, this.positionAt(angle, radius));
+				this.constrainPosition();
 				Body.setVelocity(this.body, { x: 0, y: 0 });
 				Sleeping.set(this.body, false);
 				if (progress === 1) {

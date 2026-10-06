@@ -1,0 +1,8 @@
+[
+ {"id":"probe-card","name":"Probe Card","file":"probe-card.svg","group":"Silicon & Code","description":"A little contact with a bright idea.","accent":"#8db7a6"},
+ {"id":"logic-gate","name":"Logic Gate","file":"logic-gate.svg","group":"Silicon & Code","description":"Small inputs. Interesting possibilities.","accent":"#8cb7d7"},
+ {"id":"finfet","name":"FinFET","file":"finfet.svg","group":"Silicon & Code","description":"Tiny fins with a warm copper gate.","accent":"#c6a3df"},
+ {"id":"photon-link","name":"Photon Link","file":"photon-link.svg","group":"Silicon & Code","description":"A little light along the signal path.","accent":"#81cbd1"},
+ {"id":"lotus","name":"Lotus","file":"lotus.svg","group":"Good Luck","description":"Make a little room to bloom.","accent":"#d69caf"},
+ {"id":"sunrise","name":"Sunrise","file":"sunrise.svg","group":"Little Joys","description":"A fresh start can happen any time.","accent":"#e8b577"}
+]

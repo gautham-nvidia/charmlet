@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="84" viewBox="0 0 72 84">
+ <defs><clipPath id="sunrise-window"><circle cx="36" cy="47" r="26"/></clipPath></defs>
+ <path d="M31 15V8a5 5 0 0 1 10 0v7" fill="none" stroke="#dfc291" stroke-width="3"/>
+ <path d="M32 14h8v10h-8z" fill="#b68a58"/>
+ <circle cx="36" cy="47" r="30" fill="#d0a472" stroke="#986a44" stroke-width="2"/>
+ <circle cx="36" cy="47" r="26" fill="#f9ddb0"/>
+ <g clip-path="url(#sunrise-window)">
+  <path d="M36 24v7M18 36l6 4m24 0 6-4m-2 16h7M13 52h7" stroke="#e6b065" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="36" cy="51" r="14" fill="#e9b25c"/>
+  <path d="M8 58q16-16 32 3 14-14 25-3v22H8Z" fill="#7ea79d"/>
+  <path d="M7 68q15-13 31 1 17-12 28-5v18H7Z" fill="#4f817a"/>
+ </g>
+ <path d="M17 32a24 24 0 0 1 18-9" fill="none" stroke="#fff0cd" stroke-width="2" stroke-linecap="round"/>
+</svg>

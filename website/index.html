@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="description" content="Ten free coding companions, plus original extra charms for your editor.">
+ <title>Charmlet — a little luck for your next line</title>
+ <link rel="stylesheet" href="./styles.css">
+ <link rel="icon" type="image/svg+xml" href="./assets/default/keycap.svg">
+</head>
+<body>
+ <a class="skip-link" href="#catalogue">Skip to charms</a>
+ <header class="site-header">
+  <a class="brand" href="./" aria-label="Charmlet home"><span class="brand-mark" aria-hidden="true">⌘</span>Charmlet</a>
+  <nav aria-label="Main navigation">
+   <a href="#catalogue" data-select-kind="extra">Extra charms</a>
+   <a href="#catalogue" data-select-kind="included">Included</a>
+   <a href="#how-to">How to add</a>
+  </nav>
+  <a class="button button-primary extension-download" href="./downloads/charmlet.vsix" download>Get Charmlet free <span aria-hidden="true">↗</span></a>
+ </header>
+ <main>
+  <section class="hero">
+   <div class="hero-copy">
+    <p class="eyebrow">SMALL COMPANIONS. GOOD COMPANY.</p>
+    <h1>A little luck for<br>your next line.</h1>
+    <p class="hero-description">Ten free companions for your editor. Find a few more to make it yours.</p>
+    <div class="hero-actions"><a class="button button-primary" href="#catalogue">Find your next charm <span aria-hidden="true">↓</span></a><span>Free to use. Yours to enjoy.</span></div>
+    <p class="hero-note">No account. No feature paywall. A little joy between commits.</p>
+   </div>
+   <div class="hero-art" aria-label="A selection of original Charmlet designs">
+    <div class="hero-rail" aria-hidden="true"></div>
+    <div class="hero-pendant hero-pendant-one"><span aria-hidden="true"></span><img src="./assets/default/chip.svg" alt="Violet Chip charm"></div>
+    <div class="hero-pendant hero-pendant-two"><span aria-hidden="true"></span><img src="./assets/default/evil-eye.svg" alt="Blue Evil Eye charm"></div>
+    <div class="hero-pendant hero-pendant-three"><span aria-hidden="true"></span><img src="./assets/default/drishti.svg" alt="Drishti Doll charm"></div>
+    <div class="hero-stamp"><strong>10</strong><span>already inside<br>the extension</span></div>
+   </div>
+  </section>
+  <section class="collection" id="catalogue" aria-labelledby="collection-title">
+   <div class="section-heading"><div><p class="eyebrow">THE LITTLE COLLECTION</p><h2 id="collection-title">A charm for your kind of day.</h2></div><p>Silicon dreams, watchful guardians<br>and a few bright little extras.</p></div>
+   <div class="catalogue-controls">
+    <div class="kind-switch" role="group" aria-label="Collection type"><button type="button" data-kind="extra" aria-pressed="true">Extra downloads <span id="extra-count"></span></button><button type="button" data-kind="included" aria-pressed="false">Included with Charmlet <span id="included-count"></span></button></div>
+    <label class="search-label"><span class="visually-hidden">Search charms</span><input id="search" type="search" placeholder="Find a little something…" aria-label="Search charms"></label>
+   </div>
+   <div id="group-filters" class="group-filters" role="group" aria-label="Charm groups"></div>
+   <p id="result-count" class="result-count" role="status" aria-live="polite"></p>
+   <ul id="charm-grid" class="charm-grid" aria-label="Charm collection"></ul>
+   <div id="empty-state" class="empty-state" hidden><p>No charms match that search. Try another word.</p><button id="reset-filters" type="button">Reset filters</button></div>
+  </section>
+  <section class="how-to" id="how-to" aria-labelledby="how-title">
+   <div><p class="eyebrow">ONE SMALL DOWNLOAD</p><h2 id="how-title">From this page<br>to your editor.</h2><p>Your ten starter charms are already included. Extra charms are optional, and importing them is free.</p></div>
+   <ol><li><span>01</span><div><h3>Pick a companion</h3><p>Download any extra charm from the collection.</p></div></li><li><span>02</span><div><h3>Import in Charmlet</h3><p>Run <strong>Charmlet: Import Charm Pack</strong> in VS Code and choose the downloaded file.</p></div></li><li><span>03</span><div><h3>Make it yours</h3><p>Find it in Charm settings. Adjust its size and cord, then get back to creating.</p></div></li></ol>
+  </section>
+  <section class="quote-strip" aria-label="A little encouragement"><p>“Small steps. Solid code. Keep going.”</p><span>A little encouragement, included.</span></section>
+  <section class="faq" aria-labelledby="faq-title"><p class="eyebrow">A FEW SMALL ANSWERS</p><h2 id="faq-title">Good to know.</h2>
+   <details><summary>Is Charmlet free?</summary><p>Yes. The extension, all functionality and ten starter charms are permanently free. Every download in this gallery is currently free too.</p></details>
+   <details><summary>Do I need an account or an internet connection?</summary><p>No account is needed. Once installed or imported, your charms work offline.</p></details>
+   <details><summary>How do I install this preview?</summary><p>Download the extension, open VS Code, run <strong>Extensions: Install from VSIX…</strong>, select the file, and reload the window. Then run <strong>Charmlet: Show Charm</strong>.</p></details>
+   <details><summary>Will imported charms survive updates?</summary><p>Yes. Imported packs are stored separately from the extension. You can remove them using <strong>Charmlet: Remove Charm Pack</strong>.</p></details>
+  </section>
+ </main>
+ <footer class="site-footer"><a class="brand" href="./">Charmlet</a><p>Original little companions for the things you’re making.</p><div><a href="https://github.com/gautham-nvidia/charmlet">Source & artwork</a><a href="https://github.com/gautham-nvidia/charmlet/issues">Help & feedback</a><span id="release-label">Development preview</span></div></footer>
+ <script type="module" src="./app.js"></script>
+</body>
+</html>
