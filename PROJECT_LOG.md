@@ -10,8 +10,8 @@ and next action. Current milestone status is summarized below; entries preserve 
 |---|---|---|---|
 | P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
 | P1 | Accepted and merged in PR #7 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
-| P2 | Implementation verified; packaging/integration tracked in #9 | Four free charms, saved picker, artwork provenance and prepared trial checklist | [#9](https://github.com/gautham-nvidia/charmlet/issues/9) |
-| P3 | Planned | Cross-editor/OS/remote tests; approved identity and license; Marketplace + Open VSX | Roadmap #1 |
+| P2 | Merged in PR #10 | Four free charms, saved picker, artwork provenance and prepared trial checklist | [#9](https://github.com/gautham-nvidia/charmlet/issues/9) |
+| P3 | Started on feat/phase-3-readiness | Cross-editor/OS/remote tests; approved identity and license; Marketplace + Open VSX | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [readiness](docs/phase-3-readiness.md) |
 | F1 | Deferred | Quiet opt-in coding motivation in the status bar | Roadmap #1 |
 | F2 | Deferred | Cosmetic-only paid packs and explicit celebration commands | Roadmap #1 |
 
@@ -166,3 +166,13 @@ The 72x84 canvas and attachment point match the accepted renderer. The artwork a
 Windows PC verification: type/lint/build passed, **17 unit tests passed**, and the complete UI suite passed on **VS Code 1.90.0 and 1.138.0**. Coverage includes every asset, keyboard switching, reload, reset, hidden preferences and the Phase 1 interaction suite. Hosted checks and merge evidence will be recorded in the phase PR and issue #9.
 
 Development VSIX: extension/charmlet-0.1.0.vsix built locally; all four charms and artwork provenance are included. Phase 3 and registry publication have not started.
+
+## 2026-10-05 - Phase 3 compatibility kickoff
+
+P2 merged in PR #10 as fa0b3168f025d7e1a8a9e733d83a0a331eeb8d34 before creating `feat/phase-3-readiness`. The owner requested full-circle work and release-readiness progress. Issue #11 tracks P3 and issue #8 tracks the still-unsettled spin-versus-orbit behavior.
+
+The unchanged 0.1.0 app passed the complete Windows VS Code 1.140.0 UI suite. Host-specific artifact labels, disposable-profile verification and schema-2 runtime identity metadata were added to the harness. The Windows CI matrix now retains 1.90.0 and uses 1.140.0 as its recent target. This checkpoint does not add application features or change dependencies.
+
+Cursor 3.20.21 and Devin Desktop (branded 3.10.48, package 1.126.0) were probed in disposable profiles. Both reached host startup/login screens before completing the suite. Devin's CLI-install option was explicitly unchecked before advancing Customize once. No login, credentials/profile reuse or editor patch was attempted. These are blocked verification outcomes, not proof of an extension defect.
+
+[Phase 3 readiness](docs/phase-3-readiness.md) records the evidence and remaining gates. Broader OS/remote/browser tests, publisher/license decisions, registry publication and the exact full-circle implementation remain open.

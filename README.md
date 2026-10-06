@@ -3,7 +3,7 @@
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
 **Status, 2026-10-05:** Phase 2 development build **0.1.0**, with **four free original charms**, a saved
-Charm picker and real-editor checks passing on Windows / VS Code **1.90.0 and 1.138.0**. No telemetry,
+Charm picker and real-editor checks passing on Windows / VS Code **1.90.0, 1.138.0 and 1.140.0**. No telemetry,
 account, payment or runtime AI is required.
 
 [Phase 2 tracking](https://github.com/gautham-nvidia/charmlet/issues/9) and the
@@ -57,7 +57,7 @@ The VSIX is written under `extension/` and ignored by Git. Install it using **Ex
 VSIX...** for manual testing. Packaging uses `--skip-license` because the project's own license decision
 is still open, not because third-party licenses are waived. Required notices ship in the package.
 
-[CI](.github/workflows/ci.yml) builds, tests and packages on Windows with VS Code **1.90.0 and 1.138.0**
+[CI](.github/workflows/ci.yml) builds, tests and packages on Windows with VS Code **1.90.0 and 1.140.0**
 for each PR and `main` update. Screenshots, resource snapshots and the VSIX are retained as workflow
 artifacts tied to the commit. CI does not publish to extension registries.
 
@@ -72,6 +72,8 @@ artifacts tied to the commit. CI does not publish to extension registries.
 | [Phase 1 validation](docs/phase-1-validation.md) | Windows compatibility, interaction evidence and resource captures |
 | [Phase 2 issue #9](https://github.com/gautham-nvidia/charmlet/issues/9) | Free collection, saved selection and trial package |
 | [Phase 2 validation](docs/phase-2-validation.md) | Collection screenshots and Windows checks |
+| [Phase 3 issue #11](https://github.com/gautham-nvidia/charmlet/issues/11) | Compatibility and release readiness |
+| [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
 | [Artwork provenance](extension/ARTWORK.md) | Asset origins, shared geometry and license status |
 | [extension/CHANGELOG.md](extension/CHANGELOG.md) | User-visible changes by version and date |
 | [PLAN.md](PLAN.md) | Design research, constraints and clearly marked historical proposals |
@@ -91,10 +93,10 @@ git log --all --graph --date=iso-strict --format="%h %ad %s"
 git log --follow --date=short --format="%h %ad %s" -- PROJECT_LOG.md
 ```
 
-Next: try the free collection and finish Phase 2 integration before starting Phase 3 compatibility and
-release work. The optional full-circle idea is tracked separately in [#8](https://github.com/gautham-nvidia/charmlet/issues/8).
-Registry publication still requires its own approval and identity/license decisions. Other operating
-systems, Cursor/Devin Desktop and remote/browser hosts remain unverified.
+Phase 3 is in progress: [compatibility and release readiness](docs/phase-3-readiness.md). The requested
+[full-circle interaction](https://github.com/gautham-nvidia/charmlet/issues/8) needs its precise motion
+clarified before implementation. Publishing still requires publisher/license decisions and explicit
+approval. Fork startup/login, other operating systems and remote/browser verification remain open.
 
 ## Ownership and licenses
 

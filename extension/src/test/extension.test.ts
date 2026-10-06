@@ -1,5 +1,5 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { CHARMS } from '../charm-catalog';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -101,6 +101,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 	const app = await electron.launch({
 		executablePath: process.env.VSCODE_EXECUTABLE ?? 'C:\\Program Files\\Microsoft VS Code\\Code.exe',
 		args: [
+			'--new-window',
 			`--user-data-dir=${join(profile, 'user')}`,
 			`--extensions-dir=${join(profile, 'extensions')}`,
 			`--extensionDevelopmentPath=${resolve('.')}`,
@@ -113,6 +114,8 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 	});
 	const window = await app.firstWindow();
 	try {
+		const actualUserData = await app.evaluate(({ app: host }) => host.getPath('userData'));
+		expect(realpathSync(actualUserData)).toBe(realpathSync(join(profile, 'user')));
 		await app.evaluate(({ BrowserWindow }) => {
 			const testWindow = BrowserWindow.getAllWindows()[0];
 			testWindow.setIgnoreMouseEvents(true);
@@ -557,14 +560,15 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				});
 			}
 			const report = {
-				schemaVersion: 1,
+				schemaVersion: 2,
+				hostName: await app.evaluate(({ app: host }) => host.getName()),
 				recordedAt: new Date().toISOString(),
 				hostVersion: await app.evaluate(({ app: host }) => host.getVersion()),
 				electronVersion: await app.evaluate(() => process.versions.electron),
 				platform: process.platform,
 				arch: process.arch,
-				requestedHost: process.env.VSCODE_TEST_VERSION ?? 'installed',
-				scope: 'All processes reported by the isolated VS Code host, including editor and automation overhead. Not extension-only CPU or memory.',
+				requestedHost: process.env.CHARMLET_TEST_HOST || process.env.VSCODE_TEST_VERSION || 'installed',
+				scope: 'All processes reported by the isolated editor host, including editor and automation overhead. Not extension-only CPU or memory.',
 				cpuMeaning: 'Electron percentCPUUsage since the preceding metrics call. Process identity is pid plus creationTime; a new process has no baseline.',
 				memoryMeaning: 'Electron workingSetSize in KB, per process. Shared pages can occur in multiple processes; do not sum as unique memory.',
 				sampleDurationMs,
