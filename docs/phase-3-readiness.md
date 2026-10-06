@@ -40,7 +40,7 @@ For a custom host, use its verified executable path with `CHARMLET_TEST_HOST` an
 
 | Area | Required next step |
 |---|---|
-| Full-circle interaction | Confirm whether the charm spins around its own center or orbits the top attachment, then implement and verify that specific behavior while preserving return-to-rest |
+| Full-circle interaction | Implemented and locally verified in 0.2.0; see the orbit validation record and updated PR #12 checks |
 | Cursor / Devin Desktop | Run the complete interaction suite with an authorized authenticated test setup, or collect explicit manual verification from the owner's already configured editor; do not copy credentials or bypass onboarding |
 | macOS / Linux CI | Make keyboard shortcuts and executable selection portable; use a virtual display on headless Linux and run the real suite before claiming support |
 | Remote / browser | Exercise real Remote-SSH/WSL placement; decide whether a browser bundle is in scope |
@@ -52,3 +52,11 @@ For a custom host, use its verified executable path with `CHARMLET_TEST_HOST` an
 Official [VS Code CI guidance](https://code.visualstudio.com/api/working-with-extensions/continuous-integration) uses Xvfb for headless Linux editor tests. The local `@vscode/test-electron` launcher source also includes `--no-sandbox` and `--disable-gpu-sandbox`; this repository's direct Playwright launch does not inherit that helper's launch arguments. These are preparation facts, not Linux execution evidence.
 
 No macOS/Linux/remote/browser pass, publisher registration, license choice, public registry release or full-circle implementation is claimed by this checkpoint.
+
+## 2026-10-06 - Full-circle feature complete locally
+
+The owner clarified that the charm and cord must orbit the fixed top peg. Version **0.2.0** implements that behavior while retaining selected resting preferences and safe release. The peg is stationary during a gesture and has visible clearance above it.
+
+Type/lint/build, **19 unit tests**, and both complete local UI suites on **Windows VS Code 1.90.0 and 1.140.0** passed. The [orbit validation record](full-circle-validation.md) contains screenshots and independently checked rendered-motion evidence. The earlier unresolved-motion entry is superseded by this implementation.
+
+The macOS/Linux/remote/browser, authenticated-fork, publisher/license, listing and publication gates remain open. No new fork pass is inferred from the official VS Code results. Updated hosted checks and integration are tracked in PR #12.

@@ -2,18 +2,21 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-05:** Phase 2 development build **0.1.0**, with **four free original charms**, a saved
-Charm picker and real-editor checks passing on Windows / VS Code **1.90.0, 1.138.0 and 1.140.0**. No telemetry,
+**Status, 2026-10-06:** Phase 3 development build **0.2.0**, with **four free original charms**, a saved
+Charm picker and real-editor checks passing on Windows / VS Code **1.90.0 and 1.140.0**. No telemetry,
 account, payment or runtime AI is required.
 
-[Phase 2 tracking](https://github.com/gautham-nvidia/charmlet/issues/9) and the
-[dated validation record](docs/phase-2-validation.md) show the checks and remaining review items.
+[Phase 3 tracking](https://github.com/gautham-nvidia/charmlet/issues/11) and the
+[dated validation record](docs/full-circle-validation.md) show the checks and remaining review items.
 
-![Choose a free charm in Charmlet settings](docs/phase-2/collection.png)
+![Charmlet at rest with space for a complete orbit](docs/phase-3/orbit-returned.png)
 
 Choose **Terminal**, **Chip**, **Wafer** or **Circuit** in Charm settings. Your selection and resting
 preferences are saved locally. Pulling is temporary: releasing returns the charm to its selected
 resting length and position.
+
+Drag the charm around the fixed peg for a complete loop. The peg leaves clearance above it, and the
+temporary cord adapts to the panel's available space. Release returns to your selected resting length.
 
 ## Run the demo
 
@@ -24,7 +27,7 @@ Use Node.js 24, npm, and desktop VS Code. The source lives in [extension/](exten
 ```powershell
 npm.cmd --prefix extension ci
 npm.cmd --prefix extension run compile
-code.cmd --new-window --extensionDevelopmentPath "$PWD\extension" --user-data-dir "$env:TEMP\charmlet-phase2-demo" --extensions-dir "$env:TEMP\charmlet-phase2-demo-extensions" .
+code.cmd --new-window --extensionDevelopmentPath "$PWD\extension" --user-data-dir "$env:TEMP\charmlet-phase3-demo" --extensions-dir "$env:TEMP\charmlet-phase3-demo-extensions" .
 ```
 
 This opens an isolated **Extension Development Host**; your normal extensions and pane layout remain
@@ -32,7 +35,7 @@ unchanged. After rebuilding, reload that demo window to load the updated code.
 
 1. In the demo window, press **Ctrl+Shift+P**, then run **Charmlet: Show Charm**.
 2. Run **View: Move View**, choose **Charmlet**, then **New Secondary Side Bar Entry** for a right dock.
-3. Click to nudge; pull downward to stretch, then release to return to the resting position. Pull upward to retract; the eye restores it.
+3. Click to nudge, pull and release to return to rest, or drag around the peg for a full loop. A straight upward pull hides the charm; the eye restores it.
 4. Open **Charm settings** to choose a charm, size and resting cord length. Escape closes settings.
 
 Motion and reset controls live below the charm. Tab to the charm for Enter/Space, arrow-key and Escape
@@ -47,7 +50,7 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs seventeen state/physics tests and one real-editor interaction
+`test` builds and lints both bundles, runs nineteen state/physics tests and one real-editor interaction
 regression. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.
@@ -74,6 +77,7 @@ artifacts tied to the commit. CI does not publish to extension registries.
 | [Phase 2 validation](docs/phase-2-validation.md) | Collection screenshots and Windows checks |
 | [Phase 3 issue #11](https://github.com/gautham-nvidia/charmlet/issues/11) | Compatibility and release readiness |
 | [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
+| [Full-circle validation](docs/full-circle-validation.md) | Orbit screenshots and rendered-motion evidence |
 | [Artwork provenance](extension/ARTWORK.md) | Asset origins, shared geometry and license status |
 | [extension/CHANGELOG.md](extension/CHANGELOG.md) | User-visible changes by version and date |
 | [PLAN.md](PLAN.md) | Design research, constraints and clearly marked historical proposals |
@@ -94,9 +98,8 @@ git log --follow --date=short --format="%h %ad %s" -- PROJECT_LOG.md
 ```
 
 Phase 3 is in progress: [compatibility and release readiness](docs/phase-3-readiness.md). The requested
-[full-circle interaction](https://github.com/gautham-nvidia/charmlet/issues/8) needs its precise motion
-clarified before implementation. Publishing still requires publisher/license decisions and explicit
-approval. Fork startup/login, other operating systems and remote/browser verification remain open.
+full-circle orbit is implemented and locally verified. Broader host/platform testing and publisher,
+license and listing decisions remain open; registry publication still requires explicit approval.
 
 ## Ownership and licenses
 

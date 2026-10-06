@@ -1,9 +1,9 @@
 # Charmlet: Coding Charms
 
 Four original hanging charms that swing when nudged and return to their resting cord length after a pull.
-The hanging point is centered in the view to leave room for swings in either direction.
+The peg has room above it so the charm and cord can loop all the way around it.
 
-**Phase 2 development build, version 0.1.0.** Charmlet lives in a dockable VS Code view, not over your code
+**Phase 3 development build, version 0.2.0.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 
 ## Try it
@@ -17,6 +17,7 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 2. For a right-side dock, run **View: Move View**, select **Charmlet**, then **New Secondary Side Bar Entry**.
 3. Click the keycap to nudge it. Pull downward and release to return to the resting position; pull upward at least 60 pixels to hide it.
 4. Open **Charm settings** to choose **Terminal**, **Chip**, **Wafer** or **Circuit**, then adjust size and resting cord length.
+5. For a full loop, grab the charm, move closer to the peg, and drag around it in either direction. Release to return to rest.
 
 | Charm | Style |
 |---|---|
@@ -28,6 +29,7 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 | Control | Action |
 |---|---|
 | Drag sideways and release | Swing with momentum |
+| Drag around the peg | Complete an orbit; release returns to the selected resting length |
 | Eye / restore arrow | Hide or restore the last parked length |
 | Motion switch | Enable or disable animation |
 | Charm settings | Choose a charm, size and resting cord; Escape closes settings and returns focus |
@@ -41,6 +43,8 @@ Charm choice, size, cord, visibility and motion choices are saved locally. Shrin
 the visible cord; expanding it restores your requested length. Cancelling a drag keeps the previous
 parked length. The settings panel stays closed until you open it.
 
+The displayed cord may shorten temporarily while orbiting; the Cord setting continues to show the resting preference.
+
 Size and Cord in settings define the resting appearance. A downward pull stretches temporarily and eases back on release. If an earlier build saved an unwanted long cord, use Reset once or choose your preferred resting length in settings.
 
 ## Free and local
@@ -52,10 +56,10 @@ records the asset sources and license status.
 
 ## Current limits
 
-- Tested locally on Windows with VS Code **1.90.0 and 1.138.0**, at 1400x900, 1000x650 and 1000x500 window sizes.
+- Tested locally on Windows with VS Code **1.90.0 and 1.140.0**, at 1400x900, 1000x650 and 1000x500 window sizes.
 - The animation loop stops when settled or hidden. [Recorded measurements](https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-1-validation.md) include whole-editor overhead and do not promise zero CPU use.
 - macOS, Linux, Cursor, Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.
-- The dock occupies editor layout space. Explorer's initial slot can be too short; move or resize it.
+- The dock occupies editor space. The peg reserves room above it, and small panels scale the play area to keep the loop visible.
 - Charm choice, size, cord, visibility and motion preferences persist locally; cross-machine sync is not implemented.
 - This is not yet published to VS Code Marketplace or Open VSX. The manifest publisher is not
 	evidence of a registered or verified Marketplace publisher.

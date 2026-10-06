@@ -289,13 +289,16 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
 			frame = await readyFrame(window);
 			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			const defaultMaximumCord = (await frame.getByRole('slider', { name: 'Cord', exact: true }).getAttribute('max'))!;
+			expect(Number(defaultMaximumCord)).toBeGreaterThan(320);
+			const defaultCharmWidth = await frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width);
 			await frame.getByRole('slider', { name: 'Size', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Size', exact: true }).press('End');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
-			await expect.poll(() => frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width)).toBeGreaterThan(95);
+			await expect.poll(() => frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width)).toBeGreaterThan(defaultCharmWidth);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			const maximumCord = (await frame.getByRole('slider', { name: 'Cord', exact: true }).getAttribute('max'))!;
-			expect(Number(maximumCord)).toBeGreaterThan(320);
+			expect(Number(maximumCord)).toBeGreaterThan(48);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('End');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
 			await expectBalancedSwingRoom(frame);
@@ -495,6 +498,72 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				expect(inside).toBe(true);
 			}
 			await window.screenshot({ path: testInfo.outputPath('phase-1-circle-recovered.png') });
+		});
+
+		await test.step('charm and cord complete peg orbits and recover from an upper release', async () => {
+			const observations = [];
+			for (const direction of [-1, 1]) {
+				await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
+				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+				const geometry = await frame.locator('#stage').evaluate(stage => {
+					const rig = document.getElementById('rig')!;
+					const bounds = stage.getBoundingClientRect();
+					const scale = rig.getBoundingClientRect().width / Number.parseFloat(rig.style.width);
+					return { left: bounds.left, top: bounds.top, scale, anchorX: Number((stage as HTMLElement).dataset.anchorX), anchorY: Number((stage as HTMLElement).dataset.anchorY), radius: Number((stage as HTMLElement).dataset.orbitRadius) };
+				});
+				const outer = await frame.locator('#stage').boundingBox();
+				if (!outer) { throw new Error('Orbit requires a visible stage.'); }
+				// Frame-local DOM coordinates become page coordinates through the stage's page bounding box.
+				const pegX = outer.x + geometry.anchorX * geometry.scale;
+				const pegY = outer.y + geometry.anchorY * geometry.scale;
+				const radius = geometry.radius * geometry.scale;
+				await beginDrag(window, frame, 0, 0);
+				await window.mouse.move(pegX, pegY + radius, { steps: 8 });
+				await browserFrames(window, 12);
+				const samples = [];
+				let previous = Number(await frame.locator('#charm').getAttribute('data-angle'));
+				let travel = 0;
+				const quadrants = new Set<number>();
+				for (let step = 1; step <= 96; step++) {
+					const theta = direction * 3 * Math.PI * step / 96;
+					await window.mouse.move(pegX + Math.sin(theta) * radius, pegY + Math.cos(theta) * radius);
+					await browserFrames(window, 2);
+					const sample = await frame.locator('#charm').evaluate(charm => {
+						const element = charm as HTMLElement;
+						const stage = document.getElementById('stage')!;
+						const bounds = charm.getBoundingClientRect();
+						const area = stage.getBoundingClientRect();
+						return { angle: Number(element.dataset.angle), x: Number(element.dataset.positionX), y: Number(element.dataset.positionY), anchorX: Number(stage.dataset.anchorX), anchorY: Number(stage.dataset.anchorY), inside: bounds.left >= area.left - 1 && bounds.right <= area.right + 1 && bounds.top >= area.top - 1 && bounds.bottom <= area.bottom + 1 };
+					});
+					const delta = sample.angle - previous;
+					travel += Math.atan2(Math.sin(delta), Math.cos(delta));
+					previous = sample.angle;
+					quadrants.add((sample.x >= geometry.anchorX ? 1 : 0) + (sample.y >= geometry.anchorY ? 2 : 0));
+					expect(sample.inside).toBe(true);
+					expect(sample.anchorX).toBe(geometry.anchorX);
+					expect(sample.anchorY).toBe(geometry.anchorY);
+					samples.push({ step, ...sample });
+					if (step === 32 || step === 64 || step === 96) {
+						await window.screenshot({ path: testInfo.outputPath(`orbit-${direction}-${step}.png`) });
+					}
+				}
+				expect(-direction * travel).toBeGreaterThan(3 * Math.PI - 0.25);
+				expect(quadrants.size).toBe(4);
+				await browserFrames(window, 60);
+				expect(Number(await frame.locator('#charm').getAttribute('data-position-y'))).toBeLessThan(geometry.anchorY);
+				await expect(frame.locator('#phase')).toHaveText('Held');
+				await window.mouse.up();
+				await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
+				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
+				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+				await expect(frame.locator('#phase')).toHaveText('Parked');
+				await expect(frame.locator('#cord-length')).toHaveValue('126');
+				observations.push({ direction, geometry, travel, quadrants: [...quadrants], samples });
+			}
+			const path = testInfo.outputPath('orbit-observations.json');
+			writeFileSync(path, `${JSON.stringify({ schemaVersion: 1, hostVersion: await app.evaluate(({ app: host }) => host.getVersion()), observations }, null, 2)}\n`);
+			await testInfo.attach('orbit-observations.json', { path, contentType: 'application/json' });
+			await window.screenshot({ path: testInfo.outputPath('orbit-returned.png') });
 		});
 
 		await test.step('record visible, settled and hidden resource snapshots', async () => {

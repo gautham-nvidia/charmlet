@@ -51,7 +51,7 @@ let previousTime = 0;
 let accumulatedTime = 0;
 let transition: Animation | undefined;
 let frames = 0;
-let drag: { id: number; start: Point; cordLength: number; moved: boolean } | undefined;
+let drag: { id: number; start: Point; moved: boolean; lastAngle: number; angularTravel: number; maxSideways: number; orbitalGesture: boolean } | undefined;
 const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, state.cordLength, state.size);
 
@@ -75,7 +75,7 @@ function applyCharm() {
 	charmDescription.textContent = selected.description;
 	charmSelect.value = selected.id;
 	charm.setAttribute('aria-label', `Nudge ${selected.name.toLowerCase()} charm`);
-	charm.title = `Nudge ${selected.name} charm`;
+	charm.title = `Nudge ${selected.name} charm; drag around the peg for a full loop`;
 	stage.dataset.charm = selected.id;
 }
 
@@ -109,8 +109,9 @@ function render() {
 	sizeInput.value = String(state.size);
 	sizeValue.value = `${state.size}%`;
 	cordInput.max = String(Math.floor(pendulum.layout.maximumCord / 2) * 2);
-	cordInput.value = String(cordLength);
-	cordValue.value = lengthOutput.value;
+	const restingCord = clamp(state.cordLength, 48, pendulum.layout.maximumCord);
+	cordInput.value = String(restingCord);
+	cordValue.value = `${Math.round(restingCord)} px`;
 	sizeInput.setAttribute('aria-valuetext', sizeValue.value);
 	cordInput.setAttribute('aria-valuetext', cordValue.value);
 	const status = state.hidden ? 'Retracted' : drag ? 'Held' : pendulum.moving && !reducedMotion() ? 'Swinging' : 'Parked';
@@ -121,8 +122,12 @@ function render() {
 	stage.dataset.hidden = String(state.hidden);
 	stage.dataset.cord = String(Math.round(cordLength));
 	stage.dataset.size = String(state.size);
+	stage.dataset.anchorX = String(anchorX);
+	stage.dataset.anchorY = String(anchorY);
+	stage.dataset.orbitRadius = String(pendulum.layout.orbitRadius);
 	charm.dataset.positionX = positionX.toFixed(2);
 	charm.dataset.positionY = positionY.toFixed(2);
+	charm.dataset.angle = angle.toFixed(6);
 }
 
 function stop() {
@@ -248,7 +253,11 @@ charm.addEventListener('pointerdown', event => {
 	}
 	transition?.cancel();
 	const startPoint = point(event);
-	drag = { id: event.pointerId, start: startPoint, cordLength: pendulum.layout.cordLength, moved: false };
+	drag = {
+		id: event.pointerId, start: startPoint, moved: false,
+		lastAngle: Math.atan2(startPoint.y - pendulum.layout.anchorY, startPoint.x - pendulum.layout.anchorX),
+		angularTravel: 0, maxSideways: 0, orbitalGesture: false,
+	};
 	pendulum.grab(startPoint);
 	charm.setPointerCapture(event.pointerId);
 	charm.classList.add('dragging');
@@ -266,9 +275,12 @@ charm.addEventListener('pointermove', event => {
 		drag.moved = true;
 	}
 	if (drag.moved) {
-		if (Math.abs(deltaY) > Math.abs(deltaX)) {
-			pendulum.setLength(drag.cordLength + deltaY);
-		}
+		const angle = Math.atan2(current.y - pendulum.layout.anchorY, current.x - pendulum.layout.anchorX);
+		const difference = angle - drag.lastAngle;
+		drag.angularTravel += Math.atan2(Math.sin(difference), Math.cos(difference));
+		drag.lastAngle = angle;
+		drag.maxSideways = Math.max(drag.maxSideways, Math.abs(deltaX));
+		drag.orbitalGesture ||= Math.abs(drag.angularTravel) > Math.PI / 6 && drag.maxSideways > 12;
 		pendulum.drag(current, reducedMotion());
 		if (!reducedMotion()) {
 			start();
@@ -289,7 +301,7 @@ charm.addEventListener('pointerup', event => {
 	const end = point(event);
 	const deltaY = end.y - completed.start.y;
 	const deltaX = end.x - completed.start.x;
-	if (completed.moved && deltaY < -60 && -deltaY > Math.abs(deltaX)) {
+	if (completed.moved && !completed.orbitalGesture && deltaY < -60 && -deltaY > Math.abs(deltaX)) {
 		state.hidden = true;
 		showState();
 	} else {

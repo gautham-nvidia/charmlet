@@ -4,14 +4,14 @@ Dates use YYYY-MM-DD; Git preserves exact timestamps and authors. Append dated e
 and corrections rather than erasing history. Record the linked issue/PR, commit description, evidence
 and next action. Current milestone status is summarized below; entries preserve how it changed.
 
-## Milestones - updated 2026-10-05
+## Milestones - updated 2026-10-06
 
 | ID | Status | Scope / next gate | Tracking |
 |---|---|---|---|
 | P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
 | P1 | Accepted and merged in PR #7 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
 | P2 | Merged in PR #10 | Four free charms, saved picker, artwork provenance and prepared trial checklist | [#9](https://github.com/gautham-nvidia/charmlet/issues/9) |
-| P3 | Started on feat/phase-3-readiness | Cross-editor/OS/remote tests; approved identity and license; Marketplace + Open VSX | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [readiness](docs/phase-3-readiness.md) |
+| P3 | Orbit implemented; remaining readiness gates open | Cross-editor/OS/remote tests; approved identity and license; Marketplace + Open VSX | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [readiness](docs/phase-3-readiness.md) |
 | F1 | Deferred | Quiet opt-in coding motivation in the status bar | Roadmap #1 |
 | F2 | Deferred | Cosmetic-only paid packs and explicit celebration commands | Roadmap #1 |
 
@@ -176,3 +176,11 @@ The unchanged 0.1.0 app passed the complete Windows VS Code 1.140.0 UI suite. Ho
 Cursor 3.20.21 and Devin Desktop (branded 3.10.48, package 1.126.0) were probed in disposable profiles. Both reached host startup/login screens before completing the suite. Devin's CLI-install option was explicitly unchecked before advancing Customize once. No login, credentials/profile reuse or editor patch was attempted. These are blocked verification outcomes, not proof of an extension defect.
 
 [Phase 3 readiness](docs/phase-3-readiness.md) records the evidence and remaining gates. Broader OS/remote/browser tests, publisher/license decisions, registry publication and the exact full-circle implementation remain open.
+
+## 2026-10-06 - Full-circle orbit
+
+Gautham confirmed the requested motion: the charm and cord make a complete loop around the fixed top peg. Development version **0.2.0** provides stationary-peg orbit clearance, radial temporary dragging and bounded release recovery while preserving saved resting size/cord and charm selection.
+
+The code and screenshots were reviewed. Type/lint/build and **19 unit tests passed**. Complete UI runs passed on **Windows VS Code 1.90.0 and 1.140.0**, with actual rendered angular travel exceeding a full turn in both directions, all four quadrants visited, fixed peg coordinates and every captured position within the view. Upper release recovered to the resting setting without refresh. Frozen captures and scope are in [full-circle validation](docs/full-circle-validation.md).
+
+Package: extension/charmlet-0.2.0.vsix built locally. PR #12 will carry the reviewed feature and new hosted checks. Other P3 readiness gates remain open; no public registry release or next phase has started.

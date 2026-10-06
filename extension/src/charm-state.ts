@@ -49,23 +49,24 @@ export function resetState(state: CharmState): CharmState {
 
 export function getLayout(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size) {
 	const factor = clamp(size, 60, 140) / 100;
-	const minimumWidth = Math.max(96, 96 * factor);
-	const minimumHeight = Math.max(144, 60 + 84 * factor);
+	const charmWidth = 72 * factor;
+	const charmHeight = 84 * factor;
+	const attachmentOffset = 32 * factor;
+	const visualRadius = Math.hypot(charmWidth, charmHeight) / 2;
+	const edgePadding = 8;
+	const minimumDragCord = Math.max(16, 16 * factor);
+	const orbitRadius = attachmentOffset + minimumDragCord;
+	const anchorY = visualRadius + orbitRadius + edgePadding;
+	const minimumWidth = Math.max(144, 2 * anchorY);
+	const minimumHeight = anchorY + 48 + attachmentOffset + visualRadius + edgePadding;
 	const safeWidth = Math.max(minimumWidth, width);
 	const safeHeight = Math.max(minimumHeight, height);
-	const maximumCord = Math.max(48, safeHeight - 12 - 74 * factor - 10);
+	const maximumCord = Math.max(48, safeHeight - anchorY - attachmentOffset - visualRadius - edgePadding);
 	return {
-		width: safeWidth,
-		height: safeHeight,
-		minimumWidth,
-		minimumHeight,
-		charmWidth: 72 * factor,
-		charmHeight: 84 * factor,
-		bodyRadius: 34 * factor,
-		attachmentOffset: 32 * factor,
-		anchorX: safeWidth / 2,
-		anchorY: 12,
-		cordLength: clamp(cordLength, 48, maximumCord),
-		maximumCord,
+		width: safeWidth, height: safeHeight, minimumWidth, minimumHeight,
+		charmWidth, charmHeight, bodyRadius: 34 * factor, attachmentOffset,
+		visualRadius, edgePadding, minimumDragCord, orbitRadius,
+		anchorX: safeWidth / 2, anchorY,
+		cordLength: clamp(cordLength, 48, maximumCord), maximumCord,
 	};
 }
