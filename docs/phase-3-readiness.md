@@ -42,7 +42,7 @@ For a custom host, use its verified executable path with `CHARMLET_TEST_HOST` an
 |---|---|
 | Full-circle interaction | Implemented and locally verified in 0.2.0; see the orbit validation record and updated PR #12 checks |
 | Cursor / Devin Desktop | Run the complete interaction suite with an authorized authenticated test setup, or collect explicit manual verification from the owner's already configured editor; do not copy credentials or bypass onboarding |
-| macOS / Linux CI | Portable modifiers/executable selection and six Windows/Linux/macOS jobs are prepared; Linux uses Xvfb. Support remains unverified until actual hosted results are reviewed |
+| macOS / Linux CI | Hosted run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698) passed VS Code 1.90.0 and 1.140.0 on Ubuntu 24.04 x64/Xvfb and macOS 15 Apple Silicon; see [frozen platform summary](phase-3-platforms.json). Intel Mac and Windows ARM remain unverified |
 | Remote / browser | Exercise real Remote-SSH/WSL placement; decide whether a browser bundle is in scope |
 | Publisher | Confirm personal publisher/namespace ownership and approve publication; manifest identity and validated URL syntax are not proof of a live listing |
 | License | Owner must choose the source/art license; current public visibility and permanently free pricing do not grant a reuse license |
@@ -70,3 +70,23 @@ An original 256×256 PNG Marketplace icon and light gallery banner are prepared.
 Local Windows preparation checks passed: icon export/dimensions, compile/type/lint, 27 units, VS Code 1.140.0 UI, package, gallery build and extended installed-Edge website validation. No local 1.90.0 repeat was required for this preparation slice; the existing 0.3.1 evidence remains historical.
 
 The [paid artwork plan](paid-artwork-plan.md) is a non-live proposal. The free extension, importer, ten defaults and current six extras remain free. No account, checkout, payment provider, public website, store listing, source/art license or registry publication was created. Phase 3 remains open; a paid-commerce phase must not start until the current release-readiness decisions and merge are complete.
+
+## 2026-10-07 - Current desktop VS Code platform validation
+
+Hosted run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698) at feature head `637f1e8751262a0293d4eaec5a6321c5d49b687b` and PR merge ref `3b46d03321956b66afb527bd39d855a95dc3fae0` passed all six jobs.
+
+| Desktop runner | VS Code 1.90.0 | VS Code 1.140.0 |
+|---|---|---|
+| Windows Server 2025 | Passed | Passed |
+| Ubuntu 24.04 x64 with Xvfb | Passed | Passed |
+| macOS 15 Apple Silicon | Passed | Passed |
+
+Every job passed **30 unit tests**, the complete real-editor interaction suite, VSIX packaging and static-gallery build. The lead checked the downloaded artifacts and actual host/platform identities. The frozen [platform summary](phase-3-platforms.json) records all six job IDs and accepted motion/lifecycle values: 96 samples per direction, more than 360 degrees, all four quadrants, stationary peg, every captured position in view, and zero settled/hidden frame deltas. No cross-platform CPU, memory or battery comparison is made.
+
+macOS reported a requested 1400×900 window as 1400×684 with a 1024×684 work area and zoom factor 1. The tests therefore preserve the saved cord preference while checking the visible fit available on the real screen. Native macOS select typeahead replaces unsupported Home/End behavior. Ordered, confirmed preference writes passed the minimum-macOS reload case. The earlier failure's exact root cause remains unproven.
+
+![Compact Charmlet view on macOS](phase-3-platforms/macos-compact.png)
+![Imported Probe Card on macOS](phase-3-platforms/macos-import.png)
+![Compact Charmlet view on Ubuntu with Xvfb](phase-3-platforms/linux-compact.png)
+
+This verifies the VS Code extension on the listed desktop runners and versions. Intel Mac, Windows ARM, authenticated Cursor/Devin, Remote-SSH/WSL and browser-host scope remain unverified. Publisher ownership, source/art license, actual public hosting, registry listing and publication approval remain open. Focus-timer and standalone desktop-app directions remain proposals, not implemented release scope.

@@ -24,11 +24,11 @@ Tracking: [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).
 ### Verified
 
 - Local 0.3.2 icon export, extension checks, current Windows UI, package, gallery build and website checks are recorded in the project log.
-- Thirty unit tests and the complete local Windows VS Code 1.140.0 suite passed with serialized, confirmed state writes; the hosted minimum-macOS rerun remains pending.
+- Hosted run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698) at commit `637f1e8` passed 30 units, complete UI, VSIX packaging and gallery build on Windows Server 2025, Ubuntu 24.04 x64/Xvfb and macOS 15 Apple Silicon with VS Code 1.90.0 and 1.140.0.
 
 ### Limits
 
-- Linux/macOS support remains unverified until hosted results are reviewed. Publisher, license, listing, public hosting and registry publication remain owner gates. No paid product, checkout or deployment.
+- Intel Mac, Windows ARM, authenticated editor forks and remote/browser hosts remain unverified. Publisher, license, listing, public hosting and registry publication remain owner gates. No paid product, checkout or deployment.
 
 ## 0.3.1 - 2026-10-06 (Phase 3 collection, messages and gallery)
 

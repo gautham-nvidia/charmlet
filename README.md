@@ -2,12 +2,14 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-06:** Phase 3 release-preparation build **0.3.2**, with **ten free original charms**, 80 rotating
-coding messages, a free extra-charm gallery/importer, and real-editor checks passing on Windows /
-VS Code **1.90.0 and 1.140.0**. No telemetry, account, payment or runtime AI is required.
+**Status, 2026-10-07:** Phase 3 release-preparation build **0.3.2**, with **ten free original charms**, 80 rotating
+coding messages and a free extra-charm gallery/importer. Desktop VS Code **1.90.0 and 1.140.0** checks pass
+on Windows, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon. No telemetry, account, payment or
+runtime AI is required.
 
-[Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13) and the
-[dated validation record](docs/phase-3-gallery-validation.md) show the checks and remaining review items.
+[Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
+[dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
+show the checks and remaining review items.
 
 ![Compact Charmlet view with message, controls and restore-ready layout](docs/phase-3-gallery/compact-feedback.png)
 
@@ -71,10 +73,10 @@ The VSIX is written under `extension/` and ignored by Git. Install it using **Ex
 VSIX...** for manual testing. Packaging uses `--skip-license` because the project's own license decision
 is still open, not because third-party licenses are waived. Required notices ship in the package.
 
-[CI](.github/workflows/ci.yml) prepares six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code
-**1.90.0 and 1.140.0**. Linux uses Xvfb; screenshots, resource snapshots, the VSIX and static gallery are
-retained as workflow artifacts. Windows is verified; Linux/macOS support remains unverified until the
-owner reviews actual hosted results. CI does not deploy or publish to extension registries.
+[CI](.github/workflows/ci.yml) runs six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code
+**1.90.0 and 1.140.0**. All six passed in hosted run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698).
+Linux uses Xvfb; screenshots, resource snapshots, the VSIX and static gallery are retained as workflow
+artifacts. This verifies the listed runners, not every OS/hardware/editor host. CI does not deploy or publish.
 
 ## Companion gallery
 
@@ -110,6 +112,7 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Phase 2 validation](docs/phase-2-validation.md) | Collection screenshots and Windows checks |
 | [Phase 3 issue #11](https://github.com/gautham-nvidia/charmlet/issues/11) | Compatibility and release readiness |
 | [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
+| [Desktop platform summary](docs/phase-3-platforms.json) | Frozen six-job Windows/Linux/macOS identities and accepted motion/lifecycle values |
 | [Full-circle validation](docs/full-circle-validation.md) | Orbit screenshots and rendered-motion evidence |
 | [Gallery and compact feedback #13](https://github.com/gautham-nvidia/charmlet/issues/13) | Ten defaults, messages, packs and companion gallery |
 | [Gallery validation](docs/phase-3-gallery-validation.md) | Compact, message, import, orbit and website evidence |
@@ -137,9 +140,10 @@ git log --follow --date=short --format="%h %ad %s" -- PROJECT_LOG.md
 ```
 
 Phase 3 is in progress: [compatibility and release readiness](docs/phase-3-readiness.md). The full-circle
-orbit and free gallery/import flow are implemented and locally verified. Broader host/platform testing,
-publisher, license and listing decisions remain open; registry publication still requires explicit
-approval. Optional paid artwork remains later work and no checkout is implemented.
+orbit, free gallery/import flow and listed Windows/Ubuntu/macOS desktop VS Code matrix are verified.
+Intel Mac, Windows ARM, authenticated editor forks, remote/browser scope, publisher, license, hosting and
+listing decisions remain open; registry publication still requires explicit approval. Optional paid
+artwork, focus timer and standalone desktop directions remain proposals.
 
 ## Ownership and licenses
 

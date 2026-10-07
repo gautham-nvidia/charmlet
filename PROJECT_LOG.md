@@ -11,7 +11,7 @@ and next action. Current milestone status is summarized below; entries preserve 
 | P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
 | P1 | Accepted and merged in PR #7 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
 | P2 | Merged in PR #10 | Four free charms, saved picker, artwork provenance and prepared trial checklist | [#9](https://github.com/gautham-nvidia/charmlet/issues/9) |
-| P3 | Release preparation in 0.3.2; remaining readiness gates open | App/gallery complete; portable six-job CI, icon and install/store preparation added; hosted compatibility, identity, license and publication remain | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [#13](https://github.com/gautham-nvidia/charmlet/issues/13), [readiness](docs/phase-3-readiness.md) |
+| P3 | Core desktop VS Code platform matrix verified; remaining readiness gates open | Windows/Ubuntu/macOS Apple Silicon complete; publisher/license, authenticated forks, remote/browser scope and public hosting/registry decisions remain | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [#13](https://github.com/gautham-nvidia/charmlet/issues/13), [readiness](docs/phase-3-readiness.md) |
 | F1 | Delivered in the charm view (0.3.1) | 80 optional coding messages below the charm, with Next and saved visibility/rotation | [#13](https://github.com/gautham-nvidia/charmlet/issues/13) |
 | F2 | Deferred | Cosmetic-only paid packs and explicit celebration commands | Roadmap #1 |
 
@@ -212,3 +212,13 @@ Run 37657649462 at 91c5b21 passed both Windows jobs, both Linux jobs and macOS 1
 Three focused unit tests cover write order/flush, stale readback rejection and recovery after a rejected write. Snapshot copies, revision acknowledgements, save-error handling and deactivate flushing remain. No retry, arbitrary delay, storage clear or file migration was added.
 
 Local Windows compile/type/lint, **30 unit tests**, the complete VS Code 1.140.0 UI suite, package and gallery build passed. The live gallery candidate download matched the rebuilt source VSIX bytes. Hosted minimum-macOS verification remains the deciding evidence; do not claim the macOS 1.90 failure fixed until that rerun passes.
+
+## 2026-10-07 - Six-job desktop VS Code matrix passed
+
+GitHub Actions run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698) at feature head `637f1e8751262a0293d4eaec5a6321c5d49b687b` and PR merge ref `3b46d03321956b66afb527bd39d855a95dc3fae0` passed all six jobs: Windows Server 2025, Ubuntu 24.04 x64/Xvfb and macOS 15 Apple Silicon, each on VS Code 1.90.0 and 1.140.0.
+
+Every job passed 30 unit tests, the complete UI scenario, VSIX packaging and static-gallery build. The lead downloaded all six evidence archives, verified actual host/platform identities, and checked 96 rendered samples per direction, more than 360 degrees in each direction, all four quadrants, fixed peg coordinates, in-view bounds, and zero settled/hidden frame deltas. Frozen values and job IDs are in `docs/phase-3-platforms.json`; no cross-platform CPU or battery comparison is claimed.
+
+The minimum-macOS persistence case passes with ordered confirmed state writes. Actual macOS geometry constrained the requested 1400×900 window to 1400×684 with a 1024×684 work area, and native typeahead is used instead of unsupported Home/End select behavior. The exact cause of every earlier failure remains unproven.
+
+Phase 3 remains open for publisher ownership, source/art licenses, authenticated Cursor/Devin decisions, Remote-SSH/WSL/browser scope, public hosting, registry listings and publication approval. Intel Mac and Windows ARM remain unverified. Focus-timer and standalone-app directions remain proposals.

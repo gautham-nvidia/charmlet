@@ -59,9 +59,10 @@ records asset origins, while the project source/art license remains pending and 
 
 ## Current limits
 
-- Tested locally on Windows with VS Code **1.90.0 and 1.140.0**, at 1400x900, 1000x650 and 1000x500 window sizes.
+- Complete VS Code extension checks passed on Windows Server 2025 and the local Windows PC, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon, using VS Code **1.90.0 and 1.140.0**.
 - The animation loop stops when settled or hidden. [Recorded measurements](https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-1-validation.md) include whole-editor overhead and do not promise zero CPU use.
-- macOS, Linux, Cursor, Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.
+- Intel Mac, Windows ARM, authenticated Cursor/Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.
+- These checks cover the VS Code extension. A possible standalone Windows/macOS app is only a product proposal and has not been implemented or verified.
 - The dock occupies editor space. Hanging saves headroom; Orbit reserves room for a full loop. Small panels scale the play area.
 - Charm choice, layout, size, resting cord, visibility, motion and message preferences persist locally; cross-machine sync is not implemented.
 - This is not yet published to VS Code Marketplace or Open VSX. The manifest publisher is not
