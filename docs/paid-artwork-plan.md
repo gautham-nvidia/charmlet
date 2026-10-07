@@ -71,3 +71,11 @@ The correct phase order is: finish and merge Phase 3 public-release readiness an
 - [Marvel content licensing contact](https://www.disneystudiolicensing.com/who-do-i-contact-to-license-content-from-marvel-films/)
 
 No rights holder or merchant was contacted while preparing this proposal.
+
+## 2026-10-07 - Market comparison and focus-timer interest
+
+The owner requested a comparison with desktop charm products, expressed interest in focus timers and asked about a standalone Windows/macOS version. The [competitive review](competitive-review.md) records the public evidence and its access limitations.
+
+Several alternatives already offer free functionality, personal-image customization or focus timers. The approximately US$5/five-artwork idea remains an unvalidated proposal. Prioritize original coding/silicon artwork and useful free features, then test demand for one carefully made collection before expanding paid inventory.
+
+A free focus timer, local pack creator and a standalone host are recommendations for future work, not implemented features or approved new phases. They do not change the permanently free extension/importer requirement or authorize merchant accounts, licensed artwork, charges or publication.

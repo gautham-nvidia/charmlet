@@ -61,7 +61,7 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs twenty-seven state/physics, pack and timer tests and one real-editor interaction
+`test` builds and lints both bundles, runs thirty state/physics, pack, timer and persistence tests and one real-editor interaction
 regression. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.
@@ -116,6 +116,7 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Website guide](website/README.md) | Build, preview and reusable browser check |
 | [Charm pack format](docs/charm-packs.md) | Validated data-only import format and limits |
 | [Paid artwork proposal](docs/paid-artwork-plan.md) | Non-live collection, rights, fulfillment and owner-decision plan |
+| [Competitive review and desktop direction](docs/competitive-review.md) | Sourced product comparison, proposed free focus timer and standalone-host tradeoffs |
 | [Artwork provenance](extension/ARTWORK.md) | Asset origins, shared geometry and license status |
 | [extension/CHANGELOG.md](extension/CHANGELOG.md) | User-visible changes by version and date |
 | [PLAN.md](PLAN.md) | Design research, constraints and clearly marked historical proposals |
