@@ -59,6 +59,12 @@ export function restoreState(value: unknown, charms: readonly CharmDefinition[] 
 	};
 }
 
+export function matchesSavedState(expected: CharmState, actual: unknown): boolean {
+	if (!actual || typeof actual !== 'object' || Array.isArray(actual)) { return false; }
+	const stored = actual as Record<string, unknown>;
+	return Object.entries(expected).every(([key, value]) => Object.is(stored[key], value));
+}
+
 export function resetState(state: CharmState): CharmState {
 	return {
 		...DEFAULT_STATE,

@@ -1,10 +1,11 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { DEFAULT_STATE, getLayout, resetState, restoreState, type LayoutMode } from '../charm-state';
+import { DEFAULT_STATE, getLayout, matchesSavedState, resetState, restoreState, type CharmState, type LayoutMode } from '../charm-state';
 import { CHARMS } from '../charm-catalog';
 import { MESSAGES } from '../messages';
 import { MESSAGE_ROTATION_MS, MessageRotation } from '../message-rotation';
 import { Pendulum } from '../pendulum';
+import { StateWriter } from '../state-writer';
 
 test('missing or invalid saved values restore a usable charm', () => {
 	assert.deepEqual(restoreState(undefined), DEFAULT_STATE);
@@ -56,6 +57,56 @@ test('reset retains the selected charm and motion preference', () => {
 	assert.deepEqual(resetState(state), {
 		...DEFAULT_STATE, charmId: 'wafer', reducedMotion: true, layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: 5,
 	});
+});
+
+test('state writes are ordered and flush waits for the final confirmed value', async () => {
+	const releases: Array<() => void> = [];
+	const writes: number[] = [];
+	let stored: unknown;
+	const writer = new StateWriter<number>(value => new Promise<void>(resolveWrite => {
+		writes.push(value);
+		releases.push(() => { stored = value; resolveWrite(); });
+	}), () => stored, (expected, actual) => expected === actual);
+	const first = writer.save(1);
+	await Promise.resolve();
+	await Promise.resolve();
+	assert.deepEqual(writes, [1]);
+	let flushed = false;
+	const flush = writer.flush().then(() => { flushed = true; });
+	const last = writer.save(2);
+	releases.shift()!();
+	await first;
+	await Promise.resolve();
+	await Promise.resolve();
+	assert.deepEqual(writes, [1, 2]);
+	assert.equal(flushed, false);
+	releases.shift()!();
+	await last;
+	await flush;
+	assert.equal(stored, 2);
+	assert.equal(flushed, true);
+});
+
+test('an acknowledged write with stale readback is rejected', async () => {
+	const expected = { ...DEFAULT_STATE, charmId: 'lemon-chilies' };
+	const writer = new StateWriter<CharmState>(() => Promise.resolve(), () => DEFAULT_STATE, matchesSavedState);
+	await assert.rejects(writer.save(expected), /could not confirm/);
+	assert.equal(matchesSavedState(expected, { ...expected }), true);
+	assert.equal(matchesSavedState(expected, { ...expected, messageIndex: 2 }), false);
+	assert.equal(matchesSavedState(expected, null), false);
+});
+
+test('a rejected state write does not poison the next save', async () => {
+	let stored: unknown;
+	const writer = new StateWriter<number>(async value => {
+		if (value === 1) { throw new Error('Unavailable storage'); }
+		stored = value;
+	}, () => stored, (expected, actual) => expected === actual);
+	await assert.rejects(writer.save(1), /Unavailable storage/);
+	await writer.flush();
+	await writer.save(2);
+	await writer.flush();
+	assert.equal(stored, 2);
 });
 
 test('automatic message rotation advances, reschedules and obeys enable and stop', context => {

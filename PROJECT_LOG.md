@@ -202,3 +202,13 @@ Version **0.3.2** prepares an original 256×256 Marketplace icon, manual VSIX ve
 The [paid artwork plan](docs/paid-artwork-plan.md) recommends provider-hosted one-time digital delivery as a proposal and records original theme/rights boundaries. No account, product, price, Buy control, checkout, public deployment, license choice, registry listing or next phase was created.
 
 Local Windows verification passed: marketplace icon export/PNG dimensions, compile/type/lint, **27 units**, the complete VS Code 1.140.0 UI suite, package, gallery build and extended installed-Edge website check. The website check covered manual installation copy, null store state, direct URL validation and synthetic matching-link rendering without navigation. Package: `extension/charmlet-0.3.2.vsix` built locally. The prepared six-job hosted matrix remains unverified until owner review.
+
+## 2026-10-07 - Serialized and confirmed preference writes
+
+Run 37542781796 at d241c79 passed Linux 1.90.0, Linux 1.140.0 and Windows 1.90.0. Windows 1.140.0 failed startup command discovery; macOS 1.90.0 failed the native Home picker assumption; macOS 1.140.0 failed an obsolete visible-fit 146/121 equality.
+
+Run 37657649462 at 91c5b21 passed both Windows jobs, both Linux jobs and macOS 1.140.0. Only macOS 1.90.0 failed: Lemon & Chilies was selected and acknowledged before reload, then Terminal restored. VS Code 1.90 source exposes asynchronous whole-map storage echo/update behavior, and upstream #171827 reports update/get mismatches. Whether that explains this particular failure remains unconfirmed. Serial writes plus readback confirmation avoid acknowledging an unverified value.
+
+Three focused unit tests cover write order/flush, stale readback rejection and recovery after a rejected write. Snapshot copies, revision acknowledgements, save-error handling and deactivate flushing remain. No retry, arbitrary delay, storage clear or file migration was added.
+
+Local Windows compile/type/lint, **30 unit tests**, the complete VS Code 1.140.0 UI suite, package and gallery build passed. The live gallery candidate download matched the rebuilt source VSIX bytes. Hosted minimum-macOS verification remains the deciding evidence; do not claim the macOS 1.90 failure fixed until that rerun passes.

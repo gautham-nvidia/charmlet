@@ -19,10 +19,12 @@ Tracking: [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).
 
 - CI is prepared as six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code 1.90.0 and 1.140.0; Linux uses Xvfb.
 - Gallery checks cover installation copy, null store state and synthetic matching-link rendering without external navigation.
+- Preference writes are serialized and canonical fields are confirmed from storage before the webview receives a saved acknowledgement.
 
 ### Verified
 
 - Local 0.3.2 icon export, extension checks, current Windows UI, package, gallery build and website checks are recorded in the project log.
+- Thirty unit tests and the complete local Windows VS Code 1.140.0 suite passed with serialized, confirmed state writes; the hosted minimum-macOS rerun remains pending.
 
 ### Limits
 

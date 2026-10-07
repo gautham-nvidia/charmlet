@@ -3,7 +3,8 @@ import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { CHARMS, type CharmDefinition } from './charm-catalog';
 import { installPack, loadPacks, MAX_PACK_BYTES, packCharms, removePack, type CharmPack } from './charm-packs';
-import { resetState, restoreState, type CharmState } from './charm-state';
+import { matchesSavedState, resetState, restoreState, type CharmState } from './charm-state';
+import { StateWriter } from './state-writer';
 
 let flushWrites: (() => Promise<void>) | undefined;
 
@@ -107,27 +108,29 @@ class CharmletView implements vscode.WebviewViewProvider {
 	catalogue: readonly CharmDefinition[];
 	private view?: vscode.WebviewView;
 	private dropOnReady = false;
-	private readonly pendingWrites = new Set<Promise<void>>();
+	private readonly stateWriter: StateWriter<CharmState>;
 
 	constructor(
 		private readonly context: vscode.ExtensionContext,
 		private readonly changed: (state: CharmState) => void,
 		catalogue: readonly CharmDefinition[],
 	) {
+		this.stateWriter = new StateWriter(
+			value => Promise.resolve(context.globalState.update('charmlet.state', value)),
+			() => context.globalState.get('charmlet.state'),
+			matchesSavedState,
+		);
 		this.catalogue = catalogue;
 		this.state = restoreState(context.globalState.get('charmlet.state'), catalogue);
 		changed(this.state);
 	}
 
 	private persist(snapshot: CharmState) {
-		const operation = Promise.resolve(this.context.globalState.update('charmlet.state', snapshot));
-		this.pendingWrites.add(operation);
-		void operation.then(() => this.pendingWrites.delete(operation), () => this.pendingWrites.delete(operation));
-		return operation;
+		return this.stateWriter.save(snapshot);
 	}
 
 	async flush() {
-		while (this.pendingWrites.size) { await Promise.all([...this.pendingWrites]); }
+		await this.stateWriter.flush();
 	}
 
 	get visible() {
