@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { CHARMS, type CharmDefinition } from './charm-catalog';
 import { installPack, loadPacks, MAX_PACK_BYTES, packCharms, removePack, type CharmPack } from './charm-packs';
 import { matchesSavedState, resetState, restoreState, type CharmState } from './charm-state';
+import { StateStore, type LoadedState } from './state-store';
 import { StateWriter } from './state-writer';
 
 let flushWrites: (() => Promise<void>) | undefined;
@@ -25,13 +26,19 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.warn(`Charmlet could not load stored packs: ${error instanceof Error ? error.message : 'unknown error'}`);
 	}
 
+	const stateStore = new StateStore(context.globalStorageUri.fsPath);
+	const loadedState = await stateStore.load(context.globalState.get('charmlet.state'));
+	if (loadedState.error) {
+		void vscode.window.showWarningMessage('Charmlet could not read its saved preferences. Review your charm settings.');
+	}
+
 	const status = vscode.window.createStatusBarItem('charmlet', vscode.StatusBarAlignment.Right, -100);
 	status.name = 'Charmlet';
 	status.command = 'charmlet.toggle';
 	const provider = new CharmletView(context, state => {
 		status.text = state.hidden ? '$(circle-outline) Charmlet' : '$(sparkle) Charmlet';
 		status.tooltip = state.hidden ? 'Charmlet: Show charm' : 'Charmlet: Hide or restore charm';
-	}, [...CHARMS, ...packCharms(packs)]);
+	}, [...CHARMS, ...packCharms(packs)], stateStore, loadedState);
 	flushWrites = () => provider.flush();
 
 	const refreshCatalogue = async (selectedId?: string) => {
@@ -119,9 +126,9 @@ class CharmletView implements vscode.WebviewViewProvider {
 				this.traceOutput = vscode.window.createOutputChannel('Charmlet State Trace', { log: true });
 				this.context.subscriptions.push(this.traceOutput);
 			}
-			const stored = this.context.globalState.get<Partial<CharmState>>('charmlet.state');
+			const legacyStored = this.context.globalState.get<Partial<CharmState>>('charmlet.state');
 			this.traceOutput.info(`[Charmlet state] ${JSON.stringify({
-				time: Date.now(), label, current: this.state?.charmId, stored: stored?.charmId,
+				time: Date.now(), label, current: this.state?.charmId, legacyStored: legacyStored?.charmId,
 				view: this.viewGeneration, ...details,
 			})}`);
 		} catch {
@@ -133,24 +140,28 @@ class CharmletView implements vscode.WebviewViewProvider {
 		private readonly context: vscode.ExtensionContext,
 		private readonly changed: (state: CharmState) => void,
 		catalogue: readonly CharmDefinition[],
+		private readonly stateStore: StateStore,
+		loadedState: LoadedState,
 	) {
 		this.stateWriter = new StateWriter(
 			async value => {
 				this.trace('write-start', { requested: value.charmId });
-				await context.globalState.update('charmlet.state', value);
+				await this.stateStore.write(value);
 				this.trace('write-returned', { requested: value.charmId });
 			},
-			() => {
-				const value = context.globalState.get('charmlet.state');
-				this.trace('readback');
+			async () => {
+				const value = await this.stateStore.read();
+				const saved = value && typeof value === 'object'
+					? (value as Partial<CharmState>).charmId : undefined;
+				this.trace('readback', { stored: saved, source: 'file' });
 				return value;
 			},
 			matchesSavedState,
 		);
 		this.catalogue = catalogue;
-		this.state = restoreState(context.globalState.get('charmlet.state'), catalogue);
+		this.state = restoreState(loadedState.value, catalogue);
 		changed(this.state);
-		this.trace('restored');
+		this.trace('restored', { source: loadedState.source });
 	}
 
 	private persist(snapshot: CharmState) {

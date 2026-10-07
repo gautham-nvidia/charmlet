@@ -100,3 +100,11 @@ Development-only tracing records flat charm IDs, save revisions, view generation
 A fresh disposable local smoke verified output-channel delivery after shutdown: the copied `Charmlet State Trace.log` contained 13 records and the required `restored`, `write-start`, `write-returned`, `readback` and `save-ack` labels. This proves the diagnostic reaches retained logs; it does not explain the intermittent failure.
 
 The lead will interpret future host and DOM transcripts. No causal ordering is inferred here, and the exact cause of earlier failures remains unproven. Current release readiness still requires a diagnostic hosted rerun and owner review in addition to the remaining publisher/license/host/publication gates.
+
+## 2026-10-07 - Canonical preference-file decision
+
+Frozen run 37693710452 at head `6539276` captured both macOS failures at the store/restore boundary: final Lemon & Chilies values were read back and acknowledged, no later Terminal save appeared, and the new host initialized from Terminal. This confirms that boundary failed in those runs without claiming every VS Code internal operation is understood.
+
+Charmlet now treats extension-owned `preferences.json` as canonical. Existing `globalState` is a migration fallback only when the file is missing or unreadable and is never cleared. New saves use serialized complete same-directory file replacement and confirm readback from the actual file before acknowledgement. No retry, arbitrary delay, cross-window synchronization guarantee or sudden-power-loss guarantee is claimed.
+
+Local checks passed: 34 units, the complete Windows VS Code 1.140.0 UI suite, and the exact fresh-profile two-process restart smoke. The second process had a different PID, restored Lemon & Chilies from an unchanged canonical file, and emitted a `restored` trace with source `file`. This verifies local process-restart restoration only. A new hosted six-job run remains the final evidence gate before calling the intermittent macOS case resolved. All other publisher/license/host/publication gates remain.

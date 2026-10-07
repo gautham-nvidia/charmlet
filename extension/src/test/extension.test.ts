@@ -354,6 +354,12 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await window.screenshot({ path: testInfo.outputPath('phase-2-collection.png') });
 			await picker.press('Escape');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true', { timeout: 10000 });
+			const preferencesPath = join(profile, 'user', 'User', 'globalStorage', 'gautham-nvidia.charmlet', 'preferences.json');
+			const storedPreferences = JSON.parse(readFileSync(preferencesPath, 'utf8'));
+			expect(storedPreferences.charmId).toBe(lastCharm.id);
+			expect(storedPreferences.cordLength).toBe(146);
+			expect(storedPreferences.reducedMotion).toBe(true);
 			preferenceEvents.push({ time: Date.now(), label: 'after-escape-assertion' });
 			await Promise.all([
 				window.waitForEvent('domcontentloaded'),
@@ -366,6 +372,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				selectedOption: await frame.locator('#charm-select').inputValue(),
 			});
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
+			expect(JSON.parse(readFileSync(preferencesPath, 'utf8')).charmId).toBe(lastCharm.id);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
 			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
 			await command(window, 'Charmlet: Reset Charm');

@@ -1,10 +1,15 @@
 import { strict as assert } from 'node:assert';
+import { mkdtempSync } from 'node:fs';
+import { readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import { DEFAULT_STATE, getLayout, matchesSavedState, resetState, restoreState, type CharmState, type LayoutMode } from '../charm-state';
 import { CHARMS } from '../charm-catalog';
 import { MESSAGES } from '../messages';
 import { MESSAGE_ROTATION_MS, MessageRotation } from '../message-rotation';
 import { Pendulum } from '../pendulum';
+import { StateStore } from '../state-store';
 import { StateWriter } from '../state-writer';
 
 test('missing or invalid saved values restore a usable charm', () => {
@@ -107,6 +112,63 @@ test('a rejected state write does not poison the next save', async () => {
 	await writer.save(2);
 	await writer.flush();
 	assert.equal(stored, 2);
+});
+
+test('missing preference file migrates legacy state and later file state wins', async context => {
+	const directory = mkdtempSync(join(tmpdir(), 'charmlet-state-'));
+	context.after(() => rm(directory, { recursive: true, force: true }));
+	const store = new StateStore(directory);
+	const legacy = { ...DEFAULT_STATE, charmId: 'chip', cordLength: 180 };
+	assert.deepEqual(await store.load(legacy), { value: legacy, source: 'legacy' });
+	const selected = { ...legacy, charmId: 'lemon-chilies', messageIndex: 79 };
+	await store.write(selected);
+	const reloaded = new StateStore(directory);
+	assert.deepEqual(await reloaded.load(DEFAULT_STATE), { value: selected, source: 'file' });
+	assert.deepEqual(JSON.parse(await readFile(store.path, 'utf8')), selected);
+});
+
+test('rapid preference writes confirm the final complete file after reopening', async context => {
+	const directory = mkdtempSync(join(tmpdir(), 'charmlet-state-'));
+	context.after(() => rm(directory, { recursive: true, force: true }));
+	const store = new StateStore(directory);
+	const writer = new StateWriter<CharmState>(value => store.write(value), () => store.read(), matchesSavedState);
+	const first = { ...DEFAULT_STATE, charmId: 'terminal' };
+	const last: CharmState = { ...DEFAULT_STATE, charmId: 'lemon-chilies', layoutMode: 'orbit', cordLength: 250, size: 120, reducedMotion: true, hidden: true, messageIndex: 79, rotateMessages: false };
+	await Promise.all([writer.save(first), writer.save(last)]);
+	await writer.flush();
+	assert.deepEqual(await new StateStore(directory).read(), last);
+	assert.deepEqual(await readdir(directory), ['preferences.json']);
+});
+
+test('unreadable preference JSON reports the problem and leaves the legacy fallback available', async context => {
+	const directory = mkdtempSync(join(tmpdir(), 'charmlet-state-'));
+	context.after(() => rm(directory, { recursive: true, force: true }));
+	const store = new StateStore(directory);
+	await writeFile(store.path, '{broken', 'utf8');
+	const legacy = { ...DEFAULT_STATE, charmId: 'wafer' };
+	const loaded = await store.load(legacy);
+	assert.equal(loaded.source, 'legacy');
+	assert.deepEqual(loaded.value, legacy);
+	assert.ok(loaded.error instanceof SyntaxError);
+	assert.equal(await readFile(store.path, 'utf8'), '{broken');
+});
+
+test('preference file errors reject saves and allow a later successful write', async context => {
+	const root = mkdtempSync(join(tmpdir(), 'charmlet-state-'));
+	context.after(() => rm(root, { recursive: true, force: true }));
+	const directory = join(root, 'storage');
+	await writeFile(directory, 'blocked', 'utf8');
+	const store = new StateStore(directory);
+	const writer = new StateWriter<CharmState>(value => store.write(value), () => store.read(), matchesSavedState);
+	await assert.rejects(writer.save({ ...DEFAULT_STATE }));
+	await writer.flush();
+	assert.equal(await readFile(directory, 'utf8'), 'blocked');
+	await rm(directory);
+	const selected = { ...DEFAULT_STATE, charmId: 'lemon-chilies' };
+	await writer.save(selected);
+	await writer.flush();
+	assert.deepEqual(await store.read(), selected);
+	assert.deepEqual(await readdir(directory), ['preferences.json']);
 });
 
 test('automatic message rotation advances, reschedules and obeys enable and stop', context => {

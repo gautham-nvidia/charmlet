@@ -7,7 +7,7 @@ coding messages and a free extra-charm gallery/importer. Desktop VS Code **1.90.
 on Windows, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon. No telemetry, account, payment or
 runtime AI is required.
 
-Hosted run 37663692698 passed all six listed jobs, but later documentation-only run 37666186391 repeated an intermittent macOS 1.140 selected-charm reload failure. Persistence tracing is in progress; the earlier pass is valid historical evidence, not proof that the intermittent case is resolved.
+Hosted run 37663692698 passed all six listed jobs, but later runs repeated intermittent macOS selected-charm reload failures. Preferences now use a canonical extension-owned file with legacy migration and file readback confirmation. Hosted rerun evidence is still required; the earlier pass remains valid history, not proof that the intermittent case is resolved.
 
 [Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
 [dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
@@ -65,7 +65,7 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs thirty state/physics, pack, timer and persistence tests and one real-editor interaction
+`test` builds and lints both bundles, runs thirty-four state/physics, pack, timer, persistence and file-store tests and one real-editor interaction
 regression. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.
