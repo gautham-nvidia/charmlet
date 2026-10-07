@@ -90,3 +90,13 @@ macOS reported a requested 1400×900 window as 1400×684 with a 1024×684 work a
 ![Compact Charmlet view on Ubuntu with Xvfb](phase-3-platforms/linux-compact.png)
 
 This verifies the VS Code extension on the listed desktop runners and versions. Intel Mac, Windows ARM, authenticated Cursor/Devin, Remote-SSH/WSL and browser-host scope remain unverified. Publisher ownership, source/art license, actual public hosting, registry listing and publication approval remain open. Focus-timer and standalone desktop-app directions remain proposals, not implemented release scope.
+
+## 2026-10-07 - Intermittent macOS persistence trace gate
+
+The all-six pass in run 37663692698 remains valid historical evidence. A later documentation-only head `a7d3b98` in run `37666186391` passed five jobs but repeated the selected-charm reload failure on macOS 1.140: Lemon & Chilies was selected before reload and Terminal restored afterward at the existing assertion. Product source was unchanged, so the intermittent case remains unresolved and PR #15 remains unmerged.
+
+Development-only tracing records flat charm IDs, save revisions, view generations, lifecycle labels and picker/stage events when `CHARMLET_TRACE_SAVES=1`. Ordinary installed/production mode emits none. A dedicated log output channel writes host records into the disposable profile's copied logs, and the UI harness writes a separate event transcript after application shutdown. No explicit delays/retries or state-behavior changes.
+
+A fresh disposable local smoke verified output-channel delivery after shutdown: the copied `Charmlet State Trace.log` contained 13 records and the required `restored`, `write-start`, `write-returned`, `readback` and `save-ack` labels. This proves the diagnostic reaches retained logs; it does not explain the intermittent failure.
+
+The lead will interpret future host and DOM transcripts. No causal ordering is inferred here, and the exact cause of earlier failures remains unproven. Current release readiness still requires a diagnostic hosted rerun and owner review in addition to the remaining publisher/license/host/publication gates.

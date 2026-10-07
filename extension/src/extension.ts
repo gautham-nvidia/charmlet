@@ -109,6 +109,25 @@ class CharmletView implements vscode.WebviewViewProvider {
 	private view?: vscode.WebviewView;
 	private dropOnReady = false;
 	private readonly stateWriter: StateWriter<CharmState>;
+	private viewGeneration = 0;
+	private traceOutput?: vscode.LogOutputChannel;
+
+	private trace(label: string, details: Record<string, unknown> = {}) {
+		if (this.context.extensionMode !== vscode.ExtensionMode.Development || process.env.CHARMLET_TRACE_SAVES !== '1') { return; }
+		try {
+			if (!this.traceOutput) {
+				this.traceOutput = vscode.window.createOutputChannel('Charmlet State Trace', { log: true });
+				this.context.subscriptions.push(this.traceOutput);
+			}
+			const stored = this.context.globalState.get<Partial<CharmState>>('charmlet.state');
+			this.traceOutput.info(`[Charmlet state] ${JSON.stringify({
+				time: Date.now(), label, current: this.state?.charmId, stored: stored?.charmId,
+				view: this.viewGeneration, ...details,
+			})}`);
+		} catch {
+			// Diagnostic logging must not change preference behavior.
+		}
+	}
 
 	constructor(
 		private readonly context: vscode.ExtensionContext,
@@ -116,13 +135,22 @@ class CharmletView implements vscode.WebviewViewProvider {
 		catalogue: readonly CharmDefinition[],
 	) {
 		this.stateWriter = new StateWriter(
-			value => Promise.resolve(context.globalState.update('charmlet.state', value)),
-			() => context.globalState.get('charmlet.state'),
+			async value => {
+				this.trace('write-start', { requested: value.charmId });
+				await context.globalState.update('charmlet.state', value);
+				this.trace('write-returned', { requested: value.charmId });
+			},
+			() => {
+				const value = context.globalState.get('charmlet.state');
+				this.trace('readback');
+				return value;
+			},
 			matchesSavedState,
 		);
 		this.catalogue = catalogue;
 		this.state = restoreState(context.globalState.get('charmlet.state'), catalogue);
 		changed(this.state);
+		this.trace('restored');
 	}
 
 	private persist(snapshot: CharmState) {
@@ -131,6 +159,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 
 	async flush() {
 		await this.stateWriter.flush();
+		this.trace('drained');
 	}
 
 	get visible() {
@@ -138,6 +167,8 @@ class CharmletView implements vscode.WebviewViewProvider {
 	}
 
 	resolveWebviewView(view: vscode.WebviewView) {
+		const generation = ++this.viewGeneration;
+		this.trace('view-resolved', { generation });
 		this.view = view;
 		const resource = (path: string) => vscode.Uri.joinPath(this.context.extensionUri, path);
 		view.webview.options = {
@@ -157,6 +188,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 			}
 			if (message.type === 'ready') {
 				await this.flush();
+				this.trace('ready-state', { generation });
 				await view.webview.postMessage({ type: 'state', state: this.state, catalogue: this.catalogue, drop: this.dropOnReady, visible: view.visible });
 				this.dropOnReady = false;
 			} else if (message.type === 'save' && 'state' in message) {
@@ -164,10 +196,13 @@ class CharmletView implements vscode.WebviewViewProvider {
 					? Number(message.revision) : undefined;
 				this.state = restoreState(message.state, this.catalogue);
 				this.changed(this.state);
+				this.trace('save-received', { generation, revision, requested: this.state.charmId });
 				try {
 					await this.persist({ ...this.state });
+					this.trace('save-ack', { generation, revision });
 					if (revision !== undefined) { await view.webview.postMessage({ type: 'saved', revision }); }
 				} catch {
+					this.trace('save-error', { generation, revision });
 					if (revision !== undefined) { await view.webview.postMessage({ type: 'save-error', revision }); }
 					void vscode.window.showErrorMessage('Charmlet could not save its settings.');
 				}
@@ -180,6 +215,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 			void view.webview.postMessage({ type: 'visibility', visible: view.visible });
 		});
 		view.onDidDispose(() => {
+			this.trace('view-disposed', { generation });
 			messages.dispose();
 			visibility.dispose();
 			if (this.view === view) {
@@ -191,6 +227,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 	async setCatalogue(catalogue: readonly CharmDefinition[], selectedId?: string) {
 		this.catalogue = catalogue;
 		this.state = restoreState({ ...this.state, charmId: selectedId ?? this.state.charmId }, catalogue);
+		this.trace('catalogue-state');
 		this.changed(this.state);
 		await this.persist({ ...this.state });
 		await this.view?.webview.postMessage({ type: 'catalogue', catalogue: this.catalogue, state: this.state });
@@ -198,6 +235,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 
 	async update(state: CharmState, drop = false) {
 		this.state = restoreState(state, this.catalogue);
+		this.trace('command-state', { drop });
 		this.changed(this.state);
 		await this.persist({ ...this.state });
 		await this.view?.webview.postMessage({ type: 'state', state: this.state, drop });

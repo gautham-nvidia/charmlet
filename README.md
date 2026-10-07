@@ -7,6 +7,8 @@ coding messages and a free extra-charm gallery/importer. Desktop VS Code **1.90.
 on Windows, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon. No telemetry, account, payment or
 runtime AI is required.
 
+Hosted run 37663692698 passed all six listed jobs, but later documentation-only run 37666186391 repeated an intermittent macOS 1.140 selected-charm reload failure. Persistence tracing is in progress; the earlier pass is valid historical evidence, not proof that the intermittent case is resolved.
+
 [Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
 [dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
 show the checks and remaining review items.

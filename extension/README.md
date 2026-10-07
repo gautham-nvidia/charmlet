@@ -60,6 +60,7 @@ records asset origins, while the project source/art license remains pending and 
 ## Current limits
 
 - Complete VS Code extension checks passed on Windows Server 2025 and the local Windows PC, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon, using VS Code **1.90.0 and 1.140.0**.
+- A later documentation-only run repeated an intermittent macOS 1.140 selected-charm reload failure; opt-in development traces are being collected. The earlier all-pass run remains historical evidence, not a reliability guarantee.
 - The animation loop stops when settled or hidden. [Recorded measurements](https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-1-validation.md) include whole-editor overhead and do not promise zero CPU use.
 - Intel Mac, Windows ARM, authenticated Cursor/Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.
 - These checks cover the VS Code extension. A possible standalone Windows/macOS app is only a product proposal and has not been implemented or verified.

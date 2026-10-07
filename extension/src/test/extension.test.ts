@@ -17,6 +17,17 @@ async function command(window: Page, title: string) {
 		for (const frame of window.frames()) {
 			if (!frame.isDetached() && await frame.locator('#stage[data-ready="true"]').count()) {
 				await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true', { timeout: 10000 });
+				await frame.evaluate(() => {
+					const capture = (window as unknown as { __charmletRecordPreference?: (value: unknown) => Promise<void> }).__charmletRecordPreference;
+					const stage = document.getElementById('stage');
+					const picker = document.getElementById('charm-select') as HTMLSelectElement | null;
+					if (capture) {
+						void capture({
+							time: Date.now(), label: 'before-reload-command', picker: picker?.value,
+							charm: stage?.dataset.charm, persisted: stage?.dataset.persisted,
+						}).catch(() => {});
+					}
+				});
 				break;
 			}
 		}
@@ -109,6 +120,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			environment[key] = value;
 		}
 	}
+	environment.CHARMLET_TRACE_SAVES = '1';
 	const executablePath = process.env.VSCODE_EXECUTABLE
 		?? (process.platform === 'win32' ? 'C:\\Program Files\\Microsoft VS Code\\Code.exe' : undefined);
 	if (!executablePath) {
@@ -130,7 +142,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		timeout: 45000,
 	});
 	const window = await app.firstWindow();
+	const preferenceEvents: unknown[] = [];
 	try {
+		await window.exposeBinding('__charmletRecordPreference', (source, record: unknown) => {
+			preferenceEvents.push({ frame: source.frame.url(), record });
+		});
 		const actualUserData = await app.evaluate(({ app: host }) => host.getPath('userData'));
 		expect(realpathSync(actualUserData)).toBe(realpathSync(join(profile, 'user')));
 		await app.evaluate(({ BrowserWindow }) => {
@@ -268,6 +284,34 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect(picker.locator('optgroup')).toHaveCount(2);
 			await expect(picker.locator('optgroup').nth(0)).toHaveAttribute('label', 'Silicon & Code');
 			await expect(picker.locator('optgroup').nth(1)).toHaveAttribute('label', 'Good Luck');
+			await frame.evaluate(() => {
+				const view = globalThis as unknown as Window & { __charmletRecordPreference: (value: unknown) => Promise<void> };
+				const capture = view.__charmletRecordPreference;
+				const picker = document.getElementById('charm-select') as HTMLSelectElement;
+				const stage = document.getElementById('stage')!;
+				const record = (label: string, details: Record<string, unknown> = {}) => {
+					void capture({
+						time: Date.now(), label, picker: picker.value, charm: stage.dataset.charm,
+						persisted: stage.dataset.persisted, focus: (document.activeElement as HTMLElement | null)?.id,
+						...details,
+					}).catch(() => {});
+				};
+				for (const type of ['input', 'change', 'blur', 'focus']) {
+					picker.addEventListener(type, () => record(type));
+				}
+				document.addEventListener('keydown', event => {
+					if (event.key === 'Escape' || event.target === picker) {
+						record('keydown', { key: event.key });
+					}
+				}, true);
+				view.addEventListener('message', event => {
+					const message = event.data;
+					if (message && ['state', 'saved', 'save-error', 'catalogue'].includes(message.type)) {
+						record('host-message', { type: message.type, revision: message.revision, stateCharm: message.state?.charmId });
+					}
+				});
+				record('trace-start');
+			});
 			for (const entry of CHARMS) {
 				await picker.selectOption(entry.id);
 				await expect(frame.locator('#stage')).toHaveAttribute('data-charm', entry.id);
@@ -310,11 +354,17 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await window.screenshot({ path: testInfo.outputPath('phase-2-collection.png') });
 			await picker.press('Escape');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
+			preferenceEvents.push({ time: Date.now(), label: 'after-escape-assertion' });
 			await Promise.all([
 				window.waitForEvent('domcontentloaded'),
 				command(window, 'Developer: Reload Window'),
 			]);
 			frame = await readyFrame(window);
+			preferenceEvents.push({
+				time: Date.now(), label: 'after-reload-ready',
+				restoredCharm: await frame.locator('#stage').getAttribute('data-charm'),
+				selectedOption: await frame.locator('#charm-select').inputValue(),
+			});
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
 			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
@@ -896,16 +946,24 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 	} catch (error) {
 		await window.screenshot({ path: testInfo.outputPath('failure.png') });
-		try {
-			const editorLogs = join(profile, 'user', 'logs');
-			if (existsSync(editorLogs)) {
-				cpSync(editorLogs, testInfo.outputPath('editor-logs'), { recursive: true });
-			}
-		} catch {
-			// Keep the original failure if optional diagnostic copying fails.
-		}
 		throw error;
 	} finally {
-		await app.close();
+		try {
+			await app.close();
+		} finally {
+			try {
+				writeFileSync(testInfo.outputPath('preference-events.json'), `${JSON.stringify(preferenceEvents, null, 2)}\n`);
+			} catch {
+				// Keep the original test result if optional diagnostic writing fails.
+			}
+			try {
+				const editorLogs = join(profile, 'user', 'logs');
+				if (existsSync(editorLogs)) {
+					cpSync(editorLogs, testInfo.outputPath('editor-logs'), { recursive: true });
+				}
+			} catch {
+				// Keep the original test result if optional diagnostic copying fails.
+			}
+		}
 	}
 });
