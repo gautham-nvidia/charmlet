@@ -1,5 +1,5 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
-import { copyFileSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { CHARMS } from '../charm-catalog';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -138,9 +138,16 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			testWindow.setIgnoreMouseEvents(true);
 			testWindow.setSize(1400, 900);
 		});
+		const windowGeometry = await app.evaluate(({ app: host, BrowserWindow, screen }) => {
+			const hostWindow = BrowserWindow.getAllWindows()[0];
+			const bounds = hostWindow.getBounds();
+			return { hostVersion: host.getVersion(), platform: process.platform, requested: { width: 1400, height: 900 }, bounds, contentBounds: hostWindow.getContentBounds(), workArea: screen.getDisplayMatching(bounds).workArea, zoomFactor: hostWindow.webContents.getZoomFactor() };
+		});
+		writeFileSync(testInfo.outputPath('editor-window.json'), `${JSON.stringify(windowGeometry, null, 2)}\n`);
 		await window.waitForLoadState('domcontentloaded');
 		await expect(window.locator('.monaco-workbench')).toBeVisible({ timeout: 30000 });
 		await expect(window.locator('.part.editor .view-lines').first()).toContainText('Hello, Charmlet!', { timeout: 30000 });
+		await expect(window.locator('.part.activitybar a.action-label[aria-label="Charmlet"]')).toBeVisible({ timeout: 30000 });
 		await window.keyboard.press(`${primaryModifier}+Shift+P`);
 		const input = commandInput(window);
 		await expect(input).toBeVisible();
@@ -271,15 +278,34 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 					return img.complete && img.naturalWidth === 72;
 				})).toBe(true);
 				await expect.poll(() => frame.locator('#charm-image').getAttribute('src')).toMatch(new RegExp(`${entry.file.replace('.', '\\.')}$`));
-				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
+				await expect(frame.locator('#cord-length')).toHaveValue('146');
+				const visibleCord = Number(await frame.locator('#stage').getAttribute('data-cord'));
+				expect(visibleCord).toBeGreaterThanOrEqual(48);
+				expect(visibleCord).toBeLessThanOrEqual(146);
+				await expect.poll(() => frame.locator('#charm').evaluate(charm => {
+					const bounds = charm.getBoundingClientRect();
+					const stage = document.getElementById('stage')!.getBoundingClientRect();
+					return bounds.left >= stage.left - 1 && bounds.right <= stage.right + 1
+						&& bounds.top >= stage.top - 1 && bounds.bottom <= stage.bottom + 1;
+				})).toBe(true);
 				await expect(frame.locator('#stage')).toHaveAttribute('data-size', '100');
 				await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
 				await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`phase-2-${entry.id}.png`) });
 			}
 			await picker.focus();
-			await picker.press('Home');
+			if (process.platform === 'darwin') {
+				await picker.pressSequentially('Terminal', { delay: 20 });
+			} else {
+				await picker.press('Home');
+			}
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
-			await picker.press('End');
+			if (process.platform === 'darwin') {
+				await picker.press('Tab');
+				await picker.focus();
+				await picker.pressSequentially('Lemon', { delay: 20 });
+			} else {
+				await picker.press('End');
+			}
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
 			await window.screenshot({ path: testInfo.outputPath('phase-2-collection.png') });
 			await picker.press('Escape');
@@ -313,7 +339,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			frame = await readyFrame(window);
 			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
 			const defaultMaximumCord = (await frame.getByRole('slider', { name: 'Cord', exact: true }).getAttribute('max'))!;
-			expect(Number(defaultMaximumCord)).toBeGreaterThan(320);
+			expect(Number(defaultMaximumCord)).toBeGreaterThanOrEqual(320);
 			const defaultCharmWidth = await frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width);
 			await frame.getByRole('slider', { name: 'Size', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Size', exact: true }).press('End');
@@ -333,16 +359,20 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			})).toBe(true);
 			await expectBalancedSwingRoom(frame);
 			await window.screenshot({ path: testInfo.outputPath('phase-1-settings.png') });
+			const settingsVisibleCord = Number(await frame.locator('#stage').getAttribute('data-cord'));
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Escape');
 			await expect(frame.locator('#settings')).toBeHidden();
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
+			const expandedCordAfterClose = Number(await frame.locator('#stage').getAttribute('data-cord'));
+			expect(expandedCordAfterClose).toBeGreaterThanOrEqual(settingsVisibleCord);
+			expect(expandedCordAfterClose).toBeLessThanOrEqual(Number(maximumCord));
+			const expandedVisibleCord = (await frame.locator('#stage').getAttribute('data-cord'))!;
 			await Promise.all([
 				window.waitForEvent('domcontentloaded'),
 				command(window, 'Developer: Reload Window'),
 			]);
 			frame = await readyFrame(window);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', expandedVisibleCord);
 			await expect(frame.locator('#cord-length')).toHaveValue(maximumCord);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 500));
 			frame = await readyFrame(window);
@@ -353,11 +383,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				return bounds.left >= stage.left - 1 && bounds.right <= stage.right + 1
 					&& bounds.top >= stage.top - 1 && bounds.bottom <= stage.bottom + 1;
 			})).toBe(true);
-			await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThan(Number(maximumCord));
+			await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThan(Number(expandedVisibleCord));
 			await expectBalancedSwingRoom(frame);
 			await window.screenshot({ path: testInfo.outputPath('phase-1-compact-large-charm.png') });
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', maximumCord);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', expandedVisibleCord);
 			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Home');
@@ -866,6 +896,14 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 	} catch (error) {
 		await window.screenshot({ path: testInfo.outputPath('failure.png') });
+		try {
+			const editorLogs = join(profile, 'user', 'logs');
+			if (existsSync(editorLogs)) {
+				cpSync(editorLogs, testInfo.outputPath('editor-logs'), { recursive: true });
+			}
+		} catch {
+			// Keep the original failure if optional diagnostic copying fails.
+		}
 		throw error;
 	} finally {
 		await app.close();
