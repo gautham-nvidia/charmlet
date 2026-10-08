@@ -477,6 +477,8 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 
 		await test.step('resizing during a drag cancels it without saving the temporary length', async () => {
+			const expandedViewport = await window.evaluate(() => ({ width: innerWidth, height: innerHeight }));
+			const expandedStage = await frame.locator('#stage').evaluate(stage => ({ width: stage.clientWidth, height: stage.clientHeight }));
 			await beginDrag(window, frame, -20, 40);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 650));
 			await expect(frame.locator('#phase')).toHaveText('Parked');
@@ -486,6 +488,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 			await expect(frame.locator('#charm')).not.toHaveClass(/dragging/);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
+			await expect.poll(() => window.evaluate(() => ({ width: innerWidth, height: innerHeight }))).toEqual(expandedViewport);
+			await expect.poll(() => frame.locator('#stage').evaluate(stage => ({ width: stage.clientWidth, height: stage.clientHeight }))).toEqual(expandedStage);
+			await frame.evaluate(() => new Promise<void>(resolveFrames => {
+				requestAnimationFrame(() => requestAnimationFrame(() => resolveFrames()));
+			}));
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
 		});
 

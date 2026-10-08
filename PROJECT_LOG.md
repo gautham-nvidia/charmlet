@@ -250,3 +250,11 @@ GitHub Actions run [37697185841](https://github.com/gautham-nvidia/charmlet/acti
 The lead checked both macOS traces. In each, final canonical-file readback was Lemon & Chilies, revision 14 was acknowledged, the pre-reload DOM remained Lemon with `persisted=true`, the new host restored Lemon with `source=file`, and the post-reload UI remained Lemon without an intervening save. Frozen reviewed evidence is `docs/phase-3-preferences.json`. The exact internal cause of earlier VS Code cache behavior is not asserted.
 
 The local distinct-PID two-process restart and the hosted macOS paths now validate the canonical file boundary on the listed hosts. Phase 3 remains open for publisher ownership, source/art licenses, authenticated forks, remote/browser scope, public hosting, registry listings and publication approval. Intel Mac, Windows ARM, focus timer and standalone desktop app remain separate unverified/proposed scopes.
+
+## 2026-10-08 - Linux resize-settling harness gate
+
+Documentation-head run 37799712752 at `e07d1b41996a9c4c3dc6067e81d6c0825c8b3e6c` passed both Windows jobs, both macOS jobs and Linux 1.90.0. Linux 1.140.0 job `113388357201` passed all 34 unit tests and the canonical preference-file case, then failed in the collapse-during-drag setup: `beginDrag` at line 103, called from line 493, expected `Held` and received `Parked`.
+
+The preceding resize-during-drag step requested restoration to 1400×900 but asserted only a cord value already present in the 1000×650 view. Because product `resize()` deliberately cancels active drag, an unfinished OS/webview resize can cancel the next gesture. This establishes a test synchronization gap in the observed path; it does not prove every possible `Parked` result has that cause and does not establish a Linux product incompatibility or preference regression.
+
+The harness now captures the actual expanded browser/stage geometry, waits for both geometries to return after restoration, and crosses a two-animation-frame barrier so ResizeObserver delivery settles before the next pointerdown. It does not hardcode 900 px, retry the gesture, sleep, force `Held`, disable cancellation, or change production code/assertion caps. Local check-types and lint passed; hosted rerun remains the evidence gate.
