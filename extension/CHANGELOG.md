@@ -3,6 +3,35 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.3.2 - 2026-10-06 (Phase 3 release preparation)
+
+Tracking: [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).
+
+### Added
+
+- Original 256×256 Marketplace PNG icon and light gallery-banner metadata.
+- Clear website instructions for current manual VSIX installation versus future verified Marketplace/Open VSX listings.
+- Strict nullable store-link configuration tied to the extension publisher/name identity.
+- Portable Windows/macOS keyboard shortcuts and Linux test-launch preparation.
+- A non-live paid-artwork proposal covering original collections, hosted fulfillment, rights boundaries and owner decisions.
+
+### Changed
+
+- CI is prepared as six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code 1.90.0 and 1.140.0; Linux uses Xvfb.
+- Gallery checks cover installation copy, null store state and synthetic matching-link rendering without external navigation.
+- Preferences use an extension-owned `preferences.json`: existing global-state settings are a migration fallback when the file is missing or unreadable, complete same-directory file replacements are serialized, and file readback is confirmed before the webview receives a saved acknowledgement. New preference writes no longer target the legacy cache.
+
+### Verified
+
+- Local 0.3.2 icon export, extension checks, current Windows UI, package, gallery build and website checks are recorded in the project log.
+- Hosted run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698) at commit `637f1e8` passed 30 units, complete UI, VSIX packaging and gallery build on Windows Server 2025, Ubuntu 24.04 x64/Xvfb and macOS 15 Apple Silicon with VS Code 1.90.0 and 1.140.0.
+- Local canonical-file checks passed: 34 units, complete Windows VS Code 1.140.0 UI and a two-process fresh-profile restart that restored Lemon & Chilies from the same preference file.
+- Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) at commit `1c39afdc81ba415e5a99c8f698535463c771084c` passed 34 units, complete UI, VSIX packaging and gallery build in all six jobs. Both macOS versions acknowledged Lemon & Chilies from the canonical file and restored it after reload.
+
+### Limits
+
+- Intel Mac, Windows ARM, authenticated editor forks and remote/browser hosts remain unverified. Publisher, license, listing, public hosting and registry publication remain owner gates. No paid product, checkout or deployment.
+
 ## 0.3.1 - 2026-10-06 (Phase 3 collection, messages and gallery)
 
 Tracking: [feedback/gallery #13](https://github.com/gautham-nvidia/charmlet/issues/13), [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).

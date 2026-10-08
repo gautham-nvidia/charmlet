@@ -16,12 +16,20 @@ concurrency:
 
 jobs:
   validate:
-    name: Windows VS Code ${{ matrix.vscode }}
-    runs-on: windows-latest
+    name: ${{ matrix.label }} VS Code ${{ matrix.vscode }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [windows-latest, ubuntu-24.04, macos-15]
         vscode: ['1.90.0', '1.140.0']
+        include:
+          - os: windows-latest
+            label: Windows
+          - os: ubuntu-24.04
+            label: Linux
+          - os: macos-15
+            label: macOS
     env:
       VSCODE_TEST_VERSION: ${{ matrix.vscode }}
     timeout-minutes: 15
@@ -39,7 +47,12 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Build and test on pinned VS Code
+        if: runner.os != 'Linux'
         run: npm test
+      - name: Build and test with a Linux virtual display
+        if: runner.os == 'Linux'
+        shell: bash
+        run: xvfb-run -a --server-args="-screen 0 1920x1080x24" npm test
       - name: Package development VSIX
         run: npm run package:vsix
       - name: Build and validate companion gallery
@@ -49,21 +62,21 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-evidence-vscode-${{ matrix.vscode }}-${{ github.sha }}
+          name: test-evidence-${{ matrix.label }}-vscode-${{ matrix.vscode }}-${{ github.sha }}
           path: extension/test-results/
           if-no-files-found: ignore
           retention-days: 14
       - name: Retain installable prototype
         uses: actions/upload-artifact@v4
         with:
-          name: charmlet-vscode-${{ matrix.vscode }}-${{ github.sha }}
+          name: charmlet-${{ matrix.label }}-vscode-${{ matrix.vscode }}-${{ github.sha }}
           path: extension/*.vsix
           if-no-files-found: error
           retention-days: 14
       - name: Retain companion gallery
         uses: actions/upload-artifact@v4
         with:
-          name: charmlet-gallery-vscode-${{ matrix.vscode }}-${{ github.sha }}
+          name: charmlet-gallery-${{ matrix.label }}-vscode-${{ matrix.vscode }}-${{ github.sha }}
           path: website/dist/
           if-no-files-found: error
           retention-days: 14

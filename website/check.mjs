@@ -3,6 +3,7 @@ import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
+import { validateDistribution } from './distribution.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
@@ -10,9 +11,18 @@ const require = createRequire(join(repo, 'extension', 'package.json'));
 const { chromium } = require('@playwright/test');
 const { parseCharmPack } = require('./out/charm-packs.js');
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
-const output = join(repo, 'extension', 'test-results', 'website-check');
+const output = join(repo, 'extension', 'test-results', `website-check-${manifest.version}`);
 await mkdir(output, { recursive: true });
 const base = process.env.CHARMLET_GALLERY_URL || 'http://127.0.0.1:4173/';
+const marketplace = `https://marketplace.visualstudio.com/items?itemName=${manifest.publisher}.${manifest.name}`;
+const openVsx = `https://open-vsx.org/extension/${manifest.publisher}/${manifest.name}`;
+assert.deepEqual(validateDistribution({ marketplace: null, openVsx: null }, manifest), { marketplace: null, openVsx: null });
+assert.deepEqual(validateDistribution({ marketplace, openVsx }, manifest), { marketplace, openVsx });
+assert.throws(() => validateDistribution({ marketplace: 'https://marketplace.visualstudio.com/items?itemName=wrong.charmlet', openVsx: null }, manifest));
+assert.throws(() => validateDistribution({ marketplace: marketplace.replace('https:', 'http:'), openVsx: null }, manifest));
+assert.throws(() => validateDistribution({ marketplace: 'javascript:alert(1)', openVsx: null }, manifest));
+assert.throws(() => validateDistribution({ marketplace: null, openVsx: `https://example.com/extension/${manifest.publisher}/${manifest.name}` }, manifest));
+assert.throws(() => validateDistribution({ marketplace: `${marketplace}&unexpected=true`, openVsx: null }, manifest));
 const errors = [];
 let browser;
 const checkOverflow = async page => page.evaluate(() => ({ width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
@@ -31,6 +41,20 @@ try {
   assert.equal(await page.locator('.charm-card').count(), 6);
   assert.equal(await page.locator('#extra-count').textContent(), '6');
   assert.equal(await page.locator('#included-count').textContent(), '10');
+  assert.equal(await page.locator('.site-header a[href="#install"]').last().getAttribute('href'), '#install');
+  const installation = page.locator('#install');
+  const manualCard = installation.getByRole('article', { name: 'Install the extension file', exact: true });
+  const storeCard = installation.getByRole('article', { name: 'Install from an extension store', exact: true });
+  await manualCard.getByRole('link', { name: /Download Charmlet \.vsix/ }).waitFor();
+  await manualCard.getByText('Extensions: Install from VSIX…', { exact: true }).waitFor();
+  await manualCard.getByText('Charmlet: Show Charm', { exact: true }).waitFor();
+  await storeCard.getByText('Charmlet: Show Charm', { exact: true }).waitFor();
+  for (const label of ['Ctrl', 'Shift', 'P', 'Cmd']) assert.ok(await installation.getByText(label, { exact: true }).count());
+  await assert.doesNotReject(async () => page.locator('#store-links').waitFor({ state: 'hidden' }));
+  assert.equal((await page.locator('#store-availability').textContent())?.trim(), 'After publication');
+  const howToText = await page.locator('#how-to').textContent();
+  assert.ok(howToText?.includes('.charmlet.json'));
+  assert.ok(howToText?.includes('not an extension installer'));
   const desktopImages = await decodeImages(page);
   assert.ok(desktopImages.every(image => image.complete && image.width > 0 && image.height > 0));
   const desktopOverflow = await checkOverflow(page);
@@ -76,6 +100,21 @@ try {
   assert.ok(downloadedVsix.length > 1000);
   assert.ok(downloadedVsix.equals(sourceVsix));
 
+  const actualCatalogue = JSON.parse(await readFile(join(root, 'dist', 'catalogue.json'), 'utf8'));
+  await page.route('**/catalogue.json', route => route.fulfill({ json: { ...actualCatalogue, distribution: { marketplace, openVsx } } }));
+  await page.reload({ waitUntil: 'networkidle' });
+  const storeLinks = page.locator('#store-links a');
+  assert.equal(await storeLinks.count(), 2);
+  assert.equal(await storeLinks.nth(0).getAttribute('href'), marketplace);
+  assert.equal(await storeLinks.nth(1).getAttribute('href'), openVsx);
+  assert.equal(await storeLinks.nth(0).getAttribute('target'), '_blank');
+  assert.equal(await storeLinks.nth(0).getAttribute('rel'), 'noopener noreferrer');
+  assert.equal((await page.locator('#store-availability').textContent())?.trim(), 'Store links available');
+  await page.unroute('**/catalogue.json');
+  await page.reload({ waitUntil: 'networkidle' });
+  await assert.doesNotReject(async () => page.locator('#store-links').waitFor({ state: 'hidden' }));
+  assert.equal((await page.locator('#store-availability').textContent())?.trim(), 'After publication');
+
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(base, { waitUntil: 'networkidle' });
   await page.locator('.charm-card').first().waitFor();
@@ -91,6 +130,7 @@ try {
     extras: 6,
     included: 10,
     downloadedPack: parsed.id,
+    distributionFixture: 'validated matching URLs rendered without navigation',
     packBytes: (await stat(packPath)).size,
     vsixBytes: (await stat(vsixPath)).size,
     desktopOverflow,

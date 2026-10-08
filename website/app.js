@@ -11,6 +11,26 @@ function element(tag, className, text) {
   if (text !== undefined) node.textContent = text;
   return node;
 }
+function renderStoreLinks(distribution = {}) {
+  const links = document.querySelector('#store-links');
+  links.replaceChildren();
+  for (const [key, label] of [['marketplace', 'View on VS Code Marketplace'], ['openVsx', 'View on Open VSX']]) {
+    if (!distribution[key]) continue;
+    const link = element('a', 'button button-secondary', label);
+    link.href = distribution[key];
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    links.append(link);
+  }
+  const available = links.childElementCount > 0;
+  links.hidden = !available;
+  document.querySelector('#store-availability').textContent = available ? 'Store links available' : 'After publication';
+  document.querySelector('#store-availability').className = `availability ${available ? 'available' : 'upcoming'}`;
+  document.querySelector('#store-status').textContent = available
+    ? 'Choose an official listing below. Availability inside other editors depends on the catalogue they support.'
+    : 'Store listings are being prepared. Until the official links appear here, use the extension file.';
+}
+
 function renderGroups() {
   const focusedGroup = groupFilters.contains(document.activeElement) ? document.activeElement.textContent : null;
   let restoreFocus;
@@ -81,6 +101,7 @@ try {
   if (!response.ok) throw new Error('Gallery unavailable');
   const data = await response.json();
   catalogue = data.charms;
+  renderStoreLinks(data.distribution);
   document.querySelector('#included-count').textContent = String(catalogue.filter(item => item.kind === 'included').length);
   document.querySelector('#extra-count').textContent = String(catalogue.filter(item => item.kind === 'extra').length);
   document.querySelector('#release-label').textContent = `Development preview ${data.version}`;

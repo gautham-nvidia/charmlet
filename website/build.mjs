@@ -2,6 +2,7 @@ import { createRequire } from 'node:module';
 import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateDistribution } from './distribution.mjs';
 
 const require = createRequire(import.meta.url);
 const { parseCharmPack } = require('../extension/out/charm-packs.js');
@@ -11,6 +12,7 @@ const dist = join(root, 'dist');
 const builtins = JSON.parse(await readFile(join(repo, 'extension', 'src', 'builtin-charms.json'), 'utf8'));
 const extras = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
+const distribution = validateDistribution(JSON.parse(await readFile(join(root, 'distribution.json'), 'utf8')), manifest);
 if (builtins.length !== 10 || extras.length !== 6) throw new Error('Expected ten included and six extra charms.');
 const ids = new Set([...builtins, ...extras].map(item => item.id));
 if (ids.size !== 16) throw new Error('Charm IDs must be unique across the gallery.');
@@ -44,5 +46,5 @@ const charms = [
   ...builtins.map(item => ({ ...item, kind: 'included', preview: `./assets/default/${item.file}` })),
   ...extras.map(item => ({ ...item, kind: 'extra', preview: `./assets/extras/${item.file}`, download: `./packs/${item.id}.charmlet.json` })),
 ];
-await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version, extensionDownload: './downloads/charmlet.vsix', charms }, null, 2)}\n`, 'utf8');
+await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version, extensionDownload: './downloads/charmlet.vsix', distribution, charms }, null, 2)}\n`, 'utf8');
 console.log(`Built Charmlet gallery ${manifest.version}: ${builtins.length} included, ${extras.length} extras.`);

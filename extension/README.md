@@ -3,7 +3,7 @@
 Ten original hanging charms with compact pull/return behavior, an optional fixed-peg Orbit layout and 80 coding messages.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Phase 3 development build, version 0.3.1.** Charmlet lives in a dockable VS Code view, not over your code
+**Phase 3 release-preparation build, version 0.3.2.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 
 ## Try it
@@ -41,7 +41,7 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 With the charm keyboard-focused: Enter/Space nudges, Left/Right swings, Up/Down adjusts the cord,
 and Escape hides. System reduced-motion preferences override the animation switch.
 
-Charm choice, layout, size, resting cord, visibility, motion and message preferences are saved locally.
+Charm choice, layout, size, resting cord, visibility, motion and message preferences use an extension-owned local preferences file. Existing saved settings are used as a migration fallback when that file is first created or unreadable.
 The displayed cord may shorten temporarily to fit the current panel while the Cord setting keeps the
 requested resting preference. Cancelling a drag keeps that preference. A downward pull stretches and
 eases back on release; a straight upward pull retracts and the full-size arrow restores it.
@@ -59,9 +59,11 @@ records asset origins, while the project source/art license remains pending and 
 
 ## Current limits
 
-- Tested locally on Windows with VS Code **1.90.0 and 1.140.0**, at 1400x900, 1000x650 and 1000x500 window sizes.
+- Complete VS Code extension checks passed on Windows Server 2025 and the local Windows PC, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon, using VS Code **1.90.0 and 1.140.0**.
+- Hosted run 37697185841 passed the canonical-file restoration path on macOS 15 Apple Silicon with VS Code 1.90.0 and 1.140.0: the acknowledged Lemon & Chilies file readback restored as Lemon after reload on both hosts. Earlier intermittent failures remain historical evidence, and their exact internal VS Code cause is not asserted.
 - The animation loop stops when settled or hidden. [Recorded measurements](https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-1-validation.md) include whole-editor overhead and do not promise zero CPU use.
-- macOS, Linux, Cursor, Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.
+- Intel Mac, Windows ARM, authenticated Cursor/Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.
+- These checks cover the VS Code extension. A possible standalone Windows/macOS app is only a product proposal and has not been implemented or verified.
 - The dock occupies editor space. Hanging saves headroom; Orbit reserves room for a full loop. Small panels scale the play area.
 - Charm choice, layout, size, resting cord, visibility, motion and message preferences persist locally; cross-machine sync is not implemented.
 - This is not yet published to VS Code Marketplace or Open VSX. The manifest publisher is not

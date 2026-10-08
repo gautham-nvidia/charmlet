@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "reviewedDate": "2026-10-07",
+  "featureHead": "637f1e8751262a0293d4eaec5a6321c5d49b687b",
+  "pullRequestMergeRef": "3b46d03321956b66afb527bd39d855a95dc3fae0",
+  "workflowRun": 37663692698,
+  "workflowUrl": "https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698",
+  "scope": "Desktop VS Code extension tests, not a standalone desktop application",
+  "unitSuiteCount": 30,
+  "samplesPerOrbitDirection": 96,
+  "platforms": [
+    {
+      "platform": "Windows",
+      "vscode": "1.90.0",
+      "job": 112937369878,
+      "result": "success",
+      "orbitDegreesDirectionMinus1": 534.4,
+      "orbitDegreesDirectionPlus1": 534.4,
+      "allFourQuadrants": true,
+      "fixedPegAndInView": true,
+      "settledAndHiddenFrameDeltas": 0
+    },
+    {
+      "platform": "Windows",
+      "vscode": "1.140.0",
+      "job": 112937369963,
+      "result": "success",
+      "orbitDegreesDirectionMinus1": 534.3,
+      "orbitDegreesDirectionPlus1": 534.4,
+      "allFourQuadrants": true,
+      "fixedPegAndInView": true,
+      "settledAndHiddenFrameDeltas": 0
+    },
+    {
+      "platform": "Ubuntu 24.04 x64",
+      "vscode": "1.90.0",
+      "job": 112937369892,
+      "result": "success",
+      "orbitDegreesDirectionMinus1": 534.4,
+      "orbitDegreesDirectionPlus1": 534.4,
+      "allFourQuadrants": true,
+      "fixedPegAndInView": true,
+      "settledAndHiddenFrameDeltas": 0
+    },
+    {
+      "platform": "Ubuntu 24.04 x64",
+      "vscode": "1.140.0",
+      "job": 112937369593,
+      "result": "success",
+      "orbitDegreesDirectionMinus1": 534.4,
+      "orbitDegreesDirectionPlus1": 534.9,
+      "allFourQuadrants": true,
+      "fixedPegAndInView": true,
+      "settledAndHiddenFrameDeltas": 0
+    },
+    {
+      "platform": "macOS 15 Apple Silicon",
+      "vscode": "1.90.0",
+      "job": 112937370112,
+      "result": "success",
+      "orbitDegreesDirectionMinus1": 534.2,
+      "orbitDegreesDirectionPlus1": 533.8,
+      "allFourQuadrants": true,
+      "fixedPegAndInView": true,
+      "settledAndHiddenFrameDeltas": 0
+    },
+    {
+      "platform": "macOS 15 Apple Silicon",
+      "vscode": "1.140.0",
+      "job": 112937370163,
+      "result": "success",
+      "orbitDegreesDirectionMinus1": 534.3,
+      "orbitDegreesDirectionPlus1": 533.9,
+      "allFourQuadrants": true,
+      "fixedPegAndInView": true,
+      "settledAndHiddenFrameDeltas": 0
+    }
+  ],
+  "interpretation": [
+    "The complete unit, editor interaction, packaging and gallery build path passed in all six jobs.",
+    "The reported minimum-macOS selected-charm reload case passed after serialized confirmed writes.",
+    "Rendered orbit and lifecycle summaries were checked by the lead against the frozen artifacts.",
+    "This does not establish the exact cause of every earlier intermittent failure.",
+    "No cross-platform CPU, memory, battery or frame-rate comparison is claimed.",
+    "Intel macOS, Windows ARM, authenticated editor forks, Remote-SSH/WSL and browser hosts remain separate verification scopes."
+  ]
+}

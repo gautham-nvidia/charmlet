@@ -42,11 +42,11 @@ For a custom host, use its verified executable path with `CHARMLET_TEST_HOST` an
 |---|---|
 | Full-circle interaction | Implemented and locally verified in 0.2.0; see the orbit validation record and updated PR #12 checks |
 | Cursor / Devin Desktop | Run the complete interaction suite with an authorized authenticated test setup, or collect explicit manual verification from the owner's already configured editor; do not copy credentials or bypass onboarding |
-| macOS / Linux CI | Make keyboard shortcuts and executable selection portable; use a virtual display on headless Linux and run the real suite before claiming support |
+| macOS / Linux CI | Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) passed the current 34-unit/UI/package/gallery path on VS Code 1.90.0 and 1.140.0 for Ubuntu 24.04 x64/Xvfb and macOS 15 Apple Silicon; see [platform summary](phase-3-platforms.json) and [canonical preference proof](phase-3-preferences.json). Intel Mac and Windows ARM remain unverified |
 | Remote / browser | Exercise real Remote-SSH/WSL placement; decide whether a browser bundle is in scope |
-| Publisher | Confirm the intended personal publisher and actual ownership for Marketplace/Open VSX; the manifest value alone is not proof |
+| Publisher | Confirm personal publisher/namespace ownership and approve publication; manifest identity and validated URL syntax are not proof of a live listing |
 | License | Owner must choose the source/art license; current public visibility and permanently free pricing do not grant a reuse license |
-| Listing | Prepare a suitable PNG marketplace icon and review the README/media; the existing SVG is the native view icon |
+| Listing | Original 256×256 PNG icon and manual/store instructions are prepared; owner review and live identity-matching Marketplace/Open VSX listings remain |
 | Publication | Package and review a release candidate, then obtain explicit publishing approval before namespace/account changes or registry uploads |
 
 Official [VS Code CI guidance](https://code.visualstudio.com/api/working-with-extensions/continuous-integration) uses Xvfb for headless Linux editor tests. The local `@vscode/test-electron` launcher source also includes `--no-sandbox` and `--disable-gpu-sandbox`; this repository's direct Playwright launch does not inherit that helper's launch arguments. These are preparation facts, not Linux execution evidence.
@@ -60,3 +60,65 @@ The owner clarified that the charm and cord must orbit the fixed top peg. Versio
 Type/lint/build, **19 unit tests**, and both complete local UI suites on **Windows VS Code 1.90.0 and 1.140.0** passed. The [orbit validation record](full-circle-validation.md) contains screenshots and independently checked rendered-motion evidence. The earlier unresolved-motion entry is superseded by this implementation.
 
 The macOS/Linux/remote/browser, authenticated-fork, publisher/license, listing and publication gates remain open. No new fork pass is inferred from the official VS Code results. Updated hosted checks and integration are tracked in PR #12.
+
+## 2026-10-06 - Version 0.3.2 release preparation
+
+Version **0.3.2** prepares release-facing assets and automation without changing the charm, message or importer behavior accepted in 0.3.1. The website distinguishes the currently available manual `.vsix` installation from future official store installation and from data-only `.charmlet.json` artwork packs. Committed store URLs remain null; identity validation does not prove a listing exists.
+
+An original 256×256 PNG Marketplace icon and light gallery banner are prepared. The real-editor test uses portable macOS/Windows/Linux modifiers and Linux sandbox flags. CI is configured for VS Code 1.90.0 and 1.140.0 across Windows, Ubuntu 24.04 and macOS 15, with Xvfb on Linux. These are preparation facts only: macOS/Linux support must remain unverified until the owner reviews actual hosted runs.
+
+Local Windows preparation checks passed: icon export/dimensions, compile/type/lint, 27 units, VS Code 1.140.0 UI, package, gallery build and extended installed-Edge website validation. No local 1.90.0 repeat was required for this preparation slice; the existing 0.3.1 evidence remains historical.
+
+The [paid artwork plan](paid-artwork-plan.md) is a non-live proposal. The free extension, importer, ten defaults and current six extras remain free. No account, checkout, payment provider, public website, store listing, source/art license or registry publication was created. Phase 3 remains open; a paid-commerce phase must not start until the current release-readiness decisions and merge are complete.
+
+## 2026-10-07 - Current desktop VS Code platform validation
+
+Hosted run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698) at feature head `637f1e8751262a0293d4eaec5a6321c5d49b687b` and PR merge ref `3b46d03321956b66afb527bd39d855a95dc3fae0` passed all six jobs.
+
+| Desktop runner | VS Code 1.90.0 | VS Code 1.140.0 |
+|---|---|---|
+| Windows Server 2025 | Passed | Passed |
+| Ubuntu 24.04 x64 with Xvfb | Passed | Passed |
+| macOS 15 Apple Silicon | Passed | Passed |
+
+Every job passed **30 unit tests**, the complete real-editor interaction suite, VSIX packaging and static-gallery build. The lead checked the downloaded artifacts and actual host/platform identities. The frozen [platform summary](phase-3-platforms.json) records all six job IDs and accepted motion/lifecycle values: 96 samples per direction, more than 360 degrees, all four quadrants, stationary peg, every captured position in view, and zero settled/hidden frame deltas. No cross-platform CPU, memory or battery comparison is made.
+
+macOS reported a requested 1400×900 window as 1400×684 with a 1024×684 work area and zoom factor 1. The tests therefore preserve the saved cord preference while checking the visible fit available on the real screen. Native macOS select typeahead replaces unsupported Home/End behavior. Ordered, confirmed preference writes passed the minimum-macOS reload case. The earlier failure's exact root cause remains unproven.
+
+![Compact Charmlet view on macOS](phase-3-platforms/macos-compact.png)
+![Imported Probe Card on macOS](phase-3-platforms/macos-import.png)
+![Compact Charmlet view on Ubuntu with Xvfb](phase-3-platforms/linux-compact.png)
+
+This verifies the VS Code extension on the listed desktop runners and versions. Intel Mac, Windows ARM, authenticated Cursor/Devin, Remote-SSH/WSL and browser-host scope remain unverified. Publisher ownership, source/art license, actual public hosting, registry listing and publication approval remain open. Focus-timer and standalone desktop-app directions remain proposals, not implemented release scope.
+
+## 2026-10-07 - Intermittent macOS persistence trace gate
+
+The all-six pass in run 37663692698 remains valid historical evidence. A later documentation-only head `a7d3b98` in run `37666186391` passed five jobs but repeated the selected-charm reload failure on macOS 1.140: Lemon & Chilies was selected before reload and Terminal restored afterward at the existing assertion. Product source was unchanged, so the intermittent case remains unresolved and PR #15 remains unmerged.
+
+Development-only tracing records flat charm IDs, save revisions, view generations, lifecycle labels and picker/stage events when `CHARMLET_TRACE_SAVES=1`. Ordinary installed/production mode emits none. A dedicated log output channel writes host records into the disposable profile's copied logs, and the UI harness writes a separate event transcript after application shutdown. No explicit delays/retries or state-behavior changes.
+
+A fresh disposable local smoke verified output-channel delivery after shutdown: the copied `Charmlet State Trace.log` contained 13 records and the required `restored`, `write-start`, `write-returned`, `readback` and `save-ack` labels. This proves the diagnostic reaches retained logs; it does not explain the intermittent failure.
+
+The lead will interpret future host and DOM transcripts. No causal ordering is inferred here, and the exact cause of earlier failures remains unproven. Current release readiness still requires a diagnostic hosted rerun and owner review in addition to the remaining publisher/license/host/publication gates.
+
+## 2026-10-07 - Canonical preference-file decision
+
+Frozen run 37693710452 at head `6539276` captured both macOS failures at the store/restore boundary: final Lemon & Chilies values were read back and acknowledged, no later Terminal save appeared, and the new host initialized from Terminal. This confirms that boundary failed in those runs without claiming every VS Code internal operation is understood.
+
+Charmlet now treats extension-owned `preferences.json` as canonical. Existing `globalState` is a migration fallback only when the file is missing or unreadable and is never cleared. New saves use serialized complete same-directory file replacement and confirm readback from the actual file before acknowledgement. No retry, arbitrary delay, cross-window synchronization guarantee or sudden-power-loss guarantee is claimed.
+
+Local checks passed: 34 units, the complete Windows VS Code 1.140.0 UI suite, and the exact fresh-profile two-process restart smoke. The second process had a different PID, restored Lemon & Chilies from an unchanged canonical file, and emitted a `restored` trace with source `file`. This verifies local process-restart restoration only. A new hosted six-job run remains the final evidence gate before calling the intermittent macOS case resolved. All other publisher/license/host/publication gates remain.
+
+## 2026-10-07 - Canonical preference file validated on all six jobs
+
+Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) at head `1c39afdc81ba415e5a99c8f698535463c771084c` passed all six jobs.
+
+| Runner | VS Code 1.90.0 job | VS Code 1.140.0 job |
+|---|---:|---:|
+| Windows Server 2025 | `113051678195` | `113051678205` |
+| Ubuntu 24.04 x64/Xvfb | `113051678152` | `113051677836` |
+| macOS 15 Apple Silicon | `113051678176` | `113051678323` |
+
+Every job passed 34 units, the complete real-editor UI suite, VSIX packaging and gallery build. The frozen [reviewed preference restoration proof](phase-3-preferences.json) records both macOS versions: final file readback was Lemon & Chilies, revision 14 was acknowledged, the pre-reload picker/stage remained Lemon with `persisted=true`, the new host restored Lemon with `source=file`, and the post-reload UI remained Lemon. No intervening save appears in the reviewed boundary evidence. The exact cause of prior VS Code internal cache behavior is not asserted.
+
+This validates the canonical file path on the listed runners and versions. It does not verify Intel Mac, Windows ARM, authenticated Cursor/Devin, Remote-SSH/WSL, browser hosts or the proposed standalone app. Phase 3 remains open for publisher ownership, source/art license, actual public hosting, registry listings and publication approval.

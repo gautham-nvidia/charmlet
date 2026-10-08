@@ -2,8 +2,13 @@
   "name": "charmlet",
   "displayName": "Charmlet: Coding Charms",
   "description": "Ten free charms, coding messages and extra charm packs. Offline and interactive.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "pricing": "Free",
+  "icon": "media/marketplace-icon.png",
+  "galleryBanner": {
+    "color": "#f6f4ed",
+    "theme": "light"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },

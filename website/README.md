@@ -10,7 +10,9 @@ This directory contains the dependency-free static gallery for Charmlet. It pres
 | `extras.json`, `assets/` | Frozen extra metadata and source-authored SVGs |
 | `packs/` | Validated generated `.charmlet.json` downloads |
 | `export-packs.mjs` | One-time trusted SVG-to-PNG pack exporter |
-| `build.mjs` | Validates packs and creates `dist/` |
+| `export-icon.mjs` | Exports the trusted 256×256 Marketplace PNG |
+| `distribution.json`, `distribution.mjs` | Null-or-identity-matching official store link configuration |
+| `build.mjs` | Validates packs and store configuration, then creates `dist/` |
 | `server.mjs` | Serves only generated `dist/` on localhost |
 | `check.mjs` | Focused Edge gallery/download/accessibility check |
 | `dist/` | Generated and ignored preview output |
@@ -29,6 +31,20 @@ node website/export-packs.mjs
 ```
 
 Do not weaken parser limits to accept an export. If the generated PNG profile changes, review that profile before changing validation.
+
+## Export the Marketplace icon
+
+The icon exporter reads the trusted source SVG, renders it through installed Edge, and verifies a 256×256 PNG using the existing `pngjs` decoder.
+
+**On the Windows PC (PowerShell), from the repository root:**
+
+```powershell
+node website/export-icon.mjs
+```
+
+## Configure future store links
+
+`distribution.json` keeps `marketplace` and `openVsx` null until publication. The validator accepts only HTTPS URLs whose publisher/name identity matches the extension manifest. Syntax validation is not proof that a listing exists: the owner must verify namespace ownership, publishing approval, version, and the live listing before changing either value.
 
 ## Build the gallery
 
@@ -64,6 +80,6 @@ With the preview server running, open a separate PowerShell terminal.
 node website/check.mjs
 ```
 
-The check uses installed Edge to cover desktop/mobile overflow, images, filters, search/reset, keyboard focus, real pack parsing, real VSIX bytes, and console/page errors. It writes ignored evidence under `extension/test-results/website-check/`.
+The check uses installed Edge to cover desktop/mobile overflow, images, filters, search/reset, keyboard focus, installation copy, real pack parsing, real VSIX bytes, and console/page errors. It validates null store configuration and injects matching synthetic URLs only to verify rendering without navigating or claiming publication. It writes ignored evidence under `extension/test-results/website-check-0.3.2/`.
 
 This is a local development preview. No domain, public deployment, account, checkout, payment provider, Marketplace listing or Open VSX publication is configured here.

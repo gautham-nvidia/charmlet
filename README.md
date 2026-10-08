@@ -2,12 +2,16 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-06:** Phase 3 development build **0.3.1**, with **ten free original charms**, 80 rotating
-coding messages, a free extra-charm gallery/importer, and real-editor checks passing on Windows /
-VS Code **1.90.0 and 1.140.0**. No telemetry, account, payment or runtime AI is required.
+**Status, 2026-10-07:** Phase 3 release-preparation build **0.3.2**, with **ten free original charms**, 80 rotating
+coding messages and a free extra-charm gallery/importer. Desktop VS Code **1.90.0 and 1.140.0** checks pass
+on Windows, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon. No telemetry, account, payment or
+runtime AI is required.
 
-[Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13) and the
-[dated validation record](docs/phase-3-gallery-validation.md) show the checks and remaining review items.
+Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) passed all six listed jobs with 34 units and canonical-file restoration verified on both macOS versions. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md). This verifies the listed runners, not every OS/hardware/editor host or a standalone application.
+
+[Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
+[dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
+show the checks and remaining review items.
 
 ![Compact Charmlet view with message, controls and restore-ready layout](docs/phase-3-gallery/compact-feedback.png)
 
@@ -61,7 +65,7 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs twenty-seven state/physics, pack and timer tests and one real-editor interaction
+`test` builds and lints both bundles, runs thirty-four state/physics, pack, timer, persistence and file-store tests and one real-editor interaction
 regression. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.
@@ -71,14 +75,18 @@ The VSIX is written under `extension/` and ignored by Git. Install it using **Ex
 VSIX...** for manual testing. Packaging uses `--skip-license` because the project's own license decision
 is still open, not because third-party licenses are waived. Required notices ship in the package.
 
-[CI](.github/workflows/ci.yml) builds, tests and packages on Windows with VS Code **1.90.0 and 1.140.0**
-for each PR and `main` update. Screenshots, resource snapshots and the VSIX are retained as workflow
-artifacts tied to the commit. CI does not publish to extension registries.
+[CI](.github/workflows/ci.yml) runs six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code
+**1.90.0 and 1.140.0**. All six passed the current 34-unit/UI/package/gallery path in hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841).
+Linux uses Xvfb; screenshots, resource snapshots, the VSIX and static gallery are retained as workflow
+artifacts. This verifies the listed runners, not every OS/hardware/editor host. CI does not deploy or publish.
 
 ## Companion gallery
 
 The source under [website/](website/) builds a static local gallery with six free extra charms and real
-pack/VSIX downloads. It is a development preview, not a public URL or Marketplace listing.
+pack/VSIX downloads. A `.vsix` installs the extension; a `.charmlet.json` adds artwork only after Charmlet
+is installed. Store links are driven by validated `website/distribution.json` values and remain null until
+the owner verifies a live identity-matching listing. URL validation is not proof of publication. This is
+a development preview, not a public URL or Marketplace/Open VSX listing.
 
 **On the Windows PC (PowerShell), from the repository root, after locked dependencies are installed:**
 
@@ -106,11 +114,15 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Phase 2 validation](docs/phase-2-validation.md) | Collection screenshots and Windows checks |
 | [Phase 3 issue #11](https://github.com/gautham-nvidia/charmlet/issues/11) | Compatibility and release readiness |
 | [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
+| [Desktop platform summary](docs/phase-3-platforms.json) | Frozen six-job Windows/Linux/macOS identities and accepted motion/lifecycle values |
+| [Preference restoration proof](docs/phase-3-preferences.json) | Frozen canonical-file readback/ack/restart evidence from both macOS versions |
 | [Full-circle validation](docs/full-circle-validation.md) | Orbit screenshots and rendered-motion evidence |
 | [Gallery and compact feedback #13](https://github.com/gautham-nvidia/charmlet/issues/13) | Ten defaults, messages, packs and companion gallery |
 | [Gallery validation](docs/phase-3-gallery-validation.md) | Compact, message, import, orbit and website evidence |
 | [Website guide](website/README.md) | Build, preview and reusable browser check |
 | [Charm pack format](docs/charm-packs.md) | Validated data-only import format and limits |
+| [Paid artwork proposal](docs/paid-artwork-plan.md) | Non-live collection, rights, fulfillment and owner-decision plan |
+| [Competitive review and desktop direction](docs/competitive-review.md) | Sourced product comparison, proposed free focus timer and standalone-host tradeoffs |
 | [Artwork provenance](extension/ARTWORK.md) | Asset origins, shared geometry and license status |
 | [extension/CHANGELOG.md](extension/CHANGELOG.md) | User-visible changes by version and date |
 | [PLAN.md](PLAN.md) | Design research, constraints and clearly marked historical proposals |
@@ -131,9 +143,10 @@ git log --follow --date=short --format="%h %ad %s" -- PROJECT_LOG.md
 ```
 
 Phase 3 is in progress: [compatibility and release readiness](docs/phase-3-readiness.md). The full-circle
-orbit and free gallery/import flow are implemented and locally verified. Broader host/platform testing,
-publisher, license and listing decisions remain open; registry publication still requires explicit
-approval. Optional paid artwork remains later work and no checkout is implemented.
+orbit, free gallery/import flow and listed Windows/Ubuntu/macOS desktop VS Code matrix are verified.
+Intel Mac, Windows ARM, authenticated editor forks, remote/browser scope, publisher, license, hosting and
+listing decisions remain open; registry publication still requires explicit approval. Optional paid
+artwork, focus timer and standalone desktop directions remain proposals.
 
 ## Ownership and licenses
 
