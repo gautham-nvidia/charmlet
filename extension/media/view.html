@@ -9,11 +9,15 @@
 </head>
 <body>
   <main id="app" aria-label="Charmlet">
-    <div id="stage" data-ready="false" data-running="false" data-persisted="true">
+    <div id="stage" data-ready="false" data-running="false" data-persisted="true" data-companion-ready="false" data-companion-persisted="true">
       <div id="rig">
         <div id="hanging" hidden>
           <svg id="cord" aria-hidden="true"><path id="thread"></path></svg>
           <span id="anchor" aria-hidden="true"></span>
+          <svg id="focus-ring" viewBox="0 0 24 24" aria-hidden="true" hidden>
+            <circle class="focus-track" cx="12" cy="12" r="10"></circle>
+            <circle id="focus-progress" cx="12" cy="12" r="10" pathLength="100"></circle>
+          </svg>
           <button id="charm" type="button" aria-label="Nudge terminal charm" title="Nudge charm" draggable="false">
             <img id="charm-image" src="__CHARM__" alt="" width="72" height="84" draggable="false">
           </button>
@@ -22,12 +26,21 @@
       <button id="restore" type="button" aria-label="Restore charm" title="Restore charm" hidden></button>
     </div>
     <div id="message-card" class="message-card">
-      <blockquote id="message-text"></blockquote>
+      <div class="message-body">
+        <div class="message-meta"><span id="card-kind">Fact</span><span id="card-topic">Git</span></div>
+        <p id="message-text"></p>
+        <p id="message-answer" hidden></p>
+        <div class="message-links">
+          <button id="reveal-answer" type="button" hidden>Reveal answer</button>
+          <button id="message-source" type="button" hidden>Read source</button>
+        </div>
+      </div>
       <button id="next-message" type="button" aria-label="Next coding message" title="Next coding message"></button>
     </div>
     <div class="tools" role="toolbar" aria-label="Charm controls">
       <div class="identity"><span id="charm-swatch" class="swatch" aria-hidden="true"></span><span id="charm-name">Terminal</span></div>
       <div class="actions">
+        <button id="companion-toggle" type="button" aria-label="Companion tools" title="Focus and learning" aria-expanded="false" aria-controls="companion-tools"></button>
         <button id="settings-toggle" type="button" aria-label="Charm settings" title="Charm settings" aria-expanded="false" aria-controls="settings"></button>
         <button id="layout-mode" type="button" aria-label="Orbit layout" title="Orbit layout" aria-pressed="false"></button>
         <button id="motion" type="button" role="switch" aria-checked="true" aria-label="Motion" title="Motion"></button>
@@ -52,7 +65,28 @@
         <button id="remove-pack" type="button">Remove charm pack</button>
       </div>
     </div>
-    <div class="readout"><span id="phase" role="status" aria-live="polite">Parked</span><output id="length">126 px</output></div>
+    <section id="companion-tools" aria-label="Companion tools" hidden>
+      <div role="tablist" aria-label="Companion pages">
+        <button id="tab-focus" type="button" role="tab" aria-selected="true" aria-controls="focus-panel">Focus</button>
+        <button id="tab-learn" type="button" role="tab" aria-selected="false" aria-controls="learn-panel" tabindex="-1">Learn</button>
+      </div>
+      <div id="focus-panel" role="tabpanel" aria-labelledby="tab-focus">
+        <p id="focus-status" role="status" aria-live="polite">Ready to focus</p>
+        <output id="focus-time" aria-label="Timer remaining" aria-live="off">25:00</output>
+        <p id="focus-notice" hidden></p>
+        <div class="focus-presets"><button id="preset-25" type="button">25 / 5</button><button id="preset-50" type="button">50 / 10</button></div>
+        <div class="focus-durations"><label>Focus minutes<input id="focus-minutes" type="number" min="1" max="120" value="25"></label><label>Break minutes<input id="break-minutes" type="number" min="1" max="30" value="5"></label></div>
+        <label class="focus-intent-label">One thing to finish<input id="focus-intent" type="text" maxlength="160" placeholder="One small coding win"></label>
+        <div class="focus-actions"><button id="focus-start" type="button">Start focus</button><button id="break-start" type="button">Start break</button><button id="focus-pause" type="button" hidden>Pause</button><button id="focus-resume" type="button" hidden>Resume</button><button id="focus-stop" type="button" hidden>Stop</button></div>
+      </div>
+      <div id="learn-panel" role="tabpanel" aria-labelledby="tab-learn" hidden>
+        <label for="feed-mode">Learning mix</label>
+        <select id="feed-mode"><option value="mix">Facts + trivia</option><option value="facts">Facts</option><option value="trivia">Trivia</option><option value="encouragement">Encouragement</option></select>
+        <p class="companion-hint">60 facts · 30 trivia questions · 80 optional encouragement messages</p>
+      </div>
+      <p id="companion-feedback" role="status" aria-live="polite" hidden></p>
+    </section>
+    <div class="readout"><span id="phase" role="status" aria-live="polite">Parked</span><button id="focus-readout" type="button" aria-label="Open focus session">Focus</button><output id="length">126 px</output></div>
   </main>
   <script nonce="__NONCE__" src="__SCRIPT__"></script>
 </body>

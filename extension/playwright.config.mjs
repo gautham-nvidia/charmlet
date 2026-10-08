@@ -16,7 +16,7 @@ if (process.env.VSCODE_TEST_VERSION) {
 
 export default defineConfig({
 	testDir: './src/test',
-	testMatch: 'extension.test.ts',
+	testMatch: ['extension.test.ts', 'companion-ui.test.ts'],
 	timeout: 120000,
 	workers: 1,
 	fullyParallel: false,

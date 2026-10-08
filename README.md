@@ -2,12 +2,12 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-08:** Phase 4 development is starting on `feat/phase-4-companion` with the
-[Focus, Learn and Grow plan](docs/phase-4-plan.md). The current tested installable baseline remains
-**0.3.2**: ten bundled charms, 80 messages, six free website extras and the offline importer. The new
-timer, learning feed, garden, paid Photo Studio and desktop beta are planned work, not features in that package.
+**Status, 2026-10-08:** Phase 4A development candidate **0.4.0** adds free Focus sessions and a sourced
+Learn feed to the existing ten bundled charms, 80 encouragement messages, six free website extras and
+offline importer. The garden, reminders, expanded artwork, paid Photo Studio and desktop beta remain
+planned work in the [Focus, Learn and Grow plan](docs/phase-4-plan.md), not features in this candidate.
 
-Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) passed all six listed jobs with 34 units and canonical-file restoration verified on both macOS versions. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md). This verifies the listed runners, not every OS/hardware/editor host or a standalone application.
+Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) passed all six listed jobs for the 0.3.2 baseline, with canonical-file restoration verified on both macOS versions. The 0.4.0 candidate passes 47 units and both local VS Code 1.140.0 editor suites; hosted Phase 4A verification remains pending. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md).
 
 [Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
 [dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
@@ -20,9 +20,14 @@ the top and reserves pull room; the Orbit toolbar toggle reserves space for full
 straight upward pull retracts the charm and the arrow restores it. The Cord setting is the saved resting
 preference, while the visible cord may temporarily shorten to fit the current panel.
 
-Eighty original coding messages sit directly below the charm. Use **Next coding message**, or enable/disable
-saved automatic five-minute rotation in settings. Rotation pauses while the view is unavailable, settings
-are open or a drag is active.
+The card below the charm now offers 60 sourced facts, 30 sourced trivia questions and the existing 80
+optional encouragement messages. Use **Next coding message**, choose the saved feed mode, reveal trivia
+answers or open a trusted source. Automatic five-minute rotation pauses while the view is unavailable,
+settings/tools are open, a card is active or a drag is in progress.
+
+Open **Companion tools** or run **Charmlet: Focus Session** for a deadline-based focus/break timer with
+25/5, 50/10 or custom durations, pause/resume/stop and an optional one-line intention. It restores a real
+running or paused session after reload without auto-starting another session or counting completed work.
 
 ## Run the demo
 
@@ -65,8 +70,8 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs thirty-four state/physics, pack, timer, persistence and file-store tests and one real-editor interaction
-regression. It launches a disposable VS Code profile and edits only a temporary file. The test window
+`test` builds and lints both bundles, runs the state/physics, pack, focus/learning, persistence and file-store unit suites and two real-editor interaction
+regressions. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.
 See the [validation record](docs/phase-3-gallery-validation.md) for compact, gallery, import and message checks.
@@ -76,7 +81,7 @@ VSIX...** for manual testing. Packaging uses `--skip-license` because the projec
 is still open, not because third-party licenses are waived. Required notices ship in the package.
 
 [CI](.github/workflows/ci.yml) runs six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code
-**1.90.0 and 1.140.0**. All six passed the current 34-unit/UI/package/gallery path in hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841).
+**1.90.0 and 1.140.0**. All six passed the 0.3.2 baseline's 34-unit/UI/package/gallery path in hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841).
 Linux uses Xvfb; screenshots, resource snapshots, the VSIX and static gallery are retained as workflow
 artifacts. This verifies the listed runners, not every OS/hardware/editor host. CI does not deploy or publish.
 

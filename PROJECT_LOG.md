@@ -278,3 +278,27 @@ The owner explicitly authorized Phase 4 on `feat/phase-4-companion`, based on cl
 The authoritative [Focus, Learn and Grow plan](docs/phase-4-plan.md) scopes free focus, learning, reminders, garden rewards, expanded original free collections, website Photo Studio preparation and a parallel Windows/macOS desktop beta. The [collection brief](docs/phase-4-original-collections.md) defines a 60-design website target and 12-flower garden target; these are planned targets, not assets that currently exist.
 
 Phase 5 tracks extension-store launch and outstanding publisher/license/launch-target decisions in issue #18. Phase 6 is the broader product launch; Phase 7+ holds later IDE integrations and rights-dependent licensed art. The owner-approved paid Photo Studio is a website exception to the earlier free-creator recommendation; free core, productivity, reminders, garden, importer and ten defaults remain free. Pricing remains a proposal, and no checkout, merchant account, public deployment, feature implementation, publication or next-phase completion occurred in this kickoff.
+
+## 2026-10-08 - Phase 4A Focus and Learn candidate
+
+Development version **0.4.0** implements the first Phase 4 slice: persisted focus/break sessions and a saved sourced-learning feed. Focus provides 25/5 and 50/10 presets, bounded custom durations, optional one-line intent, pause/resume/stop, deadline-based reload recovery, a compact peg ring and status-bar/command access. Learn provides 60 sourced facts, 30 sourced trivia questions and the existing 80 optional encouragement messages, with saved feed/card/reveal state and source opening restricted to trusted catalogue IDs.
+
+The host owns the once-per-second timer snapshots while active; countdown ticks do not write to disk or resize/cancel a charm drag. User actions use a separate confirmed `companion.json` request/ack path. The renderer has no countdown interval/RAF loop, pauses five-minute card rotation for drawer/reveal/hover/focus/pending activity, keeps focus announcements stable between phase changes and preserves the existing charm preference/physics/import behavior.
+
+Local Windows verification passed: compile/type/lint/bundles, **47 unit tests**, and both VS Code 1.140.0 real-editor suites (`2 passed (3.5m)`). The focused suite verified elapsed-away recovery, confirmed start/pause/reload/resume/stop, exact paused remainder, saved trivia/feed identity, answer/source display, encouragement migration and command opening. Evidence includes `phase-4-focus.png` and `phase-4-learning.png` under the focused test result.
+
+Packaging produced `extension/charmlet-0.4.0.vsix`, 103555 bytes, SHA256 `6328B45FCCFEF0D5AB3D6DF13420044CFEBC6221C9880840CD4A20ABAA8D5E21`. Gallery build reported ten included/six extras; installed-Edge website checks passed at desktop/mobile sizes with matching 103555-byte download and no console/page errors.
+
+Garden, reminders, expanded art targets, paid Photo Studio and desktop beta remain pending later Phase 4 slices. This candidate is unpublished; no account, checkout, public deployment, merchant action, store listing or next phase occurred.
+
+## 2026-10-08 - Phase 4A consolidated review fixes
+
+Lead review confirmed that once-per-second focus snapshots repeatedly restarted the five-minute card timer, starving eligible automatic rotation. `MessageRotation.setEnabled` now preserves an existing eligible timer while retaining `update` as the explicit manual-reset contract. Companion user actions stop rotation before posting and confirmed results restart a fresh period. A deterministic heartbeat unit covers the full five-minute interval.
+
+Heartbeat snapshots now preserve unchanged learning-card text nodes, selection and assistive reading. Focus form validation rejects non-integer/out-of-range minutes inline; Tab navigation inside the panel does not trigger a save that disables the next field. Focus/Learn tabs wrap correctly, explicitly opened tabs receive focus, known controller errors retain `data-companion-persisted=error`, and facts/trivia use normal four-line text with the compact two-line cap.
+
+Host lifecycle now stops companion ticks before the final provider drain. Ready delivery owns only the current view, clears only the pending tab included in that delivery and forwards a newer open request that arrived while posting. Companion action errors preserve the controller's newer-schema message. The lead-authored forward-schema guard prevents 0.4.0 from overwriting a newer companion file; its targeted test passed before this batch.
+
+Narrow Windows verification passed: compile/type/lint/bundles; compile-tests; three focused message-rotation cases; and the focused VS Code 1.140.0 companion UI test (`1 passed (19.5s)`). The unchanged full 47-unit and baseline UI suites were intentionally not rerun; the next full gate is expected to contain 49 units, but no complete 49-unit pass is claimed yet.
+
+The rebuilt candidate `extension/charmlet-0.4.0.vsix` is 103995 bytes, SHA256 `80F00AFE684EC48818D32CC8E67762DBA403B1A03F1CB4B6F5BB555A5D0A6644`. Gallery and installed-Edge checks passed with a matching 103995-byte download, no overflow and no console/page errors. Hosted 0.4.0 evidence remains pending.

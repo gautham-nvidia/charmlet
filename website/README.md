@@ -80,7 +80,7 @@ With the preview server running, open a separate PowerShell terminal.
 node website/check.mjs
 ```
 
-The check uses installed Edge to cover desktop/mobile overflow, images, filters, search/reset, keyboard focus, installation copy, real pack parsing, real VSIX bytes, and console/page errors. It validates null store configuration and injects matching synthetic URLs only to verify rendering without navigating or claiming publication. It writes ignored evidence under `extension/test-results/website-check-0.3.2/`.
+The check uses installed Edge to cover desktop/mobile overflow, images, filters, search/reset, keyboard focus, installation copy, real pack parsing, real VSIX bytes, and console/page errors. It validates null store configuration and injects matching synthetic URLs only to verify rendering without navigating or claiming publication. It writes ignored evidence under `extension/test-results/website-check-0.4.0/`.
 
 This is a local development preview. No domain, public deployment, account, checkout, payment provider, Marketplace listing or Open VSX publication is configured here.
 
@@ -88,4 +88,4 @@ This is a local development preview. No domain, public deployment, account, chec
 
 The owner-authorized [Phase 4 companion plan](../docs/phase-4-plan.md) develops focus/learning/garden features, original free collections, Photo Studio preparation and a parallel desktop beta. The [original collection brief](../docs/phase-4-original-collections.md) is a planning target, not the current gallery inventory.
 
-The current static preview remains the tested **0.3.2** gallery: ten included previews, six free extras, manual installation help and the existing importer flow. Focus timers, learning cards, garden rewards, Photo Studio, expanded collections and desktop beta must not be advertised here as live until their implementation and evidence land.
+The current static preview now distributes the **0.4.0 Phase 4A development candidate** with implemented Focus sessions and the sourced Learn feed, while retaining ten included previews, six free extras, manual installation help and the importer flow. Garden rewards, reminders, Photo Studio, expanded collections and desktop beta remain planned and must not be advertised as live until their implementation and evidence land.

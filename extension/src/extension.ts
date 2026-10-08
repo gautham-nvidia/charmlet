@@ -4,13 +4,16 @@ import { readFileSync } from 'node:fs';
 import { CHARMS, type CharmDefinition } from './charm-catalog';
 import { installPack, loadPacks, MAX_PACK_BYTES, packCharms, removePack, type CharmPack } from './charm-packs';
 import { matchesSavedState, resetState, restoreState, type CharmState } from './charm-state';
+import { CompanionController } from './companion-controller';
+import { formatFocusTime, type CompanionSnapshot, type CompanionState } from './companion-core';
+import { learningCard } from './learning-cards';
 import { StateStore, type LoadedState } from './state-store';
 import { StateWriter } from './state-writer';
 
-let flushWrites: (() => Promise<void>) | undefined;
+let deactivateExtension: (() => Promise<void>) | undefined;
 
 export async function deactivate() {
-	await flushWrites?.();
+	await deactivateExtension?.();
 }
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -31,15 +34,53 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (loadedState.error) {
 		void vscode.window.showWarningMessage('Charmlet could not read its saved preferences. Review your charm settings.');
 	}
+	const catalogue = [...CHARMS, ...packCharms(packs)];
+	const initialCharm = restoreState(loadedState.value, catalogue);
+	const companionStore = new StateStore<CompanionState>(context.globalStorageUri.fsPath, 'companion.json');
+	const loadedCompanion = await companionStore.load(undefined);
+	if (loadedCompanion.error) {
+		void vscode.window.showWarningMessage('Charmlet could not read companion settings. Review your focus and learning controls.');
+	}
+	const companion = new CompanionController(loadedCompanion.value, companionStore, initialCharm.messageIndex);
+	await companion.initialize();
 
 	const status = vscode.window.createStatusBarItem('charmlet', vscode.StatusBarAlignment.Right, -100);
 	status.name = 'Charmlet';
-	status.command = 'charmlet.toggle';
+	let latestCharm = initialCharm;
+	let latestCompanion = companion.snapshot();
+	const updateStatus = () => {
+		const focus = latestCompanion.state.focus;
+		if (focus.status !== 'idle') {
+			const phase = focus.phase === 'focus' ? 'Focus' : 'Break';
+			status.command = 'charmlet.focus';
+			status.text = `$(clock) ${phase} ${formatFocusTime(latestCompanion.remainingMs)}`;
+			status.tooltip = focus.status === 'running'
+				? `${phase} session in progress · ${formatFocusTime(latestCompanion.remainingMs)} remaining`
+				: focus.status === 'paused'
+					? `${phase} session paused · ${formatFocusTime(latestCompanion.remainingMs)} remaining`
+					: `${phase} complete · Open companion tools`;
+		} else {
+			status.command = 'charmlet.toggle';
+			status.text = latestCharm.hidden ? '$(circle-outline) Charmlet' : '$(sparkle) Charmlet';
+			status.tooltip = latestCharm.hidden ? 'Charmlet: Show charm' : 'Charmlet: Hide or restore charm';
+		}
+	};
 	const provider = new CharmletView(context, state => {
-		status.text = state.hidden ? '$(circle-outline) Charmlet' : '$(sparkle) Charmlet';
-		status.tooltip = state.hidden ? 'Charmlet: Show charm' : 'Charmlet: Hide or restore charm';
-	}, [...CHARMS, ...packCharms(packs)], stateStore, loadedState);
-	flushWrites = () => provider.flush();
+		latestCharm = state;
+		updateStatus();
+	}, catalogue, stateStore, loadedState, companion);
+	const unsubscribeCompanion = companion.subscribe(snapshot => {
+		latestCompanion = snapshot;
+		updateStatus();
+		provider.postCompanion(snapshot);
+	});
+	let disposePromise: Promise<void> | undefined;
+	const disposeCompanion = () => disposePromise ??= (async () => {
+		unsubscribeCompanion();
+		await companion.dispose();
+		await provider.flush();
+	})();
+	deactivateExtension = disposeCompanion;
 
 	const refreshCatalogue = async (selectedId?: string) => {
 		await provider.setCatalogue([...CHARMS, ...packCharms(packs)], selectedId);
@@ -99,15 +140,22 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('charmlet.show', () => provider.show()),
 		vscode.commands.registerCommand('charmlet.hide', () => provider.update({ ...provider.state, hidden: true })),
 		vscode.commands.registerCommand('charmlet.toggle', () => provider.toggle()),
+		vscode.commands.registerCommand('charmlet.focus', () => provider.openCompanion('focus')),
 		vscode.commands.registerCommand('charmlet.reset', async () => {
 			await provider.update(resetState(provider.state));
 			await provider.show();
 		}),
 		vscode.commands.registerCommand('charmlet.importPack', importPack),
 		vscode.commands.registerCommand('charmlet.removePack', removeInstalledPack),
+		{ dispose: () => { void disposeCompanion(); } },
 	);
+	updateStatus();
 	status.show();
-	return { getState: () => ({ ...provider.state }), isVisible: () => provider.visible };
+	return {
+		getState: () => ({ ...provider.state }),
+		getCompanion: () => companion.snapshot(),
+		isVisible: () => provider.visible,
+	};
 }
 
 class CharmletView implements vscode.WebviewViewProvider {
@@ -118,6 +166,8 @@ class CharmletView implements vscode.WebviewViewProvider {
 	private readonly stateWriter: StateWriter<CharmState>;
 	private viewGeneration = 0;
 	private traceOutput?: vscode.LogOutputChannel;
+	private viewReady = false;
+	private pendingCompanionTab: 'focus' | 'learn' | undefined;
 
 	private trace(label: string, details: Record<string, unknown> = {}) {
 		if (this.context.extensionMode !== vscode.ExtensionMode.Development || process.env.CHARMLET_TRACE_SAVES !== '1') { return; }
@@ -142,6 +192,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 		catalogue: readonly CharmDefinition[],
 		private readonly stateStore: StateStore,
 		loadedState: LoadedState,
+		private readonly companion: CompanionController,
 	) {
 		this.stateWriter = new StateWriter(
 			async value => {
@@ -169,7 +220,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 	}
 
 	async flush() {
-		await this.stateWriter.flush();
+		await Promise.all([this.stateWriter.flush(), this.companion.flush()]);
 		this.trace('drained');
 	}
 
@@ -181,6 +232,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 		const generation = ++this.viewGeneration;
 		this.trace('view-resolved', { generation });
 		this.view = view;
+		this.viewReady = false;
 		const resource = (path: string) => vscode.Uri.joinPath(this.context.extensionUri, path);
 		view.webview.options = {
 			enableScripts: true,
@@ -200,8 +252,21 @@ class CharmletView implements vscode.WebviewViewProvider {
 			if (message.type === 'ready') {
 				await this.flush();
 				this.trace('ready-state', { generation });
-				await view.webview.postMessage({ type: 'state', state: this.state, catalogue: this.catalogue, drop: this.dropOnReady, visible: view.visible });
+				const includedTab = this.pendingCompanionTab;
+				await view.webview.postMessage({
+					type: 'state', state: this.state, catalogue: this.catalogue, drop: this.dropOnReady, visible: view.visible,
+					companion: this.companion.snapshot(),
+					...(includedTab ? { companionTab: includedTab } : {}),
+				});
+				if (this.view !== view) { return; }
+				if (this.pendingCompanionTab === includedTab) { this.pendingCompanionTab = undefined; }
+				this.viewReady = true;
 				this.dropOnReady = false;
+				const nextTab = this.pendingCompanionTab;
+				if (nextTab) {
+					await view.webview.postMessage({ type: 'companion-open', tab: nextTab });
+					if (this.view === view && this.pendingCompanionTab === nextTab) { this.pendingCompanionTab = undefined; }
+				}
 			} else if (message.type === 'save' && 'state' in message) {
 				const revision = 'revision' in message && Number.isSafeInteger(message.revision) && Number(message.revision) >= 0
 					? Number(message.revision) : undefined;
@@ -217,6 +282,21 @@ class CharmletView implements vscode.WebviewViewProvider {
 					if (revision !== undefined) { await view.webview.postMessage({ type: 'save-error', revision }); }
 					void vscode.window.showErrorMessage('Charmlet could not save its settings.');
 				}
+			} else if (message.type === 'companion-action' && 'requestId' in message && 'action' in message
+				&& Number.isSafeInteger(message.requestId) && Number(message.requestId) >= 0) {
+				const requestId = Number(message.requestId);
+				try {
+					const result = await this.companion.dispatch(message.action);
+					await view.webview.postMessage({ type: 'companion-result', requestId, message: result.message });
+				} catch {
+					await view.webview.postMessage({
+						type: 'companion-result', requestId,
+						error: this.companion.snapshot().error ?? 'The companion action could not be saved. Try again.',
+					});
+				}
+			} else if (message.type === 'learning-source' && 'cardId' in message) {
+				const card = typeof message.cardId === 'string' ? learningCard(message.cardId) : undefined;
+				if (card?.source) { await vscode.env.openExternal(vscode.Uri.parse(card.source.url)); }
 			} else if (message.type === 'command' && 'command' in message
 				&& (message.command === 'charmlet.importPack' || message.command === 'charmlet.removePack')) {
 				await vscode.commands.executeCommand(message.command);
@@ -224,15 +304,36 @@ class CharmletView implements vscode.WebviewViewProvider {
 		});
 		const visibility = view.onDidChangeVisibility(() => {
 			void view.webview.postMessage({ type: 'visibility', visible: view.visible });
+			if (view.visible) { this.postCompanion(this.companion.snapshot()); }
 		});
 		view.onDidDispose(() => {
 			this.trace('view-disposed', { generation });
 			messages.dispose();
 			visibility.dispose();
 			if (this.view === view) {
+				this.viewReady = false;
 				this.view = undefined;
 			}
 		});
+	}
+
+	postCompanion(snapshot: CompanionSnapshot) {
+		if (this.view?.visible && this.viewReady) {
+			void this.view.webview.postMessage({ type: 'companion', snapshot });
+		}
+	}
+
+	async openCompanion(tab: 'focus' | 'learn') {
+		this.pendingCompanionTab = tab;
+		if (this.view) {
+			this.view.show(true);
+			if (this.viewReady) {
+				await this.view.webview.postMessage({ type: 'companion-open', tab });
+				this.pendingCompanionTab = undefined;
+			}
+		} else {
+			await vscode.commands.executeCommand('charmlet.view.focus');
+		}
 	}
 
 	async setCatalogue(catalogue: readonly CharmDefinition[], selectedId?: string) {

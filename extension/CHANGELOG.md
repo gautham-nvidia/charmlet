@@ -3,6 +3,31 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.4.0 - 2026-10-08 (Phase 4A Focus and Learn)
+
+Tracking: [Phase 4 #17](https://github.com/gautham-nvidia/charmlet/issues/17).
+
+### Added
+
+- Free Focus sessions with 25/5 and 50/10 presets, bounded custom minutes, optional one-line intention, pause/resume/stop, a peg progress ring and full reload recovery.
+- A saved Learn feed containing 60 sourced facts, 30 sourced trivia questions with revealable answers, and the existing 80 optional encouragement messages.
+- Trusted source opening by catalogue ID, a compact Focus/Learn drawer and a **Charmlet: Focus Session** command/status-bar entry.
+
+### Changed
+
+- Companion state is stored separately in `companion.json` using the existing serialized complete-file replacement and readback confirmation seam.
+- Five-minute card rotation now respects drawer, reveal, hover/focus and pending-action state without changing charm preferences or physics.
+
+### Verified
+
+- Local Windows checks passed: compile/type/lint/bundles, 47 unit tests, both VS Code 1.140.0 real-editor suites, VSIX packaging, gallery build and the installed-Edge website check.
+- The focused editor scenario covers elapsed-away recovery, confirmed start/pause/reload/resume/stop, exact paused remainder, saved feed/card identity, trivia reveal/source visibility and the Focus Session command.
+
+### Limits
+
+- Garden, reminders, expanded art targets, paid Photo Studio and desktop beta remain planned Phase 4 work, not features in this candidate.
+- This is an unpublished development candidate; existing publisher/license/store and broader-host gates remain.
+
 ## 0.3.2 - 2026-10-06 (Phase 3 release preparation)
 
 Tracking: [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).
