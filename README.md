@@ -2,10 +2,10 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-07:** Phase 3 release-preparation build **0.3.2**, with **ten free original charms**, 80 rotating
-coding messages and a free extra-charm gallery/importer. Desktop VS Code **1.90.0 and 1.140.0** checks pass
-on Windows, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon. No telemetry, account, payment or
-runtime AI is required.
+**Status, 2026-10-08:** Phase 4 development is starting on `feat/phase-4-companion` with the
+[Focus, Learn and Grow plan](docs/phase-4-plan.md). The current tested installable baseline remains
+**0.3.2**: ten bundled charms, 80 messages, six free website extras and the offline importer. The new
+timer, learning feed, garden, paid Photo Studio and desktop beta are planned work, not features in that package.
 
 Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) passed all six listed jobs with 34 units and canonical-file restoration verified on both macOS versions. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md). This verifies the listed runners, not every OS/hardware/editor host or a standalone application.
 
@@ -114,6 +114,10 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Phase 2 validation](docs/phase-2-validation.md) | Collection screenshots and Windows checks |
 | [Phase 3 issue #11](https://github.com/gautham-nvidia/charmlet/issues/11) | Compatibility and release readiness |
 | [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
+| [Phase 4 issue #17](https://github.com/gautham-nvidia/charmlet/issues/17) | Focus, learning, reminders, garden and original collections implementation |
+| [Phase 4 plan](docs/phase-4-plan.md) | Current product scope, architecture, slices and acceptance gates |
+| [Phase 4 collection brief](docs/phase-4-original-collections.md) | Concrete 60-design free-catalogue planning target and garden palette |
+| [Phase 5 issue #18](https://github.com/gautham-nvidia/charmlet/issues/18) | Publisher/license decisions and extension-store launch gates |
 | [Desktop platform summary](docs/phase-3-platforms.json) | Frozen six-job Windows/Linux/macOS identities and accepted motion/lifecycle values |
 | [Preference restoration proof](docs/phase-3-preferences.json) | Frozen canonical-file readback/ack/restart evidence from both macOS versions |
 | [Full-circle validation](docs/full-circle-validation.md) | Orbit screenshots and rendered-motion evidence |
@@ -142,11 +146,11 @@ git log --all --graph --date=iso-strict --format="%h %ad %s"
 git log --follow --date=short --format="%h %ad %s" -- PROJECT_LOG.md
 ```
 
-Phase 3 is in progress: [compatibility and release readiness](docs/phase-3-readiness.md). The full-circle
-orbit, free gallery/import flow and listed Windows/Ubuntu/macOS desktop VS Code matrix are verified.
-Intel Mac, Windows ARM, authenticated editor forks, remote/browser scope, publisher, license, hosting and
-listing decisions remain open; registry publication still requires explicit approval. Optional paid
-artwork, focus timer and standalone desktop directions remain proposals.
+The owner has authorized the [Phase 4 companion work](docs/phase-4-plan.md) and parallel website/desktop
+development. Phase 5 is extension-store launch, Phase 6 the broader product launch, and Phase 7+ later
+integrations. Publisher ownership, source/art licensing, actual launch-target editor checks and public
+hosting/publication remain explicit gates in [Phase 5 #18](https://github.com/gautham-nvidia/charmlet/issues/18).
+Each phase keeps its own branch and merges before the next.
 
 ## Ownership and licenses
 

@@ -79,3 +79,17 @@ The owner requested a comparison with desktop charm products, expressed interest
 Several alternatives already offer free functionality, personal-image customization or focus timers. The approximately US$5/five-artwork idea remains an unvalidated proposal. Prioritize original coding/silicon artwork and useful free features, then test demand for one carefully made collection before expanding paid inventory.
 
 A free focus timer, local pack creator and a standalone host are recommendations for future work, not implemented features or approved new phases. They do not change the permanently free extension/importer requirement or authorize merchant accounts, licensed artwork, charges or publication.
+
+## 2026-10-08 - Owner revision for Phase 4–7
+
+The owner has authorized Phase 4 companion work before public extension-store launch. The earlier recommendation that publication must precede Phase 4 is superseded; Phase 5 now owns publisher, license, store and launch-gate decisions. The earlier recommendation for a free personal-photo creator is also superseded by the owner's explicit **paid website Photo Studio** exception.
+
+- The extension core, focus/productivity features, learning, water/move reminders, garden, earned flowers, importer and ten bundled defaults remain free.
+- Continue releasing more original free website extras. The website remains the only download/sales channel for additional packs; the IDE imports ordinary downloaded pack files and is not a storefront.
+- Garden flowers are earned locally through free progress and are not downloaded or sold.
+- Optional original premium artwork remains a one-time purchase proposal. The owner requested very low pricing; my exploratory recommendation is approximately **US$1.99–$2.99** for a small pack, not an approved live price.
+- The paid website Photo Studio may create a normal pack from a private personal photo for the free importer. Prefer local crop/fit/background processing, metadata-free static output and no retained private image where practical.
+- Marvel/DC, recognizable characters, NVIDIA/company logos and other rights-dependent collaborations remain Phase 7+ ideas requiring appropriate commercial rights.
+- No live merchant account, product, payment, checkout, approved price, public deployment or Photo Studio exists yet.
+
+These changes authorize planning and Phase 4 implementation on its branch; they do not approve legal terms, merchant accounts, licensed art, charges or public launch.

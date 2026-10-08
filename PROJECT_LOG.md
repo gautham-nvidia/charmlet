@@ -4,16 +4,20 @@ Dates use YYYY-MM-DD; Git preserves exact timestamps and authors. Append dated e
 and corrections rather than erasing history. Record the linked issue/PR, commit description, evidence
 and next action. Current milestone status is summarized below; entries preserve how it changed.
 
-## Milestones - updated 2026-10-06
+## Milestones - updated 2026-10-08
 
 | ID | Status | Scope / next gate | Tracking |
 |---|---|---|---|
 | P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
 | P1 | Accepted and merged in PR #7 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
 | P2 | Merged in PR #10 | Four free charms, saved picker, artwork provenance and prepared trial checklist | [#9](https://github.com/gautham-nvidia/charmlet/issues/9) |
-| P3 | Core desktop VS Code platform matrix verified; remaining readiness gates open | Windows/Ubuntu/macOS Apple Silicon complete; publisher/license, authenticated forks, remote/browser scope and public hosting/registry decisions remain | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [#13](https://github.com/gautham-nvidia/charmlet/issues/13), [readiness](docs/phase-3-readiness.md) |
+| P3 | Engineering baseline merged in PR15/16; launch gates carried forward | Windows/Ubuntu/macOS Apple Silicon VS Code matrix verified; publisher/license, authenticated forks, remote/browser and public hosting/registry decisions move to P4/P5 | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [#18](https://github.com/gautham-nvidia/charmlet/issues/18), [readiness](docs/phase-3-readiness.md) |
+| P4 | Started: scope/architecture kickoff; features pending | Free focus/learning/reminders/garden, original collections, website Photo Studio preparation and parallel desktop beta | [#17](https://github.com/gautham-nvidia/charmlet/issues/17), [plan](docs/phase-4-plan.md) |
+| P5 | Planned: extension-store launch | Publisher/license decisions, launch-target editor checks, public install pages and Marketplace/Open VSX availability | [#18](https://github.com/gautham-nvidia/charmlet/issues/18) |
+| P6 | Planned: product launch after IDE availability | Broader launch, support/onboarding and ready commerce/desktop offerings | [Phase 4 plan](docs/phase-4-plan.md) |
+| P7+ | Deferred integrations/licensed art | Additional IDE families, rights-cleared fandom/brand collaborations and later experiments | [Phase 4 plan](docs/phase-4-plan.md) |
 | F1 | Delivered in the charm view (0.3.1) | 80 optional coding messages below the charm, with Next and saved visibility/rotation | [#13](https://github.com/gautham-nvidia/charmlet/issues/13) |
-| F2 | Deferred | Cosmetic-only paid packs and explicit celebration commands | Roadmap #1 |
+| F2 | Replanned into P4/P6 | Optional original art and paid Photo Studio; free core, productivity and importer remain | [#17](https://github.com/gautham-nvidia/charmlet/issues/17), [#18](https://github.com/gautham-nvidia/charmlet/issues/18) |
 
 ## 2026-09-17 - Identity and personal repository
 
@@ -266,3 +270,11 @@ PR #15 merged at `246d387` after all six jobs passed in run `37825599786`. Autom
 The retained P3 branch was fast-forwarded from main for this test-only follow-up. Frame discovery now skips only expected detached-frame transitions, preserves other errors, and excludes every pre-reload frame when reacquiring the charm. Eight duplicated reload blocks and the initial scan use shared helpers. The combined scenario budget is explicitly 420000 ms (seven minutes) inside the unchanged 15-minute CI job; individual assertion, typing, gesture, resource and performance limits remain.
 
 Local Windows type checking, lint and the complete VS Code 1.140.0 suite passed (`1 passed (3.3m)`). Production code and the accepted 82231-byte 0.3.2 VSIX are unchanged. Hosted follow-up verification remains pending; this does not reopen the verified preference-file boundary or start another phase.
+
+## 2026-10-08 - Phase 4 companion kickoff
+
+The owner explicitly authorized Phase 4 on `feat/phase-4-companion`, based on clean merged main `e60749e066d8dbbe911d45929cd47d5960f1186e`. This supersedes the earlier assistant recommendation that public registry publication must precede Phase 4. Launch/store gates are carried into Phase 5 rather than waived.
+
+The authoritative [Focus, Learn and Grow plan](docs/phase-4-plan.md) scopes free focus, learning, reminders, garden rewards, expanded original free collections, website Photo Studio preparation and a parallel Windows/macOS desktop beta. The [collection brief](docs/phase-4-original-collections.md) defines a 60-design website target and 12-flower garden target; these are planned targets, not assets that currently exist.
+
+Phase 5 tracks extension-store launch and outstanding publisher/license/launch-target decisions in issue #18. Phase 6 is the broader product launch; Phase 7+ holds later IDE integrations and rights-dependent licensed art. The owner-approved paid Photo Studio is a website exception to the earlier free-creator recommendation; free core, productivity, reminders, garden, importer and ten defaults remain free. Pricing remains a proposal, and no checkout, merchant account, public deployment, feature implementation, publication or next-phase completion occurred in this kickoff.
