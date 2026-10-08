@@ -14,23 +14,19 @@ function commandInput(window: Page) {
 
 async function command(window: Page, title: string) {
 	if (title === 'Developer: Reload Window') {
-		for (const frame of window.frames()) {
-			if (!frame.isDetached() && await frame.locator('#stage[data-ready="true"]').count()) {
-				await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true', { timeout: 10000 });
-				await frame.evaluate(() => {
-					const capture = (window as unknown as { __charmletRecordPreference?: (value: unknown) => Promise<void> }).__charmletRecordPreference;
-					const stage = document.getElementById('stage');
-					const picker = document.getElementById('charm-select') as HTMLSelectElement | null;
-					if (capture) {
-						void capture({
-							time: Date.now(), label: 'before-reload-command', picker: picker?.value,
-							charm: stage?.dataset.charm, persisted: stage?.dataset.persisted,
-						}).catch(() => {});
-					}
-				});
-				break;
+		const frame = await readyFrame(window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true', { timeout: 10000 });
+		await frame.evaluate(() => {
+			const capture = (window as unknown as { __charmletRecordPreference?: (value: unknown) => Promise<void> }).__charmletRecordPreference;
+			const stage = document.getElementById('stage');
+			const picker = document.getElementById('charm-select') as HTMLSelectElement | null;
+			if (capture) {
+				void capture({
+					time: Date.now(), label: 'before-reload-command', picker: picker?.value,
+					charm: stage?.dataset.charm, persisted: stage?.dataset.persisted,
+				}).catch(() => {});
 			}
-		}
+		});
 	}
 	await window.keyboard.press(`${primaryModifier}+Shift+P`);
 	const input = commandInput(window);
@@ -40,13 +36,18 @@ async function command(window: Page, title: string) {
 	await window.locator('.quick-input-list').getByText(title, { exact: true }).click();
 }
 
-async function readyFrame(window: Page): Promise<Frame> {
+async function readyFrame(window: Page, excluded: ReadonlySet<Frame> = new Set<Frame>()): Promise<Frame> {
 	let result: Frame | undefined;
 	await expect.poll(async () => {
 		for (const frame of window.frames()) {
-			if (!frame.isDetached() && await frame.locator('#stage[data-ready="true"]').isVisible()) {
-				result = frame;
-				return true;
+			if (excluded.has(frame) || frame.isDetached()) { continue; }
+			try {
+				if (await frame.locator('#stage[data-ready="true"]').isVisible() && !frame.isDetached()) {
+					result = frame;
+					return true;
+				}
+			} catch (error) {
+				if (!frame.isDetached()) { throw error; }
 			}
 		}
 		return false;
@@ -55,6 +56,15 @@ async function readyFrame(window: Page): Promise<Frame> {
 		throw new Error('Charmlet did not create a ready webview.');
 	}
 	return result;
+}
+
+async function reloadCharm(window: Page): Promise<Frame> {
+	const previous = new Set(window.frames());
+	await Promise.all([
+		window.waitForEvent('domcontentloaded'),
+		command(window, 'Developer: Reload Window'),
+	]);
+	return readyFrame(window, previous);
 }
 
 async function expectBalancedSwingRoom(frame: Frame) {
@@ -110,7 +120,9 @@ async function dragCharm(window: Page, frame: Frame, deltaX: number, deltaY: num
 }
 
 test('real-editor charm supports docking, gestures, focus, persistence and reduced motion', async ({}, testInfo) => {
-	test.setTimeout(300000);
+	// Full desktop scenario includes host startup, reloads, gestures and evidence capture.
+	// Keep individual assertion and performance limits independent of this total budget.
+	test.setTimeout(420000);
 	const profile = mkdtempSync(join(tmpdir(), 'charmlet-ui-'));
 	const scratchFile = join(profile, 'charmlet-trial.ts');
 	writeFileSync(scratchFile, "export const greeting = 'Hello, Charmlet!';\n");
@@ -173,19 +185,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await window.keyboard.press('Enter');
 		await expect.poll(() => window.frames().map(frame => frame.url()).join('\n'), { timeout: 30000 })
 			.toContain('vscode-webview');
-		let charmFrame: Frame | undefined;
-		await expect.poll(async () => {
-			for (const frame of window.frames()) {
-				if (await frame.locator('#stage[data-ready="true"]').count()) {
-					charmFrame = frame;
-					return true;
-				}
-			}
-			return false;
-		}, { timeout: 30000 }).toBe(true);
-		if (!charmFrame) {
-			throw new Error('Charmlet did not create a ready webview.');
-		}
+		const charmFrame = await readyFrame(window);
 		const charmImage = charmFrame.locator('#charm img');
 		await expect(charmImage).toBeVisible();
 		await expect.poll(() => charmImage.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(72);
@@ -243,11 +243,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
 		await frame.locator('#charm').press('Escape');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
-		await Promise.all([
-			window.waitForEvent('domcontentloaded'),
-			command(window, 'Developer: Reload Window'),
-		]);
-		frame = await readyFrame(window);
+		frame = await reloadCharm(window);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
 		await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
 		await frame.locator('#restore').click();
@@ -361,11 +357,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			expect(storedPreferences.cordLength).toBe(146);
 			expect(storedPreferences.reducedMotion).toBe(true);
 			preferenceEvents.push({ time: Date.now(), label: 'after-escape-assertion' });
-			await Promise.all([
-				window.waitForEvent('domcontentloaded'),
-				command(window, 'Developer: Reload Window'),
-			]);
-			frame = await readyFrame(window);
+			frame = await reloadCharm(window);
 			preferenceEvents.push({
 				time: Date.now(), label: 'after-reload-ready',
 				restoredCharm: await frame.locator('#stage').getAttribute('data-charm'),
@@ -423,11 +415,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			expect(expandedCordAfterClose).toBeGreaterThanOrEqual(settingsVisibleCord);
 			expect(expandedCordAfterClose).toBeLessThanOrEqual(Number(maximumCord));
 			const expandedVisibleCord = (await frame.locator('#stage').getAttribute('data-cord'))!;
-			await Promise.all([
-				window.waitForEvent('domcontentloaded'),
-				command(window, 'Developer: Reload Window'),
-			]);
-			frame = await readyFrame(window);
+			frame = await reloadCharm(window);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', expandedVisibleCord);
 			await expect(frame.locator('#cord-length')).toHaveValue(maximumCord);
@@ -583,11 +571,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				await expect.poll(async () => Math.abs(Number(await frame.locator('#charm').getAttribute('data-position-x')) - originalX)).toBeLessThan(1);
 				await expect.poll(async () => Math.abs(Number(await frame.locator('#charm').getAttribute('data-position-y')) - originalY)).toBeLessThan(1);
 				await window.screenshot({ path: testInfo.outputPath(`phase-1-returned-${restingCord}.png`) });
-				await Promise.all([
-					window.waitForEvent('domcontentloaded'),
-					command(window, 'Developer: Reload Window'),
-				]);
-				frame = await readyFrame(window);
+				frame = await reloadCharm(window);
 				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', restingCord);
 				await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'false');
 			}
@@ -668,11 +652,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await rotateMessages.uncheck();
 			await rotateMessages.press('Escape');
 			await expect(frame.locator('#settings')).toBeHidden();
-			await Promise.all([
-				window.waitForEvent('domcontentloaded'),
-				command(window, 'Developer: Reload Window'),
-			]);
-			frame = await readyFrame(window);
+			frame = await reloadCharm(window);
 			await expect(frame.locator('#rotate-messages')).not.toBeChecked();
 			await expect(frame.locator('#message-card')).toHaveAttribute('data-rotation', 'paused');
 			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
@@ -721,11 +701,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await frame.getByRole('button', { name: 'Next coding message', exact: true }).click();
 			await expect(frame.locator('#message-text')).not.toHaveText(originalMessage!);
 			const chosenMessage = await frame.locator('#message-text').textContent();
-			await Promise.all([
-				window.waitForEvent('domcontentloaded'),
-				command(window, 'Developer: Reload Window'),
-			]);
-			frame = await readyFrame(window);
+			frame = await reloadCharm(window);
 			await expect(frame.locator('#message-text')).toHaveText(chosenMessage!);
 			await expect(frame.locator('#settings')).toBeHidden();
 			await expect(frame.locator('#message-card')).toBeVisible();
@@ -741,11 +717,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				await layoutToggle.click();
 			}
 			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'orbit');
-			await Promise.all([
-				window.waitForEvent('domcontentloaded'),
-				command(window, 'Developer: Reload Window'),
-			]);
-			frame = await readyFrame(window);
+			frame = await reloadCharm(window);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'orbit');
 			const observations = [];
 			for (const direction of [-1, 1]) {
@@ -860,11 +832,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect.poll(async () => Math.abs(Number(await frame.locator('#charm').getAttribute('data-position-x')) - startX)).toBeGreaterThan(3);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 			await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true', { timeout: 10000 });
-			await Promise.all([
-				window.waitForEvent('domcontentloaded'),
-				command(window, 'Developer: Reload Window'),
-			]);
-			frame = await readyFrame(window);
+			frame = await reloadCharm(window);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'pack:probe-card:probe-card');
 			await expect(frame.locator('#charm-name')).toHaveText('Probe Card');
 			await expect(frame.locator('#charm-image')).toHaveAttribute('src', /^data:image\/png;base64,/);

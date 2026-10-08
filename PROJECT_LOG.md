@@ -258,3 +258,11 @@ Documentation-head run 37799712752 at `e07d1b41996a9c4c3dc6067e81d6c0825c8b3e6c`
 The preceding resize-during-drag step requested restoration to 1400×900 but asserted only a cord value already present in the 1000×650 view. Because product `resize()` deliberately cancels active drag, an unfinished OS/webview resize can cancel the next gesture. This establishes a test synchronization gap in the observed path; it does not prove every possible `Parked` result has that cause and does not establish a Linux product incompatibility or preference regression.
 
 The harness now captures the actual expanded browser/stage geometry, waits for both geometries to return after restoration, and crosses a two-animation-frame barrier so ResizeObserver delivery settles before the next pointerdown. It does not hardcode 900 px, retry the gesture, sleep, force `Held`, disable cancellation, or change production code/assertion caps. Local check-types and lint passed; hosted rerun remains the evidence gate.
+
+## 2026-10-08 - Post-merge reload-discovery follow-up
+
+PR #15 merged at `246d387` after all six jobs passed in run `37825599786`. Automatic main run `37826370809` passed five jobs; the first macOS 1.140 attempt reached pack-import evidence and exceeded the 300000 ms aggregate scenario budget. A scoped retry request produced a second attempt whose macOS job `113485495705` failed with `locator.isVisible: Frame was detached` in `readyFrame` after the size/cord reload.
+
+The retained P3 branch was fast-forwarded from main for this test-only follow-up. Frame discovery now skips only expected detached-frame transitions, preserves other errors, and excludes every pre-reload frame when reacquiring the charm. Eight duplicated reload blocks and the initial scan use shared helpers. The combined scenario budget is explicitly 420000 ms (seven minutes) inside the unchanged 15-minute CI job; individual assertion, typing, gesture, resource and performance limits remain.
+
+Local Windows type checking, lint and the complete VS Code 1.140.0 suite passed (`1 passed (3.3m)`). Production code and the accepted 82231-byte 0.3.2 VSIX are unchanged. Hosted follow-up verification remains pending; this does not reopen the verified preference-file boundary or start another phase.
