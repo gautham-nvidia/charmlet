@@ -1,0 +1,87 @@
+{
+  "reviewedDate": "2026-10-07",
+  "featureHead": "1c39afdc81ba415e5a99c8f698535463c771084c",
+  "workflowRun": 37697185841,
+  "workflowUrl": "https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841",
+  "scope": "Both previously failing macOS editor hosts restored the acknowledged selection from the canonical file.",
+  "hosts": [
+    {
+      "version": "1.90.0",
+      "readback": {
+        "time": 1791412648455,
+        "label": "readback",
+        "current": "lemon-chilies",
+        "view": 1,
+        "stored": "lemon-chilies",
+        "source": "file"
+      },
+      "acknowledgement": {
+        "time": 1791412648455,
+        "label": "save-ack",
+        "current": "lemon-chilies",
+        "view": 1,
+        "generation": 1,
+        "revision": 14
+      },
+      "beforeReload": {
+        "time": 1791412648680,
+        "label": "before-reload-command",
+        "picker": "lemon-chilies",
+        "charm": "lemon-chilies",
+        "persisted": "true"
+      },
+      "restoredHost": {
+        "time": 1791412651463,
+        "label": "restored",
+        "current": "lemon-chilies",
+        "view": 0,
+        "source": "file"
+      },
+      "afterReload": {
+        "time": 1791412652219,
+        "label": "after-reload-ready",
+        "restoredCharm": "lemon-chilies",
+        "selectedOption": "lemon-chilies"
+      }
+    },
+    {
+      "version": "1.140.0",
+      "readback": {
+        "time": 1791412657430,
+        "label": "readback",
+        "current": "lemon-chilies",
+        "view": 1,
+        "stored": "lemon-chilies",
+        "source": "file"
+      },
+      "acknowledgement": {
+        "time": 1791412657430,
+        "label": "save-ack",
+        "current": "lemon-chilies",
+        "view": 1,
+        "generation": 1,
+        "revision": 14
+      },
+      "beforeReload": {
+        "time": 1791412657680,
+        "label": "before-reload-command",
+        "picker": "lemon-chilies",
+        "charm": "lemon-chilies",
+        "persisted": "true"
+      },
+      "restoredHost": {
+        "time": 1791412660471,
+        "label": "restored",
+        "current": "lemon-chilies",
+        "view": 0,
+        "source": "file"
+      },
+      "afterReload": {
+        "time": 1791412662136,
+        "label": "after-reload-ready",
+        "restoredCharm": "lemon-chilies",
+        "selectedOption": "lemon-chilies"
+      }
+    }
+  ]
+}

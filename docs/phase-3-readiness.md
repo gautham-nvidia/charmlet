@@ -42,7 +42,7 @@ For a custom host, use its verified executable path with `CHARMLET_TEST_HOST` an
 |---|---|
 | Full-circle interaction | Implemented and locally verified in 0.2.0; see the orbit validation record and updated PR #12 checks |
 | Cursor / Devin Desktop | Run the complete interaction suite with an authorized authenticated test setup, or collect explicit manual verification from the owner's already configured editor; do not copy credentials or bypass onboarding |
-| macOS / Linux CI | Hosted run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698) passed VS Code 1.90.0 and 1.140.0 on Ubuntu 24.04 x64/Xvfb and macOS 15 Apple Silicon; see [frozen platform summary](phase-3-platforms.json). Intel Mac and Windows ARM remain unverified |
+| macOS / Linux CI | Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) passed the current 34-unit/UI/package/gallery path on VS Code 1.90.0 and 1.140.0 for Ubuntu 24.04 x64/Xvfb and macOS 15 Apple Silicon; see [platform summary](phase-3-platforms.json) and [canonical preference proof](phase-3-preferences.json). Intel Mac and Windows ARM remain unverified |
 | Remote / browser | Exercise real Remote-SSH/WSL placement; decide whether a browser bundle is in scope |
 | Publisher | Confirm personal publisher/namespace ownership and approve publication; manifest identity and validated URL syntax are not proof of a live listing |
 | License | Owner must choose the source/art license; current public visibility and permanently free pricing do not grant a reuse license |
@@ -108,3 +108,17 @@ Frozen run 37693710452 at head `6539276` captured both macOS failures at the sto
 Charmlet now treats extension-owned `preferences.json` as canonical. Existing `globalState` is a migration fallback only when the file is missing or unreadable and is never cleared. New saves use serialized complete same-directory file replacement and confirm readback from the actual file before acknowledgement. No retry, arbitrary delay, cross-window synchronization guarantee or sudden-power-loss guarantee is claimed.
 
 Local checks passed: 34 units, the complete Windows VS Code 1.140.0 UI suite, and the exact fresh-profile two-process restart smoke. The second process had a different PID, restored Lemon & Chilies from an unchanged canonical file, and emitted a `restored` trace with source `file`. This verifies local process-restart restoration only. A new hosted six-job run remains the final evidence gate before calling the intermittent macOS case resolved. All other publisher/license/host/publication gates remain.
+
+## 2026-10-07 - Canonical preference file validated on all six jobs
+
+Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) at head `1c39afdc81ba415e5a99c8f698535463c771084c` passed all six jobs.
+
+| Runner | VS Code 1.90.0 job | VS Code 1.140.0 job |
+|---|---:|---:|
+| Windows Server 2025 | `113051678195` | `113051678205` |
+| Ubuntu 24.04 x64/Xvfb | `113051678152` | `113051677836` |
+| macOS 15 Apple Silicon | `113051678176` | `113051678323` |
+
+Every job passed 34 units, the complete real-editor UI suite, VSIX packaging and gallery build. The frozen [reviewed preference restoration proof](phase-3-preferences.json) records both macOS versions: final file readback was Lemon & Chilies, revision 14 was acknowledged, the pre-reload picker/stage remained Lemon with `persisted=true`, the new host restored Lemon with `source=file`, and the post-reload UI remained Lemon. No intervening save appears in the reviewed boundary evidence. The exact cause of prior VS Code internal cache behavior is not asserted.
+
+This validates the canonical file path on the listed runners and versions. It does not verify Intel Mac, Windows ARM, authenticated Cursor/Devin, Remote-SSH/WSL, browser hosts or the proposed standalone app. Phase 3 remains open for publisher ownership, source/art license, actual public hosting, registry listings and publication approval.

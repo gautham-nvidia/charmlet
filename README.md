@@ -7,7 +7,7 @@ coding messages and a free extra-charm gallery/importer. Desktop VS Code **1.90.
 on Windows, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon. No telemetry, account, payment or
 runtime AI is required.
 
-Hosted run 37663692698 passed all six listed jobs, but later runs repeated intermittent macOS selected-charm reload failures. Preferences now use a canonical extension-owned file with legacy migration and file readback confirmation. Hosted rerun evidence is still required; the earlier pass remains valid history, not proof that the intermittent case is resolved.
+Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) passed all six listed jobs with 34 units and canonical-file restoration verified on both macOS versions. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md). This verifies the listed runners, not every OS/hardware/editor host or a standalone application.
 
 [Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
 [dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
@@ -76,7 +76,7 @@ VSIX...** for manual testing. Packaging uses `--skip-license` because the projec
 is still open, not because third-party licenses are waived. Required notices ship in the package.
 
 [CI](.github/workflows/ci.yml) runs six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code
-**1.90.0 and 1.140.0**. All six passed in hosted run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698).
+**1.90.0 and 1.140.0**. All six passed the current 34-unit/UI/package/gallery path in hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841).
 Linux uses Xvfb; screenshots, resource snapshots, the VSIX and static gallery are retained as workflow
 artifacts. This verifies the listed runners, not every OS/hardware/editor host. CI does not deploy or publish.
 
@@ -115,6 +115,7 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Phase 3 issue #11](https://github.com/gautham-nvidia/charmlet/issues/11) | Compatibility and release readiness |
 | [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
 | [Desktop platform summary](docs/phase-3-platforms.json) | Frozen six-job Windows/Linux/macOS identities and accepted motion/lifecycle values |
+| [Preference restoration proof](docs/phase-3-preferences.json) | Frozen canonical-file readback/ack/restart evidence from both macOS versions |
 | [Full-circle validation](docs/full-circle-validation.md) | Orbit screenshots and rendered-motion evidence |
 | [Gallery and compact feedback #13](https://github.com/gautham-nvidia/charmlet/issues/13) | Ten defaults, messages, packs and companion gallery |
 | [Gallery validation](docs/phase-3-gallery-validation.md) | Compact, message, import, orbit and website evidence |

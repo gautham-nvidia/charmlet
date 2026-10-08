@@ -242,3 +242,11 @@ Frozen run 37693710452 at head 6539276 captured the failure on both macOS hosts.
 Four focused file-store tests and existing writer tests cover migration, file precedence, complete rapid writes after reopening, unreadable JSON fallback, write failure recovery and confirmation. Local compile/type/lint, **34 unit tests**, the complete Windows VS Code 1.140.0 UI suite, package and gallery build passed.
 
 The exact lead-authored two-launch smoke used one fresh disposable profile, selected and confirmed Lemon & Chilies, closed the first process, launched a second process with a different PID, and restored the equal canonical file with a `restored` trace whose source was `file`. This proves local full-process file restoration, not cross-platform stability. Package and gallery build passed; the live download matched the rebuilt 82158-byte candidate with SHA256 `AC7890B393F8D1E0CA8E61F1C0D2CC68DC2D03CB22AAFBCF6C1C25F234CF1CD6`. Hosted cross-platform evidence is still required before declaring the intermittent macOS case resolved.
+
+## 2026-10-07 - Canonical preference file passed the six-job gate
+
+GitHub Actions run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) at head `1c39afdc81ba415e5a99c8f698535463c771084c` passed all six Windows Server 2025, Ubuntu 24.04 x64/Xvfb and macOS 15 Apple Silicon jobs on VS Code 1.90.0 and 1.140.0. Every job passed 34 units, complete UI, VSIX package and gallery build.
+
+The lead checked both macOS traces. In each, final canonical-file readback was Lemon & Chilies, revision 14 was acknowledged, the pre-reload DOM remained Lemon with `persisted=true`, the new host restored Lemon with `source=file`, and the post-reload UI remained Lemon without an intervening save. Frozen reviewed evidence is `docs/phase-3-preferences.json`. The exact internal cause of earlier VS Code cache behavior is not asserted.
+
+The local distinct-PID two-process restart and the hosted macOS paths now validate the canonical file boundary on the listed hosts. Phase 3 remains open for publisher ownership, source/art licenses, authenticated forks, remote/browser scope, public hosting, registry listings and publication approval. Intel Mac, Windows ARM, focus timer and standalone desktop app remain separate unverified/proposed scopes.

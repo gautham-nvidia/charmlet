@@ -60,7 +60,7 @@ records asset origins, while the project source/art license remains pending and 
 ## Current limits
 
 - Complete VS Code extension checks passed on Windows Server 2025 and the local Windows PC, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon, using VS Code **1.90.0 and 1.140.0**.
-- Later runs repeated intermittent macOS selected-charm reload failures. Preferences now use a canonical extension-owned file with legacy migration and file readback confirmation; hosted rerun evidence is still required. The earlier all-pass run remains historical evidence, not a reliability guarantee.
+- Hosted run 37697185841 passed the canonical-file restoration path on macOS 15 Apple Silicon with VS Code 1.90.0 and 1.140.0: the acknowledged Lemon & Chilies file readback restored as Lemon after reload on both hosts. Earlier intermittent failures remain historical evidence, and their exact internal VS Code cause is not asserted.
 - The animation loop stops when settled or hidden. [Recorded measurements](https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-1-validation.md) include whole-editor overhead and do not promise zero CPU use.
 - Intel Mac, Windows ARM, authenticated Cursor/Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.
 - These checks cover the VS Code extension. A possible standalone Windows/macOS app is only a product proposal and has not been implemented or verified.

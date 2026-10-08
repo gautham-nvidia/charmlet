@@ -26,10 +26,11 @@ Tracking: [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).
 - Local 0.3.2 icon export, extension checks, current Windows UI, package, gallery build and website checks are recorded in the project log.
 - Hosted run [37663692698](https://github.com/gautham-nvidia/charmlet/actions/runs/37663692698) at commit `637f1e8` passed 30 units, complete UI, VSIX packaging and gallery build on Windows Server 2025, Ubuntu 24.04 x64/Xvfb and macOS 15 Apple Silicon with VS Code 1.90.0 and 1.140.0.
 - Local canonical-file checks passed: 34 units, complete Windows VS Code 1.140.0 UI and a two-process fresh-profile restart that restored Lemon & Chilies from the same preference file.
+- Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) at commit `1c39afdc81ba415e5a99c8f698535463c771084c` passed 34 units, complete UI, VSIX packaging and gallery build in all six jobs. Both macOS versions acknowledged Lemon & Chilies from the canonical file and restored it after reload.
 
 ### Limits
 
-- The intermittent macOS persistence case still requires a new hosted matrix before reliability is claimed. Intel Mac, Windows ARM, authenticated editor forks and remote/browser hosts remain unverified. Publisher, license, listing, public hosting and registry publication remain owner gates. No paid product, checkout or deployment.
+- Intel Mac, Windows ARM, authenticated editor forks and remote/browser hosts remain unverified. Publisher, license, listing, public hosting and registry publication remain owner gates. No paid product, checkout or deployment.
 
 ## 0.3.1 - 2026-10-06 (Phase 3 collection, messages and gallery)
 
