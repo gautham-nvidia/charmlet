@@ -34,3 +34,11 @@ The 80 coding messages are original and unattributed. The earlier Terminal autho
 ## 2026-10-06 - Marketplace icon
 
 `media/marketplace-icon.svg` is an original project composition: the existing Terminal charm source geometry is placed over a new rounded background, circle and cord treatment. No external icon or branded artwork was used. `website/export-icon.mjs` renders that trusted SVG through installed Microsoft Edge canvas and verifies the generated `media/marketplace-icon.png` as 256×256 with the existing PNG decoder. The PNG is prepared for listing review; its presence does not imply a published or approved store listing.
+
+## 2026-10-08 - Grown by you garden artwork
+
+Four generic unrevealed growth-stage SVGs—Seed, Sprout, Leaves and Bud—and twelve original flower reward SVGs were authored for the free local garden with coding-assistant help. The flowers are Sunflower, Marigold, Hibiscus, Bluebell, Iris, Poppy, Orchid, Daisy, Lavender, Cosmos, Sakura and Wild Rose.
+
+All sixteen files use original project SVG markup on a 72×84 canvas. Reward flowers reuse the established unbranded metal hook/connector geometry and add distinct petals, centres, stems and mint leaves. The growth stages deliberately avoid revealing the selected flower before bloom. No photograph, remote image, competitor asset, company logo, official badge, confidential test material or image-generation service was used.
+
+Garden reward files are trusted bundled resources named `media/garden-<species>.svg`; they become picker entries only after the local eleven-watering state confirms the corresponding reward. The four growth-stage files are drawer illustrations and are not downloadable or selectable charms.

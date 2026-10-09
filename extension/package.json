@@ -1,8 +1,8 @@
 {
   "name": "charmlet",
   "displayName": "Charmlet: Coding Charms",
-  "description": "Ten free charms, coding messages and extra charm packs. Offline and interactive.",
-  "version": "0.3.2",
+  "description": "Ten free charms with focus, sourced learning, a gentle garden and reminders.",
+  "version": "0.4.1",
   "pricing": "Free",
   "icon": "media/marketplace-icon.png",
   "galleryBanner": {
@@ -60,6 +60,11 @@
         "category": "Charmlet"
       },
       {
+        "command": "charmlet.focus",
+        "title": "Focus Session",
+        "category": "Charmlet"
+      },
+      {
         "command": "charmlet.hide",
         "title": "Hide Charm",
         "category": "Charmlet"
@@ -93,7 +98,7 @@
     "pretest": "npm run compile",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "test:unit": "npm run compile-tests && node --test out/test/state.test.js out/test/packs.test.js",
+    "test:unit": "npm run compile-tests && node --test out/test/state.test.js out/test/packs.test.js out/test/companion.test.js",
     "test:ui": "playwright test",
     "test": "npm run test:unit && npm run test:ui",
     "package:vsix": "vsce package --no-dependencies --skip-license"

@@ -4,16 +4,20 @@ Dates use YYYY-MM-DD; Git preserves exact timestamps and authors. Append dated e
 and corrections rather than erasing history. Record the linked issue/PR, commit description, evidence
 and next action. Current milestone status is summarized below; entries preserve how it changed.
 
-## Milestones - updated 2026-10-06
+## Milestones - updated 2026-10-08
 
 | ID | Status | Scope / next gate | Tracking |
 |---|---|---|---|
 | P0 | Merged baseline; local and hosted checks passed | One-charm docked prototype, tests, development VSIX, docs and CI | [#3](https://github.com/gautham-nvidia/charmlet/issues/3), [PR #4](https://github.com/gautham-nvidia/charmlet/pull/4) |
 | P1 | Accepted and merged in PR #7 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
 | P2 | Merged in PR #10 | Four free charms, saved picker, artwork provenance and prepared trial checklist | [#9](https://github.com/gautham-nvidia/charmlet/issues/9) |
-| P3 | Core desktop VS Code platform matrix verified; remaining readiness gates open | Windows/Ubuntu/macOS Apple Silicon complete; publisher/license, authenticated forks, remote/browser scope and public hosting/registry decisions remain | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [#13](https://github.com/gautham-nvidia/charmlet/issues/13), [readiness](docs/phase-3-readiness.md) |
+| P3 | Engineering baseline merged in PR15/16; launch gates carried forward | Windows/Ubuntu/macOS Apple Silicon VS Code matrix verified; publisher/license, authenticated forks, remote/browser and public hosting/registry decisions move to P4/P5 | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [#18](https://github.com/gautham-nvidia/charmlet/issues/18), [readiness](docs/phase-3-readiness.md) |
+| P4 | Started: scope/architecture kickoff; features pending | Free focus/learning/reminders/garden, original collections, website Photo Studio preparation and parallel desktop beta | [#17](https://github.com/gautham-nvidia/charmlet/issues/17), [plan](docs/phase-4-plan.md) |
+| P5 | Planned: extension-store launch | Publisher/license decisions, launch-target editor checks, public install pages and Marketplace/Open VSX availability | [#18](https://github.com/gautham-nvidia/charmlet/issues/18) |
+| P6 | Planned: product launch after IDE availability | Broader launch, support/onboarding and ready commerce/desktop offerings | [Phase 4 plan](docs/phase-4-plan.md) |
+| P7+ | Deferred integrations/licensed art | Additional IDE families, rights-cleared fandom/brand collaborations and later experiments | [Phase 4 plan](docs/phase-4-plan.md) |
 | F1 | Delivered in the charm view (0.3.1) | 80 optional coding messages below the charm, with Next and saved visibility/rotation | [#13](https://github.com/gautham-nvidia/charmlet/issues/13) |
-| F2 | Deferred | Cosmetic-only paid packs and explicit celebration commands | Roadmap #1 |
+| F2 | Replanned into P4/P6 | Optional original art and paid Photo Studio; free core, productivity and importer remain | [#17](https://github.com/gautham-nvidia/charmlet/issues/17), [#18](https://github.com/gautham-nvidia/charmlet/issues/18) |
 
 ## 2026-09-17 - Identity and personal repository
 
@@ -266,3 +270,119 @@ PR #15 merged at `246d387` after all six jobs passed in run `37825599786`. Autom
 The retained P3 branch was fast-forwarded from main for this test-only follow-up. Frame discovery now skips only expected detached-frame transitions, preserves other errors, and excludes every pre-reload frame when reacquiring the charm. Eight duplicated reload blocks and the initial scan use shared helpers. The combined scenario budget is explicitly 420000 ms (seven minutes) inside the unchanged 15-minute CI job; individual assertion, typing, gesture, resource and performance limits remain.
 
 Local Windows type checking, lint and the complete VS Code 1.140.0 suite passed (`1 passed (3.3m)`). Production code and the accepted 82231-byte 0.3.2 VSIX are unchanged. Hosted follow-up verification remains pending; this does not reopen the verified preference-file boundary or start another phase.
+
+## 2026-10-08 - Phase 4 companion kickoff
+
+The owner explicitly authorized Phase 4 on `feat/phase-4-companion`, based on clean merged main `e60749e066d8dbbe911d45929cd47d5960f1186e`. This supersedes the earlier assistant recommendation that public registry publication must precede Phase 4. Launch/store gates are carried into Phase 5 rather than waived.
+
+The authoritative [Focus, Learn and Grow plan](docs/phase-4-plan.md) scopes free focus, learning, reminders, garden rewards, expanded original free collections, website Photo Studio preparation and a parallel Windows/macOS desktop beta. The [collection brief](docs/phase-4-original-collections.md) defines a 60-design website target and 12-flower garden target; these are planned targets, not assets that currently exist.
+
+Phase 5 tracks extension-store launch and outstanding publisher/license/launch-target decisions in issue #18. Phase 6 is the broader product launch; Phase 7+ holds later IDE integrations and rights-dependent licensed art. The owner-approved paid Photo Studio is a website exception to the earlier free-creator recommendation; free core, productivity, reminders, garden, importer and ten defaults remain free. Pricing remains a proposal, and no checkout, merchant account, public deployment, feature implementation, publication or next-phase completion occurred in this kickoff.
+
+## 2026-10-08 - Phase 4A Focus and Learn candidate
+
+Development version **0.4.0** implements the first Phase 4 slice: persisted focus/break sessions and a saved sourced-learning feed. Focus provides 25/5 and 50/10 presets, bounded custom durations, optional one-line intent, pause/resume/stop, deadline-based reload recovery, a compact peg ring and status-bar/command access. Learn provides 60 sourced facts, 30 sourced trivia questions and the existing 80 optional encouragement messages, with saved feed/card/reveal state and source opening restricted to trusted catalogue IDs.
+
+The host owns the once-per-second timer snapshots while active; countdown ticks do not write to disk or resize/cancel a charm drag. User actions use a separate confirmed `companion.json` request/ack path. The renderer has no countdown interval/RAF loop, pauses five-minute card rotation for drawer/reveal/hover/focus/pending activity, keeps focus announcements stable between phase changes and preserves the existing charm preference/physics/import behavior.
+
+Local Windows verification passed: compile/type/lint/bundles, **47 unit tests**, and both VS Code 1.140.0 real-editor suites (`2 passed (3.5m)`). The focused suite verified elapsed-away recovery, confirmed start/pause/reload/resume/stop, exact paused remainder, saved trivia/feed identity, answer/source display, encouragement migration and command opening. Evidence includes `phase-4-focus.png` and `phase-4-learning.png` under the focused test result.
+
+Packaging produced `extension/charmlet-0.4.0.vsix`, 103555 bytes, SHA256 `6328B45FCCFEF0D5AB3D6DF13420044CFEBC6221C9880840CD4A20ABAA8D5E21`. Gallery build reported ten included/six extras; installed-Edge website checks passed at desktop/mobile sizes with matching 103555-byte download and no console/page errors.
+
+Garden, reminders, expanded art targets, paid Photo Studio and desktop beta remain pending later Phase 4 slices. This candidate is unpublished; no account, checkout, public deployment, merchant action, store listing or next phase occurred.
+
+## 2026-10-08 - Phase 4A consolidated review fixes
+
+Lead review confirmed that once-per-second focus snapshots repeatedly restarted the five-minute card timer, starving eligible automatic rotation. `MessageRotation.setEnabled` now preserves an existing eligible timer while retaining `update` as the explicit manual-reset contract. Companion user actions stop rotation before posting and confirmed results restart a fresh period. A deterministic heartbeat unit covers the full five-minute interval.
+
+Heartbeat snapshots now preserve unchanged learning-card text nodes, selection and assistive reading. Focus form validation rejects non-integer/out-of-range minutes inline; Tab navigation inside the panel does not trigger a save that disables the next field. Focus/Learn tabs wrap correctly, explicitly opened tabs receive focus, known controller errors retain `data-companion-persisted=error`, and facts/trivia use normal four-line text with the compact two-line cap.
+
+Host lifecycle now stops companion ticks before the final provider drain. Ready delivery owns only the current view, clears only the pending tab included in that delivery and forwards a newer open request that arrived while posting. Companion action errors preserve the controller's newer-schema message. The lead-authored forward-schema guard prevents 0.4.0 from overwriting a newer companion file; its targeted test passed before this batch.
+
+Narrow Windows verification passed: compile/type/lint/bundles; compile-tests; three focused message-rotation cases; and the focused VS Code 1.140.0 companion UI test (`1 passed (19.5s)`). The unchanged full 47-unit and baseline UI suites were intentionally not rerun; the next full gate is expected to contain 49 units, but no complete 49-unit pass is claimed yet.
+
+The rebuilt candidate `extension/charmlet-0.4.0.vsix` is 103995 bytes, SHA256 `80F00AFE684EC48818D32CC8E67762DBA403B1A03F1CB4B6F5BB555A5D0A6644`. Gallery and installed-Edge checks passed with a matching 103995-byte download, no overflow and no console/page errors. Hosted 0.4.0 evidence remains pending.
+
+## 2026-10-08 - Phase 4B Garden and Gentle Reminders candidate
+
+Development version **0.4.1** adds the free local garden and optional quiet care reminders. One garden-wide host-local-day allowance survives reload, bloom and planting another seed; missed days pause; a planted species cannot reroll; the eleventh confirmed watering awards once before the UI acknowledges it. Twelve original flowers become picker entries only after they are earned, and hanging a reward is an explicit confirmed action.
+
+Water and stand/move reminders are disabled by default, bounded to 15–180 minutes and keep at most one pending cue per kind. Focus deferral, Done, ten-minute Snooze and Skip are stored in schema-2 `companion.json`. A cue appears only inside the drawer, with a fixed-size toolbar badge and status-bar nudge while closed—no popup, sound, focus steal, backlog counter or outside row that can resize/cancel a charm drag.
+
+The companion host loads garden state before the final charm restoration, refreshes only when owned IDs change and derives every garden file from the trusted flower catalogue. Host crypto supplies seed IDs/species choice. Version-1 Focus/Learn state migrates to schema 2; the newer-schema overwrite guard remains. Sixteen original 72×84 SVGs were added: four unrevealed growth stages and twelve distinct reward flowers, with provenance in `extension/ARTWORK.md`.
+
+Phase 4A hosted run 37860624048 passed Windows/Linux; macOS failures were exact rendered-versus-resting test-contract mismatches while Focus/settings controls were open. Tests now check the real stored preference/slider while controls are open, close the controls, then retain the exact rendered-cord assertion. No saved-preference regression was established, and macOS 0.4.1 is not claimed before the next hosted gate.
+
+Local Windows verification passed: compile/type/lint/bundles, **58 unit tests**, and both focused VS Code 1.140.0 companion UI scenarios (`2 passed (34.0s)`). The Garden/Care case verified cue Snooze/Done/disable timing, 10→11 bloom, picker refresh, explicit hang, SVG width, reload persistence, retained collection and same-day protection after planting another seed. The unchanged three-minute baseline UI was intentionally not rerun locally.
+
+Packaging produced `extension/charmlet-0.4.1.vsix`, 120880 bytes, SHA256 `B5C99D7E3B5867CFA890F30CC46A33A4A2F0A819412B22A18BA8571C3110993F`. Gallery build retained ten bundled/six website extras; installed-Edge checks passed with a matching 120880-byte download and no overflow or console/page errors. Evidence includes `phase-4-care.png`, `phase-4-garden.png` and the 12-flower atlas under ignored test results.
+
+Expanded website collections, paid Photo Studio and desktop beta remain pending. The candidate is unpublished; hosted 0.4.1 verification remains required.
+
+## 2026-10-08 - Phase 4B finishing review
+
+Collection flower buttons now perform explicit confirmed **Hang** actions; they no longer replace the main Garden preview. The main art/status/progress always describe the current seed/plant, including after an owned flower is hung. Disabling a reminder succeeds even when its draft interval is invalid by restoring the saved interval and sending the disabled state.
+
+A failed earned-catalogue refresh now latches that exact collection key and reports once instead of retrying on every focus heartbeat. Manual Hang/import/reload remain recovery paths; no automatic retry loop was added. Bluebell's three closed berry-like shapes were replaced with the lead-specified curved branches and three small flared hanging cups; no other flower was redrawn.
+
+The Garden UI regression now clears the water interval before disabling it, then plants the next seed, confirms the main preview remains `garden-seed.svg`, hangs Hibiscus from its collection button and confirms the seed preview/daily water block remain unchanged. Narrow Windows checks passed: compile/type/lint/bundles and the Garden/Care VS Code 1.140.0 case (`1 passed (13.8s)`). The accepted 58-unit/two-focused-UI evidence was not rerun.
+
+The finishing candidate `extension/charmlet-0.4.1.vsix` is 120883 bytes, SHA256 `F5955540C4B4EF110DEFBC3AFA525F2FD9C57B48324AC148F798D9D2FEAB5279`. Gallery and installed-Edge checks passed with a matching 120883-byte download and no errors. The refreshed twelve-flower atlas is 76592 bytes, SHA256 `EE2ABC64BBB42DAE419519F2A146BEE1F321019E5253EAB989D7FF2B64A1EE43`. No saved-preference regression was established by the earlier macOS run; hosted 0.4.1 remains the deciding gate.
+
+## 2026-10-08 - Phase 4C sixty free extras and live demo
+
+The website catalogue now contains the exact reviewed sixty-record manifest: 18 Compute & Silicon, 12 Test Bench, 14 AI & Code and 16 Places & Nature. The original six retain their IDs, metadata, SVGs and pack bytes; all twelve authoritative old-file hash comparisons passed. Fifty-four new original 72×84 SVGs and validated static-PNG packs were added without changing the ten bundled defaults or earned garden flowers.
+
+A checked-in trusted one-time generator records the 54 reviewed motifs. The exporter now refuses missing, duplicate or unknown IDs and the first invocation explicitly selected only those 54, preventing accidental re-export of the accepted six. Ordinary builds enforce 60 extras/70 total unique IDs, exact collection counts, matching source filenames and all existing pack parser/PNG constraints; they do not rerender artwork.
+
+The hero now runs a bounded live swing/pull/reset preview using the existing Pendulum/getLayout/Matter implementation and verified physical-scale bridge. Preview buttons accept only same-origin local asset paths. Animation stops when settled, offscreen, hidden or reduced-motion, with no idle-loop, CPU/battery or fake-IDE claim.
+
+Installed-Edge verification passed all sixty production-lazy/test-eager image decodes, all sixty pack parses during build, four filter counts, search/reset, one old and one new real pack download, source/download VSIX equality, swing/drag-return/reset/offscreen/reduced-motion demo behavior, desktop/mobile overflow and zero browser errors. The website still serves the accepted byte-identical 120883-byte 0.4.1 VSIX (`F5955540C4B4EF110DEFBC3AFA525F2FD9C57B48324AC148F798D9D2FEAB5279`).
+
+Review evidence under `extension/test-results/website-check-0.4.1/` includes desktop/mobile pages, `live-demo.png`, and labelled light/dark contact sheets for all 54 new designs. Photo Studio, paid controls, desktop beta, public hosting and later Phase 4 slices remain absent.
+
+## 2026-10-08 - Phase 4C finishing review
+
+A real pointer click on the demo charm now records a ≤3 px tap and nudges once; Enter/Space use the synthetic click path without a duplicate impulse. One clear/reset path releases capture and the Matter pointer before reset, resize, new preview selection, blur, hidden/offscreen or reduced-motion settlement. Ordinary drags still animate back to cord 126.
+
+Preview is available for both included and extra designs. The browser check now covers physical-click horizontal movement, keyboard activation, drag/return, resize while held followed by a new drag, pointercancel followed by another click, reset/offscreen capture release, reduced motion and included Evil Eye plus extra GPU Tile selection. The implementation-detail hint was replaced with user-facing swing/pull copy.
+
+Phase 4C website provenance moved from packaged `extension/ARTWORK.md` into `website/ARTWORK.md`, keeping extension source consistent with the unchanged accepted VSIX. Root/website docs now describe locked build dependencies, current evidence paths and the implemented sixty-design catalogue rather than planned expansion.
+
+Eight compact transparent-art contact sheets—light/dark for each collection—and one cropped hero screenshot replace the long gallery sheets. They show only the 54 new designs: 15 Compute & Silicon, 11 Test Bench, 14 AI & Code and 14 Places & Nature. All eight use the requested five columns and at most three rows.
+
+Final website build/check passed all prior inventory, image, pack, download, overflow and URL assertions plus the extended demo lifecycle with zero errors. Original-six hashes and the accepted 120883-byte 0.4.1 VSIX remained unchanged. No generator, artwork, pack export, extension test/build/package or future feature ran in this finishing batch.
+
+## 2026-10-08 - Phase 4C final art and tap correction
+
+Embedding Stars' constellation connector explicitly uses `fill="none"` in both the checked-in SVG and trusted generator, preserving the coloured stars/nodes instead of drawing an unintended solid polygon. Only `embedding-stars` was re-exported; its final SVG SHA256 is `F1B40246880ACA21E4B11426F5AB9C7B5C29EB352632C8B4A7A55243AD5F11B3`, and pack SHA256 is `49A5D7BAFA33B5FBA3129729DF0B15128D5152066FCF44ACA8893A0A5719AAE8`. No other pack was exported.
+
+Pointer release now always clears capture/constraint and restores preferred cord before optionally nudging an unmoved normal-motion tap. A ≤3 px reduced-motion jitter returns immediately to cord 126/resting position without running; the same normal-motion jitter settles to 126 within the existing 20-second guard. Website build/check passed the expanded coverage and regenerated only the AI & Code light/dark sheets and cropped hero evidence. All sixty catalogue checks, original-six hashes and accepted VSIX identity remain valid.
+
+## 2026-10-08 - Phase 4E standalone desktop developer beta
+
+Core 0.4.1 hosted run 37865298216 at `afd000b` passed all six Windows/Linux/macOS jobs; lead-reviewed Linux and macOS 1.140 logs show 58 units and three editor UI scenarios. Phase 4E adds a separate unpublished Electron 0.1.0 developer beta without changing extension runtime, dependencies or the accepted VSIX.
+
+The desktop package pins Electron 44.7.0 and `@electron/packager` 20.3.0 locally. One frameless transparent always-on-top window reuses the extension's renderer, Pendulum, controller, garden catalogue, validated pack parser and confirmed JSON writers through a context-isolated sandboxed preload. A strict `charmlet:` resource map, CSP nonce, denied navigation/window creation, trusted-card source lookup and whitelisted sender-checked IPC keep Node/filesystem APIs out of the renderer.
+
+The app owns its profile (`preferences.json`, `companion.json`, `packs/`, `window/preferences.json`), restores earned flowers before the active charm, serializes writes before acknowledgements, drains on Quit, pauses a running focus on public suspend/lock events without auto-resume, and keeps desktop/IDE progress independent. One floating window supplies header, tray/menu controls and validated pass-through configuration; no global hotkey, autostart, telemetry, updater, account or remote content was added.
+
+The exact lead placement model passed all five cases: primary top-right, retained negative monitor coordinates, disconnected-monitor recovery, partial-overlap clamp and malformed/small-screen bounds. The exact power stub passed once-only pause. Owned Windows Electron smoke passed isolated-profile/restart persistence, paused remainder, earned Hibiscus, Focus resume/pause/stop, trivia reveal, explicit keyboard focus, hide/show retention, bounded placement, restricted hit-test state, and security flags (`nodeIntegration=false`, `contextIsolation=true`, `sandbox=true`, `webSecurity=true`). Renderer `require` and `process` are absent.
+
+Unsigned Windows packaging produced `desktop/release/Charmlet-win32-x64/`: 116 files, 385948424 bytes total; `Charmlet.exe` is 246302208 bytes, SHA256 `16139C7C7C6BE93668C107FB65C6DB3ED3F53BFDBB3B39E1E8680FB3DC9CE1DF`. Evidence: `desktop-focus.png` 102793 bytes/SHA256 `23583F9ACF708EC9AE2A78C18A3AE67BA6A43961D66F40662D856DF215BBB025`; `desktop-garden.png` 112914 bytes/SHA256 `791CE7256AB04DB46E8A3EE4D03F089F5A4E69C7F2B3FD09D33F0A3D13A04D0D`.
+
+Automated CDP evidence proves the restricted IPC and BrowserWindow ignored-state configuration, not native clicks passing through another app. Real native pass-through/no-focus-steal, tray behavior, mixed-DPI/monitor changes, suspend/lock, macOS Spaces/build, signing/notarization and distribution remain manual or hosted gates. No macOS pass, signing, installer or public-release claim is made.
+
+## 2026-10-08 - Phase 4E finishing review
+
+Native show/hide events now centrally send renderer visibility and a fresh companion snapshot whenever the window returns, including already-visible explicit controls. Reload increments a main-frame generation, clears renderer readiness and drops stale ready/save/action replies; sender validation also requires the current main frame. The hidden-running test emits only the owned app's `powerMonitor` suspend event, confirms persisted pause, calls actual `showInactive()` without injecting visibility, and immediately sees the current Paused state/remainder.
+
+The pass-through stage is now truly transparent (`#app`/`#stage` computed rgba 0,0,0,0); readable surfaces remain on header/cards/tools/drawers/readout with dark color scheme and visible focus. Resource serving admits only known SVG/PNG media and safely returns 404 for malformed paths. `app.setName('Charmlet')` precedes profile access. Diagnostics read actual Electron `getLastWebPreferences()` and distinguish measured window state from unqueryable configured frame/transparent/skip-taskbar flags.
+
+Unreadable preference/companion files now stop initialization without replacement. IPC, placement, display, power, tray actions, startup and shutdown have bounded error handling; background failures latch one quiet tray status, and Quit still drains all possible writers then exits. Remove Pack uses a scalable native popup menu. Tray tooltip/title reflects notice/reminder/focus, and macOS gets explicit app/Edit menus.
+
+The existing Node:test smoke now has a 180-second owned cleanup hook and `expect.poll` 5-second limits, plus dev and packaged modes with separate profiles/evidence. Both passed the full security/profile/Hibiscus/hidden-power/show/reload-generation/restart/stop/trivia lifecycle. Dev paused remainder 46830 ms; packaged 46840 ms. Actual Electron preferences showed `nodeIntegration=false`, `contextIsolation=true`, `sandbox=true`, `webSecurity=true`; renderer globals remained absent.
+
+Final unsigned Windows package contains 116 files/385953559 bytes. `Charmlet.exe` remains 246302208 bytes/SHA256 `16139C7C7C6BE93668C107FB65C6DB3ED3F53BFDBB3B39E1E8680FB3DC9CE1DF`; packaged `main.cjs` SHA256 is `09E0A5A76DC0CD76F5BF1F013E9F15EAF00921A918FFE0074C196EEB9FB56E03`. Dev screenshots: Focus105964/`9B10FFEA47B68B0EAC97604F6DE219256A4815E2EA090BF5428453032ED86699`, Garden117597/`084BBA979E7DF6516B05377BA8A1D231CDF5B63C2B4BB051E5158E9930610CE7`. Packaged screenshots: Focus105962/`A45396CE0EAAE4DB21822CDB465BE359663452F5272E00103EF8C429F467FBC5`, Garden117599/`48E44DF1FF123AB5E19784BA5B4E1390FFBF7DC17BE5D6EEB38833B64E9B0232`.
+
+Actual native click-through/no-focus-steal, tray popup behavior, real monitor/DPI removal, real OS suspend/lock, macOS Spaces/build and signing/distribution remain manual or hosted gates. Extension/gallery artifacts remain untouched.

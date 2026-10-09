@@ -122,3 +122,9 @@ Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs
 Every job passed 34 units, the complete real-editor UI suite, VSIX packaging and gallery build. The frozen [reviewed preference restoration proof](phase-3-preferences.json) records both macOS versions: final file readback was Lemon & Chilies, revision 14 was acknowledged, the pre-reload picker/stage remained Lemon with `persisted=true`, the new host restored Lemon with `source=file`, and the post-reload UI remained Lemon. No intervening save appears in the reviewed boundary evidence. The exact cause of prior VS Code internal cache behavior is not asserted.
 
 This validates the canonical file path on the listed runners and versions. It does not verify Intel Mac, Windows ARM, authenticated Cursor/Devin, Remote-SSH/WSL, browser hosts or the proposed standalone app. Phase 3 remains open for publisher ownership, source/art license, actual public hosting, registry listings and publication approval.
+
+## 2026-10-08 - Roadmap transfer after merged engineering baseline
+
+The Phase 3 engineering baseline is merged through PR #15 (`246d387`) and test-only PR #16 (`e60749e`). Final pre-merge run `37833771379` and post-merge run `37834591589` passed all six 34-unit/full-UI/package/gallery jobs. The owner expressly authorized [Phase 4 companion work](phase-4-plan.md) on its retained workflow branch.
+
+This roadmap transfer does not waive release gates. Phase 4 handles the companion implementation and any actual launch-target editor verification needed by its features. Phase 5 issue [#18](https://github.com/gautham-nvidia/charmlet/issues/18) carries publisher ownership, source/art licensing, public install pages, Marketplace/Open VSX decisions and remaining launch-target scope. Authenticated Cursor/Devin, Remote-SSH/WSL, browser hosts, Intel Mac and Windows ARM still require verification or an explicit scope decision before a matching public claim.

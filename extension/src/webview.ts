@@ -1,7 +1,7 @@
-import { createElement, ArrowDown, ArrowRight, Eye, EyeOff, Orbit, Pause, Play, RotateCcw, SlidersHorizontal } from 'lucide';
+import { createElement, ArrowDown, ArrowRight, Eye, EyeOff, Orbit, Pause, Play, RotateCcw, SlidersHorizontal, Timer } from 'lucide';
 import { resetState, clamp, getLayout, restoreState, type CharmState } from './charm-state';
 import { CHARMS, getCharm, type CharmDefinition } from './charm-catalog';
-import { MESSAGES } from './messages';
+import { createCompanionView } from './companion-view';
 import { MessageRotation } from './message-rotation';
 import { Pendulum, type Point } from './pendulum';
 
@@ -11,12 +11,12 @@ declare function acquireVsCodeApi(): {
 	postMessage(message: unknown): void;
 };
 
-function element<Kind extends HTMLElement>(id: string) {
+function element<Kind extends Element>(id: string) {
 	const result = document.getElementById(id);
 	if (!result) {
 		throw new Error(`Missing charm element: ${id}`);
 	}
-	return result as Kind;
+	return result as unknown as Kind;
 }
 
 const api = acquireVsCodeApi();
@@ -30,6 +30,7 @@ const toggle = element<HTMLButtonElement>('toggle');
 const motion = element<HTMLButtonElement>('motion');
 const reset = element<HTMLButtonElement>('reset');
 const settingsToggle = element<HTMLButtonElement>('settings-toggle');
+const companionToggle = element<HTMLButtonElement>('companion-toggle');
 const layoutMode = element<HTMLButtonElement>('layout-mode');
 const settings = element<HTMLDivElement>('settings');
 const sizeInput = element<HTMLInputElement>('size');
@@ -39,6 +40,7 @@ const cordValue = element<HTMLOutputElement>('cord-value');
 const phase = element<HTMLSpanElement>('phase');
 const lengthOutput = element<HTMLOutputElement>('length');
 const thread = document.getElementById('thread')!;
+const focusRing = element<SVGElement>('focus-ring');
 const charmImage = element<HTMLImageElement>('charm-image');
 const charmName = element<HTMLSpanElement>('charm-name');
 const charmSwatch = element<HTMLSpanElement>('charm-swatch');
@@ -47,7 +49,6 @@ const charmDescription = element<HTMLParagraphElement>('charm-description');
 const showMessages = element<HTMLInputElement>('show-messages');
 const rotateMessages = element<HTMLInputElement>('rotate-messages');
 const messageCard = element<HTMLDivElement>('message-card');
-const messageText = element<HTMLElement>('message-text');
 const nextMessage = element<HTMLButtonElement>('next-message');
 const importPack = element<HTMLButtonElement>('import-pack');
 const removePack = element<HTMLButtonElement>('remove-pack');
@@ -66,6 +67,21 @@ let frames = 0;
 let drag: { id: number; start: Point; screenStart: Point; moved: boolean; lastAngle: number; angularTravel: number; maxSideways: number; orbitalGesture: boolean; hideDistance: number; orbitSideDistance: number } | undefined;
 const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, state.cordLength, state.size, state.layoutMode);
+const companionUI = createCompanionView({
+	send: (action, requestId) => api.postMessage({ type: 'companion-action', action, requestId }),
+	openSource: cardId => api.postMessage({ type: 'learning-source', cardId }),
+	image: file => new URL(file, mediaRoot).toString(),
+	hangFlower: (flowerId, requestId) => api.postMessage({ type: 'garden-hang', flowerId, requestId }),
+	onOpen: () => {
+		settings.hidden = true;
+		settingsToggle.setAttribute('aria-expanded', 'false');
+	},
+	onLayout: () => {
+		resize();
+		scheduleMessages();
+	},
+	onActivity: scheduleMessages,
+});
 
 function reducedMotion() {
 	return state.reducedMotion || systemMotion.matches || document.body.classList.contains('vscode-reduce-motion');
@@ -96,23 +112,19 @@ function updateMessage() {
 	messageCard.hidden = !state.showMessages;
 	showMessages.checked = state.showMessages;
 	rotateMessages.checked = state.rotateMessages;
-	const message = MESSAGES[state.messageIndex];
-	messageText.textContent = message;
-	messageText.title = message;
 }
 
 function advanceMessage() {
-	state.messageIndex = (state.messageIndex + 1) % MESSAGES.length;
-	updateMessage();
-	save();
+	companionUI.nextCard();
 	scheduleMessages();
 }
 
 const messageRotation = new MessageRotation(advanceMessage);
 
 function scheduleMessages() {
-	const enabled = ready && visible && !document.hidden && state.showMessages && state.rotateMessages && settings.hidden && !drag;
-	messageRotation.update(enabled);
+	const enabled = ready && stage.dataset.companionReady === 'true' && visible && !document.hidden
+		&& state.showMessages && state.rotateMessages && settings.hidden && !drag && companionUI.canRotate();
+	messageRotation.setEnabled(enabled);
 	messageCard.dataset.rotation = enabled ? 'active' : 'paused';
 }
 
@@ -164,6 +176,8 @@ function render() {
 	charm.style.transform = `translate(${positionX}px, ${positionY}px) rotate(${angle}rad)`;
 	anchor.style.left = `${anchorX}px`;
 	anchor.style.top = `${anchorY}px`;
+	focusRing.style.left = `${anchorX}px`;
+	focusRing.style.top = `${anchorY}px`;
 	restore.style.left = `${anchorX * scale - 15}px`;
 	restore.style.top = `${Math.max(4, anchorY * scale - 14)}px`;
 	thread.setAttribute('d', `M ${anchorX} ${anchorY} Q ${anchorX + (hookX - anchorX) * 0.45} ${(anchorY + hookY) / 2} ${hookX} ${hookY}`);
@@ -463,6 +477,7 @@ motion.addEventListener('click', () => {
 
 settingsToggle.addEventListener('click', () => {
 	cancelDrag();
+	companionUI.close(false);
 	settings.hidden = !settings.hidden;
 	settingsToggle.setAttribute('aria-expanded', String(!settings.hidden));
 	resize();
@@ -498,7 +513,6 @@ rotateMessages.addEventListener('change', () => {
 	save();
 	scheduleMessages();
 });
-nextMessage.addEventListener('click', advanceMessage);
 importPack.addEventListener('click', () => api.postMessage({ type: 'command', command: 'charmlet.importPack' }));
 removePack.addEventListener('click', () => api.postMessage({ type: 'command', command: 'charmlet.removePack' }));
 sizeInput.addEventListener('input', () => {
@@ -545,6 +559,10 @@ window.addEventListener('message', event => {
 			visible = message.visible === true;
 		}
 		api.setState(state);
+		if ('companion' in message) { companionUI.receive(message.companion); }
+		if ('companionTab' in message && (message.companionTab === 'focus' || message.companionTab === 'learn' || message.companionTab === 'garden')) {
+			companionUI.open(message.companionTab);
+		}
 		ready = true;
 		stage.dataset.ready = 'true';
 		resize();
@@ -559,6 +577,17 @@ window.addEventListener('message', event => {
 		updateMessage();
 		resize();
 		showState();
+	} else if (message.type === 'companion' && 'snapshot' in message) {
+		companionUI.receive(message.snapshot);
+		scheduleMessages();
+	} else if (message.type === 'companion-result' && 'requestId' in message && Number.isSafeInteger(message.requestId)) {
+		companionUI.result(
+			Number(message.requestId),
+			'error' in message && typeof message.error === 'string' ? message.error : undefined,
+			'message' in message && typeof message.message === 'string' ? message.message : undefined,
+		);
+	} else if (message.type === 'companion-open' && 'tab' in message && (message.tab === 'focus' || message.tab === 'learn' || message.tab === 'garden')) {
+		companionUI.open(message.tab);
 	} else if (message.type === 'saved' && 'revision' in message && message.revision === saveRevision) {
 		stage.dataset.persisted = 'true';
 	} else if (message.type === 'save-error' && 'revision' in message && message.revision === saveRevision) {
@@ -576,6 +605,7 @@ new MutationObserver(updateMotionPreference).observe(document.body, { attributes
 new ResizeObserver(resize).observe(stage);
 reset.replaceChildren(createElement(RotateCcw, { width: 15, height: 15 }));
 restore.replaceChildren(createElement(ArrowDown, { width: 14, height: 14 }));
+companionToggle.prepend(createElement(Timer, { width: 15, height: 15 }));
 settingsToggle.replaceChildren(createElement(SlidersHorizontal, { width: 15, height: 15 }));
 layoutMode.replaceChildren(createElement(Orbit, { width: 16, height: 16 }));
 nextMessage.replaceChildren(createElement(ArrowRight, { width: 14, height: 14 }));

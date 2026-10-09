@@ -2,6 +2,7 @@ import { createRequire } from 'node:module';
 import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { build } from '../extension/node_modules/esbuild/lib/main.js';
 import { validateDistribution } from './distribution.mjs';
 
 const require = createRequire(import.meta.url);
@@ -13,11 +14,18 @@ const builtins = JSON.parse(await readFile(join(repo, 'extension', 'src', 'built
 const extras = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
 const distribution = validateDistribution(JSON.parse(await readFile(join(root, 'distribution.json'), 'utf8')), manifest);
-if (builtins.length !== 10 || extras.length !== 6) throw new Error('Expected ten included and six extra charms.');
+if (builtins.length !== 10 || extras.length !== 60) throw new Error('Expected ten included and sixty extra charms.');
 const ids = new Set([...builtins, ...extras].map(item => item.id));
-if (ids.size !== 16) throw new Error('Charm IDs must be unique across the gallery.');
+if (ids.size !== 70) throw new Error('Charm IDs must be unique across the gallery.');
+const expectedCollections = { 'Compute & Silicon': 18, 'Test Bench': 12, 'AI & Code': 14, 'Places & Nature': 16 };
+for (const [name, count] of Object.entries(expectedCollections)) {
+  if (extras.filter(item => item.collection === name).length !== count) throw new Error(`Unexpected collection size: ${name}`);
+}
+if (extras.some(item => !Object.hasOwn(expectedCollections, item.collection))) throw new Error('Unknown collection.');
 const validated = [];
 for (const extra of extras) {
+  if (extra.file !== `${extra.id}.svg`) throw new Error(`Source filename must match charm ID: ${extra.id}`);
+  await readFile(join(root, 'assets', extra.file), 'utf8');
   const packPath = join(root, 'packs', `${extra.id}.charmlet.json`);
   const pack = parseCharmPack(await readFile(packPath));
   const charm = pack.charms[0];
@@ -40,6 +48,11 @@ for (const { extra, packPath } of validated) {
   await copyFile(join(root, 'assets', extra.file), join(dist, 'assets', 'extras', extra.file));
   await copyFile(packPath, join(dist, 'packs', `${extra.id}.charmlet.json`));
 }
+await build({
+  entryPoints: [join(root, 'demo.ts')], bundle: true, platform: 'browser',
+  format: 'iife', globalName: 'CharmletDemo', outfile: join(dist, 'demo.js'),
+  minify: true, sourcemap: false, target: ['es2022'],
+});
 const vsix = `charmlet-${manifest.version}.vsix`;
 await copyFile(join(repo, 'extension', vsix), join(dist, 'downloads', 'charmlet.vsix'));
 const charms = [

@@ -199,6 +199,24 @@ test('automatic message rotation advances, reschedules and obeys enable and stop
 	}
 });
 
+test('eligible heartbeats do not postpone automatic card rotation', context => {
+	context.mock.timers.enable({ apis: ['setTimeout'] });
+	try {
+		let calls = 0;
+		const rotation = new MessageRotation(() => { calls++; });
+		rotation.setEnabled(true);
+		for (let second = 0; second < MESSAGE_ROTATION_MS / 1000; second++) {
+			context.mock.timers.tick(1000);
+			rotation.setEnabled(true);
+		}
+		assert.equal(calls, 1);
+		rotation.setEnabled(false);
+		context.mock.timers.tick(MESSAGE_ROTATION_MS);
+		assert.equal(calls, 1);
+		rotation.stop();
+	} finally { context.mock.timers.reset(); }
+});
+
 test('manual message changes restart the automatic countdown', context => {
 	context.mock.timers.enable({ apis: ['setTimeout'] });
 	try {

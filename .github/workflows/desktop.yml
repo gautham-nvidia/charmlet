@@ -1,0 +1,78 @@
+name: Desktop Beta
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - 'extension/src/**'
+      - 'extension/media/**'
+      - 'extension/package-lock.json'
+      - '.github/workflows/desktop.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - 'extension/src/**'
+      - 'extension/media/**'
+      - 'extension/package-lock.json'
+      - '.github/workflows/desktop.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  desktop:
+    name: Desktop ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            label: Windows
+          - os: macos-15
+            label: macOS
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            extension/package-lock.json
+            desktop/package-lock.json
+      - name: Install shared build and test dependencies
+        run: npm ci --prefix extension
+      - name: Install locked desktop dependencies
+        run: npm ci --prefix desktop
+      - name: Test the desktop beta in its owned profile
+        run: npm run test --prefix desktop
+      - name: Package an unsigned developer beta
+        run: npm run package --prefix desktop
+      - name: Test the packaged desktop executable in its owned profile
+        run: node desktop/test/smoke.mjs --packaged
+      - name: Retain desktop test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-evidence-${{ matrix.label }}-${{ github.sha }}
+          path: desktop/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Retain unsigned desktop beta
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-beta-${{ matrix.label }}-${{ github.sha }}
+          path: desktop/release/
+          if-no-files-found: error
+          retention-days: 14
