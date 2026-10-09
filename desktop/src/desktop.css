@@ -1,0 +1,10 @@
+html, body.desktop { width: 100%; height: 100%; background: transparent; color-scheme: dark; }
+body.desktop { display: grid; grid-template-rows: 28px minmax(0, 1fr); overflow: hidden; --surface: rgba(28, 33, 31, .92); --ink: #edf3ef; --quiet: #b1beb8; }
+#desktop-header { display: flex; align-items: center; justify-content: space-between; height: 28px; padding-left: 10px; border: 1px solid rgba(152, 177, 165, .28); border-bottom: 0; border-radius: 10px 10px 0 0; color: #edf3ef; background: rgba(24, 31, 28, .94); font: 600 11px/1 system-ui, sans-serif; -webkit-app-region: drag; user-select: none; }
+#desktop-hide { width: 32px; height: 27px; border-radius: 0 9px 0 0; color: #dce8dc; -webkit-app-region: no-drag; }
+#desktop-hide:hover { background: rgba(255, 255, 255, .12); }
+body.desktop #app { height: 100%; border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
+body.desktop #stage { background: transparent; }
+body.desktop .message-card, body.desktop #settings, body.desktop #companion-tools, body.desktop .tools, body.desktop .readout { background: rgba(28, 33, 31, .88); backdrop-filter: blur(10px); }
+body.desktop #message-card { margin-bottom: 4px; }
+body.desktop button:focus-visible, body.desktop input:focus-visible, body.desktop select:focus-visible, body.desktop summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

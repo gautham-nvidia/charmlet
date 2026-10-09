@@ -4,10 +4,10 @@
 
 **Status, 2026-10-08:** Phase 4B development candidate **0.4.1** adds a free eleven-watering garden and
 optional gentle water/move reminders to Focus, Learn, ten bundled charms, 80 encouragement messages,
-60 free website extras and the offline importer. Paid Photo Studio and desktop beta
-remain planned work in the [Focus, Learn and Grow plan](docs/phase-4-plan.md), not features in this candidate.
+60 free website extras and the offline importer. A separate unsigned Phase 4E desktop developer beta now lives under
+[`desktop/`](desktop/README.md); it is not part of the VSIX or a public release. Paid Photo Studio remains planned.
 
-The 0.3.2 baseline passed its six-job hosted matrix. Phase 4A run 37860624048 passed Windows/Linux but macOS exposed test assertions that compared temporarily fitted cord length while controls were open; no saved-preference regression was established. The 0.4.1 Garden/Care candidate passes 58 units and two focused local VS Code 1.140.0 UI scenarios, but still requires hosted verification. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md).
+The 0.3.2 baseline passed its six-job hosted matrix. Core 0.4.1 run 37865298216 at `afd000b` passed all six Windows/Linux/macOS jobs; directly reviewed Linux and macOS 1.140 logs show 58 units and three editor UI scenarios. The desktop beta has separate local Windows evidence and still requires hosted macOS review. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md).
 
 [Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
 [dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
@@ -89,6 +89,12 @@ is still open, not because third-party licenses are waived. Required notices shi
 Linux uses Xvfb; screenshots, resource snapshots, the VSIX and static gallery are retained as workflow
 artifacts. This verifies the listed runners, not every OS/hardware/editor host. CI does not deploy or publish.
 
+## Desktop developer beta
+
+[`desktop/`](desktop/README.md) builds one floating Windows/macOS Electron window with the shared charm renderer, Focus/Learn/Garden controller, validated packs, confirmed local JSON state and tray/menu-bar actions. Its profile is independent from VS Code; automatic cross-device or IDE synchronization is not included.
+
+Local Windows evidence covers the five frozen placement cases, one suspend/lock pause-handler case, owned-profile Electron UI/restart behavior, earned Hibiscus restoration, renderer security flags and restricted hit-test IPC configuration. That diagnostic is not native OS click-through proof. Real Windows/macOS click-through, focus behavior, monitor/DPI movement, suspend/lock, macOS packaging, signing and distribution remain explicit manual/hosted gates.
+
 ## Companion gallery
 
 The source under [website/](website/) builds a static local gallery with 60 free extra charms across four
@@ -126,6 +132,7 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
 | [Phase 4 issue #17](https://github.com/gautham-nvidia/charmlet/issues/17) | Focus, learning, reminders, garden and original collections implementation |
 | [Phase 4 plan](docs/phase-4-plan.md) | Current product scope, architecture, slices and acceptance gates |
+| [Desktop beta guide](desktop/README.md) | Local build/test/package commands, security boundaries and manual Windows/macOS gates |
 | [Phase 4 collection brief](docs/phase-4-original-collections.md) | Implemented 60-design free website catalogue direction and garden palette |
 | [Phase 5 issue #18](https://github.com/gautham-nvidia/charmlet/issues/18) | Publisher/license decisions and extension-store launch gates |
 | [Desktop platform summary](docs/phase-3-platforms.json) | Frozen six-job Windows/Linux/macOS identities and accepted motion/lifecycle values |
