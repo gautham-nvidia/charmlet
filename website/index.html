@@ -3,7 +3,7 @@
 <head>
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <meta name="description" content="Ten free coding companions with focus, sourced learning, a gentle garden and reminders.">
+ <meta name="description" content="Charmlet focus, learning and garden tools with ten included charms and sixty free extras.">
  <title>Charmlet — a little luck for your next line</title>
  <link rel="stylesheet" href="./styles.css">
  <link rel="icon" type="image/svg+xml" href="./assets/default/keycap.svg">
@@ -25,20 +25,19 @@
    <div class="hero-copy">
     <p class="eyebrow">SMALL COMPANIONS. GOOD COMPANY.</p>
     <h1>A little luck for<br>your next line.</h1>
-    <p class="hero-description">Ten free companions with quiet focus, sourced learning and a no-pressure garden.</p>
+    <p class="hero-description">Ten companions inside the extension, sixty free extras, and a live swing to try here.</p>
     <div class="hero-actions"><a class="button button-primary" href="#catalogue">Find your next charm <span aria-hidden="true">↓</span></a><span>Free to use. Yours to enjoy.</span></div>
     <p class="hero-note">No account. No feature paywall. Focus and learn without leaving your editor.</p>
    </div>
-   <div class="hero-art" aria-label="A selection of original Charmlet designs">
-    <div class="hero-rail" aria-hidden="true"></div>
-    <div class="hero-pendant hero-pendant-one"><span aria-hidden="true"></span><img src="./assets/default/chip.svg" alt="Violet Chip charm"></div>
-    <div class="hero-pendant hero-pendant-two"><span aria-hidden="true"></span><img src="./assets/default/evil-eye.svg" alt="Blue Evil Eye charm"></div>
-    <div class="hero-pendant hero-pendant-three"><span aria-hidden="true"></span><img src="./assets/default/drishti.svg" alt="Drishti Doll charm"></div>
-    <div class="hero-stamp"><strong>10</strong><span>already inside<br>the extension</span></div>
+   <div class="hero-demo" aria-label="Live Charmlet swing preview">
+    <div id="demo-stage" data-ready="false" data-running="false" data-dragging="false" data-frames="0" data-cord="126">
+     <div id="demo-rig"><svg id="demo-cord" aria-hidden="true"><path id="demo-thread"></path></svg><span id="demo-anchor" aria-hidden="true"></span><button id="demo-charm" type="button" aria-label="Swing Terminal charm"><img id="demo-image" src="./assets/default/keycap.svg" alt="Terminal charm" width="72" height="84" draggable="false"></button></div>
+    </div>
+    <div class="demo-copy"><p class="eyebrow">LIVE SWING PREVIEW</p><h2 id="demo-name">Terminal</h2><p id="demo-hint">Drag the charm, then let go. It always returns to its resting length.</p><div class="demo-actions"><button id="demo-nudge" class="button button-secondary" type="button">Try a swing</button><button id="demo-reset" class="button button-secondary" type="button">Reset demo</button></div></div>
    </div>
   </section>
   <section class="collection" id="catalogue" aria-labelledby="collection-title">
-   <div class="section-heading"><div><p class="eyebrow">THE LITTLE COLLECTION</p><h2 id="collection-title">A charm for your kind of day.</h2></div><p>Silicon dreams, watchful guardians<br>and a few bright little extras.</p></div>
+   <div class="section-heading"><div><p class="eyebrow">THE LITTLE COLLECTION</p><h2 id="collection-title">A charm for your kind of day.</h2></div><p>Four original collections.<br>Sixty free extras to preview and import.</p></div>
    <div class="catalogue-controls">
     <div class="kind-switch" role="group" aria-label="Collection type"><button type="button" data-kind="extra" aria-pressed="true">Extra downloads <span id="extra-count"></span></button><button type="button" data-kind="included" aria-pressed="false">Included with Charmlet <span id="included-count"></span></button></div>
     <label class="search-label"><span class="visually-hidden">Search charms</span><input id="search" type="search" placeholder="Find a little something…" aria-label="Search charms"></label>
@@ -94,6 +93,7 @@
   </section>
  </main>
  <footer class="site-footer"><a class="brand" href="./">Charmlet</a><p>Original little companions for the things you’re making.</p><div><a href="https://github.com/gautham-nvidia/charmlet">Source & artwork</a><a href="https://github.com/gautham-nvidia/charmlet/issues">Help & feedback</a><span id="release-label">Development preview</span></div></footer>
- <script type="module" src="./app.js"></script>
+ <script defer src="./demo.js"></script>
+ <script type="module" defer src="./app.js"></script>
 </body>
 </html>

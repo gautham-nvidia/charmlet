@@ -4,7 +4,7 @@
 
 **Status, 2026-10-08:** Phase 4B development candidate **0.4.1** adds a free eleven-watering garden and
 optional gentle water/move reminders to Focus, Learn, ten bundled charms, 80 encouragement messages,
-six free website extras and the offline importer. Expanded artwork, paid Photo Studio and desktop beta
+60 free website extras and the offline importer. Paid Photo Studio and desktop beta
 remain planned work in the [Focus, Learn and Grow plan](docs/phase-4-plan.md), not features in this candidate.
 
 The 0.3.2 baseline passed its six-job hosted matrix. Phase 4A run 37860624048 passed Windows/Linux but macOS exposed test assertions that compared temporarily fitted cord length while controls were open; no saved-preference regression was established. The 0.4.1 Garden/Care candidate passes 58 units and two focused local VS Code 1.140.0 UI scenarios, but still requires hosted verification. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md).
@@ -91,8 +91,9 @@ artifacts. This verifies the listed runners, not every OS/hardware/editor host. 
 
 ## Companion gallery
 
-The source under [website/](website/) builds a static local gallery with six free extra charms and real
-pack/VSIX downloads. A `.vsix` installs the extension; a `.charmlet.json` adds artwork only after Charmlet
+The source under [website/](website/) builds a static local gallery with 60 free extra charms across four
+collections, real pack/VSIX downloads and a bounded live swing/pull preview powered by the extension's
+shared Pendulum model. A `.vsix` installs the extension; a `.charmlet.json` adds artwork only after Charmlet
 is installed. Store links are driven by validated `website/distribution.json` values and remain null until
 the owner verifies a live identity-matching listing. URL validation is not proof of publication. This is
 a development preview, not a public URL or Marketplace/Open VSX listing.
@@ -125,7 +126,7 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
 | [Phase 4 issue #17](https://github.com/gautham-nvidia/charmlet/issues/17) | Focus, learning, reminders, garden and original collections implementation |
 | [Phase 4 plan](docs/phase-4-plan.md) | Current product scope, architecture, slices and acceptance gates |
-| [Phase 4 collection brief](docs/phase-4-original-collections.md) | Concrete 60-design free-catalogue planning target and garden palette |
+| [Phase 4 collection brief](docs/phase-4-original-collections.md) | Implemented 60-design free website catalogue direction and garden palette |
 | [Phase 5 issue #18](https://github.com/gautham-nvidia/charmlet/issues/18) | Publisher/license decisions and extension-store launch gates |
 | [Desktop platform summary](docs/phase-3-platforms.json) | Frozen six-job Windows/Linux/macOS identities and accepted motion/lifecycle values |
 | [Preference restoration proof](docs/phase-3-preferences.json) | Frozen canonical-file readback/ack/restart evidence from both macOS versions |
@@ -136,7 +137,8 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Charm pack format](docs/charm-packs.md) | Validated data-only import format and limits |
 | [Paid artwork proposal](docs/paid-artwork-plan.md) | Non-live collection, rights, fulfillment and owner-decision plan |
 | [Competitive review and desktop direction](docs/competitive-review.md) | Sourced product comparison, proposed free focus timer and standalone-host tradeoffs |
-| [Artwork provenance](extension/ARTWORK.md) | Asset origins, shared geometry and license status |
+| [Extension artwork provenance](extension/ARTWORK.md) | Bundled/default/garden asset origins, shared geometry and license status |
+| [Website artwork provenance](website/ARTWORK.md) | Sixty free website designs, frozen legacy assets and Phase 4C generation/export record |
 | [extension/CHANGELOG.md](extension/CHANGELOG.md) | User-visible changes by version and date |
 | [PLAN.md](PLAN.md) | Design research, constraints and clearly marked historical proposals |
 

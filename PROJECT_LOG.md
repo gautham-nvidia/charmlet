@@ -328,3 +328,33 @@ A failed earned-catalogue refresh now latches that exact collection key and repo
 The Garden UI regression now clears the water interval before disabling it, then plants the next seed, confirms the main preview remains `garden-seed.svg`, hangs Hibiscus from its collection button and confirms the seed preview/daily water block remain unchanged. Narrow Windows checks passed: compile/type/lint/bundles and the Garden/Care VS Code 1.140.0 case (`1 passed (13.8s)`). The accepted 58-unit/two-focused-UI evidence was not rerun.
 
 The finishing candidate `extension/charmlet-0.4.1.vsix` is 120883 bytes, SHA256 `F5955540C4B4EF110DEFBC3AFA525F2FD9C57B48324AC148F798D9D2FEAB5279`. Gallery and installed-Edge checks passed with a matching 120883-byte download and no errors. The refreshed twelve-flower atlas is 76592 bytes, SHA256 `EE2ABC64BBB42DAE419519F2A146BEE1F321019E5253EAB989D7FF2B64A1EE43`. No saved-preference regression was established by the earlier macOS run; hosted 0.4.1 remains the deciding gate.
+
+## 2026-10-08 - Phase 4C sixty free extras and live demo
+
+The website catalogue now contains the exact reviewed sixty-record manifest: 18 Compute & Silicon, 12 Test Bench, 14 AI & Code and 16 Places & Nature. The original six retain their IDs, metadata, SVGs and pack bytes; all twelve authoritative old-file hash comparisons passed. Fifty-four new original 72×84 SVGs and validated static-PNG packs were added without changing the ten bundled defaults or earned garden flowers.
+
+A checked-in trusted one-time generator records the 54 reviewed motifs. The exporter now refuses missing, duplicate or unknown IDs and the first invocation explicitly selected only those 54, preventing accidental re-export of the accepted six. Ordinary builds enforce 60 extras/70 total unique IDs, exact collection counts, matching source filenames and all existing pack parser/PNG constraints; they do not rerender artwork.
+
+The hero now runs a bounded live swing/pull/reset preview using the existing Pendulum/getLayout/Matter implementation and verified physical-scale bridge. Preview buttons accept only same-origin local asset paths. Animation stops when settled, offscreen, hidden or reduced-motion, with no idle-loop, CPU/battery or fake-IDE claim.
+
+Installed-Edge verification passed all sixty production-lazy/test-eager image decodes, all sixty pack parses during build, four filter counts, search/reset, one old and one new real pack download, source/download VSIX equality, swing/drag-return/reset/offscreen/reduced-motion demo behavior, desktop/mobile overflow and zero browser errors. The website still serves the accepted byte-identical 120883-byte 0.4.1 VSIX (`F5955540C4B4EF110DEFBC3AFA525F2FD9C57B48324AC148F798D9D2FEAB5279`).
+
+Review evidence under `extension/test-results/website-check-0.4.1/` includes desktop/mobile pages, `live-demo.png`, and labelled light/dark contact sheets for all 54 new designs. Photo Studio, paid controls, desktop beta, public hosting and later Phase 4 slices remain absent.
+
+## 2026-10-08 - Phase 4C finishing review
+
+A real pointer click on the demo charm now records a ≤3 px tap and nudges once; Enter/Space use the synthetic click path without a duplicate impulse. One clear/reset path releases capture and the Matter pointer before reset, resize, new preview selection, blur, hidden/offscreen or reduced-motion settlement. Ordinary drags still animate back to cord 126.
+
+Preview is available for both included and extra designs. The browser check now covers physical-click horizontal movement, keyboard activation, drag/return, resize while held followed by a new drag, pointercancel followed by another click, reset/offscreen capture release, reduced motion and included Evil Eye plus extra GPU Tile selection. The implementation-detail hint was replaced with user-facing swing/pull copy.
+
+Phase 4C website provenance moved from packaged `extension/ARTWORK.md` into `website/ARTWORK.md`, keeping extension source consistent with the unchanged accepted VSIX. Root/website docs now describe locked build dependencies, current evidence paths and the implemented sixty-design catalogue rather than planned expansion.
+
+Eight compact transparent-art contact sheets—light/dark for each collection—and one cropped hero screenshot replace the long gallery sheets. They show only the 54 new designs: 15 Compute & Silicon, 11 Test Bench, 14 AI & Code and 14 Places & Nature. All eight use the requested five columns and at most three rows.
+
+Final website build/check passed all prior inventory, image, pack, download, overflow and URL assertions plus the extended demo lifecycle with zero errors. Original-six hashes and the accepted 120883-byte 0.4.1 VSIX remained unchanged. No generator, artwork, pack export, extension test/build/package or future feature ran in this finishing batch.
+
+## 2026-10-08 - Phase 4C final art and tap correction
+
+Embedding Stars' constellation connector explicitly uses `fill="none"` in both the checked-in SVG and trusted generator, preserving the coloured stars/nodes instead of drawing an unintended solid polygon. Only `embedding-stars` was re-exported; its final SVG SHA256 is `F1B40246880ACA21E4B11426F5AB9C7B5C29EB352632C8B4A7A55243AD5F11B3`, and pack SHA256 is `49A5D7BAFA33B5FBA3129729DF0B15128D5152066FCF44ACA8893A0A5719AAE8`. No other pack was exported.
+
+Pointer release now always clears capture/constraint and restores preferred cord before optionally nudging an unmoved normal-motion tap. A ≤3 px reduced-motion jitter returns immediately to cord 126/resting position without running; the same normal-motion jitter settles to 126 within the existing 20-second guard. Website build/check passed the expanded coverage and regenerated only the AI & Code light/dark sheets and cropped hero evidence. All sixty catalogue checks, original-six hashes and accepted VSIX identity remain valid.

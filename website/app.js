@@ -5,6 +5,8 @@ const resultCount = document.querySelector('#result-count');
 const emptyState = document.querySelector('#empty-state');
 const state = { kind: 'extra', group: 'All', query: '' };
 let catalogue = [];
+const extraCollections = ['Compute & Silicon', 'Test Bench', 'AI & Code', 'Places & Nature'];
+const presentationGroup = item => item.collection ?? item.group;
 function element(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -34,7 +36,9 @@ function renderStoreLinks(distribution = {}) {
 function renderGroups() {
   const focusedGroup = groupFilters.contains(document.activeElement) ? document.activeElement.textContent : null;
   let restoreFocus;
-  const groups = ['All', ...new Set(catalogue.filter(item => item.kind === state.kind).map(item => item.group))];
+  const groups = state.kind === 'extra'
+    ? ['All', ...extraCollections]
+    : ['All', ...new Set(catalogue.filter(item => item.kind === state.kind).map(presentationGroup))];
   groupFilters.replaceChildren();
   for (const group of groups) {
     const button = element('button', 'group-filter', group);
@@ -53,8 +57,8 @@ function render() {
   renderGroups();
   const query = state.query.trim().toLowerCase();
   const items = catalogue.filter(item => item.kind === state.kind
-    && (state.group === 'All' || item.group === state.group)
-    && `${item.name} ${item.description}`.toLowerCase().includes(query));
+    && (state.group === 'All' || presentationGroup(item) === state.group)
+    && `${item.name} ${item.description} ${presentationGroup(item)}`.toLowerCase().includes(query));
   grid.replaceChildren();
   for (const item of items) {
     const card = element('li', 'charm-card');
@@ -69,17 +73,23 @@ function render() {
     image.loading = 'lazy';
     art.append(element('span', 'card-cord'), image);
     const copy = element('div', 'card-copy');
-    copy.append(element('span', 'card-group', item.group), element('h3', '', item.name), element('p', 'card-description', item.description));
+    copy.append(element('span', 'card-group', presentationGroup(item)), element('h3', '', item.name), element('p', 'card-description', item.description));
     const foot = element('div', 'card-foot');
+    foot.append(element('span', item.kind === 'extra' ? 'price-label' : 'included-label', item.kind === 'extra' ? 'Free' : 'Included with Charmlet'));
+    const preview = element('button', 'preview-link', 'Preview');
+    preview.type = 'button';
+    preview.setAttribute('aria-label', `Preview ${item.name} in the live swing demo`);
+    preview.addEventListener('click', () => {
+      window.CharmletDemo?.setCharm(item);
+      document.querySelector('.hero-demo')?.scrollIntoView({ behavior: 'instant', block: 'center' });
+    });
+    foot.append(preview);
     if (item.kind === 'extra') {
-      foot.append(element('span', 'price-label', 'Free'));
       const download = element('a', 'download-link', 'Download charm ↓');
       download.href = item.download;
       download.download = `${item.id}.charmlet.json`;
       download.setAttribute('aria-label', `Download ${item.name} charm`);
       foot.append(download);
-    } else {
-      foot.append(element('span', 'included-label', 'Included with Charmlet'));
     }
     copy.append(foot);
     card.append(art, copy);
