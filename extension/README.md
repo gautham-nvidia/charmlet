@@ -1,9 +1,9 @@
 # Charmlet: Coding Charms
 
-Ten original hanging charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus sessions and a sourced Learn feed.
+Ten original hanging charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus/Learn tools, a gentle garden and optional reminders.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Phase 4A development candidate, version 0.4.0.** Charmlet lives in a dockable VS Code view, not over your code
+**Phase 4B development candidate, version 0.4.1.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 
 ## Try it
@@ -20,7 +20,8 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 5. Switch to **Orbit layout** for a full loop around the fixed peg; Hanging layout keeps a compact top peg and pull room.
 6. Open **Companion tools** or run **Charmlet: Focus Session** for a focus/break timer with presets, custom minutes, pause/resume/stop and an optional intention.
 7. Open the **Learn** page to choose Facts + trivia, Facts, Trivia or the existing Encouragement feed; reveal trivia answers and open reviewed public sources.
-8. Run **Charmlet: Import Charm Pack** for a free downloaded `.charmlet.json`; remove imported packs with **Charmlet: Remove Charm Pack**.
+8. Open **Garden** to plant one unknown seed, water once per local day and earn its original flower after eleven valid waterings. Optional water/move reminders live under **Gentle reminders**.
+9. Run **Charmlet: Import Charm Pack** for a free downloaded `.charmlet.json`; remove imported packs with **Charmlet: Remove Charm Pack**.
 
 | Group | Bundled charms |
 |---|---|
@@ -36,6 +37,8 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 | Motion switch | Enable or disable animation |
 | Companion tools | Open the Focus/Learn drawer without changing charm size, cord or visibility |
 | Focus Session command/readout | Start, pause, resume or stop a persisted focus/break timer |
+| Garden | Plant, water once per local day, keep missed-day progress and earn a selectable flower after eleven waterings |
+| Gentle reminders | Optionally schedule one quiet water or move cue; Done, Snooze and Skip stay inside the drawer |
 | Next coding message | Advance the saved learning/encouragement feed and restart the five-minute countdown |
 | Charm settings | Choose a charm, size, resting cord, message visibility and automatic rotation; Escape closes settings and returns focus |
 | Import / Remove Charm Pack | Add or remove validated static-PNG data packs |
@@ -59,6 +62,11 @@ Focus sessions use a separate local companion file and a host-owned deadline rat
 A running timer updates the display once per second without writing every tick. Pause preserves the exact
 remaining duration across reload; expiration recovers one finished session without auto-starting another.
 
+The free garden uses one garden-wide watering allowance per host-local day. Missed days pause progress,
+a planted species cannot reroll on reload, and the eleventh valid watering adds its original flower to
+**Grown by you** before the UI confirms it. A new seed does not reset that day's allowance. Water and move
+reminders are off by default, bounded to 15–180 minutes, and show one quiet cue with Done/Snooze/Skip.
+
 ## Free and local
 
 All ten bundled charms and every functional control are permanently free. They work offline without
@@ -68,8 +76,9 @@ records asset origins, while the project source/art license remains pending and 
 
 ## Current limits
 
-- Garden, reminders, expanded artwork, Photo Studio and a standalone desktop app are not part of this Phase 4A candidate.
-- The 0.3.2 baseline passed complete VS Code extension checks on Windows Server 2025 and the local Windows PC, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon, using VS Code **1.90.0 and 1.140.0**. Current 0.4.0 evidence is local Windows VS Code 1.140.0 only until hosted CI passes.
+- Expanded website artwork, Photo Studio and a standalone desktop app are not part of this Phase 4B candidate.
+- The 0.3.2 baseline passed complete VS Code extension checks on Windows Server 2025 and the local Windows PC, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon, using VS Code **1.90.0 and 1.140.0**. Current 0.4.1 evidence is 58 units and two focused local Windows VS Code 1.140.0 UI scenarios until hosted CI passes.
+- Phase 4A run 37860624048 passed Windows/Linux; macOS failed rendered-cord assertions while Focus/settings controls reduced available height. Those checks now separate stored preference from fitted display, but macOS 0.4.1 is not claimed until the hosted gate passes.
 - Hosted 0.3.2 run 37697185841 passed the canonical-file restoration path on macOS 15 Apple Silicon with VS Code 1.90.0 and 1.140.0: the acknowledged Lemon & Chilies file readback restored as Lemon after reload on both hosts. Earlier intermittent failures remain historical evidence, and their exact internal VS Code cause is not asserted.
 - The animation loop stops when settled or hidden. [Recorded measurements](https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-1-validation.md) include whole-editor overhead and do not promise zero CPU use.
 - Intel Mac, Windows ARM, authenticated Cursor/Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.

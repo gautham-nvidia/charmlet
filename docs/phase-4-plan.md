@@ -1,5 +1,7 @@
 # Phase 4 — Focus, Learn and Grow
 
+**Implementation progress, 2026-10-08:** Focus/Learn landed on the phase branch in 0.4.0; Garden/Gentle Reminders are implemented in the 0.4.1 development candidate with local Windows verification. The expanded website catalogue/demo, paid Photo Studio preparation and desktop beta remain in progress/planned slices. See the root README and project log for current evidence; this document retains the kickoff requirements below.
+
 **Owner direction, 2026-10-08:** build Charmlet into a useful, original coding companion. Prioritize the IDE release while developing the website and a working Windows/macOS desktop beta alongside it. Store availability is Phase 5; the broader product launch is Phase 6.
 
 This is the Phase 4 implementation plan. The current installable baseline is still 0.3.2; the features below are not marked delivered merely because they are planned.

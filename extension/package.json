@@ -1,8 +1,8 @@
 {
   "name": "charmlet",
   "displayName": "Charmlet: Coding Charms",
-  "description": "Ten free charms with focus sessions, sourced learning cards and extra charm packs.",
-  "version": "0.4.0",
+  "description": "Ten free charms with focus, sourced learning, a gentle garden and reminders.",
+  "version": "0.4.1",
   "pricing": "Free",
   "icon": "media/marketplace-icon.png",
   "galleryBanner": {

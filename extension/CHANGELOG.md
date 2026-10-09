@@ -3,6 +3,32 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.4.1 - 2026-10-08 (Phase 4B Garden and Gentle Reminders)
+
+Tracking: [Phase 4 #17](https://github.com/gautham-nvidia/charmlet/issues/17).
+
+### Added
+
+- A free local seed garden with one garden-wide watering per local day, no missed-day penalty, eleven-watering bloom and twelve original earned flower charms.
+- Optional water and stand/move reminders, disabled by default, with 15–180 minute intervals, focus deferral and quiet Done/Snooze/Skip controls inside the companion drawer.
+- A third Garden tab, growth-stage artwork, **Grown by you** collection and explicit **Hang my flower** action.
+
+### Changed
+
+- Companion state migrates from schema 1 to schema 2 without losing Focus/Learn state and keeps garden/care data in the same confirmed local file.
+- Earned garden charms are added to the picker before restoring the selected charm; flowers never appear as default items before unlock.
+- The host owns cryptographic seed/species selection and the shared focus/reminder/day-boundary scheduler.
+
+### Verified
+
+- Local Windows checks passed: compile/type/lint/bundles, 58 unit tests and both focused VS Code 1.140.0 companion UI scenarios.
+- The Garden/Care scenario covers reminder Snooze/Done/disable, eleven-watering bloom, earned picker entry, explicit hang, reload persistence and same-day protection for a new seed.
+
+### Limits
+
+- Expanded website collections, paid Photo Studio and desktop beta remain later Phase 4 work.
+- This is an unpublished development candidate; hosted 0.4.1 platform verification remains pending.
+
 ## 0.4.0 - 2026-10-08 (Phase 4A Focus and Learn)
 
 Tracking: [Phase 4 #17](https://github.com/gautham-nvidia/charmlet/issues/17).

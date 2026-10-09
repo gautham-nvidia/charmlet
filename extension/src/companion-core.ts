@@ -1,9 +1,11 @@
 import { ENCOURAGEMENT_CARDS, feedDeck, isFeedMode, learningCard, type FeedMode, type LearningCard } from './learning-cards';
+import { configureReminder, defaultCare, dismissReminder, restoreCare, settleCare, validReminderMinutes, visibleReminder, type CareState, type ReminderKind } from './care-core';
+import { canWaterGarden, emptyGarden, FLOWERS, gardenStage, localDayKey, plantGarden, restoreGarden, waterGarden, type GardenStage, type GardenState } from './garden-core';
 
 export const MINUTE_MS = 60000;
 export const FOCUS_MINUTES_LIMIT = 120;
 export const BREAK_MINUTES_LIMIT = 30;
-export const COMPANION_STATE_VERSION = 1;
+export const COMPANION_STATE_VERSION = 2;
 export type FocusPhase = 'focus' | 'break';
 export type FocusStatus = 'idle' | 'running' | 'paused' | 'finished';
 export type FocusNotice = 'elapsed-away' | 'clock-changed' | null;
@@ -19,11 +21,13 @@ export interface FocusState {
 }
 
 export interface CompanionState {
-	version: 1;
+	version: 2;
 	revision: number;
 	settings: { focusMinutes: number; breakMinutes: number; intent: string };
 	focus: FocusState;
 	learning: { mode: FeedMode; cardId: string; encouragementId: string; revealed: boolean };
+	garden: GardenState;
+	care: CareState;
 }
 
 export type CompanionAction =
@@ -34,13 +38,24 @@ export type CompanionAction =
 	| { type: 'focus-stop' }
 	| { type: 'feed-mode'; mode: FeedMode }
 	| { type: 'feed-next' }
-	| { type: 'feed-reveal'; cardId: string; revealed: boolean };
+	| { type: 'feed-reveal'; cardId: string; revealed: boolean }
+	| { type: 'garden-plant' }
+	| { type: 'garden-water' }
+	| { type: 'care-configure'; kind: ReminderKind; enabled: boolean; intervalMinutes: number }
+	| { type: 'care-dismiss'; kind: ReminderKind; action: 'done' | 'skip' | 'snooze' }
+	| { type: 'care-defer'; enabled: boolean };
+
+export interface GardenEntropy { plantId(): string; index(size: number): number; }
 
 export interface CompanionSnapshot {
 	state: CompanionState;
 	now: number;
 	remainingMs: number;
 	progress: number;
+	gardenDay: string;
+	gardenStage: GardenStage;
+	gardenCanWater: boolean;
+	reminder: ReminderKind | null;
 	error?: string;
 }
 export interface CompanionResult { state: CompanionState; message?: string; }
@@ -80,10 +95,11 @@ function idleFocus(minutes: number): FocusState {
 export function defaultCompanionState(legacyMessageIndex = 0): CompanionState {
 	const quote = ENCOURAGEMENT_CARDS[integer(legacyMessageIndex, 0, ENCOURAGEMENT_CARDS.length - 1, 0)];
 	return {
-		version: 1, revision: 0,
+		version: 2, revision: 0,
 		settings: { focusMinutes: 25, breakMinutes: 5, intent: '' },
 		focus: idleFocus(25),
 		learning: { mode: 'mix', cardId: feedDeck('mix')[0].id, encouragementId: quote.id, revealed: false },
+		garden: emptyGarden(), care: defaultCare(),
 	};
 }
 
@@ -92,11 +108,12 @@ export function hasNewerCompanionSchema(value: unknown): boolean {
 	return typeof version === 'number' && Number.isSafeInteger(version) && version > COMPANION_STATE_VERSION;
 }
 
-/** Project untrusted saved JSON into the small canonical schema; do not read a clock here. */
-export function restoreCompanionState(value: unknown, legacyMessageIndex = 0): CompanionState {
+/** Project saved JSON with explicitly supplied calendar time; version1 gains empty garden/care state. */
+export function restoreCompanionState(value: unknown, now: number, legacyMessageIndex = 0): CompanionState {
+	clockValue(now);
 	const defaults = defaultCompanionState(legacyMessageIndex);
 	const raw = object(value);
-	if (raw.version !== 1) { return defaults; }
+	if (raw.version !== 1 && raw.version !== 2) { return defaults; }
 	const settings = object(raw.settings);
 	const focusMinutes = integer(settings.focusMinutes, 1, FOCUS_MINUTES_LIMIT, 25);
 	const breakMinutes = integer(settings.breakMinutes, 1, BREAK_MINUTES_LIMIT, 5);
@@ -120,14 +137,16 @@ export function restoreCompanionState(value: unknown, legacyMessageIndex = 0): C
 	const card = feedDeck(mode).find(entry => entry.id === learning.cardId) ?? feedDeck(mode)[0];
 	const quote = ENCOURAGEMENT_CARDS.find(entry => entry.id === learning.encouragementId) ?? learningCard(defaults.learning.encouragementId)!;
 	return {
-		version: 1, revision: integer(raw.revision, 0, 2147483646, 0),
+		version: 2, revision: integer(raw.revision, 0, 2147483646, 0),
 		settings: { focusMinutes, breakMinutes, intent: intent(settings.intent) },
 		focus: restoredFocus,
 		learning: { mode, cardId: card.id, encouragementId: quote.id, revealed: card.id === learning.cardId && card.kind === 'trivia' && learning.revealed === true },
+		garden: restoreGarden(raw.version === 2 ? raw.garden : undefined, now),
+		care: restoreCare(raw.version === 2 ? raw.care : undefined, now),
 	};
 }
 
-function revised(state: CompanionState, changes: Partial<Pick<CompanionState, 'settings' | 'focus' | 'learning'>>): CompanionState {
+function revised(state: CompanionState, changes: Partial<Pick<CompanionState, 'settings' | 'focus' | 'learning' | 'garden' | 'care'>>): CompanionState {
 	return { ...state, ...changes, revision: (state.revision + 1) % 2147483647 };
 }
 
@@ -143,7 +162,7 @@ export function remainingFocusMs(state: CompanionState, now: number): number {
  * Finish at most one timer. A backwards observed wall clock pauses at the last
  * known remainder. An expired timer never auto-starts another session or records work.
  */
-export function reconcileCompanion(state: CompanionState, now: number, lastObservedAt?: number, recovered = false): CompanionState {
+function reconcileFocus(state: CompanionState, now: number, lastObservedAt?: number, recovered = false): CompanionState {
 	clockValue(now);
 	if (state.focus.status !== 'running') { return state; }
 	const previous = lastObservedAt === undefined ? state.focus.startedAt! : clockValue(lastObservedAt);
@@ -161,6 +180,12 @@ export function reconcileCompanion(state: CompanionState, now: number, lastObser
 		} });
 	}
 	return state;
+}
+
+export function reconcileCompanion(state: CompanionState, now: number, lastObservedAt?: number, recovered = false): CompanionState {
+	const focused = reconcileFocus(state, now, lastObservedAt, recovered);
+	const care = settleCare(focused.care, now, lastObservedAt ?? now);
+	return care === focused.care ? focused : revised(focused, { care });
 }
 
 function validMinutes(value: unknown, maximum: number): value is number {
@@ -183,18 +208,29 @@ export function parseCompanionAction(value: unknown): CompanionAction | undefine
 		case 'focus-resume':
 		case 'focus-stop':
 		case 'feed-next':
+		case 'garden-plant':
+		case 'garden-water':
 			return { type: action.type };
 		case 'feed-mode':
 			return isFeedMode(action.mode) ? { type: action.type, mode: action.mode } : undefined;
 		case 'feed-reveal':
 			return typeof action.cardId === 'string' && action.cardId.length <= 100 && typeof action.revealed === 'boolean'
 				? { type: action.type, cardId: action.cardId, revealed: action.revealed } : undefined;
+		case 'care-configure':
+			return (action.kind === 'water' || action.kind === 'move') && typeof action.enabled === 'boolean'
+				&& validReminderMinutes(action.intervalMinutes)
+				? { type: action.type, kind: action.kind, enabled: action.enabled, intervalMinutes: action.intervalMinutes } : undefined;
+		case 'care-dismiss':
+			return (action.kind === 'water' || action.kind === 'move') && (action.action === 'done' || action.action === 'skip' || action.action === 'snooze')
+				? { type: action.type, kind: action.kind, action: action.action } : undefined;
+		case 'care-defer':
+			return typeof action.enabled === 'boolean' ? { type: action.type, enabled: action.enabled } : undefined;
 		default:
 			return undefined;
 	}
 }
 
-export function applyCompanionAction(state: CompanionState, action: CompanionAction, now: number, lastObservedAt?: number): CompanionResult {
+export function applyCompanionAction(state: CompanionState, action: CompanionAction, now: number, lastObservedAt?: number, entropy?: GardenEntropy): CompanionResult {
 	const validated = parseCompanionAction(action);
 	if (!validated) { throw new Error('Invalid companion action.'); }
 	action = validated;
@@ -258,6 +294,35 @@ export function applyCompanionAction(state: CompanionState, action: CompanionAct
 				next = revised(next, { learning: { ...next.learning, revealed: action.revealed } });
 			}
 			break;
+		case 'garden-plant':
+			if (next.garden.plant && next.garden.plant.waterings < 11) { return { state: next, message: 'Your current seed is still growing.' }; }
+			if (!entropy) { throw new Error('Seed randomness is unavailable.'); }
+			next = revised(next, { garden: plantGarden(next.garden, now, entropy.plantId(), size => entropy.index(size)) });
+			break;
+		case 'garden-water': {
+			const result = waterGarden(next.garden, now);
+			if (result.state !== next.garden) { next = revised(next, { garden: result.state }); }
+			const messages = {
+				'no-plant': 'Plant a seed to begin your garden.',
+				complete: 'Your flower is already in your collection.',
+				'watered-today': 'Already watered today. Your progress is safe.',
+				'clock-changed': 'Your calendar is earlier than the last watering. Your progress is safe.',
+				watered: 'A little care, one day at a time.',
+				bloomed: `${FLOWERS.find(flower => flower.id === result.earned)?.name ?? 'Your flower'} bloomed! Find it in Grown by you.`,
+			};
+			return { state: next, message: messages[result.reason] };
+		}
+		case 'care-configure':
+			next = revised(next, { care: configureReminder(next.care, action.kind, action.enabled, action.intervalMinutes, now) });
+			break;
+		case 'care-dismiss': {
+			const care = dismissReminder(next.care, action.kind, action.action, now);
+			if (care !== next.care) { next = revised(next, { care }); }
+			break;
+		}
+		case 'care-defer':
+			next = revised(next, { care: { ...next.care, deferWhileFocusing: action.enabled } });
+			break;
 	}
 	return { state: next };
 }
@@ -268,9 +333,12 @@ export function currentLearningCard(state: CompanionState): LearningCard {
 
 export function companionSnapshot(state: CompanionState, now: number): CompanionSnapshot {
 	const remainingMs = remainingFocusMs(state, now);
+	const gardenDay = localDayKey(now);
 	return {
 		state: structuredClone(state), now, remainingMs,
 		progress: state.focus.status === 'idle' ? 0 : Math.max(0, Math.min(1, 1 - remainingMs / state.focus.durationMs)),
+		gardenDay, gardenStage: gardenStage(state.garden), gardenCanWater: canWaterGarden(state.garden, gardenDay),
+		reminder: visibleReminder(state.care, state.focus) ?? null,
 	};
 }
 

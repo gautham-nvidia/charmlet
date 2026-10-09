@@ -6,6 +6,8 @@ import { installPack, loadPacks, MAX_PACK_BYTES, packCharms, removePack, type Ch
 import { matchesSavedState, resetState, restoreState, type CharmState } from './charm-state';
 import { CompanionController } from './companion-controller';
 import { formatFocusTime, type CompanionSnapshot, type CompanionState } from './companion-core';
+import { gardenCharms } from './garden-catalog';
+import { isFlowerId } from './garden-core';
 import { learningCard } from './learning-cards';
 import { StateStore, type LoadedState } from './state-store';
 import { StateWriter } from './state-writer';
@@ -34,15 +36,17 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (loadedState.error) {
 		void vscode.window.showWarningMessage('Charmlet could not read its saved preferences. Review your charm settings.');
 	}
-	const catalogue = [...CHARMS, ...packCharms(packs)];
-	const initialCharm = restoreState(loadedState.value, catalogue);
+	const baseCatalogue = [...CHARMS, ...packCharms(packs)];
+	const legacyMessageIndex = restoreState(loadedState.value, baseCatalogue).messageIndex;
 	const companionStore = new StateStore<CompanionState>(context.globalStorageUri.fsPath, 'companion.json');
 	const loadedCompanion = await companionStore.load(undefined);
 	if (loadedCompanion.error) {
-		void vscode.window.showWarningMessage('Charmlet could not read companion settings. Review your focus and learning controls.');
+		void vscode.window.showWarningMessage('Charmlet could not read companion settings. Review your focus, learning, garden and reminder controls.');
 	}
-	const companion = new CompanionController(loadedCompanion.value, companionStore, initialCharm.messageIndex);
+	const companion = new CompanionController(loadedCompanion.value, companionStore, legacyMessageIndex);
 	await companion.initialize();
+	const catalogue = [...baseCatalogue, ...gardenCharms(companion.snapshot().state.garden)];
+	const initialCharm = restoreState(loadedState.value, catalogue);
 
 	const status = vscode.window.createStatusBarItem('charmlet', vscode.StatusBarAlignment.Right, -100);
 	status.name = 'Charmlet';
@@ -50,7 +54,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	let latestCompanion = companion.snapshot();
 	const updateStatus = () => {
 		const focus = latestCompanion.state.focus;
-		if (focus.status !== 'idle') {
+		if (latestCompanion.reminder) {
+			const reminder = latestCompanion.reminder === 'water' ? 'Water break' : 'Stand and move';
+			status.command = 'charmlet.focus';
+			status.text = `$(bell) ${reminder}`;
+			status.tooltip = `${reminder} · Open companion tools`;
+		} else if (focus.status !== 'idle') {
 			const phase = focus.phase === 'focus' ? 'Focus' : 'Break';
 			status.command = 'charmlet.focus';
 			status.text = `$(clock) ${phase} ${formatFocusTime(latestCompanion.remainingMs)}`;
@@ -69,10 +78,30 @@ export async function activate(context: vscode.ExtensionContext) {
 		latestCharm = state;
 		updateStatus();
 	}, catalogue, stateStore, loadedState, companion);
+	const refreshCatalogue = async (selectedId?: string) => {
+		await provider.setCatalogue([
+			...CHARMS, ...packCharms(packs), ...gardenCharms(companion.snapshot().state.garden),
+		], selectedId);
+	};
+	let gardenKey = gardenCharms(latestCompanion.state.garden).map(charm => charm.id).join('|');
+	let failedGardenKey: string | undefined;
+	let gardenRefresh: Promise<void> | undefined;
+	const refreshGardenCatalogue = () => {
+		const nextGardenKey = gardenCharms(latestCompanion.state.garden).map(charm => charm.id).join('|');
+		if (nextGardenKey === gardenKey || nextGardenKey === failedGardenKey || gardenRefresh) { return; }
+		gardenRefresh = refreshCatalogue()
+			.then(() => { gardenKey = nextGardenKey; failedGardenKey = undefined; })
+			.catch(() => {
+				failedGardenKey = nextGardenKey;
+				void vscode.window.showErrorMessage('Charmlet saved your flower but could not refresh the charm picker.');
+			})
+			.finally(() => { gardenRefresh = undefined; });
+	};
 	const unsubscribeCompanion = companion.subscribe(snapshot => {
 		latestCompanion = snapshot;
 		updateStatus();
 		provider.postCompanion(snapshot);
+		refreshGardenCatalogue();
 	});
 	let disposePromise: Promise<void> | undefined;
 	const disposeCompanion = () => disposePromise ??= (async () => {
@@ -81,10 +110,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		await provider.flush();
 	})();
 	deactivateExtension = disposeCompanion;
-
-	const refreshCatalogue = async (selectedId?: string) => {
-		await provider.setCatalogue([...CHARMS, ...packCharms(packs)], selectedId);
-	};
 	const importPack = async () => {
 		try {
 			const selected = await vscode.window.showOpenDialog({
@@ -167,7 +192,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 	private viewGeneration = 0;
 	private traceOutput?: vscode.LogOutputChannel;
 	private viewReady = false;
-	private pendingCompanionTab: 'focus' | 'learn' | undefined;
+	private pendingCompanionTab: 'focus' | 'learn' | 'garden' | undefined;
 
 	private trace(label: string, details: Record<string, unknown> = {}) {
 		if (this.context.extensionMode !== vscode.ExtensionMode.Development || process.env.CHARMLET_TRACE_SAVES !== '1') { return; }
@@ -294,6 +319,21 @@ class CharmletView implements vscode.WebviewViewProvider {
 						error: this.companion.snapshot().error ?? 'The companion action could not be saved. Try again.',
 					});
 				}
+			} else if (message.type === 'garden-hang' && 'requestId' in message && 'flowerId' in message
+				&& Number.isSafeInteger(message.requestId) && Number(message.requestId) >= 0 && isFlowerId(message.flowerId)) {
+				const requestId = Number(message.requestId);
+				try {
+					const earned = gardenCharms(this.companion.snapshot().state.garden);
+					const selected = earned.find(charm => charm.id === `garden:${message.flowerId}`);
+					if (!selected) {
+						await view.webview.postMessage({ type: 'companion-result', requestId, error: 'That flower is not available in your garden.' });
+					} else {
+						await this.setCatalogue([...this.catalogue.filter(charm => !charm.id.startsWith('garden:')), ...earned], selected.id);
+						await view.webview.postMessage({ type: 'companion-result', requestId });
+					}
+				} catch {
+					await view.webview.postMessage({ type: 'companion-result', requestId, error: 'Charmlet could not hang that flower. Try again.' });
+				}
 			} else if (message.type === 'learning-source' && 'cardId' in message) {
 				const card = typeof message.cardId === 'string' ? learningCard(message.cardId) : undefined;
 				if (card?.source) { await vscode.env.openExternal(vscode.Uri.parse(card.source.url)); }
@@ -323,7 +363,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 		}
 	}
 
-	async openCompanion(tab: 'focus' | 'learn') {
+	async openCompanion(tab: 'focus' | 'learn' | 'garden') {
 		this.pendingCompanionTab = tab;
 		if (this.view) {
 			this.view.show(true);

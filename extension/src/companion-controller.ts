@@ -1,7 +1,10 @@
 import {
 	applyCompanionAction, companionSnapshot, hasNewerCompanionSchema, matchesCompanionState, parseCompanionAction,
-	reconcileCompanion, restoreCompanionState, type CompanionSnapshot, type CompanionState,
+	reconcileCompanion, restoreCompanionState, type CompanionSnapshot, type CompanionState, type GardenEntropy,
 } from './companion-core';
+import { randomInt, randomUUID } from 'node:crypto';
+import { nextReminderDue } from './care-core';
+import { gardenNextChange } from './garden-core';
 import { StateWriter } from './state-writer';
 
 export interface CompanionStorage {
@@ -38,8 +41,9 @@ export class CompanionController {
 		storage: CompanionStorage,
 		legacyMessageIndex = 0,
 		private readonly clock: CompanionClock = systemClock,
+		private readonly entropy: GardenEntropy = { plantId: randomUUID, index: size => randomInt(size) },
 	) {
-		this.state = restoreCompanionState(saved, legacyMessageIndex);
+		this.state = restoreCompanionState(saved, clock.now(), legacyMessageIndex);
 		this.newerSchema = hasNewerCompanionSchema(saved);
 		this.writer = new StateWriter(value => storage.write(value), () => storage.read(), matchesCompanionState);
 		this.lastObservedAt = this.state.focus.startedAt ?? clock.now();
@@ -111,7 +115,7 @@ export class CompanionController {
 		if (!action) { throw new Error('Invalid companion action.'); }
 		return this.enqueue(async () => {
 			const now = this.clock.now();
-			const result = applyCompanionAction(this.state, action, now, this.lastObservedAt);
+			const result = applyCompanionAction(this.state, action, now, this.lastObservedAt, this.entropy);
 			if (result.state !== this.state || this.error) { await this.commit(result.state); }
 			this.lastObservedAt = now;
 			this.emit();
@@ -127,8 +131,14 @@ export class CompanionController {
 
 	private schedule() {
 		this.stopTimer();
-		if (this.closed || this.error || this.state.focus.status !== 'running') { return; }
-		const delay = Math.max(1, Math.min(1000, this.state.focus.deadlineAt! - this.clock.now()));
+		if (this.closed || this.error) { return; }
+		const now = this.clock.now();
+		const candidates = [
+			this.state.focus.status === 'running' ? Math.min(now + 1000, this.state.focus.deadlineAt!) : undefined,
+			nextReminderDue(this.state.care), gardenNextChange(this.state.garden, now),
+		].filter((value): value is number => value !== undefined);
+		if (!candidates.length) { return; }
+		const delay = Math.max(1, Math.min(2147483647, Math.min(...candidates) - now));
 		this.timer = this.clock.set(() => {
 			this.timer = undefined;
 			void this.tick().catch(() => { /* commit reported the storage error; do not spin a retry loop. */ });

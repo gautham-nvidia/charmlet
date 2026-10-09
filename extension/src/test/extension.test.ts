@@ -375,10 +375,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Home');
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('ArrowRight');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
+			await expect(frame.getByRole('slider', { name: 'Cord', exact: true })).toHaveValue('50');
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Escape');
 			await expect(frame.locator('#settings-toggle')).toBeFocused();
 			await expect(frame.locator('#settings')).toBeHidden();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
 		});
 
 		await test.step('cancelled and lost-capture drags restore the parked state', async () => {

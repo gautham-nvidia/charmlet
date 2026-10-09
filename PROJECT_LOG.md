@@ -302,3 +302,29 @@ Host lifecycle now stops companion ticks before the final provider drain. Ready 
 Narrow Windows verification passed: compile/type/lint/bundles; compile-tests; three focused message-rotation cases; and the focused VS Code 1.140.0 companion UI test (`1 passed (19.5s)`). The unchanged full 47-unit and baseline UI suites were intentionally not rerun; the next full gate is expected to contain 49 units, but no complete 49-unit pass is claimed yet.
 
 The rebuilt candidate `extension/charmlet-0.4.0.vsix` is 103995 bytes, SHA256 `80F00AFE684EC48818D32CC8E67762DBA403B1A03F1CB4B6F5BB555A5D0A6644`. Gallery and installed-Edge checks passed with a matching 103995-byte download, no overflow and no console/page errors. Hosted 0.4.0 evidence remains pending.
+
+## 2026-10-08 - Phase 4B Garden and Gentle Reminders candidate
+
+Development version **0.4.1** adds the free local garden and optional quiet care reminders. One garden-wide host-local-day allowance survives reload, bloom and planting another seed; missed days pause; a planted species cannot reroll; the eleventh confirmed watering awards once before the UI acknowledges it. Twelve original flowers become picker entries only after they are earned, and hanging a reward is an explicit confirmed action.
+
+Water and stand/move reminders are disabled by default, bounded to 15–180 minutes and keep at most one pending cue per kind. Focus deferral, Done, ten-minute Snooze and Skip are stored in schema-2 `companion.json`. A cue appears only inside the drawer, with a fixed-size toolbar badge and status-bar nudge while closed—no popup, sound, focus steal, backlog counter or outside row that can resize/cancel a charm drag.
+
+The companion host loads garden state before the final charm restoration, refreshes only when owned IDs change and derives every garden file from the trusted flower catalogue. Host crypto supplies seed IDs/species choice. Version-1 Focus/Learn state migrates to schema 2; the newer-schema overwrite guard remains. Sixteen original 72×84 SVGs were added: four unrevealed growth stages and twelve distinct reward flowers, with provenance in `extension/ARTWORK.md`.
+
+Phase 4A hosted run 37860624048 passed Windows/Linux; macOS failures were exact rendered-versus-resting test-contract mismatches while Focus/settings controls were open. Tests now check the real stored preference/slider while controls are open, close the controls, then retain the exact rendered-cord assertion. No saved-preference regression was established, and macOS 0.4.1 is not claimed before the next hosted gate.
+
+Local Windows verification passed: compile/type/lint/bundles, **58 unit tests**, and both focused VS Code 1.140.0 companion UI scenarios (`2 passed (34.0s)`). The Garden/Care case verified cue Snooze/Done/disable timing, 10→11 bloom, picker refresh, explicit hang, SVG width, reload persistence, retained collection and same-day protection after planting another seed. The unchanged three-minute baseline UI was intentionally not rerun locally.
+
+Packaging produced `extension/charmlet-0.4.1.vsix`, 120880 bytes, SHA256 `B5C99D7E3B5867CFA890F30CC46A33A4A2F0A819412B22A18BA8571C3110993F`. Gallery build retained ten bundled/six website extras; installed-Edge checks passed with a matching 120880-byte download and no overflow or console/page errors. Evidence includes `phase-4-care.png`, `phase-4-garden.png` and the 12-flower atlas under ignored test results.
+
+Expanded website collections, paid Photo Studio and desktop beta remain pending. The candidate is unpublished; hosted 0.4.1 verification remains required.
+
+## 2026-10-08 - Phase 4B finishing review
+
+Collection flower buttons now perform explicit confirmed **Hang** actions; they no longer replace the main Garden preview. The main art/status/progress always describe the current seed/plant, including after an owned flower is hung. Disabling a reminder succeeds even when its draft interval is invalid by restoring the saved interval and sending the disabled state.
+
+A failed earned-catalogue refresh now latches that exact collection key and reports once instead of retrying on every focus heartbeat. Manual Hang/import/reload remain recovery paths; no automatic retry loop was added. Bluebell's three closed berry-like shapes were replaced with the lead-specified curved branches and three small flared hanging cups; no other flower was redrawn.
+
+The Garden UI regression now clears the water interval before disabling it, then plants the next seed, confirms the main preview remains `garden-seed.svg`, hangs Hibiscus from its collection button and confirms the seed preview/daily water block remain unchanged. Narrow Windows checks passed: compile/type/lint/bundles and the Garden/Care VS Code 1.140.0 case (`1 passed (13.8s)`). The accepted 58-unit/two-focused-UI evidence was not rerun.
+
+The finishing candidate `extension/charmlet-0.4.1.vsix` is 120883 bytes, SHA256 `F5955540C4B4EF110DEFBC3AFA525F2FD9C57B48324AC148F798D9D2FEAB5279`. Gallery and installed-Edge checks passed with a matching 120883-byte download and no errors. The refreshed twelve-flower atlas is 76592 bytes, SHA256 `EE2ABC64BBB42DAE419519F2A146BEE1F321019E5253EAB989D7FF2B64A1EE43`. No saved-preference regression was established by the earlier macOS run; hosted 0.4.1 remains the deciding gate.

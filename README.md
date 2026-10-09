@@ -2,12 +2,12 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-08:** Phase 4A development candidate **0.4.0** adds free Focus sessions and a sourced
-Learn feed to the existing ten bundled charms, 80 encouragement messages, six free website extras and
-offline importer. The garden, reminders, expanded artwork, paid Photo Studio and desktop beta remain
-planned work in the [Focus, Learn and Grow plan](docs/phase-4-plan.md), not features in this candidate.
+**Status, 2026-10-08:** Phase 4B development candidate **0.4.1** adds a free eleven-watering garden and
+optional gentle water/move reminders to Focus, Learn, ten bundled charms, 80 encouragement messages,
+six free website extras and the offline importer. Expanded artwork, paid Photo Studio and desktop beta
+remain planned work in the [Focus, Learn and Grow plan](docs/phase-4-plan.md), not features in this candidate.
 
-Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) passed all six listed jobs for the 0.3.2 baseline, with canonical-file restoration verified on both macOS versions. The 0.4.0 candidate passes 47 units and both local VS Code 1.140.0 editor suites; hosted Phase 4A verification remains pending. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md).
+The 0.3.2 baseline passed its six-job hosted matrix. Phase 4A run 37860624048 passed Windows/Linux but macOS exposed test assertions that compared temporarily fitted cord length while controls were open; no saved-preference regression was established. The 0.4.1 Garden/Care candidate passes 58 units and two focused local VS Code 1.140.0 UI scenarios, but still requires hosted verification. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md).
 
 [Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
 [dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
@@ -28,6 +28,10 @@ settings/tools are open, a card is active or a drag is in progress.
 Open **Companion tools** or run **Charmlet: Focus Session** for a deadline-based focus/break timer with
 25/5, 50/10 or custom durations, pause/resume/stop and an optional one-line intention. It restores a real
 running or paused session after reload without auto-starting another session or counting completed work.
+
+The free **Garden** hides one original species until its eleventh valid watering day, keeps progress through
+missed days, and adds the bloom to **Grown by you** before it can be explicitly hung. Optional water and
+stand/move reminders are off by default and use one quiet in-drawer cue with Done, Snooze or Skip.
 
 ## Run the demo
 
@@ -70,7 +74,7 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs the state/physics, pack, focus/learning, persistence and file-store unit suites and two real-editor interaction
+`test` builds and lints both bundles, runs the state/physics, pack, focus/learning/garden/care, persistence and file-store unit suites and three real-editor interaction
 regressions. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.

@@ -70,6 +70,8 @@ const pendulum = new Pendulum(280, 320, state.cordLength, state.size, state.layo
 const companionUI = createCompanionView({
 	send: (action, requestId) => api.postMessage({ type: 'companion-action', action, requestId }),
 	openSource: cardId => api.postMessage({ type: 'learning-source', cardId }),
+	image: file => new URL(file, mediaRoot).toString(),
+	hangFlower: (flowerId, requestId) => api.postMessage({ type: 'garden-hang', flowerId, requestId }),
 	onOpen: () => {
 		settings.hidden = true;
 		settingsToggle.setAttribute('aria-expanded', 'false');
@@ -558,7 +560,7 @@ window.addEventListener('message', event => {
 		}
 		api.setState(state);
 		if ('companion' in message) { companionUI.receive(message.companion); }
-		if ('companionTab' in message && (message.companionTab === 'focus' || message.companionTab === 'learn')) {
+		if ('companionTab' in message && (message.companionTab === 'focus' || message.companionTab === 'learn' || message.companionTab === 'garden')) {
 			companionUI.open(message.companionTab);
 		}
 		ready = true;
@@ -584,7 +586,7 @@ window.addEventListener('message', event => {
 			'error' in message && typeof message.error === 'string' ? message.error : undefined,
 			'message' in message && typeof message.message === 'string' ? message.message : undefined,
 		);
-	} else if (message.type === 'companion-open' && 'tab' in message && (message.tab === 'focus' || message.tab === 'learn')) {
+	} else if (message.type === 'companion-open' && 'tab' in message && (message.tab === 'focus' || message.tab === 'learn' || message.tab === 'garden')) {
 		companionUI.open(message.tab);
 	} else if (message.type === 'saved' && 'revision' in message && message.revision === saveRevision) {
 		stage.dataset.persisted = 'true';
@@ -603,7 +605,7 @@ new MutationObserver(updateMotionPreference).observe(document.body, { attributes
 new ResizeObserver(resize).observe(stage);
 reset.replaceChildren(createElement(RotateCcw, { width: 15, height: 15 }));
 restore.replaceChildren(createElement(ArrowDown, { width: 14, height: 14 }));
-companionToggle.replaceChildren(createElement(Timer, { width: 15, height: 15 }));
+companionToggle.prepend(createElement(Timer, { width: 15, height: 15 }));
 settingsToggle.replaceChildren(createElement(SlidersHorizontal, { width: 15, height: 15 }));
 layoutMode.replaceChildren(createElement(Orbit, { width: 16, height: 16 }));
 nextMessage.replaceChildren(createElement(ArrowRight, { width: 14, height: 14 }));
