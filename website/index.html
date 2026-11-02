@@ -3,95 +3,90 @@
 <head>
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <meta name="description" content="Ten free coding companions, plus original extra charms for your editor.">
- <title>Charmlet — a little luck for your next line</title>
+ <meta name="description" content="A little play in your every day. Discover Charmlet's art worlds, free focus tools and your own tiny garden.">
+ <title>Charmlet — make room for a little play</title>
  <link rel="stylesheet" href="./styles.css">
  <link rel="icon" type="image/svg+xml" href="./assets/default/keycap.svg">
 </head>
 <body>
  <a class="skip-link" href="#catalogue">Skip to charms</a>
  <header class="site-header">
-  <a class="brand" href="./" aria-label="Charmlet home"><span class="brand-mark" aria-hidden="true">⌘</span>Charmlet</a>
-  <nav aria-label="Main navigation">
-   <a href="#catalogue" data-select-kind="extra">Extra charms</a>
-   <a href="#catalogue" data-select-kind="included">Included</a>
-   <a href="#install">Install</a>
-   <a href="#how-to">Add packs</a>
-  </nav>
-  <a class="button button-primary" href="#install">Install Charmlet</a>
+  <a class="brand" href="./" aria-label="Charmlet home"><span class="brand-mark" aria-hidden="true">c.</span>charmlet<span class="brand-dot" aria-hidden="true"></span></a>
+  <nav aria-label="Main navigation"><a href="#worlds">Explore worlds</a><a href="./review.html">Art review</a><a href="#garden">Grow a little</a><a href="#catalogue" data-select-kind="included">Included</a><a href="./studio/">Photo Studio</a><a href="#install">Install</a></nav>
+  <a class="button button-primary" href="#install">Get Charmlet <span aria-hidden="true">↗</span></a>
  </header>
  <main>
-  <section class="hero">
+  <section class="hero" aria-labelledby="hero-title">
    <div class="hero-copy">
-    <p class="eyebrow">SMALL COMPANIONS. GOOD COMPANY.</p>
-    <h1>A little luck for<br>your next line.</h1>
-    <p class="hero-description">Ten free companions for your editor. Find a few more to make it yours.</p>
-    <div class="hero-actions"><a class="button button-primary" href="#catalogue">Find your next charm <span aria-hidden="true">↓</span></a><span>Free to use. Yours to enjoy.</span></div>
-    <p class="hero-note">No account. No feature paywall. A little joy between commits.</p>
+    <p class="eyebrow"><span class="little-dot" aria-hidden="true"></span>FOR CURIOUS MINDS & HAPPY DESKS</p>
+    <h1 id="hero-title">A little <span class="marker-word">play<span class="doodle-star" aria-hidden="true">*</span></span><br>in your every day.</h1>
+    <p class="hero-description">Charms worth collecting. A quieter way to focus.<br>A tiny garden that's entirely yours.</p>
+    <div class="hero-actions"><a class="button button-primary" href="#worlds">Find your kind of charm <span aria-hidden="true">↘</span></a><a class="button button-secondary" href="#garden">Plant your first seed</a></div>
+    <p class="hero-note">The app, focus tools, garden and importer are free. No account needed.</p>
+    <div class="hero-caption"><span class="caption-line" aria-hidden="true"></span><span>Less ordinary.<br>More <strong>you.</strong></span></div>
    </div>
-   <div class="hero-art" aria-label="A selection of original Charmlet designs">
-    <div class="hero-rail" aria-hidden="true"></div>
-    <div class="hero-pendant hero-pendant-one"><span aria-hidden="true"></span><img src="./assets/default/chip.svg" alt="Violet Chip charm"></div>
-    <div class="hero-pendant hero-pendant-two"><span aria-hidden="true"></span><img src="./assets/default/evil-eye.svg" alt="Blue Evil Eye charm"></div>
-    <div class="hero-pendant hero-pendant-three"><span aria-hidden="true"></span><img src="./assets/default/drishti.svg" alt="Drishti Doll charm"></div>
-    <div class="hero-stamp"><strong>10</strong><span>already inside<br>the extension</span></div>
+   <div class="hero-playground">
+    <span class="playground-note">Go on. Give it a little swing.</span>
+    <div class="hero-photo photo-panda" aria-hidden="true"><img src="./assets/previews/red-panda.webp" alt="" width="512" height="512"><span>good company</span></div>
+    <div class="hero-photo photo-planet" aria-hidden="true"><img src="./assets/previews/ringed-planet.webp" alt="" width="512" height="512"><span>a little wonder</span></div>
+    <div class="hero-demo" aria-label="Live Charmlet swing preview">
+     <div class="demo-window-bar"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>your little corner</span><span aria-hidden="true">+</span></div>
+     <div id="demo-stage" data-ready="false" data-running="false" data-dragging="false" data-frames="0" data-cord="126"><div id="demo-rig"><svg id="demo-cord" aria-hidden="true"><path id="demo-thread"></path></svg><span id="demo-anchor" aria-hidden="true"></span><button id="demo-charm" type="button" aria-label="Swing Terminal charm"><img id="demo-image" src="./assets/default/keycap.svg" alt="Terminal charm" width="72" height="84" draggable="false"></button></div></div>
+     <div class="demo-copy"><p class="eyebrow">LIVE SWING PLAYGROUND</p><h2 id="demo-name">Terminal</h2><p id="demo-hint">Drag the charm, then let it settle.</p><div class="demo-actions"><button id="demo-nudge" class="button button-secondary" type="button">Try a swing</button><button id="demo-reset" class="quiet-button" type="button">Reset demo</button><button id="surprise-charm" class="quiet-button" type="button" disabled>Surprise me</button></div></div>
+    </div>
+    <span class="playground-stamp">small thing.<br><strong>good feeling.</strong></span>
    </div>
   </section>
+  <div class="joy-ribbon" aria-hidden="true"><span>FOCUS A LITTLE</span><b>+</b><span>LEARN SOMETHING</span><b>+</b><span>GROW AT YOUR PACE</span><b>+</b><span>COLLECT WHAT YOU LOVE</span></div>
+  <section class="art-workshop" id="new-art" aria-labelledby="art-title">
+   <div class="section-heading"><div><p class="eyebrow">FRESH FROM THE SKETCHBOOK</p><h2 id="art-title">More life.<br><span class="serif-note">More personality.</span></h2></div><div class="section-intro"><p>Photographic detail meets playful colour. Different subjects, different silhouettes—no one-size-fits-all badge.</p><span class="status-pill">New art direction · previews</span></div></div>
+   <div id="art-studies" class="art-studies"></div>
+   <p class="small-note">These are the earlier AI-generated style studies. The <a href="./review.html"><strong>full illustrated redraw review</strong></a> now compares new transparent candidates with the originals and offers separate review packs to try. The classic downloads below remain unchanged.</p>
+  </section>
+  <section class="worlds-section" id="worlds" aria-labelledby="worlds-title">
+   <div class="section-heading"><div><p class="eyebrow">WHAT'S YOUR LITTLE WORLD?</p><h2 id="worlds-title">Follow your curiosity.</h2></div><p>From silicon to the stars.<br>And a few favourites closer to home.</p></div>
+   <div id="collection-worlds" class="world-grid" aria-label="Explore charm collections"></div>
+  </section>
+  <section class="garden-section" id="garden" aria-labelledby="garden-title">
+   <div class="garden-copy"><p class="eyebrow">GROWN BY YOU. KEPT FOREVER.</p><h2 id="garden-title">Your very own<br><span class="serif-note">little patch of green.</span></h2><p>Plant a surprise seed. Water it once a day. On the eleventh watering day, a flower joins your collection.</p><p class="garden-kindness">Miss a day? Nothing dies. Nothing resets.<br>There's no wrong pace to grow.</p><a class="button garden-button" href="#garden-help">Where do I plant my seed? <span aria-hidden="true">↗</span></a><span class="garden-free">Always free. Saved locally in your app.</span></div>
+   <div class="garden-preview"><span class="preview-tag">Growth preview</span><div class="garden-scene"><span class="garden-sun" aria-hidden="true"></span><img id="garden-demo-image" src="./assets/garden/seed.svg" alt="Seed growth preview" width="144" height="168"><span class="garden-ground" aria-hidden="true"></span></div><h3 id="garden-demo-title">One small beginning.</h3><p id="garden-demo-copy">Plant a surprise seed in the app.</p><div class="growth-steps" role="group" aria-label="Preview garden stages"><button type="button" data-garden-stage="0" aria-pressed="true">Seed</button><button type="button" data-garden-stage="1" aria-pressed="false">Sprout</button><button type="button" data-garden-stage="2" aria-pressed="false">Leaves</button><button type="button" data-garden-stage="3" aria-pressed="false">Bud</button><button type="button" data-garden-stage="4" aria-pressed="false">Bloom</button></div><p class="small-note">This previews the stages. It does not water or change your real garden.</p></div>
+  </section>
+  <section class="garden-help" id="garden-help" aria-labelledby="garden-help-title"><div><p class="eyebrow">NO MORE HUNTING FOR THE SEED</p><h2 id="garden-help-title">Open. Plant. Grow.</h2></div><ol><li><strong>Open Charmlet in your editor.</strong><span>Use the current extension file, reload, then run <b>Charmlet: Show Charm</b>.</span></li><li><strong>Click “Garden” in the main toolbar.</strong><span>Or run <b>Charmlet: Open Garden</b> from the Command Palette. Choose <b>Plant a seed</b> inside the Garden panel.</span></li><li><strong>Plant once, then water daily.</strong><span>Eleven different watering days earn a flower. Your seed and progress survive reloads.</span></li></ol></section>
   <section class="collection" id="catalogue" aria-labelledby="collection-title">
-   <div class="section-heading"><div><p class="eyebrow">THE LITTLE COLLECTION</p><h2 id="collection-title">A charm for your kind of day.</h2></div><p>Silicon dreams, watchful guardians<br>and a few bright little extras.</p></div>
-   <div class="catalogue-controls">
-    <div class="kind-switch" role="group" aria-label="Collection type"><button type="button" data-kind="extra" aria-pressed="true">Extra downloads <span id="extra-count"></span></button><button type="button" data-kind="included" aria-pressed="false">Included with Charmlet <span id="included-count"></span></button></div>
-    <label class="search-label"><span class="visually-hidden">Search charms</span><input id="search" type="search" placeholder="Find a little something…" aria-label="Search charms"></label>
-   </div>
+   <div class="section-heading"><div><p class="eyebrow">THE CLASSIC LIBRARY</p><h2 id="collection-title">A little something<br><span class="serif-note">you can take home now.</span></h2></div><p>Ten included. Sixty free extras.<br>The classics stay while the new collection grows.</p></div>
+   <div class="catalogue-controls"><div class="kind-switch" role="group" aria-label="Collection type"><button type="button" data-kind="extra" aria-pressed="true">Extra downloads <span id="extra-count"></span></button><button type="button" data-kind="included" aria-pressed="false">Included with Charmlet <span id="included-count"></span></button></div><label class="search-label"><span class="visually-hidden">Search charms</span><input id="search" type="search" placeholder="Find a little something…" aria-label="Search charms"></label></div>
    <div id="group-filters" class="group-filters" role="group" aria-label="Charm groups"></div>
+   <section id="collection-story" class="collection-story" aria-label="Selected collection" hidden></section>
    <p id="result-count" class="result-count" role="status" aria-live="polite"></p>
    <ul id="charm-grid" class="charm-grid" aria-label="Charm collection"></ul>
    <div id="empty-state" class="empty-state" hidden><p>No charms match that search. Try another word.</p><button id="reset-filters" type="button">Reset filters</button></div>
   </section>
   <section class="installation" id="install" aria-labelledby="install-title">
-   <div class="section-heading"><div><p class="eyebrow">START HERE</p><h2 id="install-title">Install once.<br>Find your charm.</h2></div><p>The extension is free.<br>Choose the installation method available now.</p></div>
+   <div class="section-heading"><div><p class="eyebrow">YOUR DESK, BUT A LITTLE HAPPIER</p><h2 id="install-title">Install once.<br>Make yourself at home.</h2></div><p>The extension is free.<br>Choose the installation method available now.</p></div>
    <div class="install-grid">
-    <article class="install-card" aria-labelledby="manual-title">
-     <span class="availability available">Available now</span>
-     <h3 id="manual-title">Install the extension file</h3>
-     <p>A <strong>.vsix</strong> file installs Charmlet in your editor.</p>
-     <a class="button button-primary extension-download" href="./downloads/charmlet.vsix" download>Download Charmlet .vsix <span aria-hidden="true">↓</span></a>
-     <ol>
-      <li>Download the free extension file above.</li>
-      <li>In desktop VS Code, open the Command Palette: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> on Windows/Linux, or <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> on macOS.</li>
-      <li>Run <strong>Extensions: Install from VSIX…</strong>, choose the downloaded <strong>.vsix</strong> file and follow your editor's confirmation prompts.</li>
-      <li>Reload the editor window, then run <strong>Charmlet: Show Charm</strong>.</li>
-     </ol>
-    </article>
-    <article class="install-card" aria-labelledby="stores-title">
-     <span id="store-availability" class="availability upcoming">After publication</span>
-     <h3 id="stores-title">Install from an extension store</h3>
-     <p id="store-status">Store listings are being prepared. Until the official links appear here, use the extension file.</p>
-     <div id="store-links" class="store-links" hidden></div>
-     <ol>
-      <li>Once published, use the official store link for your editor.</li>
-      <li>Open the editor's Extensions view, find the verified Charmlet listing and choose <strong>Install</strong>.</li>
-      <li>Run <strong>Charmlet: Show Charm</strong>. Store installation then provides the editor's normal extension update flow.</li>
-     </ol>
-     <p class="install-note">Planned routes: Visual Studio Marketplace for VS Code; Open VSX for editors that support it. Cursor and Devin Desktop compatibility is still being verified.</p>
-    </article>
+    <article class="install-card" aria-labelledby="manual-title"><span class="availability available">Available now</span><h3 id="manual-title">Install the extension file</h3><p>A <strong>.vsix</strong> file installs Charmlet in your editor.</p><a class="button button-primary extension-download" href="./downloads/charmlet.vsix" download>Download Charmlet .vsix <span aria-hidden="true">↓</span></a><ol><li>Download the free extension file above.</li><li>In desktop VS Code, open the Command Palette: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> on Windows/Linux, or <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> on macOS.</li><li>Run <strong>Extensions: Install from VSIX…</strong>, choose the downloaded <strong>.vsix</strong> file and follow your editor's confirmation prompts.</li><li>Reload the editor window, then run <strong>Charmlet: Show Charm</strong>.</li></ol></article>
+    <article class="install-card" aria-labelledby="stores-title"><span id="store-availability" class="availability upcoming">After publication</span><h3 id="stores-title">Install from an extension store</h3><p id="store-status">Store listings are being prepared. Until the official links appear here, use the extension file.</p><div id="store-links" class="store-links" hidden></div><ol><li>Once published, use the official store link for your editor.</li><li>Open the editor's Extensions view, find the verified Charmlet listing and choose <strong>Install</strong>.</li><li>Run <strong>Charmlet: Show Charm</strong>. Store installation then provides the editor's normal extension update flow.</li></ol><p class="install-note">Planned routes: Visual Studio Marketplace for VS Code; Open VSX for editors that support it. Cursor and Devin Desktop compatibility is still being verified.</p></article>
    </div>
    <p class="install-note">These steps use desktop VS Code. <a href="https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-3-readiness.md">See current editor and platform checks</a>.</p>
   </section>
-  <section class="how-to" id="how-to" aria-labelledby="how-title">
-   <div><p class="eyebrow">ONE SMALL DOWNLOAD</p><h2 id="how-title">Already installed?<br>Add a little more.</h2><p>Extra artwork uses a .charmlet.json pack file. Import it inside Charmlet; it is not an extension installer.</p></div>
-   <ol><li><span>01</span><div><h3>Pick a companion</h3><p>Download any extra charm from the collection.</p></div></li><li><span>02</span><div><h3>Import in Charmlet</h3><p>Run <strong>Charmlet: Import Charm Pack</strong> in VS Code and choose the downloaded file.</p></div></li><li><span>03</span><div><h3>Make it yours</h3><p>Find it in Charm settings. Adjust its size and cord, then get back to creating.</p></div></li></ol>
-  </section>
-  <section class="quote-strip" aria-label="A little encouragement"><p>“Small steps. Solid code. Keep going.”</p><span>A little encouragement, included.</span></section>
+  <section class="how-to" id="how-to" aria-labelledby="how-title"><div><p class="eyebrow">FOUND YOUR FAVOURITE?</p><h2 id="how-title">Bring it along.</h2><p>Extra artwork uses a .charmlet.json pack file. Import it inside Charmlet; it is not an extension installer.</p></div><ol><li><span>01</span><div><h3>Pick a companion</h3><p>Download any available extra charm from the classic library.</p></div></li><li><span>02</span><div><h3>Import in Charmlet</h3><p>Run <strong>Charmlet: Import Charm Pack</strong> in VS Code and choose the downloaded file.</p></div></li><li><span>03</span><div><h3>Make it yours</h3><p>Find it in Charm settings. Adjust its size and cord, then get back to creating.</p></div></li></ol></section>
+  <section class="quote-strip" aria-label="A little encouragement"><p>Big ideas deserve<br>a few <span>little joys.</span></p><span>Focus. Learn. Grow.<br>And remember to enjoy the small wins.</span></section>
   <section class="faq" aria-labelledby="faq-title"><p class="eyebrow">A FEW SMALL ANSWERS</p><h2 id="faq-title">Good to know.</h2>
-   <details><summary>Is Charmlet free?</summary><p>Yes. The extension, all functionality and ten starter charms are permanently free. Every download in this gallery is currently free too.</p></details>
-   <details><summary>Do I need an account or an internet connection?</summary><p>No account is needed. Once installed or imported, your charms work offline.</p></details>
+   <details><summary>Is Charmlet free?</summary><p>Yes. The extension, Focus/Learn/Garden tools, importer, ten starter charms and all sixty classic gallery downloads are free. Photo Studio is a separate optional paid-creation service that is not available in the default preview.</p></details>
+   <details><summary>Are the new photographic-style images downloadable?</summary><p>Not yet. They are clearly marked art-direction previews while their transparent cutouts and packs are prepared. Existing classic downloads remain available and keep their original format.</p></details>
+   <details><summary>What about athlete and league collections?</summary><p>Sports has separate football, basketball, American football and baseball ideas. Named athlete and league editions are a wishlist, not current downloads or an endorsement. Their image and branding rights need a separate review.</p></details>
+   <details><summary>What do Focus and Learn include?</summary><p>Focus provides persisted focus/break sessions with pause and resume. Learn provides 60 sourced facts, 30 sourced trivia questions and 80 optional encouragement messages.</p></details>
+   <details><summary>How does the garden work?</summary><p>Click Garden in the toolbar, then Plant a seed, or run Charmlet: Open Garden. Plant one unknown seed and water once per local day. Missing days do not hurt progress. The eleventh valid watering adds its original flower to Grown by you. Water and move reminders are optional and off by default.</p></details>
+   <details><summary>Do I need an account or an internet connection?</summary><p>No account is needed for the app. Once installed or imported, your charms, focus tools and garden work offline. AI is used to prepare the new artwork, not to run the extension.</p></details>
    <details><summary>How do I install this preview?</summary><p>Use the current <a href="#install">manual installation steps</a>. Official extension-store links will appear there only after publication.</p></details>
    <details><summary>Will imported charms survive updates?</summary><p>Yes. Imported packs are stored separately from the extension. You can remove them using <strong>Charmlet: Remove Charm Pack</strong>.</p></details>
-   <details><summary>Will there be paid packs?</summary><p>Optional artwork collections are planned. The extension, all functionality, importing and the ten starter charms stay free. No paid packs are on sale in this preview.</p></details>
+   <details><summary>What is Photo Studio?</summary><p>Photo Studio is a prepared optional service for turning a personal photo into a data-only Charmlet pack. Photo processing stays in the browser, and importing remains free. It is Coming Soon by default; no price or live purchase is offered here.</p></details>
+   <details><summary>Will there be paid packs?</summary><p>Optional artwork collections remain a proposal. The extension, all functionality, importing, ten starter charms and sixty classic gallery extras stay free. No paid pack is on sale in this preview.</p></details>
   </section>
  </main>
- <footer class="site-footer"><a class="brand" href="./">Charmlet</a><p>Original little companions for the things you’re making.</p><div><a href="https://github.com/gautham-nvidia/charmlet">Source & artwork</a><a href="https://github.com/gautham-nvidia/charmlet/issues">Help & feedback</a><span id="release-label">Development preview</span></div></footer>
- <script type="module" src="./app.js"></script>
+ <dialog id="art-dialog" aria-labelledby="art-dialog-title"><button id="art-dialog-close" class="quiet-button" type="button" aria-label="Close art preview">Close ×</button><span class="preview-tag">Art-direction preview</span><h2 id="art-dialog-title"></h2><img id="art-dialog-image" alt="" width="512" height="512"><p id="art-dialog-note"></p><p class="small-note">AI-generated concept. Not a published charm pack.</p></dialog>
+ <footer class="site-footer"><a class="brand" href="./">charmlet<span class="brand-dot" aria-hidden="true"></span></a><p>Small companions.<br>A little more you.</p><div><a href="https://github.com/gautham-nvidia/charmlet">Source & artwork</a><a href="https://github.com/gautham-nvidia/charmlet/issues">Help & feedback</a><span id="release-label">Development preview</span></div></footer>
+ <script defer src="./demo.js"></script>
+ <script type="module" defer src="./app.js"></script>
 </body>
 </html>

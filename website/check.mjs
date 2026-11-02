@@ -8,14 +8,19 @@ import { validateDistribution } from './distribution.mjs';
 const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
 const require = createRequire(join(repo, 'extension', 'package.json'));
-const { chromium } = require('@playwright/test');
+const { chromium, expect } = require('@playwright/test');
 const { parseCharmPack } = require('./out/charm-packs.js');
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
+const target = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
+const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
+const expectedWorldCounts = { ai: 7, coding: 7, silicon: 18, testing: 12, animals: 0, trees: 2, space: 1, parks: 6, cities: 5, culture: 0, sports: 0, luck: 2 };
 const output = join(repo, 'extension', 'test-results', `website-check-${manifest.version}`);
 await mkdir(output, { recursive: true });
 const base = process.env.CHARMLET_GALLERY_URL || 'http://127.0.0.1:4173/';
 const marketplace = `https://marketplace.visualstudio.com/items?itemName=${manifest.publisher}.${manifest.name}`;
 const openVsx = `https://open-vsx.org/extension/${manifest.publisher}/${manifest.name}`;
+const expectedCollections = { 'Compute & Silicon': 18, 'Test Bench': 12, 'AI & Code': 14, 'Places & Nature': 16 };
+assert.equal(target.length, 60);
 assert.deepEqual(validateDistribution({ marketplace: null, openVsx: null }, manifest), { marketplace: null, openVsx: null });
 assert.deepEqual(validateDistribution({ marketplace, openVsx }, manifest), { marketplace, openVsx });
 assert.throws(() => validateDistribution({ marketplace: 'https://marketplace.visualstudio.com/items?itemName=wrong.charmlet', openVsx: null }, manifest));
@@ -23,25 +28,47 @@ assert.throws(() => validateDistribution({ marketplace: marketplace.replace('htt
 assert.throws(() => validateDistribution({ marketplace: 'javascript:alert(1)', openVsx: null }, manifest));
 assert.throws(() => validateDistribution({ marketplace: null, openVsx: `https://example.com/extension/${manifest.publisher}/${manifest.name}` }, manifest));
 assert.throws(() => validateDistribution({ marketplace: `${marketplace}&unexpected=true`, openVsx: null }, manifest));
+for (const [collection, count] of Object.entries(expectedCollections)) assert.equal(target.filter(item => item.collection === collection).length, count);
 const errors = [];
 let browser;
 const checkOverflow = async page => page.evaluate(() => ({ width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
-const decodeImages = async page => page.locator('img').evaluateAll(async images => {
+const twoFrames = async page => page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+const decodeImages = async page => page.locator('img[src]').evaluateAll(async images => {
+  for (const image of images) image.loading = 'eager';
   await Promise.all(images.map(image => image.decode()));
   return images.map(image => ({ alt: image.alt, width: image.naturalWidth, height: image.naturalHeight, complete: image.complete }));
 });
+async function downloadPack(page, id) {
+  const card = page.locator(`.charm-card[data-charm-id="${id}"]`);
+  const [download] = await Promise.all([page.waitForEvent('download'), card.locator('.download-link').click()]);
+  const path = join(output, `downloaded-${id}.charmlet.json`);
+  await download.saveAs(path);
+  const parsed = parseCharmPack(await readFile(path));
+  assert.equal(parsed.id, id);
+  assert.equal(parsed.charms[0].id, id);
+  return { parsed, path };
+}
 try {
   browser = await chromium.launch({ channel: 'msedge', headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
-  page.on('console', message => { if (message.type() === 'error') errors.push(`console ${message.location().url}: ${message.text()}`); });
+  page.on('console', message => {
+    if (message.type() !== 'error') return;
+    errors.push(`console ${message.location().url}: ${message.text()}`);
+  });
   page.on('pageerror', error => errors.push(`page: ${error.message}`));
   const response = await page.goto(base, { waitUntil: 'networkidle' });
   assert.equal(response?.status(), 200);
   await page.locator('.charm-card').first().waitFor();
-  assert.equal(await page.locator('.charm-card').count(), 6);
-  assert.equal(await page.locator('#extra-count').textContent(), '6');
+  assert.equal(await page.locator('.charm-card').count(), 60);
+  assert.equal(await page.locator('#extra-count').textContent(), '60');
   assert.equal(await page.locator('#included-count').textContent(), '10');
   assert.equal(await page.locator('.site-header a[href="#install"]').last().getAttribute('href'), '#install');
+  assert.equal(await page.getByRole('link', { name: 'Photo Studio', exact: true }).getAttribute('href'), './studio/');
+  await page.goto(new URL('studio/', base).href, { waitUntil: 'networkidle' });
+  await page.locator('#studio[data-studio-state="unavailable"]').waitFor();
+  assert.equal(await page.locator('input[type=file], input[type=password]').count(), 0);
+  await page.goto(base, { waitUntil: 'networkidle' });
+  await page.locator('.charm-card').first().waitFor();
   const installation = page.locator('#install');
   const manualCard = installation.getByRole('article', { name: 'Install the extension file', exact: true });
   const storeCard = installation.getByRole('article', { name: 'Install from an extension store', exact: true });
@@ -61,36 +88,200 @@ try {
   assert.ok(desktopOverflow.scroll <= desktopOverflow.width);
   await page.screenshot({ path: join(output, 'desktop.png'), fullPage: true });
 
-  const goodLuck = page.getByRole('button', { name: 'Good Luck', exact: true });
-  await goodLuck.focus();
-  await page.keyboard.press('Enter');
-  assert.equal((await page.evaluate(() => document.activeElement?.textContent))?.trim(), 'Good Luck');
-  assert.equal(await page.locator('.charm-card').count(), 1);
-  assert.equal(await page.locator('.charm-card').getAttribute('data-charm-id'), 'lotus');
-  const focusStyle = await goodLuck.evaluate(element => getComputedStyle(element).outlineStyle);
-  assert.notEqual(focusStyle, 'none');
-  await page.screenshot({ path: join(output, 'filtered.png'), fullPage: true });
+  assert.equal(await page.locator('#collection-worlds .world-card').count(), 12);
+  assert.equal(await page.locator('#art-studies .art-study').count(), 4);
+  for (const world of worldConfig.collections) {
+    const filter = page.locator('#group-filters').getByRole('button', { name: world.name, exact: true });
+    await filter.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await page.evaluate(() => document.activeElement?.dataset.group), world.id);
+    assert.equal(await page.locator('.charm-card').count(), expectedWorldCounts[world.id]);
+    assert.notEqual(await filter.evaluate(element => getComputedStyle(element).outlineStyle), 'none');
+    await expect(page.locator('#collection-story')).toBeVisible();
+  }
+  await page.getByRole('button', { name: 'Explore Sports', exact: true }).click();
+  const sports = page.locator('#collection-story');
+  await expect(sports).toContainText('Football');
+  await expect(sports).toContainText('Basketball');
+  for (const name of ['Cristiano Ronaldo (CR7)', 'Lionel Messi', 'Stephen Curry', 'LeBron James', 'Michael Jordan', 'NFL', 'EPL', 'UEFA Champions League', 'Baseball']) {
+    await expect(sports).toContainText(name);
+  }
+  await expect(sports).toContainText('not available downloads');
+  assert.equal(await page.locator('.download-link').count(), 0);
+  await sports.getByRole('button', { name: 'View Bring your game art preview', exact: true }).click();
+  await expect(page.locator('#art-dialog')).toBeVisible();
+  await page.locator('#art-dialog-image').evaluate(image => image.decode());
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#art-dialog')).not.toBeVisible();
+  await page.getByRole('button', { name: 'All', exact: true }).click();
+  await page.locator('[data-garden-stage="4"]').click();
+  await expect(page.locator('#garden-demo-title')).toHaveText('Grown by you. Kept forever.');
+  await expect(page.locator('#garden-demo-copy')).toContainText('eleven');
+  await page.locator('[data-garden-stage="2"]').click();
+  await expect(page.locator('#garden-demo-copy')).toContainText('Missing a day');
+  await expect(page.locator('#garden-help')).toContainText('Charmlet: Open Garden');
+  await expect(page.locator('#garden-help')).toContainText('Plant a seed');
+  await page.locator('[data-garden-stage="0"]').click();
+  assert.equal(await page.locator('.charm-card').count(), 60);
 
+  await page.locator('#search').fill('golden die');
+  assert.equal(await page.locator('.charm-card').count(), 1);
+  assert.equal(await page.locator('.charm-card').getAttribute('data-charm-id'), 'golden-die');
+  await page.locator('#search').fill('');
+  assert.equal(await page.locator('.charm-card').count(), 60);
+  await page.locator('#search').fill('GPU');
+  assert.ok(await page.locator('.charm-card[data-charm-id="gpu-tile"]').isVisible());
   await page.locator('#search').fill('no-such-charm');
   assert.equal(await page.locator('.charm-card').count(), 0);
   await page.getByRole('button', { name: 'Reset filters', exact: true }).click();
-  assert.equal(await page.locator('.charm-card').count(), 6);
-  assert.equal(await page.locator('#search').inputValue(), '');
+  assert.equal(await page.locator('.charm-card').count(), 60);
   assert.equal(await page.evaluate(() => document.activeElement?.id), 'search');
+
+  await page.locator('.hero').screenshot({ path: join(output, 'visual-refresh-hero.png') });
+  await page.locator('#new-art').screenshot({ path: join(output, 'visual-refresh-art.png') });
+  await page.locator('#garden').screenshot({ path: join(output, 'visual-refresh-garden.png') });
+  await page.reload({ waitUntil: 'networkidle' });
 
   await page.getByRole('button', { name: /Included with Charmlet/ }).click();
   assert.equal(await page.locator('.charm-card').count(), 10);
   assert.equal(await page.locator('.included-label').count(), 10);
   const includedImages = await decodeImages(page);
   assert.ok(includedImages.every(image => image.complete && image.width > 0 && image.height > 0));
-
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; });
+  await page.locator('.charm-card[data-charm-id="evil-eye"]').getByRole('button', { name: /Preview Evil Eye/ }).click();
+  await page.locator('.hero-demo').scrollIntoViewIfNeeded();
+  assert.equal(await page.locator('#demo-name').textContent(), 'Evil Eye');
+  assert.match(await page.locator('#demo-image').getAttribute('src'), /evil-eye\.svg$/);
   await page.getByRole('button', { name: /Extra downloads/ }).click();
-  const [packDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.download-link').first().click()]);
-  const packPath = join(output, 'downloaded-probe-card.charmlet.json');
-  await packDownload.saveAs(packPath);
-  const parsed = parseCharmPack(await readFile(packPath));
-  assert.equal(parsed.id, 'probe-card');
-  assert.equal(parsed.charms[0].id, 'probe-card');
+  const oldPack = await downloadPack(page, 'probe-card');
+  const newPack = await downloadPack(page, 'gpu-tile');
+
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; });
+  await page.locator('.charm-card[data-charm-id="gpu-tile"]').getByRole('button', { name: /Preview GPU Tile/ }).click();
+  const hero = page.locator('.hero');
+  const demo = page.locator('#demo-stage');
+  const demoButton = page.locator('#demo-charm');
+  await page.locator('.hero-demo').scrollIntoViewIfNeeded();
+  await page.locator('#demo-stage[data-ready="true"]').waitFor();
+  await page.locator('#demo-image').evaluate(image => image.decode());
+  assert.equal(await page.locator('#demo-name').textContent(), 'GPU Tile');
+  const demoStage = await demo.boundingBox();
+  const restingCharm = await demoButton.boundingBox();
+  assert.ok(demoStage && restingCharm);
+  const restingCenterX = restingCharm.x + restingCharm.width / 2;
+
+  await page.mouse.click(restingCenterX, restingCharm.y + restingCharm.height / 2);
+  await page.locator('#demo-stage[data-running="true"]').waitFor();
+  await expect.poll(async () => {
+    const bounds = await demoButton.boundingBox();
+    return bounds ? Math.abs(bounds.x + bounds.width / 2 - restingCenterX) : 0;
+  }).toBeGreaterThan(2);
+  await hero.screenshot({ path: join(output, 'phase-4c-hero.png') });
+  await page.locator('#demo-stage[data-running="false"]').waitFor({ timeout: 20000 });
+  assert.equal(await demo.getAttribute('data-cord'), '126');
+
+  const keyboardFrames = Number(await demo.getAttribute('data-frames'));
+  await demoButton.focus();
+  await demoButton.press('Enter');
+  await page.locator('#demo-stage[data-running="true"]').waitFor();
+  await page.locator('#demo-stage[data-running="false"]').waitFor({ timeout: 20000 });
+  assert.ok(Number(await demo.getAttribute('data-frames')) > keyboardFrames);
+
+  let bounds = await demoButton.boundingBox();
+  assert.ok(bounds);
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width / 2 + 50, bounds.y + bounds.height / 2 + 70, { steps: 10 });
+  await page.mouse.up();
+  await page.locator('#demo-stage[data-running="false"]').waitFor({ timeout: 20000 });
+  assert.equal(await demo.getAttribute('data-cord'), '126');
+  let returned = await demoButton.boundingBox();
+  assert.ok(returned.x >= demoStage.x - 1 && returned.x + returned.width <= demoStage.x + demoStage.width + 1
+    && returned.y >= demoStage.y - 1 && returned.y + returned.height <= demoStage.y + demoStage.height + 1);
+
+  bounds = await demoButton.boundingBox();
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width / 2 + 35, bounds.y + bounds.height / 2 + 45, { steps: 6 });
+  assert.equal(await demo.getAttribute('data-dragging'), 'true');
+  await page.setViewportSize({ width: 1300, height: 900 });
+  await expect.poll(() => demo.getAttribute('data-dragging')).toBe('false');
+  assert.equal(await demoButton.evaluate((button, pointerId) => button.hasPointerCapture(pointerId), 1), false);
+  await page.mouse.up();
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.locator('.hero-demo').scrollIntoViewIfNeeded();
+  await twoFrames(page);
+  bounds = await demoButton.boundingBox();
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width / 2 + 25, bounds.y + bounds.height / 2 + 30, { steps: 5 });
+  assert.equal(await demo.getAttribute('data-dragging'), 'true');
+  await page.mouse.up();
+  await page.locator('#demo-stage[data-running="false"]').waitFor({ timeout: 20000 });
+
+  bounds = await demoButton.boundingBox();
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width / 2 - 30, bounds.y + bounds.height / 2 + 35, { steps: 5 });
+  await demoButton.dispatchEvent('pointercancel', { pointerId: 1 });
+  assert.equal(await demo.getAttribute('data-dragging'), 'false');
+  assert.equal(await demo.getAttribute('data-cord'), '126');
+  await page.mouse.up();
+  returned = await demoButton.boundingBox();
+  await page.mouse.click(returned.x + returned.width / 2, returned.y + returned.height / 2);
+  await page.locator('#demo-stage[data-running="true"]').waitFor();
+  await page.locator('#demo-stage[data-running="false"]').waitFor({ timeout: 20000 });
+
+  bounds = await demoButton.boundingBox();
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width / 2 + 20, bounds.y + bounds.height / 2 + 20, { steps: 4 });
+  await page.getByRole('button', { name: 'Reset demo', exact: true }).dispatchEvent('click');
+  assert.equal(await demo.getAttribute('data-dragging'), 'false');
+  assert.equal(await demoButton.evaluate((button, pointerId) => button.hasPointerCapture(pointerId), 1), false);
+  await page.mouse.up();
+
+  const tapRest = await demoButton.boundingBox();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.mouse.move(tapRest.x + tapRest.width / 2, tapRest.y + tapRest.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(tapRest.x + tapRest.width / 2 + 2, tapRest.y + tapRest.height / 2 + 2);
+  await page.mouse.up();
+  assert.equal(await demo.getAttribute('data-dragging'), 'false');
+  assert.equal(await demo.getAttribute('data-running'), 'false');
+  assert.equal(await demo.getAttribute('data-cord'), '126');
+  let tapReturned = await demoButton.boundingBox();
+  assert.ok(Math.abs(tapReturned.x - tapRest.x) < 1 && Math.abs(tapReturned.y - tapRest.y) < 1);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.mouse.move(tapReturned.x + tapReturned.width / 2, tapReturned.y + tapReturned.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(tapReturned.x + tapReturned.width / 2 + 2, tapReturned.y + tapReturned.height / 2 + 2);
+  await page.mouse.up();
+  await page.locator('#demo-stage[data-running="false"]').waitFor({ timeout: 20000 });
+  assert.equal(await demo.getAttribute('data-cord'), '126');
+  tapReturned = await demoButton.boundingBox();
+  assert.ok(Math.abs(tapReturned.x - tapRest.x) < 1 && Math.abs(tapReturned.y - tapRest.y) < 1);
+
+  bounds = await demoButton.boundingBox();
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width / 2 + 20, bounds.y + bounds.height / 2 + 30, { steps: 4 });
+  assert.equal(await demo.getAttribute('data-dragging'), 'true');
+  await page.locator('#catalogue').scrollIntoViewIfNeeded();
+  await expect.poll(() => demo.getAttribute('data-dragging')).toBe('false');
+  assert.equal(await demoButton.evaluate((button, pointerId) => button.hasPointerCapture(pointerId), 1), false);
+  assert.equal(await demo.getAttribute('data-running'), 'false');
+  const hiddenFrames = Number(await demo.getAttribute('data-frames'));
+  await twoFrames(page);
+  assert.equal(Number(await demo.getAttribute('data-frames')), hiddenFrames);
+  await page.mouse.up();
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.locator('.hero-demo').scrollIntoViewIfNeeded();
+  await page.getByRole('button', { name: 'Try a swing', exact: true }).click();
+  assert.equal(await demo.getAttribute('data-running'), 'false');
+  assert.equal(await demo.getAttribute('data-dragging'), 'false');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
 
   const [vsixDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.extension-download').first().click()]);
   const vsixPath = join(output, `downloaded-charmlet-${manifest.version}.vsix`);
@@ -101,6 +292,7 @@ try {
   assert.ok(downloadedVsix.equals(sourceVsix));
 
   const actualCatalogue = JSON.parse(await readFile(join(root, 'dist', 'catalogue.json'), 'utf8'));
+  assert.equal(new Set(actualCatalogue.charms.map(item => item.id)).size, 70);
   await page.route('**/catalogue.json', route => route.fulfill({ json: { ...actualCatalogue, distribution: { marketplace, openVsx } } }));
   await page.reload({ waitUntil: 'networkidle' });
   const storeLinks = page.locator('#store-links a');
@@ -118,7 +310,7 @@ try {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(base, { waitUntil: 'networkidle' });
   await page.locator('.charm-card').first().waitFor();
-  assert.equal(await page.locator('.charm-card').count(), 6);
+  assert.equal(await page.locator('.charm-card').count(), 60);
   const mobileImages = await decodeImages(page);
   assert.ok(mobileImages.every(image => image.complete && image.width > 0 && image.height > 0));
   const mobileOverflow = await checkOverflow(page);
@@ -127,11 +319,18 @@ try {
   assert.deepEqual(errors, []);
   const result = {
     url: base,
-    extras: 6,
+    extras: 60,
     included: 10,
-    downloadedPack: parsed.id,
+    uniqueIds: 70,
+    collections: expectedWorldCounts,
+    artPreviews: 4,
+    gardenEntry: 'growth preview and direct Open Garden installation guidance',
+    sportsIdeas: 'athletes and leagues labelled as a wishlist, without download links',
+    downloadedPacks: [oldPack.parsed.id, newPack.parsed.id],
+    demo: 'swing, drag-return, offscreen-stop, reduced-motion-stop',
     distributionFixture: 'validated matching URLs rendered without navigation',
-    packBytes: (await stat(packPath)).size,
+    oldPackBytes: (await stat(oldPack.path)).size,
+    newPackBytes: (await stat(newPack.path)).size,
     vsixBytes: (await stat(vsixPath)).size,
     desktopOverflow,
     mobileOverflow,

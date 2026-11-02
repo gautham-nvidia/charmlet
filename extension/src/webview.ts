@@ -1,7 +1,8 @@
-import { createElement, ArrowDown, ArrowRight, Eye, EyeOff, Orbit, Pause, Play, RotateCcw, SlidersHorizontal } from 'lucide';
+import { createElement, ArrowDown, ArrowRight, Eye, EyeOff, Orbit, Pause, Play, RotateCcw, Timer, X } from 'lucide';
 import { resetState, clamp, getLayout, restoreState, type CharmState } from './charm-state';
 import { CHARMS, getCharm, type CharmDefinition } from './charm-catalog';
-import { MESSAGES } from './messages';
+import { createCompanionView } from './companion-view';
+import { createNavigationView, type NavigationView } from './navigation-view';
 import { MessageRotation } from './message-rotation';
 import { Pendulum, type Point } from './pendulum';
 
@@ -11,15 +12,19 @@ declare function acquireVsCodeApi(): {
 	postMessage(message: unknown): void;
 };
 
-function element<Kind extends HTMLElement>(id: string) {
+function element<Kind extends Element>(id: string) {
 	const result = document.getElementById(id);
 	if (!result) {
 		throw new Error(`Missing charm element: ${id}`);
 	}
-	return result as Kind;
+	return result as unknown as Kind;
 }
 
 const api = acquireVsCodeApi();
+const appElement = element<HTMLDivElement>('app');
+const primaryNav = element<HTMLElement>('primary-nav');
+const backdrop = element<HTMLDivElement>('tools-backdrop');
+let navigationUI: NavigationView | undefined;
 const stage = element<HTMLDivElement>('stage');
 const rig = element<HTMLDivElement>('rig');
 const hanging = element<HTMLDivElement>('hanging');
@@ -30,6 +35,7 @@ const toggle = element<HTMLButtonElement>('toggle');
 const motion = element<HTMLButtonElement>('motion');
 const reset = element<HTMLButtonElement>('reset');
 const settingsToggle = element<HTMLButtonElement>('settings-toggle');
+const companionToggle = element<HTMLButtonElement>('companion-toggle');
 const layoutMode = element<HTMLButtonElement>('layout-mode');
 const settings = element<HTMLDivElement>('settings');
 const sizeInput = element<HTMLInputElement>('size');
@@ -39,6 +45,7 @@ const cordValue = element<HTMLOutputElement>('cord-value');
 const phase = element<HTMLSpanElement>('phase');
 const lengthOutput = element<HTMLOutputElement>('length');
 const thread = document.getElementById('thread')!;
+const focusRing = element<SVGElement>('focus-ring');
 const charmImage = element<HTMLImageElement>('charm-image');
 const charmName = element<HTMLSpanElement>('charm-name');
 const charmSwatch = element<HTMLSpanElement>('charm-swatch');
@@ -47,7 +54,6 @@ const charmDescription = element<HTMLParagraphElement>('charm-description');
 const showMessages = element<HTMLInputElement>('show-messages');
 const rotateMessages = element<HTMLInputElement>('rotate-messages');
 const messageCard = element<HTMLDivElement>('message-card');
-const messageText = element<HTMLElement>('message-text');
 const nextMessage = element<HTMLButtonElement>('next-message');
 const importPack = element<HTMLButtonElement>('import-pack');
 const removePack = element<HTMLButtonElement>('remove-pack');
@@ -66,6 +72,79 @@ let frames = 0;
 let drag: { id: number; start: Point; screenStart: Point; moved: boolean; lastAngle: number; angularTravel: number; maxSideways: number; orbitalGesture: boolean; hideDistance: number; orbitSideDistance: number } | undefined;
 const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, state.cordLength, state.size, state.layoutMode);
+const companionUI = createCompanionView({
+	send: (action, requestId) => api.postMessage({ type: 'companion-action', action, requestId }),
+	openSource: cardId => api.postMessage({ type: 'learning-source', cardId }),
+	image: file => new URL(file, mediaRoot).toString(),
+	hangFlower: (flowerId, requestId) => api.postMessage({ type: 'garden-hang', flowerId, requestId }),
+	onOpen: () => {
+		settings.hidden = true;
+		navigationUI?.close(false);
+	},
+	onLayout: () => {
+		resize();
+		scheduleMessages();
+	},
+	onActivity: scheduleMessages,
+});
+navigationUI = createNavigationView({
+	image: selected => selected.source ?? new URL(selected.file, mediaRoot).toString(),
+	select: selectCharm,
+	action: action => {
+		if (action === 'appearance') { openAppearance(); }
+		else if (action === 'messages') { companionUI.open('learn'); }
+		else if (action === 'reminders') { companionUI.openReminders(); }
+	},
+	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); },
+	onChange: () => { updateOverlays(); scheduleMessages(); },
+});
+
+function popupOpen() { return !settings.hidden || companionUI.isOpen() || navigationUI?.isOpen() === true; }
+
+function updateOverlays() {
+	const appBounds = appElement.getBoundingClientRect();
+	const navBounds = primaryNav.getBoundingClientRect();
+	const bottom = `${Math.max(8, appBounds.bottom - navBounds.top + 8)}px`;
+	if (appElement.style.getPropertyValue('--popup-bottom') !== bottom) { appElement.style.setProperty('--popup-bottom', bottom); }
+	const open = popupOpen();
+	backdrop.hidden = !open;
+	appElement.classList.toggle('has-popup', open);
+	hanging.inert = state.hidden || open;
+	restore.inert = open;
+}
+
+function closeAppearance(restoreFocus = true) {
+	if (settings.hidden) { return; }
+	settings.hidden = true;
+	if (restoreFocus) { settingsToggle.focus({ preventScroll: true }); }
+	updateOverlays();
+	scheduleMessages();
+}
+
+function openAppearance() {
+	cancelDrag();
+	navigationUI?.close(false);
+	companionUI.close(false);
+	settings.hidden = false;
+	updateOverlays();
+	charmSelect.focus({ preventScroll: true });
+	scheduleMessages();
+}
+
+function selectCharm(id: string) {
+	cancelDrag();
+	state.charmId = getCharm(id, charms).id;
+	applyCharm();
+	resize();
+	save();
+}
+
+backdrop.addEventListener('click', () => {
+	if (navigationUI?.isOpen()) { navigationUI.close(); }
+	else if (!settings.hidden) { closeAppearance(); }
+	else { companionUI.close(); }
+});
+element<HTMLButtonElement>('settings-close').addEventListener('click', () => closeAppearance());
 
 function reducedMotion() {
 	return state.reducedMotion || systemMotion.matches || document.body.classList.contains('vscode-reduce-motion');
@@ -90,29 +169,26 @@ function applyCharm() {
 	charmSelect.value = selected.id;
 	charm.setAttribute('aria-label', `Nudge ${selected.name.toLowerCase()} charm`);
 	stage.dataset.charm = selected.id;
+	navigationUI?.setCatalogue(charms, selected.id);
 }
 
 function updateMessage() {
 	messageCard.hidden = !state.showMessages;
 	showMessages.checked = state.showMessages;
 	rotateMessages.checked = state.rotateMessages;
-	const message = MESSAGES[state.messageIndex];
-	messageText.textContent = message;
-	messageText.title = message;
 }
 
 function advanceMessage() {
-	state.messageIndex = (state.messageIndex + 1) % MESSAGES.length;
-	updateMessage();
-	save();
+	companionUI.nextCard();
 	scheduleMessages();
 }
 
 const messageRotation = new MessageRotation(advanceMessage);
 
 function scheduleMessages() {
-	const enabled = ready && visible && !document.hidden && state.showMessages && state.rotateMessages && settings.hidden && !drag;
-	messageRotation.update(enabled);
+	const enabled = ready && stage.dataset.companionReady === 'true' && visible && !document.hidden
+		&& state.showMessages && state.rotateMessages && settings.hidden && !navigationUI?.isOpen() && !drag && companionUI.canRotate();
+	messageRotation.setEnabled(enabled);
 	messageCard.dataset.rotation = enabled ? 'active' : 'paused';
 }
 
@@ -139,10 +215,10 @@ function controls() {
 	charm.title = state.layoutMode === 'orbit'
 		? `Nudge ${selected.name} charm; drag around the peg for a full loop`
 		: `Nudge ${selected.name} charm; pull up to retract. Use Orbit layout for full loops.`;
-	toggle.replaceChildren(createElement(state.hidden ? Eye : EyeOff, { width: 16, height: 16 }));
+	toggle.replaceChildren(createElement(state.hidden ? Eye : EyeOff, { width: 16, height: 16 }), document.createTextNode(state.hidden ? 'Show charm' : 'Hide charm'));
 	toggle.title = state.hidden ? 'Restore charm' : 'Hide charm';
 	toggle.setAttribute('aria-label', toggle.title);
-	motion.replaceChildren(createElement(reducedMotion() ? Play : Pause, { width: 16, height: 16 }));
+	motion.replaceChildren(createElement(reducedMotion() ? Play : Pause, { width: 16, height: 16 }), document.createTextNode('Motion'));
 	motion.setAttribute('aria-checked', String(!reducedMotion()));
 	motion.disabled = systemMotion.matches || document.body.classList.contains('vscode-reduce-motion');
 	motion.title = motion.disabled ? 'Motion disabled by system preference' : 'Motion';
@@ -152,7 +228,7 @@ function controls() {
 	if (state.hidden && hanging.contains(document.activeElement)) {
 		restore.focus({ preventScroll: true });
 	}
-	hanging.inert = state.hidden;
+	hanging.inert = state.hidden || popupOpen();
 }
 
 function render() {
@@ -164,6 +240,8 @@ function render() {
 	charm.style.transform = `translate(${positionX}px, ${positionY}px) rotate(${angle}rad)`;
 	anchor.style.left = `${anchorX}px`;
 	anchor.style.top = `${anchorY}px`;
+	focusRing.style.left = `${anchorX}px`;
+	focusRing.style.top = `${anchorY}px`;
 	restore.style.left = `${anchorX * scale - 15}px`;
 	restore.style.top = `${Math.max(4, anchorY * scale - 14)}px`;
 	thread.setAttribute('d', `M ${anchorX} ${anchorY} Q ${anchorX + (hookX - anchorX) * 0.45} ${(anchorY + hookY) / 2} ${hookX} ${hookY}`);
@@ -296,6 +374,7 @@ function cancelDrag() {
 
 function resize() {
 	cancelDrag();
+	updateOverlays();
 	const { width, height } = stage.getBoundingClientRect();
 	const layout = getLayout(width, height, state.cordLength, state.size, state.layoutMode);
 	scale = Math.max(0.01, Math.min(1, width / layout.minimumWidth, height / layout.minimumHeight));
@@ -422,7 +501,7 @@ charm.addEventListener('keydown', event => {
 		state.hidden = true;
 		showState();
 		save();
-		toggle.focus();
+		settingsToggle.focus();
 	}
 });
 
@@ -461,30 +540,14 @@ motion.addEventListener('click', () => {
 	save();
 });
 
-settingsToggle.addEventListener('click', () => {
-	cancelDrag();
-	settings.hidden = !settings.hidden;
-	settingsToggle.setAttribute('aria-expanded', String(!settings.hidden));
-	resize();
-	scheduleMessages();
-});
 settings.addEventListener('keydown', event => {
 	if (event.key === 'Escape') {
+		event.preventDefault();
 		event.stopPropagation();
-		settings.hidden = true;
-		settingsToggle.setAttribute('aria-expanded', 'false');
-		settingsToggle.focus();
-		resize();
-		scheduleMessages();
+		closeAppearance();
 	}
 });
-charmSelect.addEventListener('change', () => {
-	cancelDrag();
-	state.charmId = getCharm(charmSelect.value, charms).id;
-	applyCharm();
-	resize();
-	save();
-});
+charmSelect.addEventListener('change', () => selectCharm(charmSelect.value));
 showMessages.addEventListener('change', () => {
 	state.showMessages = showMessages.checked;
 	updateMessage();
@@ -498,7 +561,6 @@ rotateMessages.addEventListener('change', () => {
 	save();
 	scheduleMessages();
 });
-nextMessage.addEventListener('click', advanceMessage);
 importPack.addEventListener('click', () => api.postMessage({ type: 'command', command: 'charmlet.importPack' }));
 removePack.addEventListener('click', () => api.postMessage({ type: 'command', command: 'charmlet.removePack' }));
 sizeInput.addEventListener('input', () => {
@@ -545,7 +607,12 @@ window.addEventListener('message', event => {
 			visible = message.visible === true;
 		}
 		api.setState(state);
+		if ('companion' in message) { companionUI.receive(message.companion); }
+		if ('companionTab' in message && (message.companionTab === 'focus' || message.companionTab === 'learn' || message.companionTab === 'garden')) {
+			companionUI.open(message.companionTab);
+		}
 		ready = true;
+		navigationUI?.setReady(true);
 		stage.dataset.ready = 'true';
 		resize();
 		showState('drop' in message && message.drop === true);
@@ -559,6 +626,17 @@ window.addEventListener('message', event => {
 		updateMessage();
 		resize();
 		showState();
+	} else if (message.type === 'companion' && 'snapshot' in message) {
+		companionUI.receive(message.snapshot);
+		scheduleMessages();
+	} else if (message.type === 'companion-result' && 'requestId' in message && Number.isSafeInteger(message.requestId)) {
+		companionUI.result(
+			Number(message.requestId),
+			'error' in message && typeof message.error === 'string' ? message.error : undefined,
+			'message' in message && typeof message.message === 'string' ? message.message : undefined,
+		);
+	} else if (message.type === 'companion-open' && 'tab' in message && (message.tab === 'focus' || message.tab === 'learn' || message.tab === 'garden')) {
+		companionUI.open(message.tab);
 	} else if (message.type === 'saved' && 'revision' in message && message.revision === saveRevision) {
 		stage.dataset.persisted = 'true';
 	} else if (message.type === 'save-error' && 'revision' in message && message.revision === saveRevision) {
@@ -574,10 +652,13 @@ window.addEventListener('pagehide', () => messageRotation.stop());
 systemMotion.addEventListener('change', updateMotionPreference);
 new MutationObserver(updateMotionPreference).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 new ResizeObserver(resize).observe(stage);
-reset.replaceChildren(createElement(RotateCcw, { width: 15, height: 15 }));
+reset.replaceChildren(createElement(RotateCcw, { width: 15, height: 15 }), document.createTextNode('Reset position'));
 restore.replaceChildren(createElement(ArrowDown, { width: 14, height: 14 }));
-settingsToggle.replaceChildren(createElement(SlidersHorizontal, { width: 15, height: 15 }));
-layoutMode.replaceChildren(createElement(Orbit, { width: 16, height: 16 }));
+companionToggle.prepend(createElement(Timer, { width: 13, height: 13, 'aria-hidden': 'true' }));
+for (const id of ['settings-close', 'companion-close']) {
+	element<HTMLButtonElement>(id).append(createElement(X, { width: 14, height: 14, 'aria-hidden': 'true' }));
+}
+layoutMode.replaceChildren(createElement(Orbit, { width: 16, height: 16 }), document.createTextNode('Orbit layout'));
 nextMessage.replaceChildren(createElement(ArrowRight, { width: 14, height: 14 }));
 populateCharms();
 applyCharm();

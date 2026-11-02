@@ -8,13 +8,18 @@ const { chromium } = require('../extension/node_modules/@playwright/test');
 const { parseCharmPack } = require('../extension/out/charm-packs.js');
 const root = dirname(fileURLToPath(import.meta.url));
 const extras = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
+const requested = process.argv.slice(2);
+if (!requested.length || new Set(requested).size !== requested.length || requested.some(id => !extras.some(item => item.id === id))) {
+  throw new Error('Specify unique known charm IDs to export; unchanged packs are frozen.');
+}
+const selected = extras.filter(entry => requested.includes(entry.id));
 const output = join(root, 'packs');
 await mkdir(output, { recursive: true });
 let browser;
 try {
   browser = await chromium.launch({ channel: 'msedge', headless: true });
   const page = await browser.newPage();
-  for (const entry of extras) {
+  for (const entry of selected) {
     const svg = await readFile(join(root, 'assets', entry.file), 'utf8');
     const source = Buffer.from(svg, 'utf8').toString('base64');
     const png = await page.evaluate(async encoded => {

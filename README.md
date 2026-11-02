@@ -2,27 +2,36 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-07:** Phase 3 release-preparation build **0.3.2**, with **ten free original charms**, 80 rotating
-coding messages and a free extra-charm gallery/importer. Desktop VS Code **1.90.0 and 1.140.0** checks pass
-on Windows, Ubuntu 24.04 x64 with Xvfb, and macOS 15 Apple Silicon. No telemetry, account, payment or
-runtime AI is required.
+**Status, 2026-10-09:** Phase 4 development candidate **0.4.3** adds direct **Charms / Focus / Garden / Settings** navigation, a searchable visual picker, motivation-first fresh state, compact recurring reminders and the installed-version footer. Saved selections, feed choices and garden progress are preserved.
 
-Hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841) passed all six listed jobs with 34 units and canonical-file restoration verified on both macOS versions. See the frozen [preference restoration proof](docs/phase-3-preferences.json) and [Phase 3 readiness](docs/phase-3-readiness.md). This verifies the listed runners, not every OS/hardware/editor host or a standalone application.
+The website's separate **Art review** gallery contains **95 transparent Gemini illustration candidates**, **83 importable designs** and **14 review packs**, while the ten original defaults and sixty classic downloads remain unchanged. Photo Studio's local/fake-provider foundation is verified but live paid access remains disabled. The unsigned [`desktop0.1.1`](desktop/README.md) Windows portable ZIP has been extracted and tested; it is not part of the VSIX or a public release.
+
+Local evidence covers 59 units and six editor cases on Windows VS Code1.90.0/1.140.0, plus review-pack import/reload, 95 image checks, desktop/source/archive smoke and Photo Studio's 18 unit/service checks and isolated browser flow. New hosted Linux/macOS, authenticated IDE forks, native desktop interaction, merchant setup, licences/signing and final artwork/free-paid decisions remain gates. Historical0.4.1 hosted results are not proof for this candidate. See the [verification record](docs/phase-4-validation.md).
 
 [Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
 [dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
 show the checks and remaining review items.
 
-![Compact Charmlet view with message, controls and restore-ready layout](docs/phase-3-gallery/compact-feedback.png)
+![Historical Phase 3 compact Charmlet view](docs/phase-3-gallery/compact-feedback.png)
 
-Choose among ten bundled charms in the grouped picker. The default **Hanging** layout keeps the peg near
-the top and reserves pull room; the Orbit toolbar toggle reserves space for full fixed-peg loops. A
+The screenshot above records Phase 3; the current candidate uses the four labelled navigation buttons described below.
+
+Choose among installed charms in the searchable **Charms** picker. The default **Hanging** layout keeps the peg near
+the top and reserves pull room; **Settings → Appearance → Orbit layout** reserves space for full fixed-peg loops. A
 straight upward pull retracts the charm and the arrow restores it. The Cord setting is the saved resting
 preference, while the visible cord may temporarily shorten to fit the current panel.
 
-Eighty original coding messages sit directly below the charm. Use **Next coding message**, or enable/disable
-saved automatic five-minute rotation in settings. Rotation pauses while the view is unavailable, settings
-are open or a drag is active.
+The card below the charm offers 80 motivational messages by default, with optional 60 sourced facts and 30 sourced trivia questions under **Settings → Messages**. Existing saved feed choices stay unchanged. Use **Next coding message**, choose the saved feed mode, reveal trivia
+answers or open a trusted source. Automatic five-minute rotation pauses while the view is unavailable,
+settings/tools are open, a card is active or a drag is in progress.
+
+Click **Focus** or run **Charmlet: Focus Session** for a deadline-based focus/break timer with
+25/5, 50/10 or custom durations, pause/resume/stop and an optional one-line intention. It restores a real
+running or paused session after reload without auto-starting another session or counting completed work.
+
+Click **Garden**, then **Plant a seed**, or run **Charmlet: Open Garden**. The free garden hides one original species until its eleventh valid watering day, keeps progress through
+missed days, and adds the bloom to **Grown by you** before it can be explicitly hung. Optional water and
+stand/move reminders are off by default under **Settings → Reminders**. They use one quiet in-app notice with Done, ten-minute Snooze or Skip, without moving focus or stacking missed intervals.
 
 ## Run the demo
 
@@ -42,7 +51,7 @@ unchanged. After rebuilding, reload that demo window to load the updated code.
 1. In the demo window, press **Ctrl+Shift+P**, then run **Charmlet: Show Charm**.
 2. Run **View: Move View**, choose **Charmlet**, then **New Secondary Side Bar Entry** for a right dock.
 3. Click to nudge or pull and release to return to rest. Switch on **Orbit layout** before dragging a full loop. A straight upward pull retracts the charm; the restore arrow brings it back.
-4. Open **Charm settings** to choose a charm, size and resting cord length. Escape closes settings.
+4. Click **Charms** to search/select artwork, or **Settings → Appearance** for size and resting cord. Escape closes the open panel.
 
 | Group | Bundled charms |
 |---|---|
@@ -53,7 +62,7 @@ Extra free charms use validated `.charmlet.json` files. Run **Charmlet: Import C
 **Charmlet: Remove Charm Pack** to remove an imported pack. Imported PNG artwork is stored separately
 from extension files, survives updates and works offline.
 
-Motion and reset controls live below the charm. Tab to the charm for Enter/Space, arrow-key and Escape
+Motion and reset controls live under Settings. Tab to the charm for Enter/Space, arrow-key and Escape
 controls. See [extension/README.md](extension/README.md) for the full controls and limitations.
 
 ## Verify and package
@@ -65,8 +74,8 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs thirty-four state/physics, pack, timer, persistence and file-store tests and one real-editor interaction
-regression. It launches a disposable VS Code profile and edits only a temporary file. The test window
+`test` builds and lints both bundles, runs the state/physics, pack, focus/learning/garden/care, persistence and file-store unit suites and six real-editor interaction
+regressions. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.
 See the [validation record](docs/phase-3-gallery-validation.md) for compact, gallery, import and message checks.
@@ -76,14 +85,22 @@ VSIX...** for manual testing. Packaging uses `--skip-license` because the projec
 is still open, not because third-party licenses are waived. Required notices ship in the package.
 
 [CI](.github/workflows/ci.yml) runs six jobs across Windows, Ubuntu 24.04 and macOS 15 with VS Code
-**1.90.0 and 1.140.0**. All six passed the current 34-unit/UI/package/gallery path in hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841).
+**1.90.0 and 1.140.0**. All six passed the 0.3.2 baseline's 34-unit/UI/package/gallery path in hosted run [37697185841](https://github.com/gautham-nvidia/charmlet/actions/runs/37697185841).
 Linux uses Xvfb; screenshots, resource snapshots, the VSIX and static gallery are retained as workflow
 artifacts. This verifies the listed runners, not every OS/hardware/editor host. CI does not deploy or publish.
 
+## Desktop developer beta
+
+[`desktop/`](desktop/README.md) builds one floating Windows/macOS Electron window with the shared charm renderer, Focus/Learn/Garden controller, validated packs, confirmed local JSON state and tray/menu-bar actions. Its profile is independent from VS Code; automatic cross-device or IDE synchronization is not included.
+
+Local Windows evidence covers the five frozen placement cases, one suspend/lock pause-handler case, owned-profile Electron UI/restart behavior, earned Hibiscus restoration, renderer security flags and restricted hit-test IPC configuration. That diagnostic is not native OS click-through proof. Real Windows/macOS click-through, focus behavior, monitor/DPI movement, suspend/lock, macOS packaging, signing and distribution remain explicit manual/hosted gates.
+
 ## Companion gallery
 
-The source under [website/](website/) builds a static local gallery with six free extra charms and real
-pack/VSIX downloads. A `.vsix` installs the extension; a `.charmlet.json` adds artwork only after Charmlet
+The source under [website/](website/) builds a local collection playground with twelve browsing worlds,
+four labelled art-direction previews, a Garden growth demonstration and sixty classic free downloads.
+Real pack/VSIX downloads and a bounded live swing/pull preview use the extension's
+shared Pendulum model. A `.vsix` installs the extension; a `.charmlet.json` adds artwork only after Charmlet
 is installed. Store links are driven by validated `website/distribution.json` values and remain null until
 the owner verifies a live identity-matching listing. URL validation is not proof of publication. This is
 a development preview, not a public URL or Marketplace/Open VSX listing.
@@ -114,6 +131,11 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Phase 2 validation](docs/phase-2-validation.md) | Collection screenshots and Windows checks |
 | [Phase 3 issue #11](https://github.com/gautham-nvidia/charmlet/issues/11) | Compatibility and release readiness |
 | [Phase 3 readiness](docs/phase-3-readiness.md) | Host evidence, automation limits and release gates |
+| [Phase 4 issue #17](https://github.com/gautham-nvidia/charmlet/issues/17) | Focus, learning, reminders, garden and original collections implementation |
+| [Phase 4 plan](docs/phase-4-plan.md) | Current product scope, architecture, slices and acceptance gates |
+| [Desktop beta guide](desktop/README.md) | Local build/test/package commands, security boundaries and manual Windows/macOS gates |
+| [Phase 4 collection brief](docs/phase-4-original-collections.md) | Implemented 60-design free website catalogue direction and garden palette |
+| [Phase 5 issue #18](https://github.com/gautham-nvidia/charmlet/issues/18) | Publisher/license decisions and extension-store launch gates |
 | [Desktop platform summary](docs/phase-3-platforms.json) | Frozen six-job Windows/Linux/macOS identities and accepted motion/lifecycle values |
 | [Preference restoration proof](docs/phase-3-preferences.json) | Frozen canonical-file readback/ack/restart evidence from both macOS versions |
 | [Full-circle validation](docs/full-circle-validation.md) | Orbit screenshots and rendered-motion evidence |
@@ -123,7 +145,8 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Charm pack format](docs/charm-packs.md) | Validated data-only import format and limits |
 | [Paid artwork proposal](docs/paid-artwork-plan.md) | Non-live collection, rights, fulfillment and owner-decision plan |
 | [Competitive review and desktop direction](docs/competitive-review.md) | Sourced product comparison, proposed free focus timer and standalone-host tradeoffs |
-| [Artwork provenance](extension/ARTWORK.md) | Asset origins, shared geometry and license status |
+| [Extension artwork provenance](extension/ARTWORK.md) | Bundled/default/garden asset origins, shared geometry and license status |
+| [Website artwork provenance](website/ARTWORK.md) | Sixty free website designs, frozen legacy assets and Phase 4C generation/export record |
 | [extension/CHANGELOG.md](extension/CHANGELOG.md) | User-visible changes by version and date |
 | [PLAN.md](PLAN.md) | Design research, constraints and clearly marked historical proposals |
 
@@ -142,11 +165,11 @@ git log --all --graph --date=iso-strict --format="%h %ad %s"
 git log --follow --date=short --format="%h %ad %s" -- PROJECT_LOG.md
 ```
 
-Phase 3 is in progress: [compatibility and release readiness](docs/phase-3-readiness.md). The full-circle
-orbit, free gallery/import flow and listed Windows/Ubuntu/macOS desktop VS Code matrix are verified.
-Intel Mac, Windows ARM, authenticated editor forks, remote/browser scope, publisher, license, hosting and
-listing decisions remain open; registry publication still requires explicit approval. Optional paid
-artwork, focus timer and standalone desktop directions remain proposals.
+The owner has authorized the [Phase 4 companion work](docs/phase-4-plan.md) and parallel website/desktop
+development. Phase 5 is extension-store launch, Phase 6 the broader product launch, and Phase 7+ later
+integrations. Publisher ownership, source/art licensing, actual launch-target editor checks and public
+hosting/publication remain explicit gates in [Phase 5 #18](https://github.com/gautham-nvidia/charmlet/issues/18).
+Each phase keeps its own branch and merges before the next.
 
 ## Ownership and licenses
 

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta name="description" content="Prepare a personal Charmlet keepsake locally in your browser when Photo Studio is available.">
+  <title>Charmlet Photo Studio</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <a class="skip-link" href="#studio">Skip to Photo Studio</a>
+  <header><a class="brand" href="../"><span aria-hidden="true">&gt;_</span> Charmlet</a><nav aria-label="Photo Studio navigation"><a href="../#catalogue">Free gallery</a><a href="../#how-to">Import help</a></nav></header>
+  <main id="studio" data-studio-state="loading">
+    <section class="intro"><p class="eyebrow">OPTIONAL PERSONAL KEEPSAKES</p><h1>Photo Studio</h1><p>Turn one of your photos into a private Charmlet pack. Photo cropping and export stay in this browser; the free extension and desktop importer remain available to everyone.</p></section>
+    <section id="studio-panel" aria-live="polite"><p id="studio-status" role="status">Checking Photo Studio availability…</p></section>
+  </main>
+  <footer><p>Local photo processing · No photo retention · Free pack importing</p><a href="../">Back to Charmlet</a></footer>
+  <script defer src="./studio.js"></script>
+</body>
+</html>

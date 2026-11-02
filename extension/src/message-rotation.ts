@@ -14,6 +14,11 @@ export class MessageRotation {
 		}, MESSAGE_ROTATION_MS);
 	}
 
+	setEnabled(enabled: boolean) {
+		if (!enabled) { this.stop(); return; }
+		if (this.timer === undefined) { this.update(true); }
+	}
+
 	stop() {
 		if (this.timer !== undefined) { clearTimeout(this.timer); }
 		this.timer = undefined;

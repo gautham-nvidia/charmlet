@@ -1,5 +1,7 @@
 # Charmlet - design research and build plan
 
+**Owner update, 2026-10-08:** [Phase 4 — Focus, Learn and Grow](docs/phase-4-plan.md) is the current product and architecture plan. The owner authorized Phase 4 companion implementation and parallel website/desktop-beta work now; Phase 5 is extension-store launch, Phase 6 the broader product launch, and Phase 7+ later integrations/licensed art. The website paid Photo Studio is the explicit exception to the earlier free-creator recommendation, while the free core, productivity features, reminders, garden, importer and ten defaults remain free. Older decoration, private-API and freemium-key proposals below are historical and do not override this direction.
+
 **Implementation update, 2026-10-05:** Phase 1's free-core controls and interaction checks are implemented in development version 0.0.2, with local Windows passes on VS Code 1.90.0 and 1.138.0. See [PROJECT_LOG.md](PROJECT_LOG.md) and the [validation record](docs/phase-1-validation.md) for current evidence and remaining feedback. Each phase uses its own branch and merges to main before the next begins. Earlier proposals below remain historical.
 
 **Implementation update, 2026-09-17:** Charmlet is the selected product name; the personal public

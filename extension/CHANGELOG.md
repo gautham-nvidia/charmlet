@@ -3,6 +3,86 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.4.3 - 2026-10-09 (Navigation and motivation)
+
+### Changed
+
+- Four direct controls: Charms, Focus, Garden and Settings, with a searchable visual picker and keyboard-accessible pop-out menus.
+- Proper SVG dropdown chevrons, compact reminder checkboxes and one visible panel at a time.
+- Motivation is the fresh-state feed default; saved feed choices remain unchanged. Motivational cards have no duplicated category heading.
+- Gentle recurring reminder notices are visible without opening tools, with Done, ten-minute Snooze and Skip. They do not move focus or create catch-up stacks.
+- Footer displays Website — coming soon, Made in Silicon Valley and the actual installed version.
+- The separate website provides 95 Gemini redraw candidates, 83 importable review designs and 14 review packs. Original defaults, website packs and earned progress remain unchanged; no final paid split or public release is implied.
+
+### Verification
+
+- Type/lint/build, 59 units and six real-editor cases passed locally on Windows VS Code 1.90.0 and 1.140.0. Current-host review-pack import/reload also passed.
+- New hosted cross-platform checks remain pending. Desktop 0.1.1, Photo Studio test-mode integration and website artwork checks have separate evidence and release gates.
+
+## 0.4.2 - 2026-10-08 (Garden discovery)
+
+### Added
+
+- A visible **Plant a seed** entry beside Focus; it becomes **Garden** after starting a garden.
+- **Charmlet: Open Garden** in the Command Palette and the Charmlet view title actions.
+- A real-editor regression covering direct access, the first watering, same-day protection, keyboard return and reload without rerolling the seed.
+
+### Verification
+
+- Type checking, lint, bundles, 58 unit tests and all four editor scenarios passed locally on Windows VS Code 1.140.0. The new Garden case reproduced the missing entry before the change, then passed.
+- Other editor versions and hosted platform checks remain pending for this candidate. The eleven-day rule, saved progress and reward logic are unchanged.
+
+## 0.4.1 - 2026-10-08 (Phase 4B Garden and Gentle Reminders)
+
+Tracking: [Phase 4 #17](https://github.com/gautham-nvidia/charmlet/issues/17).
+
+### Added
+
+- A free local seed garden with one garden-wide watering per local day, no missed-day penalty, eleven-watering bloom and twelve original earned flower charms.
+- Optional water and stand/move reminders, disabled by default, with 15–180 minute intervals, focus deferral and quiet Done/Snooze/Skip controls inside the companion drawer.
+- A third Garden tab, growth-stage artwork, **Grown by you** collection and explicit **Hang my flower** action.
+
+### Changed
+
+- Companion state migrates from schema 1 to schema 2 without losing Focus/Learn state and keeps garden/care data in the same confirmed local file.
+- Earned garden charms are added to the picker before restoring the selected charm; flowers never appear as default items before unlock.
+- The host owns cryptographic seed/species selection and the shared focus/reminder/day-boundary scheduler.
+
+### Verified
+
+- Local Windows checks passed: compile/type/lint/bundles, 58 unit tests and both focused VS Code 1.140.0 companion UI scenarios.
+- The Garden/Care scenario covers reminder Snooze/Done/disable, eleven-watering bloom, earned picker entry, explicit hang, reload persistence and same-day protection for a new seed.
+
+### Limits
+
+- Expanded website collections, paid Photo Studio and desktop beta remain later Phase 4 work.
+- This is an unpublished development candidate; hosted 0.4.1 platform verification remains pending.
+
+## 0.4.0 - 2026-10-08 (Phase 4A Focus and Learn)
+
+Tracking: [Phase 4 #17](https://github.com/gautham-nvidia/charmlet/issues/17).
+
+### Added
+
+- Free Focus sessions with 25/5 and 50/10 presets, bounded custom minutes, optional one-line intention, pause/resume/stop, a peg progress ring and full reload recovery.
+- A saved Learn feed containing 60 sourced facts, 30 sourced trivia questions with revealable answers, and the existing 80 optional encouragement messages.
+- Trusted source opening by catalogue ID, a compact Focus/Learn drawer and a **Charmlet: Focus Session** command/status-bar entry.
+
+### Changed
+
+- Companion state is stored separately in `companion.json` using the existing serialized complete-file replacement and readback confirmation seam.
+- Five-minute card rotation now respects drawer, reveal, hover/focus and pending-action state without changing charm preferences or physics.
+
+### Verified
+
+- Local Windows checks passed: compile/type/lint/bundles, 47 unit tests, both VS Code 1.140.0 real-editor suites, VSIX packaging, gallery build and the installed-Edge website check.
+- The focused editor scenario covers elapsed-away recovery, confirmed start/pause/reload/resume/stop, exact paused remainder, saved feed/card identity, trivia reveal/source visibility and the Focus Session command.
+
+### Limits
+
+- Garden, reminders, expanded art targets, paid Photo Studio and desktop beta remain planned Phase 4 work, not features in this candidate.
+- This is an unpublished development candidate; existing publisher/license/store and broader-host gates remain.
+
 ## 0.3.2 - 2026-10-06 (Phase 3 release preparation)
 
 Tracking: [P3 #11](https://github.com/gautham-nvidia/charmlet/issues/11).

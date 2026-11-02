@@ -9,11 +9,12 @@ export interface LoadedState {
 	error?: unknown;
 }
 
-export class StateStore {
+export class StateStore<Value = CharmState> {
 	readonly path: string;
 
-	constructor(private readonly directory: string) {
-		this.path = join(directory, 'preferences.json');
+	constructor(private readonly directory: string, private readonly filename: 'preferences.json' | 'companion.json' = 'preferences.json') {
+		if (filename !== 'preferences.json' && filename !== 'companion.json') { throw new Error('Unsupported state filename.'); }
+		this.path = join(directory, filename);
 	}
 
 	async read(): Promise<unknown> {
@@ -31,9 +32,9 @@ export class StateStore {
 		}
 	}
 
-	async write(value: CharmState): Promise<void> {
+	async write(value: Value): Promise<void> {
 		await mkdir(this.directory, { recursive: true });
-		const temporary = join(this.directory, `.preferences-${randomUUID()}.tmp`);
+		const temporary = join(this.directory, `.${this.filename.slice(0, -5)}-${randomUUID()}.tmp`);
 		let handle: FileHandle | undefined;
 		try {
 			handle = await open(temporary, 'wx', 0o600);
