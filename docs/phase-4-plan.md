@@ -159,7 +159,7 @@ Another app's free download or one-time purchase does not grant rights to redist
 - [x] Concrete feature, garden, content, catalogue, host and validation direction prepared.
 - [x] Phase 4 implementation delivered as extension 0.4.3, desktop 0.1.1, the expanded gallery and disabled Photo Studio foundation.
 - [x] Approved navigation A, motivation default, reminders and the complete 95-candidate review gallery verified locally.
-- [ ] Fresh hosted checks and Phase 4 merge recorded on PR #19.
+- [x] All eight hosted checks passed; PR #19 merged at `69e0674` and issue #17 closed.
 - [ ] Phase 5 store/publication decisions completed.
 
-The owner authorized resuming the project and continuing on separate phase branches on November 2. Merge the verified Phase 4 engineering work before starting Phase 5. The 95 redraws remain review candidates; final artwork selection, licensing and live merchant/store setup are release decisions. Current evidence and limitations are in [Phase 4 verification](phase-4-validation.md).
+The owner authorized resuming the project and continuing on separate phase branches on November 2. Phase 5 started from the merged Phase 4 commit on `feat/phase-5-store-release`. The 95 redraws remain review candidates; final artwork selection, licensing and live merchant/store setup are release decisions. Current evidence and limitations are in [Phase 4 verification](phase-4-validation.md) and [Phase 5 release preparation](phase-5-release.md).

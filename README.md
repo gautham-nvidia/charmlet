@@ -2,19 +2,19 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-10-09:** Phase 4 development candidate **0.4.3** adds direct **Charms / Focus / Garden / Settings** navigation, a searchable visual picker, motivation-first fresh state, compact recurring reminders and the installed-version footer. Saved selections, feed choices and garden progress are preserved.
+**Status, 2026-11-02:** Phase 4 merged in [PR #19](https://github.com/gautham-nvidia/charmlet/pull/19). **0.5.0** prepares the extension-store release with privacy/support information, checked download artifacts and a manual publishing workflow. The app retains **Charms / Focus / Garden / Settings**, searchable charm selection, motivation, gentle reminders and saved garden progress.
 
 The website's separate **Art review** gallery contains **95 transparent Gemini illustration candidates**, **83 importable designs** and **14 review packs**, while the ten original defaults and sixty classic downloads remain unchanged. Photo Studio's local/fake-provider foundation is verified but live paid access remains disabled. The unsigned [`desktop0.1.1`](desktop/README.md) Windows portable ZIP has been extracted and tested; it is not part of the VSIX or a public release.
 
-Local evidence covers 59 units and six editor cases on Windows VS Code1.90.0/1.140.0, plus review-pack import/reload, 95 image checks, desktop/source/archive smoke and Photo Studio's 18 unit/service checks and isolated browser flow. New hosted Linux/macOS, authenticated IDE forks, native desktop interaction, merchant setup, licences/signing and final artwork/free-paid decisions remain gates. Historical0.4.1 hosted results are not proof for this candidate. See the [verification record](docs/phase-4-validation.md).
+The accepted Phase 4 head passed all six Windows/Linux/macOS VS Code 1.90/1.140 jobs and both Windows/macOS desktop archive jobs. The automatic post-merge run then exposed an intermittent Linux menu-opening failure; its event capture and subsequent results are tracked in the [Phase 5 release record](docs/phase-5-release.md). Source/art licences, publisher accounts, verified editor forks, public hosting and native desktop/merchant setup remain release gates. See the [Phase 4 verification record](docs/phase-4-validation.md) and [privacy notice](extension/PRIVACY.md).
 
 [Gallery and compact-feedback tracking #13](https://github.com/gautham-nvidia/charmlet/issues/13), the
 [dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
 show the checks and remaining review items.
 
-![Historical Phase 3 compact Charmlet view](docs/phase-3-gallery/compact-feedback.png)
+<img src="docs/store-assets/navigation.png" width="240" alt="Charmlet 0.5.0 navigation and learning card"> <img src="docs/store-assets/picker.png" width="240" alt="Charmlet 0.5.0 searchable original collection">
 
-The screenshot above records Phase 3; the current candidate uses the four labelled navigation buttons described below.
+These captures show the 0.5.0 candidate's four labelled navigation buttons and original bundled artwork.
 
 Choose among installed charms in the searchable **Charms** picker. The default **Hanging** layout keeps the peg near
 the top and reserves pull room; **Settings → Appearance → Orbit layout** reserves space for full fixed-peg loops. A
@@ -136,6 +136,8 @@ run `node website/check.mjs` to verify filters, images, downloads, overflow, key
 | [Desktop beta guide](desktop/README.md) | Local build/test/package commands, security boundaries and manual Windows/macOS gates |
 | [Phase 4 collection brief](docs/phase-4-original-collections.md) | Implemented 60-design free website catalogue direction and garden palette |
 | [Phase 5 issue #18](https://github.com/gautham-nvidia/charmlet/issues/18) | Publisher/license decisions and extension-store launch gates |
+| [Phase 5 release preparation](docs/phase-5-release.md) | Versioned candidate, privacy, checksum checks, registry workflow and actual setup gaps |
+| [Store and launch copy](docs/store-listing.md) | Prepared listing text, screenshot scope and later product-launch checklist |
 | [Desktop platform summary](docs/phase-3-platforms.json) | Frozen six-job Windows/Linux/macOS identities and accepted motion/lifecycle values |
 | [Preference restoration proof](docs/phase-3-preferences.json) | Frozen canonical-file readback/ack/restart evidence from both macOS versions |
 | [Full-circle validation](docs/full-circle-validation.md) | Orbit screenshots and rendered-motion evidence |

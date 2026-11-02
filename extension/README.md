@@ -3,8 +3,11 @@
 Ten original hanging charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus/Learn tools, a gentle garden and optional reminders.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Phase 4 development candidate, version 0.4.3.** Charmlet lives in a dockable VS Code view, not over your code
+**Store preparation candidate, version 0.5.0.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
+It also works in Restricted Mode without asking you to trust workspace code.
+
+<img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/navigation.png" width="240" alt="Charmlet main view, facts and direct navigation"> <img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/picker.png" width="240" alt="Search the ten original bundled charms">
 
 ## Try it
 
@@ -91,6 +94,8 @@ records asset origins, while the project source/art license remains pending and 
 	evidence of a registered or verified Marketplace publisher.
 
 ## Project and feedback
+
+[Privacy and local data](PRIVACY.md) describes saved preferences, focus notes, imported packs and data removal. Charmlet does not send workspace code or progress to a server.
 
 [Report an issue](https://github.com/gautham-nvidia/charmlet/issues) with your OS/editor version,
 steps to reproduce and expected behavior. Avoid including private code or credentials in screenshots.

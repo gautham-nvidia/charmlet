@@ -9,6 +9,7 @@ desktop/dist/
 desktop/release/
 desktop/distribution/
 desktop/test-results/
+release/dist/
 **/*.vsix
 **/.env
 **/.env.*

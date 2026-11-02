@@ -7,7 +7,9 @@ import { command, commandInput, endOfDocument, primaryModifier, readyFrame, relo
 
 async function openAppearance(frame: Frame) {
 	await frame.locator('#settings-toggle').click();
+	await expect(frame.locator('#settings-toggle')).toHaveAttribute('aria-expanded', 'true');
 	await frame.locator('#menu-appearance').click();
+	await expect(frame.locator('#settings')).toBeVisible();
 }
 
 async function menuAction(frame: Frame, id: string) {
@@ -243,11 +245,21 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 					void capture({
 						time: Date.now(), label, picker: picker.value, charm: stage.dataset.charm,
 						persisted: stage.dataset.persisted, focus: (document.activeElement as HTMLElement | null)?.id,
+						appearanceHidden: document.getElementById('settings')?.hidden,
+						menuHidden: document.getElementById('settings-menu')?.hidden,
+						menuExpanded: document.getElementById('settings-toggle')?.getAttribute('aria-expanded'),
 						...details,
 					}).catch(() => {});
 				};
 				for (const type of ['input', 'change', 'blur', 'focus']) {
 					picker.addEventListener(type, () => record(type));
+				}
+				for (const type of ['pointerdown', 'pointerup', 'click']) {
+					document.addEventListener(type, event => {
+						const target = event.target as HTMLElement;
+						record(type, { target: target.id, button: target.closest('button')?.id });
+						queueMicrotask(() => record(`${type}-after`, { target: target.id }));
+					}, true);
 				}
 				document.addEventListener('keydown', event => {
 					if (event.key === 'Escape' || event.target === picker) {
@@ -285,6 +297,8 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				await expect(frame.locator('#stage')).toHaveAttribute('data-size', '100');
 				await expect(frame.locator('#motion')).toHaveAttribute('aria-checked', 'false');
 				await picker.press('Escape');
+				await expect(frame.locator('#settings')).toBeHidden();
+				await expect(frame.locator('#settings-toggle')).toBeFocused();
 				await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`phase-2-${entry.id}.png`) });
 				await openAppearance(frame);
 			}

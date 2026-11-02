@@ -21,5 +21,5 @@ export default defineConfig({
 	workers: 1,
 	fullyParallel: false,
 	reporter: 'list',
-	outputDir: `test-results/${testHost}`,
+	outputDir: `test-results/${testHost}${process.env.CHARMLET_TEST_PACKAGED === '1' ? '-installed' : ''}`,
 });
