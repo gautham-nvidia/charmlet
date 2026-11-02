@@ -95,7 +95,7 @@ test('companion focus and learning persist across a real editor reload', async (
 		let frame = await readyFrame(window);
 		const stage = frame.locator('#stage');
 		await expect(stage).toHaveAttribute('data-companion-ready', 'true');
-		await frame.getByRole('button', { name: 'Companion tools', exact: true }).click();
+		await frame.getByRole('button', { name: 'Focus', exact: true }).click();
 		await expect(frame.locator('#focus-status')).toHaveText('Focus complete');
 		await expect(frame.locator('#focus-notice')).toContainText('ended while you were away');
 		expect(JSON.parse(readFileSync(companionPath, 'utf8')).focus.status).toBe('finished');
@@ -143,7 +143,7 @@ test('companion focus and learning persist across a real editor reload', async (
 		await window.screenshot({ path: testInfo.outputPath('phase-4-focus.png') });
 
 		frame = await reloadCharm(window);
-		await frame.getByRole('button', { name: 'Companion tools', exact: true }).click();
+		await frame.getByRole('button', { name: 'Focus', exact: true }).click();
 		await expect(frame.locator('#focus-status')).toHaveText('Paused');
 		expect(JSON.parse(readFileSync(companionPath, 'utf8')).focus.remainingMs).toBe(paused.focus.remainingMs);
 		await expect(frame.locator('#focus-time')).toHaveText(pausedText!);
@@ -159,11 +159,11 @@ test('companion focus and learning persist across a real editor reload', async (
 		expect(storedPreferences.cordLength).toBe(126);
 		expect(storedPreferences.size).toBe(100);
 		await expect(frame.locator('#cord-length')).toHaveValue('126');
-		await frame.getByRole('button', { name: 'Companion tools', exact: true }).click();
+		await frame.getByRole('button', { name: 'Focus', exact: true }).click();
 		await expect(frame.locator('#companion-tools')).toBeHidden();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '100');
-		await frame.getByRole('button', { name: 'Companion tools', exact: true }).click();
+		await frame.getByRole('button', { name: 'Focus', exact: true }).click();
 
 		await frame.getByRole('tab', { name: 'Learn', exact: true }).click();
 		await frame.locator('#feed-mode').selectOption('trivia');
@@ -174,12 +174,12 @@ test('companion focus and learning persist across a real editor reload', async (
 		const question = learningCard(questionId)!;
 		expect(question.kind).toBe('trivia');
 		expect(questionText).toBe(question.text);
+		await frame.locator('#companion-close').click();
 		await frame.getByRole('button', { name: 'Reveal answer', exact: true }).click();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
 		await expect(frame.locator('#message-answer')).toHaveText(question.answer!);
 		await expect(frame.locator('#message-source')).toBeVisible();
 		await window.screenshot({ path: testInfo.outputPath('phase-4-learning.png') });
-		await frame.getByRole('button', { name: 'Companion tools', exact: true }).click();
 		await expect(frame.locator('#companion-tools')).toBeHidden();
 		await expect(frame.locator('#message-card')).toHaveAttribute('data-rotation', 'paused');
 		await frame.getByRole('button', { name: 'Next coding message', exact: true }).click();
@@ -192,7 +192,7 @@ test('companion focus and learning persist across a real editor reload', async (
 		let restored = JSON.parse(readFileSync(companionPath, 'utf8'));
 		expect(restored.learning.mode).toBe('trivia');
 		expect(restored.learning.cardId).toBe(selectedAfterNext);
-		await frame.getByRole('button', { name: 'Companion tools', exact: true }).click();
+		await frame.getByRole('button', { name: 'Focus', exact: true }).click();
 		await frame.getByRole('tab', { name: 'Learn', exact: true }).click();
 		await frame.locator('#feed-mode').selectOption('encouragement');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
@@ -249,7 +249,7 @@ test('garden rewards and gentle reminders persist through the real editor', asyn
 		await command(window, 'Charmlet: Show Charm');
 		let frame = await readyFrame(window);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-ready', 'true');
-		await frame.getByRole('button', { name: 'Companion tools', exact: true }).click();
+		await expect(frame.locator('#companion-tools')).toBeHidden();
 		await expect(frame.locator('#care-cue')).toBeVisible();
 		await expect(frame.locator('#care-cue-label')).toHaveText('Water break');
 		await window.screenshot({ path: testInfo.outputPath('phase-4-care.png') });
@@ -272,7 +272,8 @@ test('garden rewards and gentle reminders persist through the real editor', asyn
 		expect(stored.care.move.dueAt).toBeLessThanOrEqual(afterDone + 15 * 60000);
 		await expect(frame.locator('#care-cue')).toBeHidden();
 
-		await frame.locator('#care-settings').getByText('Gentle reminders', { exact: true }).click();
+		await frame.locator('#settings-toggle').click();
+		await frame.locator('#menu-reminders').click();
 		const waterEnabled = frame.locator('#water-reminder-enabled');
 		const moveEnabled = frame.locator('#move-reminder-enabled');
 		await expect(waterEnabled).toBeChecked();
@@ -286,7 +287,7 @@ test('garden rewards and gentle reminders persist through the real editor', asyn
 		expect(stored.care.water).toMatchObject({ enabled: false, dueAt: null, pendingAt: null });
 		expect(stored.care.move).toMatchObject({ enabled: false, dueAt: null, pendingAt: null });
 
-		await frame.getByRole('tab', { name: 'Garden', exact: true }).click();
+		await frame.getByRole('button', { name: 'Open garden', exact: true }).click();
 		await expect(frame.locator('#garden-count')).toHaveText('10 / 11 waterings');
 		await frame.getByRole('button', { name: 'Water plant', exact: true }).click();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
@@ -305,7 +306,7 @@ test('garden rewards and gentle reminders persist through the real editor', asyn
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'garden:hibiscus');
 		stored = JSON.parse(readFileSync(companionPath, 'utf8'));
 		expect(stored.garden.collection[0]).toMatchObject({ id: 'hibiscus', blooms: 1 });
-		await frame.getByRole('button', { name: 'Companion tools', exact: true }).click();
+		await frame.getByRole('button', { name: 'Focus', exact: true }).click();
 		await frame.getByRole('tab', { name: 'Garden', exact: true }).click();
 		await expect(frame.locator('#garden-count')).toHaveText('11 / 11 waterings');
 		await frame.getByRole('button', { name: 'Plant another seed', exact: true }).click();
@@ -321,6 +322,132 @@ test('garden rewards and gentle reminders persist through the real editor', asyn
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'garden:hibiscus');
 		await expect(frame.locator('#garden-art')).toHaveAttribute('src', /garden-seed\.svg$/);
 		await expect(frame.getByRole('button', { name: 'Water plant', exact: true })).toBeDisabled();
+	} finally {
+		await closeOwnedEditor(editor, testInfo);
+	}
+});
+
+test('garden entry is visible before opening companion tools', async ({}, testInfo) => {
+	const editor = await launchOwnedEditor('charmlet-garden-entry-', ({ preferencesPath, companionPath }) => {
+		writeFileSync(preferencesPath, `${JSON.stringify({ ...DEFAULT_STATE, reducedMotion: true })}\n`);
+		writeFileSync(companionPath, `${JSON.stringify(defaultCompanionState())}\n`);
+	});
+	const { window, companionPath } = editor;
+	try {
+		await command(window, 'Charmlet: Show Charm');
+		let frame = await readyFrame(window);
+		const entry = frame.getByRole('button', { name: 'Open garden', exact: true });
+		await expect(frame.locator('#companion-tools')).toBeHidden();
+		await expect(entry).toBeVisible();
+		await expect(entry).toHaveText('Garden');
+		await entry.click();
+		await expect(frame.getByRole('tab', { name: 'Garden', exact: true })).toHaveAttribute('aria-selected', 'true');
+		await frame.getByRole('button', { name: 'Plant a seed', exact: true }).click();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
+		await expect(entry).toHaveText('Garden');
+		await frame.getByRole('button', { name: 'Water plant', exact: true }).click();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
+		await expect(frame.locator('#garden-count')).toHaveText('1 / 11 waterings');
+		const plantId = JSON.parse(readFileSync(companionPath, 'utf8')).garden.plant.id;
+		await frame.getByRole('tab', { name: 'Garden', exact: true }).press('Escape');
+		await expect(entry).toBeFocused();
+		await command(window, 'Charmlet: Open Garden');
+		await expect(frame.locator('#garden-panel')).toBeVisible();
+		await expect(frame.getByRole('button', { name: 'Water plant', exact: true })).toBeDisabled();
+		frame = await reloadCharm(window);
+		await frame.getByRole('button', { name: 'Open garden', exact: true }).click();
+		await expect(frame.locator('#garden-count')).toHaveText('1 / 11 waterings');
+		expect(JSON.parse(readFileSync(companionPath, 'utf8')).garden.plant.id).toBe(plantId);
+		await window.screenshot({ path: testInfo.outputPath('garden-entry.png') });
+	} finally {
+		await closeOwnedEditor(editor, testInfo);
+	}
+});
+
+test('motivation has no category heading and reminder checkboxes remain compact', async ({}, testInfo) => {
+	const editor = await launchOwnedEditor('charmlet-controls-', ({ preferencesPath, companionPath }) => {
+		writeFileSync(preferencesPath, `${JSON.stringify({ ...DEFAULT_STATE, reducedMotion: true })}\n`);
+		const state = applyCompanionAction(defaultCompanionState(), { type: 'feed-mode', mode: 'encouragement' }, Date.now()).state;
+		writeFileSync(companionPath, `${JSON.stringify(state)}\n`);
+	});
+	try {
+		await command(editor.window, 'Charmlet: Show Charm');
+		const frame = await readyFrame(editor.window);
+		await expect.soft(frame.locator('.message-meta')).toBeHidden();
+		await expect(frame.locator('#message-text')).not.toBeEmpty();
+		await frame.locator('#settings-toggle').click();
+		await frame.locator('#menu-reminders').click();
+		for (const id of ['water-reminder-enabled', 'move-reminder-enabled', 'care-defer']) {
+			const bounds = await frame.locator(`#${id}`).boundingBox();
+			expect.soft(bounds?.width).toBeLessThanOrEqual(20);
+			expect.soft(bounds?.height).toBeLessThanOrEqual(20);
+		}
+		await editor.window.screenshot({ path: testInfo.outputPath('reminder-controls.png') });
+	} finally {
+		await closeOwnedEditor(editor, testInfo);
+	}
+});
+
+test('navigation A searches installed charms and exposes quiet reminders and build identity', async ({}, testInfo) => {
+	const editor = await launchOwnedEditor('charmlet-navigation-', ({ preferencesPath, companionPath }) => {
+		writeFileSync(preferencesPath, `${JSON.stringify({ ...DEFAULT_STATE, reducedMotion: true })}\n`);
+		const state = applyCompanionAction(defaultCompanionState(), { type: 'care-configure', kind: 'water', enabled: true, intervalMinutes: 15 }, Date.now() - 16 * 60000).state;
+		writeFileSync(companionPath, `${JSON.stringify(state)}\n`);
+	});
+	try {
+		await command(editor.window, 'Charmlet: Show Charm');
+		let frame = await readyFrame(editor.window);
+		await expect(frame.locator('#companion-tools')).toBeHidden();
+		await expect(frame.locator('#care-cue')).toBeVisible();
+		await expect(frame.locator('#message-meta')).toBeHidden();
+		await expect(frame.locator('#primary-nav > button')).toHaveCount(4);
+		await expect(frame.locator('#primary-nav .nav-chevron')).toHaveCount(2);
+		const version = JSON.parse(readFileSync(resolve('package.json'), 'utf8')).version;
+		await expect(frame.locator('#app-version')).toHaveText(`v${version}`);
+		await expect(frame.locator('.app-footer')).toContainText('Made in Silicon Valley');
+		await expect(frame.locator('#website-placeholder')).toHaveText('Website — coming soon');
+		await frame.getByRole('button', { name: 'Done', exact: true }).click();
+		await expect(frame.locator('#care-cue')).toBeHidden();
+		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+		await expect(frame.locator('#charm-search')).toBeFocused();
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(10);
+		await frame.locator('#charm-groups').getByRole('button', { name: 'Good Luck', exact: true }).click();
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(4);
+		await frame.locator('#charm-search').fill('evil');
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(1);
+		await frame.getByRole('button', { name: 'Select Evil Eye', exact: true }).click();
+		await expect(frame.locator('#charm-picker')).toBeHidden();
+		await expect(frame.locator('#charms-toggle')).toBeFocused();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'evil-eye');
+		frame = await reloadCharm(editor.window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'evil-eye');
+		await frame.locator('#settings-toggle').click();
+		await expect(frame.locator('#menu-appearance')).toBeFocused();
+		await frame.locator('#menu-appearance').press('ArrowDown');
+		await expect(frame.locator('#menu-messages')).toBeFocused();
+		await frame.locator('#menu-messages').press('Enter');
+		await expect(frame.locator('#feed-mode')).toHaveValue('encouragement');
+		await frame.locator('#feed-mode').selectOption('facts');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
+		await frame.locator('#companion-close').click();
+		await expect(frame.locator('#settings-toggle')).toBeFocused();
+		await expect(frame.locator('#message-meta')).toBeVisible();
+		await editor.window.screenshot({ path: testInfo.outputPath('navigation-a.png') });
+		const reviewPack = resolve('..', 'website', 'packs', 'review', 'review-starter-redraws-1.charmlet.json');
+		await editor.app.evaluate(({ dialog }, path) => {
+			dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [path] });
+		}, reviewPack);
+		await command(editor.window, 'Charmlet: Import Charm Pack');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'pack:review-starter-redraws-1:starter-terminal');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		await expect.poll(() => frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(216);
+		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(20);
+		await editor.window.screenshot({ path: testInfo.outputPath('navigation-redraw-review.png') });
+		await frame.locator('#picker-close').click();
+		frame = await reloadCharm(editor.window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'pack:review-starter-redraws-1:starter-terminal');
 	} finally {
 		await closeOwnedEditor(editor, testInfo);
 	}

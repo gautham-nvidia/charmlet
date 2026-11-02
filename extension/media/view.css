@@ -30,7 +30,7 @@ button {
 }
 button:focus-visible { outline: 1px solid var(--focus); outline-offset: 3px; }
 button:disabled { opacity: 0.5; cursor: default; }
-#app { display: grid; grid-template-rows: minmax(0, 1fr) auto auto auto auto auto; height: 100vh; }
+#app { position: relative; display: grid; grid-template-rows: minmax(0, 1fr) repeat(5, auto); height: 100vh; min-width: 0; --popup-bottom: 106px; }
 #stage { position: relative; overflow: hidden; min-width: 0; }
 #rig { position: absolute; left: 0; top: 0; transform-origin: top left; }
 #hanging { position: absolute; inset: 0; }
@@ -62,16 +62,17 @@ button:disabled { opacity: 0.5; cursor: default; }
 #charm img { width: 100%; height: 100%; pointer-events: none; filter: drop-shadow(0 5px 3px #00000030); }
 #restore { position: absolute; top: 7px; width: 30px; height: 28px; border-radius: 4px; }
 #restore:hover, .actions button:hover, .readout button:hover { background: var(--hover); }
-.tools { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; padding: 5px 0; margin: 0 12px; min-height: 38px; border-top: 1px solid var(--vscode-widget-border, #88888825); }
-.identity { display: flex; align-items: center; gap: 7px; min-width: 0; overflow: hidden; }
+.tools { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; padding: 8px 0; margin: 0 10px; min-height: 48px; border-top: 1px solid var(--vscode-widget-border, #88888825); }
+.identity { position: absolute; top: 10px; left: 12px; right: 40px; display: flex; align-items: center; gap: 7px; min-width: 0; overflow: hidden; pointer-events: none; font-size: 11px; color: var(--quiet); }
 #charm-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .swatch { width: 6px; height: 6px; background: #85d8bc; border-radius: 50%; flex-shrink: 0; }
 .actions { display: flex; gap: 2px; }
 .actions button { position: relative; width: 28px; height: 28px; border-radius: 4px; flex-shrink: 0; }
 #care-badge { position: absolute; top: 3px; right: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--vscode-notificationsWarningIcon-foreground, #e9b951); box-shadow: 0 0 0 1px var(--surface); }
 .actions [aria-checked="false"] { color: var(--quiet); }
-.readout { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 0 14px; min-height: 18px; color: var(--quiet); font-size: 10px; font-variant-numeric: tabular-nums; }
+.readout { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; padding: 0 14px; min-height: 18px; color: var(--quiet); font-size: 10px; font-variant-numeric: tabular-nums; }
 .readout button { min-width: 48px; min-height: 18px; padding: 1px 6px; border-radius: 3px; color: var(--quiet); font: inherit; font-variant-numeric: tabular-nums; }
+#garden-readout { color: var(--ink); font-weight: 600; }
 #settings { display: grid; grid-template-columns: auto minmax(36px, 1fr) 48px; align-items: center; gap: 8px; padding: 4px 14px 12px; max-height: min(42vh, 220px); overflow-y: auto; }
 #settings label { color: var(--quiet); font-size: 11px; }
 #settings output { text-align: right; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -114,14 +115,14 @@ button:disabled { opacity: 0.5; cursor: default; }
 .focus-presets button:hover, .focus-actions button:hover { background: var(--vscode-button-secondaryHoverBackground, var(--hover)); }
 .focus-durations { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .focus-durations label, .focus-intent-label, #learn-panel label { display: grid; gap: 3px; color: var(--quiet); font-size: 10px; }
-#companion-tools input, #companion-tools select { width: 100%; min-width: 0; min-height: 26px; padding: 3px 5px; color: var(--vscode-input-foreground, var(--ink)); background: var(--vscode-input-background, var(--surface)); border: 1px solid var(--vscode-input-border, #88888855); border-radius: 3px; font: inherit; }
+#companion-tools input:not([type="checkbox"]), #companion-tools select { width: 100%; min-width: 0; min-height: 26px; padding: 3px 5px; color: var(--vscode-input-foreground, var(--ink)); background: var(--vscode-input-background, var(--surface)); border: 1px solid var(--vscode-input-border, #88888855); border-radius: 3px; font: inherit; }
 #companion-tools select { color: var(--vscode-dropdown-foreground, var(--ink)); background: var(--vscode-dropdown-background, var(--surface)); }
 #care-settings { border-top: 1px solid var(--vscode-widget-border, #88888825); padding-top: 5px; }
 #care-settings summary { min-height: 24px; color: var(--quiet); cursor: pointer; }
 .care-settings-grid { display: grid; grid-template-columns: minmax(0, 1fr) 72px; align-items: center; gap: 6px 8px; padding-top: 6px; }
 .care-settings-grid label { display: grid; gap: 3px; color: var(--quiet); font-size: 10px; }
 .care-settings-grid .care-choice { display: flex; align-items: center; gap: 6px; color: var(--ink); }
-.care-settings-grid .care-choice input { width: auto; min-height: 0; margin: 0; accent-color: var(--focus); }
+#companion-tools .care-choice input[type="checkbox"] { width: 16px; height: 16px; min-width: 16px; min-height: 16px; flex: 0 0 16px; padding: 0; margin: 0; accent-color: var(--focus); }
 .care-settings-grid .care-defer { grid-column: 1 / -1; }
 #care-cue { margin-bottom: 7px; padding: 6px 8px; border-left: 2px solid var(--focus); border-radius: 4px; background: var(--vscode-textBlockQuote-background, #88888812); }
 #care-cue-label, #care-cue-copy { margin: 0; }
@@ -148,4 +149,52 @@ body.vscode-high-contrast button, body.vscode-high-contrast-light button { borde
 body.vscode-high-contrast #charm:focus-visible { outline-width: 2px; }
 @media (max-height: 380px) { #message-text { -webkit-line-clamp: 2; } }
 @media (max-height: 280px) { .message-card { margin-bottom: 4px; padding: 4px 6px; } }
+#primary-nav > button { position: relative; display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 32px; padding: 5px 3px; border: 1px solid var(--vscode-widget-border, #88888845); border-radius: 6px; color: var(--ink); background: var(--vscode-button-secondaryBackground, #88888810); font: 600 10px/1.3 var(--vscode-font-family, system-ui, sans-serif); }
+#primary-nav > button:hover, #primary-nav > button[aria-expanded="true"] { background: var(--hover); border-color: var(--focus); }
+#primary-nav svg { flex-shrink: 0; }
+#primary-nav .nav-chevron { width: 12px; height: 12px; }
+.app-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 3px 10px; padding: 6px 12px 7px; border-top: 1px solid var(--vscode-widget-border, #88888820); color: var(--quiet); font-size: 9px; line-height: 1.4; }
+#app-version { margin-left: 5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#tools-backdrop { position: absolute; inset: 0 0 var(--popup-bottom); z-index: 4; background: var(--vscode-editorWidget-background, #20202055); opacity: .35; }
+#app.has-popup #hanging { pointer-events: none; }
+#settings.tool-popup, #companion-tools.tool-popup, #charm-picker.tool-popup { position: absolute; inset: 8px 8px var(--popup-bottom); z-index: 5; display: flex; flex-direction: column; min-height: 70px; max-height: none; padding: 0; overflow: hidden; border: 1px solid var(--vscode-widget-border, #88888860); border-radius: 9px; color: var(--ink); background: var(--surface); box-shadow: 0 8px 24px #00000030; }
+.popup-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: 0 0 auto; padding: 10px 11px; border-bottom: 1px solid var(--vscode-widget-border, #88888825); }
+.popup-heading h2 { margin: 0; font: 600 12px/1.4 var(--vscode-font-family, system-ui, sans-serif); }
+.popup-heading p { margin: 3px 0 0; font-size: 10px; color: var(--quiet); }
+.popup-close { width: 26px; height: 26px; border-radius: 5px; flex: 0 0 26px; }
+.popup-close:hover { background: var(--hover); }
+.picker-body, .companion-content { min-height: 0; padding: 10px; overflow-y: auto; }
+.charm-search-label { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border: 1px solid var(--vscode-input-border, #88888860); border-radius: 6px; background: var(--vscode-input-background, var(--surface)); }
+#charm-search-icon { display: flex; color: var(--quiet); }
+#charm-search { width: 100%; min-width: 0; border: 0; outline: 0; padding: 1px; color: var(--vscode-input-foreground, var(--ink)); background: transparent; font: inherit; font-size: 11px; }
+.charm-search-label:focus-within { outline: 1px solid var(--focus); outline-offset: 1px; }
+#charm-groups { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0; }
+#charm-groups button { min-height: 25px; padding: 4px 8px; border: 1px solid var(--vscode-widget-border, #88888840); border-radius: 999px; color: var(--quiet); font: inherit; font-size: 10px; }
+#charm-groups button[aria-pressed="true"] { color: var(--ink); border-color: var(--focus); background: var(--hover); }
+#charm-results { margin: 6px 0 9px; color: var(--quiet); font-size: 10px; }
+#charm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 7px; }
+.charm-tile { min-width: 0; padding: 8px 4px 6px; border: 1px solid var(--vscode-widget-border, #88888835); border-radius: 7px; background: var(--vscode-editorWidget-background, #88888808); font: inherit; font-size: 10px; }
+.charm-tile:hover, .charm-tile[aria-pressed="true"] { border-color: var(--focus); background: var(--hover); }
+.charm-tile img { width: 54px; height: 63px; object-fit: contain; margin-bottom: 5px; }
+.charm-tile span { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#charm-empty { padding: 14px 4px; text-align: center; color: var(--quiet); font-size: 11px; }
+#clear-charm-search { padding: 6px 9px; border: 1px solid var(--focus); border-radius: 5px; margin: auto; font: inherit; }
+.picker-body > .companion-hint { margin-top: 12px; }
+.settings-menu { position: absolute; right: 10px; bottom: var(--popup-bottom); z-index: 6; width: min(260px, calc(100% - 20px)); max-height: calc(100% - var(--popup-bottom) - 8px); overflow-y: auto; border: 1px solid var(--vscode-widget-border, #88888860); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 24px #00000030; padding-bottom: 5px; }
+.settings-menu > button { display: flex; align-items: center; justify-content: flex-start; gap: 8px; width: calc(100% - 10px); min-height: 30px; margin: 0 5px; padding: 6px 10px; border-radius: 4px; text-align: left; font: inherit; font-size: 11px; }
+.settings-menu > button:hover { background: var(--hover); }
+.menu-divider { margin: 5px 10px; border-top: 1px solid var(--vscode-widget-border, #88888825); }
+.appearance-fields { display: grid; grid-template-columns: auto minmax(36px, 1fr) 48px; align-items: center; gap: 10px 8px; padding: 12px; overflow-y: auto; min-height: 0; }
+.appearance-actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+.appearance-actions button { display: flex; align-items: center; gap: 6px; min-height: 30px; padding: 5px 8px; border: 1px solid var(--vscode-widget-border, #88888855); border-radius: 5px; font: inherit; font-size: 10px; }
+.appearance-actions button:hover, .appearance-actions button[aria-pressed="true"] { background: var(--hover); }
+#care-settings { border: 0; padding: 0; }
+#care-settings > summary { display: none; }
+.care-settings-grid { grid-template-columns: minmax(0, 1fr) 84px; gap: 14px 12px; padding: 6px 0 14px; }
+.care-settings-grid label { font-size: 11px; }
+.care-settings-grid .care-defer { padding-top: 8px; border-top: 1px solid var(--vscode-widget-border, #88888825); }
+#care-cue { margin: 0 10px 8px; padding: 9px 10px; border: 1px solid var(--vscode-widget-border, #88888845); border-left: 3px solid var(--focus); background: var(--vscode-editorWidget-background, var(--surface)); }
+#focus-time { font-size: 34px; padding: 8px 0; }
+#focus-panel, #learn-panel, #garden-panel { gap: 10px; }
+@media (max-width: 260px) { #primary-nav > button { font-size: 9px; gap: 2px; } #companion-toggle > svg { display: none; } .app-footer { font-size: 8px; } }
 @media (prefers-reduced-motion: reduce) { #charm img { filter: none; } }

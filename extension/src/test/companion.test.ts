@@ -71,7 +71,7 @@ test('learning catalogue has sourced facts and answerable trivia with unique sta
 
 test('feed preferences retain the legacy quote, reveal only the current trivia and survive JSON reload', () => {
 	let state = defaultCompanionState(17);
-	assert.equal(currentLearningCard(state).kind, 'fact');
+	assert.equal(currentLearningCard(state).kind, 'encouragement');
 	state = applyCompanionAction(state, { type: 'feed-mode', mode: 'encouragement' }, START).state;
 	assert.equal(currentLearningCard(state).text, MESSAGES[17]);
 	state = applyCompanionAction(state, { type: 'feed-mode', mode: 'trivia' }, START).state;
@@ -87,6 +87,14 @@ test('feed preferences retain the legacy quote, reveal only the current trivia a
 	assert.equal(applyCompanionAction(state, { type: 'feed-reveal', cardId: question, revealed: true }, START).state, state);
 	state = applyCompanionAction(state, { type: 'feed-mode', mode: 'encouragement' }, START).state;
 	assert.equal(currentLearningCard(state).text, MESSAGES[17]);
+});
+
+test('motivation is the fresh-state default without replacing a saved learning preference', () => {
+	const fresh = defaultCompanionState(17);
+	assert.equal(fresh.learning.mode, 'encouragement');
+	assert.equal(currentLearningCard(fresh).text, MESSAGES[17]);
+	const saved = applyCompanionAction(fresh, { type: 'feed-mode', mode: 'facts' }, START).state;
+	assert.deepEqual(restoreCompanionState(JSON.parse(JSON.stringify(saved)), START), saved);
 });
 
 test('every feed loops its own deck without leaking other kinds or losing the selected identity', () => {

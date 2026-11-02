@@ -5,6 +5,22 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { command, commandInput, endOfDocument, primaryModifier, readyFrame, reloadCharm } from './editor-helpers';
 
+async function openAppearance(frame: Frame) {
+	await frame.locator('#settings-toggle').click();
+	await frame.locator('#menu-appearance').click();
+}
+
+async function menuAction(frame: Frame, id: string) {
+	await frame.locator('#settings-toggle').click();
+	await frame.locator(`#${id}`).click();
+}
+
+async function appearanceAction(frame: Frame, id: string) {
+	await openAppearance(frame);
+	await frame.locator(`#${id}`).click();
+	await frame.locator('#settings-close').click();
+}
+
 async function expectBalancedSwingRoom(frame: Frame) {
 	await expect.poll(() => frame.locator('#charm').evaluate(charm => {
 		const bounds = charm.getBoundingClientRect();
@@ -142,7 +158,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		let frame = await readyFrame(window);
 		await expect(window.locator('.part.auxiliarybar a.action-label[aria-label="Charmlet"]')).toBeVisible();
 		await expect.poll(() => frame.locator('#stage').evaluate(stage => stage.clientHeight)).toBeGreaterThan(350);
-		await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
+		await menuAction(frame, 'reset');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 		await expect.poll(() => frame.locator('#hanging').evaluate(node => node.getAnimations().every(animation => animation.playState === 'finished'))).toBe(true);
@@ -162,7 +178,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await window.screenshot({ path: testInfo.outputPath('right-dock.png') });
 		await dragCharm(window, frame, -55, 0);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'true');
-		await frame.getByRole('button', { name: 'Hide charm', exact: true }).click();
+		await menuAction(frame, 'toggle');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 		const hiddenFrames = await frame.locator('#stage').getAttribute('data-frames');
 		await browserFrames(window);
@@ -174,7 +190,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
 		await expect(frame.locator('#restore')).toBeVisible();
 		await frame.locator('#restore').click();
-		await frame.getByRole('switch', { name: 'Motion', exact: true }).click();
+		await appearanceAction(frame, 'motion');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 		await frame.locator('#charm').focus();
 		await frame.locator('#charm').press('ArrowDown');
@@ -183,7 +199,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
 		frame = await reloadCharm(window);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
-		await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
+		await expect(frame.locator('#motion')).toHaveAttribute('aria-checked', 'false');
 		await frame.locator('#restore').click();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
 		await frame.locator('#charm').click();
@@ -212,7 +228,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			expect(lastCharm.name).toBe('Lemon & Chilies');
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
 			frame = await readyFrame(window);
-			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await openAppearance(frame);
 			let picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
 			await expect(picker.locator('option')).toHaveCount(10);
 			await expect(picker.locator('optgroup')).toHaveCount(2);
@@ -267,8 +283,10 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 						&& bounds.top >= stage.top - 1 && bounds.bottom <= stage.bottom + 1;
 				})).toBe(true);
 				await expect(frame.locator('#stage')).toHaveAttribute('data-size', '100');
-				await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
+				await expect(frame.locator('#motion')).toHaveAttribute('aria-checked', 'false');
+				await picker.press('Escape');
 				await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`phase-2-${entry.id}.png`) });
+				await openAppearance(frame);
 			}
 			await picker.focus();
 			if (process.platform === 'darwin') {
@@ -304,12 +322,12 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
 			expect(JSON.parse(readFileSync(preferencesPath, 'utf8')).charmId).toBe(lastCharm.id);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '146');
-			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'false');
+			await expect(frame.locator('#motion')).toHaveAttribute('aria-checked', 'false');
 			await command(window, 'Charmlet: Reset Charm');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', lastCharm.id);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
-			await frame.getByRole('button', { name: 'Hide charm', exact: true }).click();
-			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await menuAction(frame, 'toggle');
+			await openAppearance(frame);
 			picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
 			await picker.selectOption('chip');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
@@ -324,7 +342,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await test.step('size and cord controls persist across reload', async () => {
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
 			frame = await readyFrame(window);
-			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await openAppearance(frame);
 			const defaultMaximumCord = (await frame.getByRole('slider', { name: 'Cord', exact: true }).getAttribute('max'))!;
 			expect(Number(defaultMaximumCord)).toBeGreaterThanOrEqual(320);
 			const defaultCharmWidth = await frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width);
@@ -371,7 +389,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await window.screenshot({ path: testInfo.outputPath('phase-1-compact-large-charm.png') });
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', expandedVisibleCord);
-			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await openAppearance(frame);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Home');
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('ArrowRight');
@@ -446,11 +464,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 
 		await test.step('system reduced motion overrides animation and high contrast keeps focus visible', async () => {
-			await frame.getByRole('switch', { name: 'Motion', exact: true }).click();
+			await appearanceAction(frame, 'motion');
 			await frame.locator('#charm').click();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'true');
 			await window.emulateMedia({ reducedMotion: 'reduce' });
-			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toBeDisabled();
+			await expect(frame.locator('#motion')).toBeDisabled();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 			const stoppedFrames = await frame.locator('#stage').getAttribute('data-frames');
 			await frame.locator('#charm').click();
@@ -471,13 +489,13 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect(frame.locator('#charm')).toHaveCSS('outline-style', 'solid');
 			await window.screenshot({ path: testInfo.outputPath('phase-1-high-contrast.png') });
 			await window.emulateMedia({ reducedMotion: 'no-preference' });
-			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toBeEnabled();
+			await expect(frame.locator('#motion')).toBeEnabled();
 		});
 
 		await test.step('keyboard hiding and restoring leave focus on usable controls', async () => {
 			await frame.locator('#charm').focus();
 			await frame.locator('#charm').press('Escape');
-			await expect(frame.locator('#toggle')).toBeFocused();
+			await expect(frame.locator('#settings-toggle')).toBeFocused();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
 			await frame.locator('#restore').focus();
 			await frame.locator('#restore').press('Enter');
@@ -488,7 +506,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await test.step('downward pulls return to the selected resting length without saving the stretch', async () => {
 			for (const reset of [false, true]) {
 				if (reset) {
-					await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
+					await menuAction(frame, 'reset');
 				}
 				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 				const restingCord = reset ? '126' : '50';
@@ -517,13 +535,13 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 
 		await test.step('circular drags release and recover without refreshing the editor', async () => {
-			const layoutToggle = frame.getByRole('button', { name: 'Orbit layout', exact: true });
+			const layoutToggle = frame.locator('#layout-mode');
 			if (await layoutToggle.getAttribute('aria-pressed') !== 'true') {
-				await layoutToggle.click();
+				await appearanceAction(frame, 'layout-mode');
 			}
 			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'orbit');
 			for (const direction of [-1, 1]) {
-				await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
+				await menuAction(frame, 'reset');
 				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 				await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '126');
 				const start = await beginDrag(window, frame, 0, 0, 0.1);
@@ -561,13 +579,13 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 340));
 			frame = await readyFrame(window);
 			await expect.poll(() => frame.locator('#stage').evaluate(stage => stage.clientHeight)).toBeLessThan(200);
-			const layoutToggle = frame.getByRole('button', { name: 'Orbit layout', exact: true });
+			const layoutToggle = frame.locator('#layout-mode');
 			if (await layoutToggle.getAttribute('aria-pressed') === 'true') {
-				await layoutToggle.click();
+				await appearanceAction(frame, 'layout-mode');
 			}
 			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'hanging');
 			await expect(frame.locator('#settings')).toBeHidden();
-			await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
+			await menuAction(frame, 'reset');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 			await expect(frame.locator('#message-card')).toBeVisible();
 			const messagePlacement = () => frame.locator('#message-card').evaluate(card => {
@@ -580,7 +598,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			expect(placement.messageTop).toBeGreaterThanOrEqual(placement.stageBottom - 1);
 			expect(placement.messageBottom).toBeLessThanOrEqual(placement.toolsTop + 1);
 			await expect(frame.locator('#message-card')).toHaveAttribute('data-rotation', 'active');
-			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await openAppearance(frame);
 			await expect(frame.locator('#settings')).toBeVisible();
 			await expect(frame.locator('#message-card')).toHaveAttribute('data-rotation', 'paused');
 			placement = await messagePlacement();
@@ -594,7 +612,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			frame = await reloadCharm(window);
 			await expect(frame.locator('#rotate-messages')).not.toBeChecked();
 			await expect(frame.locator('#message-card')).toHaveAttribute('data-rotation', 'paused');
-			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await openAppearance(frame);
 			const restoredRotateMessages = frame.getByRole('checkbox', { name: 'Rotate messages automatically', exact: true });
 			await restoredRotateMessages.check();
 			await restoredRotateMessages.press('Escape');
@@ -654,16 +672,16 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 
 		await test.step('charm and cord complete peg orbits and recover from an upper release', async () => {
-			const layoutToggle = frame.getByRole('button', { name: 'Orbit layout', exact: true });
+			const layoutToggle = frame.locator('#layout-mode');
 			if (await layoutToggle.getAttribute('aria-pressed') !== 'true') {
-				await layoutToggle.click();
+				await appearanceAction(frame, 'layout-mode');
 			}
 			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'orbit');
 			frame = await reloadCharm(window);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', 'orbit');
 			const observations = [];
 			for (const direction of [-1, 1]) {
-				await frame.getByRole('button', { name: 'Reset position', exact: true }).click();
+				await menuAction(frame, 'reset');
 				await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 				const geometry = await frame.locator('#stage').evaluate(stage => {
 					const rig = document.getElementById('rig')!;
@@ -733,7 +751,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			const restingCord = (await frame.locator('#stage').getAttribute('data-cord'))!;
 			const layout = (await frame.locator('#stage').getAttribute('data-layout'))!;
 			const message = (await frame.locator('#message-text').textContent())!;
-			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'true');
+			await expect(frame.locator('#motion')).toHaveAttribute('aria-checked', 'true');
 			await app.evaluate(({ dialog }, path) => {
 				const holder = globalThis as typeof globalThis & { __charmletOpenDialog?: typeof dialog.showOpenDialog };
 				holder.__charmletOpenDialog = dialog.showOpenDialog;
@@ -751,7 +769,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 					}
 				});
 			}
-			await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+			await openAppearance(frame);
 			const importedPicker = frame.getByRole('combobox', { name: 'Charm', exact: true });
 			await expect(importedPicker).toHaveValue('pack:probe-card:probe-card');
 			await expect(importedPicker.locator('option')).toHaveCount(11);
@@ -766,7 +784,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', restingCord);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-layout', layout);
 			await expect(frame.locator('#message-text')).toHaveText(message);
-			await expect(frame.getByRole('switch', { name: 'Motion', exact: true })).toHaveAttribute('aria-checked', 'true');
+			await expect(frame.locator('#motion')).toHaveAttribute('aria-checked', 'true');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 			await expect.poll(() => frame.locator('#hanging').evaluate(node => node.getAnimations().every(animation => animation.playState === 'finished'))).toBe(true);
 			const startX = Number(await frame.locator('#charm').getAttribute('data-position-x'));
@@ -813,7 +831,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				} else if (mode === 'settled') {
 					await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 				} else {
-					await frame.getByRole('button', { name: 'Hide charm', exact: true }).click();
+					await menuAction(frame, 'toggle');
 					await expect(frame.locator('#hanging')).toBeHidden();
 					await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 				}

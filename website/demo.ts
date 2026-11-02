@@ -157,18 +157,18 @@ charm.addEventListener('pointerup', event => {
 charm.addEventListener('pointercancel', () => resetPose('The demo reset safely after an interrupted drag.'));
 charm.addEventListener('lostpointercapture', () => { if (drag) { resetPose('The demo reset safely after losing the pointer.'); } });
 charm.addEventListener('click', event => { if (event.detail === 0) { nudge(); } });
-window.addEventListener('blur', () => resetPose('The demo reset when the window lost focus.'));
+window.addEventListener('blur', () => resetPose());
 nudgeButton.addEventListener('click', nudge);
 resetButton.addEventListener('click', () => resetPose('Demo reset.'));
 document.addEventListener('visibilitychange', () => {
 	visible = !document.hidden;
-	if (!visible) { resetPose('The demo paused while this page was hidden.'); }
+	if (!visible) { resetPose(); }
 });
 reducedMotion.addEventListener('change', () => resetPose(reducedMotion.matches
 	? 'Reduced motion is active. Dragging still follows your pointer.' : 'Drag the charm, then let it settle.'));
 new IntersectionObserver(entries => {
 	intersecting = entries[0]?.isIntersecting === true;
-	if (!intersecting) { resetPose('The demo reset while it was offscreen.'); }
+	if (!intersecting) { resetPose(); }
 }).observe(stage);
 new ResizeObserver(resize).observe(stage);
 

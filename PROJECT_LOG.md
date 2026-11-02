@@ -4,7 +4,7 @@ Dates use YYYY-MM-DD; Git preserves exact timestamps and authors. Append dated e
 and corrections rather than erasing history. Record the linked issue/PR, commit description, evidence
 and next action. Current milestone status is summarized below; entries preserve how it changed.
 
-## Milestones - updated 2026-10-08
+## Milestones - updated 2026-11-02
 
 | ID | Status | Scope / next gate | Tracking |
 |---|---|---|---|
@@ -12,7 +12,7 @@ and next action. Current milestone status is summarized below; entries preserve 
 | P1 | Accepted and merged in PR #7 | Size/cord controls, lifecycle/accessibility coverage, two Windows hosts and resource captures | [#2](https://github.com/gautham-nvidia/charmlet/issues/2), [validation](docs/phase-1-validation.md) |
 | P2 | Merged in PR #10 | Four free charms, saved picker, artwork provenance and prepared trial checklist | [#9](https://github.com/gautham-nvidia/charmlet/issues/9) |
 | P3 | Engineering baseline merged in PR15/16; launch gates carried forward | Windows/Ubuntu/macOS Apple Silicon VS Code matrix verified; publisher/license, authenticated forks, remote/browser and public hosting/registry decisions move to P4/P5 | [#11](https://github.com/gautham-nvidia/charmlet/issues/11), [#18](https://github.com/gautham-nvidia/charmlet/issues/18), [readiness](docs/phase-3-readiness.md) |
-| P4 | Started: scope/architecture kickoff; features pending | Free focus/learning/reminders/garden, original collections, website Photo Studio preparation and parallel desktop beta | [#17](https://github.com/gautham-nvidia/charmlet/issues/17), [plan](docs/phase-4-plan.md) |
+| P4 | Resumed; candidate verified locally and being integrated through PR #19 | 0.4.3 navigation/motivation; 95 art candidates; verified mock Photo Studio; desktop 0.1.1; fresh hosted checks precede the merge | [#17](https://github.com/gautham-nvidia/charmlet/issues/17), [plan](docs/phase-4-plan.md), [verification](docs/phase-4-validation.md) |
 | P5 | Planned: extension-store launch | Publisher/license decisions, launch-target editor checks, public install pages and Marketplace/Open VSX availability | [#18](https://github.com/gautham-nvidia/charmlet/issues/18) |
 | P6 | Planned: product launch after IDE availability | Broader launch, support/onboarding and ready commerce/desktop offerings | [Phase 4 plan](docs/phase-4-plan.md) |
 | P7+ | Deferred integrations/licensed art | Additional IDE families, rights-cleared fandom/brand collaborations and later experiments | [Phase 4 plan](docs/phase-4-plan.md) |
@@ -386,3 +386,37 @@ The existing Node:test smoke now has a 180-second owned cleanup hook and `expect
 Final unsigned Windows package contains 116 files/385953559 bytes. `Charmlet.exe` remains 246302208 bytes/SHA256 `16139C7C7C6BE93668C107FB65C6DB3ED3F53BFDBB3B39E1E8680FB3DC9CE1DF`; packaged `main.cjs` SHA256 is `09E0A5A76DC0CD76F5BF1F013E9F15EAF00921A918FFE0074C196EEB9FB56E03`. Dev screenshots: Focus105964/`9B10FFEA47B68B0EAC97604F6DE219256A4815E2EA090BF5428453032ED86699`, Garden117597/`084BBA979E7DF6516B05377BA8A1D231CDF5B63C2B4BB051E5158E9930610CE7`. Packaged screenshots: Focus105962/`A45396CE0EAAE4DB21822CDB465BE359663452F5272E00103EF8C429F467FBC5`, Garden117599/`48E44DF1FF123AB5E19784BA5B4E1390FFBF7DC17BE5D6EEB38833B64E9B0232`.
 
 Actual native click-through/no-focus-steal, tray popup behavior, real monitor/DPI removal, real OS suspend/lock, macOS Spaces/build and signing/distribution remain manual or hosted gates. Extension/gallery artifacts remain untouched.
+
+## 2026-10-08 - Visual direction and direct Garden access, 0.4.2
+
+The user rejected the repetitive badge artwork and plain website, then selected a hybrid of playful detail and photographic realism. Gemini 3 Pro Image produced basketball, red panda, ringed planet and Yosemite-inspired concept previews from original prompts. A carved-looking Yosemite draft was retained separately; the refined photographic-style version is the one shown. Four optimized WebP previews are clearly labelled as concepts, not real photographs or downloadable packs. Generation is an authoring step; no image API key or model call is exposed in the website or app runtime.
+
+The website now uses twelve collection worlds, separating AI from Coding and adding Animals, Trees/Forests, Stars/Galaxies, National Parks, Cities, Local Culture and Sports. Available classic designs and planned collections are distinguished. Sports records the requested athletes/leagues as a wishlist without offering uncleared downloads. The original sixty SVG/PNG packs are unchanged. A more playful landing page, art workshop, category navigation, preview dialog and interactive growth-stage illustration replace the old presentation. The growth illustration explicitly does not water a real garden.
+
+Version0.4.2 adds a visible Plant a seed/Garden entry, a Charmlet: Open Garden command and a view-title action. The new real-editor case first failed because the entry was absent, then passed with first planting/watering, same-day protection, keyboard focus return and unchanged seed identity after reload. No garden rule or persistence model was altered.
+
+Verification on the Windows PC: compile/type/lint/bundles,58 units and all4 VS Code1.140.0 editor scenarios passed. The refreshed Edge check passed12 category counts,4 previews, athlete/league wishlist labels, dialog keyboard handling, Garden guidance, old/new real pack downloads, matching VSIX bytes, all sourced images, desktop1440/mobile375 layouts and zero browser errors. Shared desktop source also passed its build and owned development-host smoke after the footer change; its distributed package was not rebuilt here.
+
+Candidate: extension/charmlet-0.4.2.vsix,121335bytes,SHA256 CE426CE04EA0A7D01EEE1DC18B4C5FD52B5FEF9A0C7457EBBA7B9598AAA0C5A8. New-version hosted/other-editor checks, realistic cutout/pack preparation, Photo Studio and portable desktop archive follow-ups remain open. No publication or phase merge is claimed.
+
+## 2026-10-09 - Approved navigation, illustrated review and local Phase 4 follow-through
+
+The owner chose navigation A and authorized continued implementation while retaining final artwork/free-paid approval. Version0.4.3 now has Charms/Focus/Garden/Settings, searchable installed-art tiles, keyboard menu/close behavior, SVG chevrons,16pxreminder controls and a host-version footer. Motivation is the fresh-state default without resetting saved choices. The duplicated visible heading was removed. Enabled reminders are recurring nonmodal notices; Done/Skip restart the chosen interval, Snooze waits ten minutes and wait-for-break defers while focusing.
+
+Gemini3ProImage generated95original illustration candidates: ten starter redraws,60website redraws,12flower studies and13new-world additions. Raw files, hashes and rejected revisions are preserved; background/edge failures were corrected rather than relaxing the PNG importer. Visual review also corrected the initially oval Football candidate to a spherical soccer ball. The separate review site supports search, original/new comparison, dark backdrop and enlargement.83individual designs and14collection packs import under review IDs; flowers are previews rather than downloadable unlocks. Changing a bundle's artwork produces a new bundle ID. The original ten defaults and60classic packs remain unchanged.
+
+Photo Studio's frontend/backend foundation now has tested expiry recovery, crop/name/frame retention in browser memory, pre-decode dimension limits and late-load cancellation after Lock.18core/service tests and an isolated fake-provider browser flow passed, including three export frames, no photo bytes in requests/web storage and375pxlayout. No live merchant validation, charge or refund was performed; availability remains off by default.
+
+Desktop0.1.1uses the shared UI, manifest-derived version and non-destructive versioned release directories. Build,6models, source smoke, packaged smoke and an extracted Windows ZIP smoke passed. The archive is158274214bytes/SHA256c77c0105bc61d3d81b08eb66f420508132ccd202402b9fb8549b04ec91f9db52. Mac tar.gz packaging is implemented to preserve executable modes/links, but the current-version hosted Mac and native OS interaction/signing gates remain open.
+
+Final Windows verification: type/lint/build,59units, six editor cases on both1.90.0/1.140.0, plus the expanded Starter Redraws import/reload case on both versions. Gallery/demo/download checks,95PNG/83download/14bundle review checks, five cutout tests and Photo Studio browser checks passed without page errors. VSIX0.4.3is125679bytes/SHA2569ba44bf8444a6bfc1b9d005eabaa0c9f4d4b09435995d211337ea8c2eaa353e1. Evidence/commands are in docs/phase-4-validation.md. No normal user profile was modified, no public release/checkout was enabled, and this local continuation did not commit, push or merge the phase branch.
+
+## 2026-11-02 — autonomous project resumption
+
+The owner requested continued work with full permission, a branch for each phase and Slack contact when needed. Recovered and preserved the October changes on `feat/phase-4-companion`; PR #19 remained open/draft at `2027bcf`, with no comments or merge conflicts. The earlier no-push continuation boundary is superseded by this request.
+
+Fresh Windows checks passed: extension build/lint/types, 59 units, six VS Code 1.140 editor scenarios, 23 artwork/Studio tests, the mock-provider Studio browser flow and both gallery/review checks. All 95 transparent review candidates, 83 individual imports and 14 collection packs remain intact. The rebuilt 0.4.3 VSIX is 125679 bytes, SHA-256 `485b2093f6c993a4ed2c331279d7911907b0aba47a1de9c40daa95106c11f8c4`.
+
+Desktop type/build and six models passed. A concurrent editor/desktop run failed at trivia reveal; a subsequent isolated desktop smoke passed. Added failure-only event/renderer/host evidence instead of weakening assertions or treating one retry as proof of a fix. Hosted Windows/macOS archive checks remain the next integration gate.
+
+Added the 23 artwork/Studio tests to hosted CI, the WebP response MIME type to the local gallery server, and an ignore rule covering all local raw artwork output. A candidate scan against the local image credential found no secret matches. GitHub currently has no repository release secrets, configured environments or Pages site; these are concrete Phase 5 setup prerequisites.

@@ -59,8 +59,8 @@ jobs:
         run: npm run test --prefix desktop
       - name: Package an unsigned developer beta
         run: npm run package --prefix desktop
-      - name: Test the packaged desktop executable in its owned profile
-        run: node desktop/test/smoke.mjs --packaged
+      - name: Archive and test the extracted desktop application
+        run: node desktop/archive.mjs
       - name: Retain desktop test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -73,6 +73,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: desktop-beta-${{ matrix.label }}-${{ github.sha }}
-          path: desktop/release/
+          path: desktop/distribution/
           if-no-files-found: error
           retention-days: 14

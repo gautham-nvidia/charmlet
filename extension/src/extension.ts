@@ -166,6 +166,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('charmlet.hide', () => provider.update({ ...provider.state, hidden: true })),
 		vscode.commands.registerCommand('charmlet.toggle', () => provider.toggle()),
 		vscode.commands.registerCommand('charmlet.focus', () => provider.openCompanion('focus')),
+		vscode.commands.registerCommand('charmlet.garden', () => provider.openCompanion('garden')),
 		vscode.commands.registerCommand('charmlet.reset', async () => {
 			await provider.update(resetState(provider.state));
 			await provider.show();
@@ -267,6 +268,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 		view.webview.html = template
 			.replaceAll('__NONCE__', randomBytes(16).toString('hex'))
 			.replaceAll('__CSP__', view.webview.cspSource)
+			.replaceAll('__APP_VERSION__', String(this.context.extension.packageJSON.version).replace(/[^a-zA-Z0-9.+-]/g, ''))
 			.replaceAll('__SCRIPT__', view.webview.asWebviewUri(resource('dist/webview.js')).toString())
 			.replaceAll('__STYLE__', view.webview.asWebviewUri(resource('media/view.css')).toString())
 			.replaceAll('__CHARM__', view.webview.asWebviewUri(resource('media/keycap.svg')).toString());

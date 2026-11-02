@@ -55,6 +55,9 @@ jobs:
         run: xvfb-run -a --server-args="-screen 0 1920x1080x24" npm test
       - name: Package development VSIX
         run: npm run package:vsix
+      - name: Validate artwork and Photo Studio boundaries
+        working-directory: .
+        run: node --test website/art-cutout.test.mjs website/studio/test/core.test.mjs website/studio/test/service.test.mjs
       - name: Build and validate companion gallery
         working-directory: .
         run: node website/build.mjs

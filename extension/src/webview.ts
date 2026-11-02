@@ -1,7 +1,8 @@
-import { createElement, ArrowDown, ArrowRight, Eye, EyeOff, Orbit, Pause, Play, RotateCcw, SlidersHorizontal, Timer } from 'lucide';
+import { createElement, ArrowDown, ArrowRight, Eye, EyeOff, Orbit, Pause, Play, RotateCcw, Timer, X } from 'lucide';
 import { resetState, clamp, getLayout, restoreState, type CharmState } from './charm-state';
 import { CHARMS, getCharm, type CharmDefinition } from './charm-catalog';
 import { createCompanionView } from './companion-view';
+import { createNavigationView, type NavigationView } from './navigation-view';
 import { MessageRotation } from './message-rotation';
 import { Pendulum, type Point } from './pendulum';
 
@@ -20,6 +21,10 @@ function element<Kind extends Element>(id: string) {
 }
 
 const api = acquireVsCodeApi();
+const appElement = element<HTMLDivElement>('app');
+const primaryNav = element<HTMLElement>('primary-nav');
+const backdrop = element<HTMLDivElement>('tools-backdrop');
+let navigationUI: NavigationView | undefined;
 const stage = element<HTMLDivElement>('stage');
 const rig = element<HTMLDivElement>('rig');
 const hanging = element<HTMLDivElement>('hanging');
@@ -74,7 +79,7 @@ const companionUI = createCompanionView({
 	hangFlower: (flowerId, requestId) => api.postMessage({ type: 'garden-hang', flowerId, requestId }),
 	onOpen: () => {
 		settings.hidden = true;
-		settingsToggle.setAttribute('aria-expanded', 'false');
+		navigationUI?.close(false);
 	},
 	onLayout: () => {
 		resize();
@@ -82,6 +87,64 @@ const companionUI = createCompanionView({
 	},
 	onActivity: scheduleMessages,
 });
+navigationUI = createNavigationView({
+	image: selected => selected.source ?? new URL(selected.file, mediaRoot).toString(),
+	select: selectCharm,
+	action: action => {
+		if (action === 'appearance') { openAppearance(); }
+		else if (action === 'messages') { companionUI.open('learn'); }
+		else if (action === 'reminders') { companionUI.openReminders(); }
+	},
+	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); },
+	onChange: () => { updateOverlays(); scheduleMessages(); },
+});
+
+function popupOpen() { return !settings.hidden || companionUI.isOpen() || navigationUI?.isOpen() === true; }
+
+function updateOverlays() {
+	const appBounds = appElement.getBoundingClientRect();
+	const navBounds = primaryNav.getBoundingClientRect();
+	const bottom = `${Math.max(8, appBounds.bottom - navBounds.top + 8)}px`;
+	if (appElement.style.getPropertyValue('--popup-bottom') !== bottom) { appElement.style.setProperty('--popup-bottom', bottom); }
+	const open = popupOpen();
+	backdrop.hidden = !open;
+	appElement.classList.toggle('has-popup', open);
+	hanging.inert = state.hidden || open;
+	restore.inert = open;
+}
+
+function closeAppearance(restoreFocus = true) {
+	if (settings.hidden) { return; }
+	settings.hidden = true;
+	if (restoreFocus) { settingsToggle.focus({ preventScroll: true }); }
+	updateOverlays();
+	scheduleMessages();
+}
+
+function openAppearance() {
+	cancelDrag();
+	navigationUI?.close(false);
+	companionUI.close(false);
+	settings.hidden = false;
+	updateOverlays();
+	charmSelect.focus({ preventScroll: true });
+	scheduleMessages();
+}
+
+function selectCharm(id: string) {
+	cancelDrag();
+	state.charmId = getCharm(id, charms).id;
+	applyCharm();
+	resize();
+	save();
+}
+
+backdrop.addEventListener('click', () => {
+	if (navigationUI?.isOpen()) { navigationUI.close(); }
+	else if (!settings.hidden) { closeAppearance(); }
+	else { companionUI.close(); }
+});
+element<HTMLButtonElement>('settings-close').addEventListener('click', () => closeAppearance());
 
 function reducedMotion() {
 	return state.reducedMotion || systemMotion.matches || document.body.classList.contains('vscode-reduce-motion');
@@ -106,6 +169,7 @@ function applyCharm() {
 	charmSelect.value = selected.id;
 	charm.setAttribute('aria-label', `Nudge ${selected.name.toLowerCase()} charm`);
 	stage.dataset.charm = selected.id;
+	navigationUI?.setCatalogue(charms, selected.id);
 }
 
 function updateMessage() {
@@ -123,7 +187,7 @@ const messageRotation = new MessageRotation(advanceMessage);
 
 function scheduleMessages() {
 	const enabled = ready && stage.dataset.companionReady === 'true' && visible && !document.hidden
-		&& state.showMessages && state.rotateMessages && settings.hidden && !drag && companionUI.canRotate();
+		&& state.showMessages && state.rotateMessages && settings.hidden && !navigationUI?.isOpen() && !drag && companionUI.canRotate();
 	messageRotation.setEnabled(enabled);
 	messageCard.dataset.rotation = enabled ? 'active' : 'paused';
 }
@@ -151,10 +215,10 @@ function controls() {
 	charm.title = state.layoutMode === 'orbit'
 		? `Nudge ${selected.name} charm; drag around the peg for a full loop`
 		: `Nudge ${selected.name} charm; pull up to retract. Use Orbit layout for full loops.`;
-	toggle.replaceChildren(createElement(state.hidden ? Eye : EyeOff, { width: 16, height: 16 }));
+	toggle.replaceChildren(createElement(state.hidden ? Eye : EyeOff, { width: 16, height: 16 }), document.createTextNode(state.hidden ? 'Show charm' : 'Hide charm'));
 	toggle.title = state.hidden ? 'Restore charm' : 'Hide charm';
 	toggle.setAttribute('aria-label', toggle.title);
-	motion.replaceChildren(createElement(reducedMotion() ? Play : Pause, { width: 16, height: 16 }));
+	motion.replaceChildren(createElement(reducedMotion() ? Play : Pause, { width: 16, height: 16 }), document.createTextNode('Motion'));
 	motion.setAttribute('aria-checked', String(!reducedMotion()));
 	motion.disabled = systemMotion.matches || document.body.classList.contains('vscode-reduce-motion');
 	motion.title = motion.disabled ? 'Motion disabled by system preference' : 'Motion';
@@ -164,7 +228,7 @@ function controls() {
 	if (state.hidden && hanging.contains(document.activeElement)) {
 		restore.focus({ preventScroll: true });
 	}
-	hanging.inert = state.hidden;
+	hanging.inert = state.hidden || popupOpen();
 }
 
 function render() {
@@ -310,6 +374,7 @@ function cancelDrag() {
 
 function resize() {
 	cancelDrag();
+	updateOverlays();
 	const { width, height } = stage.getBoundingClientRect();
 	const layout = getLayout(width, height, state.cordLength, state.size, state.layoutMode);
 	scale = Math.max(0.01, Math.min(1, width / layout.minimumWidth, height / layout.minimumHeight));
@@ -436,7 +501,7 @@ charm.addEventListener('keydown', event => {
 		state.hidden = true;
 		showState();
 		save();
-		toggle.focus();
+		settingsToggle.focus();
 	}
 });
 
@@ -475,31 +540,14 @@ motion.addEventListener('click', () => {
 	save();
 });
 
-settingsToggle.addEventListener('click', () => {
-	cancelDrag();
-	companionUI.close(false);
-	settings.hidden = !settings.hidden;
-	settingsToggle.setAttribute('aria-expanded', String(!settings.hidden));
-	resize();
-	scheduleMessages();
-});
 settings.addEventListener('keydown', event => {
 	if (event.key === 'Escape') {
+		event.preventDefault();
 		event.stopPropagation();
-		settings.hidden = true;
-		settingsToggle.setAttribute('aria-expanded', 'false');
-		settingsToggle.focus();
-		resize();
-		scheduleMessages();
+		closeAppearance();
 	}
 });
-charmSelect.addEventListener('change', () => {
-	cancelDrag();
-	state.charmId = getCharm(charmSelect.value, charms).id;
-	applyCharm();
-	resize();
-	save();
-});
+charmSelect.addEventListener('change', () => selectCharm(charmSelect.value));
 showMessages.addEventListener('change', () => {
 	state.showMessages = showMessages.checked;
 	updateMessage();
@@ -564,6 +612,7 @@ window.addEventListener('message', event => {
 			companionUI.open(message.companionTab);
 		}
 		ready = true;
+		navigationUI?.setReady(true);
 		stage.dataset.ready = 'true';
 		resize();
 		showState('drop' in message && message.drop === true);
@@ -603,11 +652,13 @@ window.addEventListener('pagehide', () => messageRotation.stop());
 systemMotion.addEventListener('change', updateMotionPreference);
 new MutationObserver(updateMotionPreference).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 new ResizeObserver(resize).observe(stage);
-reset.replaceChildren(createElement(RotateCcw, { width: 15, height: 15 }));
+reset.replaceChildren(createElement(RotateCcw, { width: 15, height: 15 }), document.createTextNode('Reset position'));
 restore.replaceChildren(createElement(ArrowDown, { width: 14, height: 14 }));
-companionToggle.prepend(createElement(Timer, { width: 15, height: 15 }));
-settingsToggle.replaceChildren(createElement(SlidersHorizontal, { width: 15, height: 15 }));
-layoutMode.replaceChildren(createElement(Orbit, { width: 16, height: 16 }));
+companionToggle.prepend(createElement(Timer, { width: 13, height: 13, 'aria-hidden': 'true' }));
+for (const id of ['settings-close', 'companion-close']) {
+	element<HTMLButtonElement>(id).append(createElement(X, { width: 14, height: 14, 'aria-hidden': 'true' }));
+}
+layoutMode.replaceChildren(createElement(Orbit, { width: 16, height: 16 }), document.createTextNode('Orbit layout'));
 nextMessage.replaceChildren(createElement(ArrowRight, { width: 14, height: 14 }));
 populateCharms();
 applyCharm();

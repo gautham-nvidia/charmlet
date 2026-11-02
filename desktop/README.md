@@ -12,7 +12,23 @@ npm.cmd --prefix desktop run test
 npm.cmd --prefix desktop run package
 ```
 
-The Windows output is an unsigned folder under `desktop/release/Charmlet-win32-x64/`. The macOS `.app` must be produced and checked by the hosted macOS job. There is no installer, signing, notarization, update service, store listing or public distribution in this slice.
+The current Windows 0.1.1 output is an unsigned folder under `desktop/release/0.1.1/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. The current macOS `.app` still must be produced and checked by the hosted macOS job. There is no installer, signing, notarization, update service, store listing or public distribution in this slice.
+
+For a portable download, archive and test the extracted application.
+
+**On the Windows PC (PowerShell), from the repository root:**
+
+```powershell
+node desktop/archive.mjs
+```
+
+This writes a Windows ZIP under `desktop/distribution/`. The hosted Mac job writes a `.tar.gz` so the `.app` keeps its executable permissions and framework links. Both archive types are extracted and launched in disposable profiles before upload. GitHub's outer artifact ZIP contains that tested archive; extract it, then extract the inner archive and keep the app folder together.
+
+## Current local evidence — 2026-10-09
+
+Windows 0.1.1 includes the same Charms/Focus/Garden/Settings navigation, motivation-first fresh state, compact reminder controls and host-version footer as extension0.4.3. Build/type checking, six model checks and the owned dev smoke passed. The portable ZIP was extracted and the extracted executable passed restart, focus, garden, source security and saved-state checks in a disposable profile.
+
+`desktop/distribution/Charmlet-desktop-0.1.1-win32-x64.zip` is 158274214 bytes; SHA-256 `c77c0105bc61d3d81b08eb66f420508132ccd202402b9fb8549b04ec91f9db52`. This is an unsigned local beta, not proof of the native/manual gates below or a current-version Mac run.
 
 ## Data and security boundaries
 

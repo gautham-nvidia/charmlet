@@ -4,7 +4,7 @@ const api = acquireVsCodeApi();
 const stage = document.getElementById('stage')!;
 const charm = document.getElementById('charm')!;
 const hide = document.getElementById('desktop-hide')!;
-const interactive = '#desktop-header, #charm, #restore, #message-card, .tools, #settings, #companion-tools, .readout';
+const interactive = '#desktop-header, #charm, #restore, #message-card, #care-cue, .tools, #settings, #companion-tools, #charm-picker, #settings-menu, #tools-backdrop, .readout, .app-footer';
 let ignored: boolean | undefined;
 let charmHeld = false;
 

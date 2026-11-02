@@ -12,13 +12,14 @@ const { chromium, expect } = require('@playwright/test');
 const { parseCharmPack } = require('./out/charm-packs.js');
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
 const target = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
+const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
+const expectedWorldCounts = { ai: 7, coding: 7, silicon: 18, testing: 12, animals: 0, trees: 2, space: 1, parks: 6, cities: 5, culture: 0, sports: 0, luck: 2 };
 const output = join(repo, 'extension', 'test-results', `website-check-${manifest.version}`);
 await mkdir(output, { recursive: true });
 const base = process.env.CHARMLET_GALLERY_URL || 'http://127.0.0.1:4173/';
 const marketplace = `https://marketplace.visualstudio.com/items?itemName=${manifest.publisher}.${manifest.name}`;
 const openVsx = `https://open-vsx.org/extension/${manifest.publisher}/${manifest.name}`;
 const expectedCollections = { 'Compute & Silicon': 18, 'Test Bench': 12, 'AI & Code': 14, 'Places & Nature': 16 };
-const legacyIds = ['probe-card', 'logic-gate', 'finfet', 'photon-link', 'lotus', 'sunrise'];
 assert.equal(target.length, 60);
 assert.deepEqual(validateDistribution({ marketplace: null, openVsx: null }, manifest), { marketplace: null, openVsx: null });
 assert.deepEqual(validateDistribution({ marketplace, openVsx }, manifest), { marketplace, openVsx });
@@ -32,7 +33,7 @@ const errors = [];
 let browser;
 const checkOverflow = async page => page.evaluate(() => ({ width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
 const twoFrames = async page => page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-const decodeImages = async page => page.locator('img').evaluateAll(async images => {
+const decodeImages = async page => page.locator('img[src]').evaluateAll(async images => {
   for (const image of images) image.loading = 'eager';
   await Promise.all(images.map(image => image.decode()));
   return images.map(image => ({ alt: image.alt, width: image.naturalWidth, height: image.naturalHeight, complete: image.complete }));
@@ -47,30 +48,13 @@ async function downloadPack(page, id) {
   assert.equal(parsed.charms[0].id, id);
   return { parsed, path };
 }
-async function renderCollectionSheet(browser, collection, theme) {
-  const items = target.filter(item => item.collection === collection && !legacyIds.includes(item.id));
-  const columns = items.length > 15 ? 6 : 5;
-  const background = theme === 'dark' ? '#20262a' : '#f6f4ed';
-  const foreground = theme === 'dark' ? '#edf3ef' : '#183c35';
-  const border = theme === 'dark' ? '#65736d' : '#cbd7cc';
-  const page = await browser.newPage({ viewport: { width: columns * 152 + 32, height: Math.ceil(items.length / columns) * 160 + 78 } });
-  try {
-    const cards = items.map(item => `<figure><img src="${new URL(`assets/extras/${item.file}`, base)}" alt="${item.name}"><figcaption>${item.name}</figcaption></figure>`).join('');
-    await page.setContent(`<!doctype html><meta charset="utf-8"><style>
-      *{box-sizing:border-box}body{margin:0;padding:16px;background:${background};color:${foreground};font:13px system-ui}
-      h1{height:30px;margin:0 0 12px;font:600 20px Georgia,serif}.sheet{display:grid;grid-template-columns:repeat(${columns},144px);gap:8px}
-      figure{width:144px;height:152px;margin:0;display:grid;grid-template-rows:112px 1fr;place-items:center;padding:4px;border:1px solid ${border};border-radius:8px;background:${theme === 'dark' ? '#293136' : '#fffdf7'}}
-      img{width:96px;height:112px;object-fit:contain}figcaption{max-width:136px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    </style><h1>${collection} — ${items.length} new designs</h1><section class="sheet">${cards}</section>`);
-    await page.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
-    const slug = collection.toLowerCase().replaceAll('&', 'and').replaceAll(/[^a-z]+/g, '-').replace(/^-|-$/g, '');
-    await page.locator('body').screenshot({ path: join(output, `phase-4c-${slug}-${theme}.png`) });
-  } finally { await page.close(); }
-}
 try {
   browser = await chromium.launch({ channel: 'msedge', headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
-  page.on('console', message => { if (message.type() === 'error') errors.push(`console ${message.location().url}: ${message.text()}`); });
+  page.on('console', message => {
+    if (message.type() !== 'error') return;
+    errors.push(`console ${message.location().url}: ${message.text()}`);
+  });
   page.on('pageerror', error => errors.push(`page: ${error.message}`));
   const response = await page.goto(base, { waitUntil: 'networkidle' });
   assert.equal(response?.status(), 200);
@@ -79,6 +63,12 @@ try {
   assert.equal(await page.locator('#extra-count').textContent(), '60');
   assert.equal(await page.locator('#included-count').textContent(), '10');
   assert.equal(await page.locator('.site-header a[href="#install"]').last().getAttribute('href'), '#install');
+  assert.equal(await page.getByRole('link', { name: 'Photo Studio', exact: true }).getAttribute('href'), './studio/');
+  await page.goto(new URL('studio/', base).href, { waitUntil: 'networkidle' });
+  await page.locator('#studio[data-studio-state="unavailable"]').waitFor();
+  assert.equal(await page.locator('input[type=file], input[type=password]').count(), 0);
+  await page.goto(base, { waitUntil: 'networkidle' });
+  await page.locator('.charm-card').first().waitFor();
   const installation = page.locator('#install');
   const manualCard = installation.getByRole('article', { name: 'Install the extension file', exact: true });
   const storeCard = installation.getByRole('article', { name: 'Install from an extension store', exact: true });
@@ -98,15 +88,40 @@ try {
   assert.ok(desktopOverflow.scroll <= desktopOverflow.width);
   await page.screenshot({ path: join(output, 'desktop.png'), fullPage: true });
 
-  for (const [collection, count] of Object.entries(expectedCollections)) {
-    const filter = page.getByRole('button', { name: collection, exact: true });
+  assert.equal(await page.locator('#collection-worlds .world-card').count(), 12);
+  assert.equal(await page.locator('#art-studies .art-study').count(), 4);
+  for (const world of worldConfig.collections) {
+    const filter = page.locator('#group-filters').getByRole('button', { name: world.name, exact: true });
     await filter.focus();
     await page.keyboard.press('Enter');
-    assert.equal((await page.evaluate(() => document.activeElement?.textContent))?.trim(), collection);
-    assert.equal(await page.locator('.charm-card').count(), count);
+    assert.equal(await page.evaluate(() => document.activeElement?.dataset.group), world.id);
+    assert.equal(await page.locator('.charm-card').count(), expectedWorldCounts[world.id]);
     assert.notEqual(await filter.evaluate(element => getComputedStyle(element).outlineStyle), 'none');
+    await expect(page.locator('#collection-story')).toBeVisible();
   }
+  await page.getByRole('button', { name: 'Explore Sports', exact: true }).click();
+  const sports = page.locator('#collection-story');
+  await expect(sports).toContainText('Football');
+  await expect(sports).toContainText('Basketball');
+  for (const name of ['Cristiano Ronaldo (CR7)', 'Lionel Messi', 'Stephen Curry', 'LeBron James', 'Michael Jordan', 'NFL', 'EPL', 'UEFA Champions League', 'Baseball']) {
+    await expect(sports).toContainText(name);
+  }
+  await expect(sports).toContainText('not available downloads');
+  assert.equal(await page.locator('.download-link').count(), 0);
+  await sports.getByRole('button', { name: 'View Bring your game art preview', exact: true }).click();
+  await expect(page.locator('#art-dialog')).toBeVisible();
+  await page.locator('#art-dialog-image').evaluate(image => image.decode());
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#art-dialog')).not.toBeVisible();
   await page.getByRole('button', { name: 'All', exact: true }).click();
+  await page.locator('[data-garden-stage="4"]').click();
+  await expect(page.locator('#garden-demo-title')).toHaveText('Grown by you. Kept forever.');
+  await expect(page.locator('#garden-demo-copy')).toContainText('eleven');
+  await page.locator('[data-garden-stage="2"]').click();
+  await expect(page.locator('#garden-demo-copy')).toContainText('Missing a day');
+  await expect(page.locator('#garden-help')).toContainText('Charmlet: Open Garden');
+  await expect(page.locator('#garden-help')).toContainText('Plant a seed');
+  await page.locator('[data-garden-stage="0"]').click();
   assert.equal(await page.locator('.charm-card').count(), 60);
 
   await page.locator('#search').fill('golden die');
@@ -122,10 +137,9 @@ try {
   assert.equal(await page.locator('.charm-card').count(), 60);
   assert.equal(await page.evaluate(() => document.activeElement?.id), 'search');
 
-  for (const collection of Object.keys(expectedCollections)) {
-    await renderCollectionSheet(browser, collection, 'light');
-    await renderCollectionSheet(browser, collection, 'dark');
-  }
+  await page.locator('.hero').screenshot({ path: join(output, 'visual-refresh-hero.png') });
+  await page.locator('#new-art').screenshot({ path: join(output, 'visual-refresh-art.png') });
+  await page.locator('#garden').screenshot({ path: join(output, 'visual-refresh-garden.png') });
   await page.reload({ waitUntil: 'networkidle' });
 
   await page.getByRole('button', { name: /Included with Charmlet/ }).click();
@@ -308,7 +322,10 @@ try {
     extras: 60,
     included: 10,
     uniqueIds: 70,
-    collections: expectedCollections,
+    collections: expectedWorldCounts,
+    artPreviews: 4,
+    gardenEntry: 'growth preview and direct Open Garden installation guidance',
+    sportsIdeas: 'athletes and leagues labelled as a wishlist, without download links',
     downloadedPacks: [oldPack.parsed.id, newPack.parsed.id],
     demo: 'swing, drag-return, offscreen-stop, reduced-motion-stop',
     distributionFixture: 'validated matching URLs rendered without navigation',

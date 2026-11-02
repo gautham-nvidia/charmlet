@@ -98,7 +98,7 @@ export function defaultCompanionState(legacyMessageIndex = 0): CompanionState {
 		version: 2, revision: 0,
 		settings: { focusMinutes: 25, breakMinutes: 5, intent: '' },
 		focus: idleFocus(25),
-		learning: { mode: 'mix', cardId: feedDeck('mix')[0].id, encouragementId: quote.id, revealed: false },
+		learning: { mode: 'encouragement', cardId: quote.id, encouragementId: quote.id, revealed: false },
 		garden: emptyGarden(), care: defaultCare(),
 	};
 }
@@ -133,7 +133,7 @@ export function restoreCompanionState(value: unknown, now: number, legacyMessage
 		restoredFocus = { phase, status: 'finished', durationMs, remainingMs: 0, startedAt: null, deadlineAt: null, notice };
 	}
 	const learning = object(raw.learning);
-	const mode = isFeedMode(learning.mode) ? learning.mode : 'mix';
+	const mode = isFeedMode(learning.mode) ? learning.mode : defaults.learning.mode;
 	const card = feedDeck(mode).find(entry => entry.id === learning.cardId) ?? feedDeck(mode)[0];
 	const quote = ENCOURAGEMENT_CARDS.find(entry => entry.id === learning.encouragementId) ?? learningCard(defaults.learning.encouragementId)!;
 	return {

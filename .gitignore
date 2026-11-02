@@ -7,6 +7,7 @@ extension/playwright-report/
 website/dist/
 desktop/dist/
 desktop/release/
+desktop/distribution/
 desktop/test-results/
 **/*.vsix
 **/.env
@@ -17,3 +18,4 @@ Thumbs.db
 
 # Local agent recovery notes
 /session/
+/output/

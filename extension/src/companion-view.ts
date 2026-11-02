@@ -20,6 +20,7 @@ export interface CompanionView {
 	receive(snapshot: unknown): void;
 	result(requestId: number, error?: string, message?: string): void;
 	open(tab: 'focus' | 'learn' | 'garden'): void;
+	openReminders(): void;
 	close(restoreFocus?: boolean): void;
 	toggle(): void;
 	nextCard(): void;
@@ -46,12 +47,18 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 	const tools = required<HTMLElement>('companion-tools');
 	const toggle = required<HTMLButtonElement>('companion-toggle');
 	const focusReadout = required<HTMLButtonElement>('focus-readout');
+	const gardenReadout = required<HTMLButtonElement>('garden-readout');
 	const tabFocus = required<HTMLButtonElement>('tab-focus');
 	const tabLearn = required<HTMLButtonElement>('tab-learn');
 	const tabGarden = required<HTMLButtonElement>('tab-garden');
 	const focusPanel = required<HTMLDivElement>('focus-panel');
 	const learnPanel = required<HTMLDivElement>('learn-panel');
 	const gardenPanel = required<HTMLDivElement>('garden-panel');
+	const reminderPanel = required<HTMLDivElement>('reminder-panel');
+	const companionTabs = required<HTMLDivElement>('companion-tabs');
+	const companionTitle = required<HTMLHeadingElement>('companion-title');
+	const companionClose = required<HTMLButtonElement>('companion-close');
+	const messageMeta = required<HTMLDivElement>('message-meta');
 	const focusStatus = required<HTMLParagraphElement>('focus-status');
 	const focusTime = required<HTMLOutputElement>('focus-time');
 	const focusNotice = required<HTMLParagraphElement>('focus-notice');
@@ -105,7 +112,7 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 	let ready = false;
 	let requestSequence = 0;
 	let pendingRequest: number | undefined;
-	let activeTab: 'focus' | 'learn' | 'garden' = 'focus';
+	let activeTab: 'focus' | 'learn' | 'garden' | 'reminders' = 'focus';
 	let opener: HTMLElement | undefined;
 	let layoutKey = '';
 	let feedbackText = '';
@@ -172,8 +179,9 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 	}
 
 	function cardText(card: LearningCard) {
-		setText(cardKind, card.kind === 'fact' ? 'Fact' : card.kind === 'trivia' ? 'Trivia' : 'Encouragement');
-		setText(cardTopic, card.topic);
+		messageMeta.hidden = card.kind === 'encouragement';
+		setText(cardKind, card.kind === 'fact' ? 'Fact' : card.kind === 'trivia' ? 'Trivia' : '');
+		setText(cardTopic, card.kind === 'encouragement' ? '' : card.topic);
 		setText(messageText, card.text);
 		if (messageText.title !== card.text) { messageText.title = card.text; }
 		messageCard.classList.toggle('encouragement', card.kind === 'encouragement');
@@ -337,17 +345,23 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 		const showRing = focus.status !== 'idle';
 		focusRing.toggleAttribute('hidden', !showRing);
 		focusProgress.style.strokeDashoffset = String(100 * (1 - snapshot.progress));
+		focusReadout.hidden = !showRing;
 		focusReadout.textContent = showRing ? formatFocusTime(snapshot.remainingMs) : 'Focus';
 		focusReadout.title = showRing ? `${statusText}: ${formatFocusTime(snapshot.remainingMs)}` : 'Open focus session';
+		gardenReadout.textContent = 'Garden';
+		gardenReadout.title = state.garden.plant ? `${state.garden.plant.waterings} / ${WATERINGS_TO_BLOOM} waterings · Open garden` : 'Plant your first seed';
+		gardenReadout.setAttribute('aria-expanded', String(!tools.hidden && activeTab === 'garden'));
+		toggle.setAttribute('aria-expanded', String(!tools.hidden && activeTab === 'focus'));
 		stage.dataset.companionReady = String(ready);
 		toggle.disabled = !ready;
 		focusReadout.disabled = !ready;
+		gardenReadout.disabled = !ready;
 		nextMessage.disabled = !ready || busy;
 
 		const focusLayout = !tools.hidden && activeTab === 'focus' ? `${focus.status}:${focus.notice}:${careSettings.open}` : '';
 		const gardenLayout = !tools.hidden && activeTab === 'garden'
 			? `${state.garden.plant?.id}:${state.garden.plant?.waterings}:${gardenCollectionKey}:${snapshot.gardenCanWater}` : '';
-		const cueLayout = !tools.hidden ? snapshot.reminder : '';
+		const cueLayout = snapshot.reminder;
 		const nextLayoutKey = [tools.hidden, activeTab, focusLayout, gardenLayout, cueLayout, card.id, state.learning.revealed].join('|');
 		if (nextLayoutKey !== layoutKey) {
 			layoutKey = nextLayoutKey;
@@ -355,7 +369,7 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 		}
 	}
 
-	function selectTab(tab: 'focus' | 'learn' | 'garden', focusTab = false) {
+	function selectTab(tab: 'focus' | 'learn' | 'garden' | 'reminders', focusTab = false) {
 		activeTab = tab;
 		const focusSelected = tab === 'focus';
 		const learnSelected = tab === 'learn';
@@ -369,14 +383,20 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 		focusPanel.hidden = !focusSelected;
 		learnPanel.hidden = !learnSelected;
 		gardenPanel.hidden = !gardenSelected;
-		if (focusTab) { (focusSelected ? tabFocus : learnSelected ? tabLearn : tabGarden).focus(); }
+		reminderPanel.hidden = tab !== 'reminders';
+		companionTabs.hidden = tab === 'reminders';
+		careSettings.open = true;
+		setText(companionTitle, focusSelected ? 'Focus' : learnSelected ? 'Messages' : gardenSelected ? 'Garden' : 'Gentle reminders');
+		if (focusTab) { (focusSelected ? tabFocus : learnSelected ? tabLearn : gardenSelected ? tabGarden : waterReminderEnabled).focus(); }
 		render();
 	}
 
-	function open(tab: 'focus' | 'learn' | 'garden') {
+	function open(tab: 'focus' | 'learn' | 'garden' | 'reminders') {
 		if (!ready) { return; }
-		if (tools.hidden) {
+		if (tools.hidden || document.activeElement === toggle || document.activeElement === gardenReadout || document.activeElement === focusReadout) {
 			opener = document.activeElement instanceof HTMLElement ? document.activeElement : toggle;
+		}
+		if (tools.hidden) {
 			tools.hidden = false;
 			toggle.setAttribute('aria-expanded', 'true');
 			options.onOpen();
@@ -420,8 +440,10 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 		send({ type: 'feed-next' });
 	}
 
-	toggle.addEventListener('click', () => tools.hidden ? open('focus') : close());
+	toggle.addEventListener('click', () => tools.hidden || activeTab !== 'focus' ? open('focus') : close());
 	focusReadout.addEventListener('click', () => open('focus'));
+	gardenReadout.addEventListener('click', () => tools.hidden || activeTab !== 'garden' ? open('garden') : close());
+	companionClose.addEventListener('click', () => close());
 	tabFocus.addEventListener('click', () => selectTab('focus'));
 	tabLearn.addEventListener('click', () => selectTab('learn'));
 	tabGarden.addEventListener('click', () => selectTab('garden'));
@@ -486,13 +508,14 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 	messageCard.addEventListener('focusin', options.onActivity);
 	messageCard.addEventListener('focusout', options.onActivity);
 
-	for (const control of [toggle, focusReadout, ...requestControls]) { control.disabled = true; }
+	for (const control of [toggle, focusReadout, gardenReadout, ...requestControls]) { control.disabled = true; }
 	focusRing.setAttribute('hidden', '');
 
 	return {
 		receive,
 		result,
 		open,
+		openReminders: () => open('reminders'),
 		close,
 		toggle: () => tools.hidden ? open(activeTab) : close(),
 		nextCard,

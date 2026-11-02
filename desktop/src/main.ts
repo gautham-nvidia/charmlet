@@ -156,6 +156,7 @@ async function registerResources() {
 				const html = template
 					.replaceAll('__NONCE__', nonce)
 					.replaceAll('__CSP__', 'charmlet:')
+					.replaceAll('__APP_VERSION__', app.getVersion().replace(/[^a-zA-Z0-9.+-]/g, ''))
 					.replaceAll('__SCRIPT__', 'charmlet://app/renderer.js')
 					.replaceAll('__STYLE__', 'charmlet://app/view.css')
 					.replaceAll('__CHARM__', 'charmlet://app/media/keycap.svg')

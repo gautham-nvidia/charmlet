@@ -3,6 +3,35 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.4.3 - 2026-10-09 (Navigation and motivation)
+
+### Changed
+
+- Four direct controls: Charms, Focus, Garden and Settings, with a searchable visual picker and keyboard-accessible pop-out menus.
+- Proper SVG dropdown chevrons, compact reminder checkboxes and one visible panel at a time.
+- Motivation is the fresh-state feed default; saved feed choices remain unchanged. Motivational cards have no duplicated category heading.
+- Gentle recurring reminder notices are visible without opening tools, with Done, ten-minute Snooze and Skip. They do not move focus or create catch-up stacks.
+- Footer displays Website — coming soon, Made in Silicon Valley and the actual installed version.
+- The separate website provides 95 Gemini redraw candidates, 83 importable review designs and 14 review packs. Original defaults, website packs and earned progress remain unchanged; no final paid split or public release is implied.
+
+### Verification
+
+- Type/lint/build, 59 units and six real-editor cases passed locally on Windows VS Code 1.90.0 and 1.140.0. Current-host review-pack import/reload also passed.
+- New hosted cross-platform checks remain pending. Desktop 0.1.1, Photo Studio test-mode integration and website artwork checks have separate evidence and release gates.
+
+## 0.4.2 - 2026-10-08 (Garden discovery)
+
+### Added
+
+- A visible **Plant a seed** entry beside Focus; it becomes **Garden** after starting a garden.
+- **Charmlet: Open Garden** in the Command Palette and the Charmlet view title actions.
+- A real-editor regression covering direct access, the first watering, same-day protection, keyboard return and reload without rerolling the seed.
+
+### Verification
+
+- Type checking, lint, bundles, 58 unit tests and all four editor scenarios passed locally on Windows VS Code 1.140.0. The new Garden case reproduced the missing entry before the change, then passed.
+- Other editor versions and hosted platform checks remain pending for this candidate. The eleven-day rule, saved progress and reward logic are unchanged.
+
 ## 0.4.1 - 2026-10-08 (Phase 4B Garden and Gentle Reminders)
 
 Tracking: [Phase 4 #17](https://github.com/gautham-nvidia/charmlet/issues/17).

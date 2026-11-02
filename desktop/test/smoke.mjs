@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
@@ -12,13 +12,16 @@ const repo = join(root, '..');
 const require = createRequire(import.meta.url);
 const { _electron: electron, expect } = require(join(repo, 'extension', 'node_modules', '@playwright', 'test'));
 const packaged = process.argv.includes('--packaged');
-const mode = packaged ? 'packaged' : 'dev';
+const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+const bundleRoot = process.env.CHARMLET_DESKTOP_BUNDLE_ROOT
+  ? resolve(process.env.CHARMLET_DESKTOP_BUNDLE_ROOT) : join(root, 'release', manifest.version);
+const mode = packaged ? process.env.CHARMLET_DESKTOP_BUNDLE_ROOT ? 'archive' : 'packaged' : 'dev';
 const arch = process.arch;
 const executablePath = packaged
   ? process.platform === 'win32'
-    ? join(root, 'release', `Charmlet-win32-${arch}`, 'Charmlet.exe')
+    ? join(bundleRoot, `Charmlet-win32-${arch}`, 'Charmlet.exe')
     : process.platform === 'darwin'
-      ? join(root, 'release', `Charmlet-darwin-${arch}`, 'Charmlet.app', 'Contents', 'MacOS', 'Charmlet')
+      ? join(bundleRoot, `Charmlet-darwin-${arch}`, 'Charmlet.app', 'Contents', 'MacOS', 'Charmlet')
       : (() => { throw new Error(`Packaged smoke supports only win32/darwin, not ${process.platform}.`); })()
   : require('electron');
 const launchArgs = packaged ? [] : [root];
@@ -70,6 +73,24 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     try {
       const window = await application.firstWindow({ timeout: 45000 });
       await window.locator('#stage[data-ready="true"][data-companion-ready="true"]').waitFor({ timeout: 30000 });
+      await window.evaluate(() => {
+        globalThis.__charmletTestEvents = [];
+        const record = value => {
+          globalThis.__charmletTestEvents.push(value);
+          if (globalThis.__charmletTestEvents.length > 60) globalThis.__charmletTestEvents.shift();
+        };
+        for (const type of ['pointerdown', 'pointerup', 'click']) {
+          document.addEventListener(type, event => record({
+            type, target: event.target?.id, x: event.clientX, y: event.clientY,
+          }), true);
+        }
+        window.addEventListener('message', event => {
+          if (['companion', 'companion-result'].includes(event.data?.type)) {
+            record({ type: event.data.type, requestId: event.data.requestId, error: event.data.error,
+              learning: event.data.snapshot?.state?.learning });
+          }
+        });
+      });
       return { application, window };
     } catch (error) {
       await quit(application);
@@ -85,6 +106,23 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     await application.close().catch(() => undefined);
   }
   context.after(async () => {
+    for (const application of applications) {
+      try {
+        const window = await application.firstWindow();
+        await window.screenshot({ path: join(output, 'desktop-last-state.png') });
+        writeFileSync(join(output, 'desktop-last-state.json'), JSON.stringify({
+          host: await diagnostic(application),
+          renderer: await window.evaluate(() => ({
+            events: globalThis.__charmletTestEvents,
+            companionPersisted: document.getElementById('stage')?.dataset.companionPersisted,
+            focused: document.activeElement?.id,
+            feedback: document.getElementById('companion-feedback')?.textContent,
+            reveal: { text: document.getElementById('reveal-answer')?.textContent,
+              disabled: document.getElementById('reveal-answer')?.disabled },
+          })),
+        }, null, 2));
+      } catch { /* A closed window must not prevent owned-process cleanup. */ }
+    }
     await Promise.all([...applications].map(application => quit(application)));
     const logs = join(profile, 'logs');
     if (existsSync(logs)) cpSync(logs, join(output, 'logs'), { recursive: true });
@@ -93,6 +131,8 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   let first = await launch();
   const { application, window } = first;
   const start = await diagnostic(application);
+  await expect(window.locator('#app-version')).toHaveText(`v${manifest.version}`);
+  await expect(window.locator('#primary-nav > button')).toHaveCount(4);
   assert.equal(start.appName, 'Charmlet');
   assert.equal(realpathSync(start.profile), realpathSync(profile));
   assert.equal(start.focusable, false);
@@ -122,7 +162,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   await window.evaluate(() => globalThis.acquireVsCodeApi().postMessage({ type: 'desktop-hit-test', ignore: true }));
   await expect.poll(async () => (await diagnostic(application)).ignored, { timeout: 5000 }).toBe(true);
 
-  await window.getByRole('button', { name: 'Companion tools', exact: true }).click();
+  await window.getByRole('button', { name: 'Focus', exact: true }).click();
   await window.getByRole('tab', { name: 'Focus', exact: true }).click();
   assert.equal((await diagnostic(application)).focusable, true);
   await window.getByRole('button', { name: 'Resume', exact: true }).focus();
@@ -148,7 +188,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].webContents.reload());
   await window.locator('#stage[data-ready="true"][data-companion-ready="true"]').waitFor({ timeout: 30000 });
   await expect.poll(async () => (await diagnostic(application)).rendererGeneration, { timeout: 5000 }).toBeGreaterThan(generation);
-  await window.getByRole('button', { name: 'Companion tools', exact: true }).click();
+  await window.getByRole('button', { name: 'Focus', exact: true }).click();
   assert.equal(await window.locator('#focus-status').textContent(), 'Paused');
   assert.equal(JSON.parse(readFileSync(companionPath, 'utf8')).focus.remainingMs, paused);
   await window.getByRole('tab', { name: 'Garden', exact: true }).click();
@@ -164,10 +204,11 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   assert.equal(restarted.companion.state.focus.remainingMs, paused);
   await second.window.evaluate(() => globalThis.acquireVsCodeApi().postMessage({ type: 'desktop-hit-test', ignore: false }));
   await expect.poll(async () => (await diagnostic(second.application)).ignored, { timeout: 5000 }).toBe(false);
-  await second.window.getByRole('button', { name: 'Companion tools', exact: true }).click();
+  await second.window.getByRole('button', { name: 'Focus', exact: true }).click();
   await second.window.getByRole('button', { name: 'Stop', exact: true }).click();
   await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).focus.status, { timeout: 5000 }).toBe('idle');
   await second.window.getByRole('tab', { name: 'Learn', exact: true }).click();
+  await second.window.locator('#companion-close').click();
   await second.window.getByRole('button', { name: 'Reveal answer', exact: true }).click();
   await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).learning.revealed, { timeout: 5000 }).toBe(true);
   assert.ok((await second.window.locator('#message-answer').textContent())?.includes('commit'));

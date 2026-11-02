@@ -152,13 +152,14 @@ Use original code/art/copy and retain existing dependency notices. Generic compu
 
 Another app's free download or one-time purchase does not grant rights to redistribute its artwork. [Charmling's terms](https://charmling.app/terms), reviewed 2026-10-08, describe a perpetual, non-transferable licence to use the application on one Mac; that is not a blanket reuse licence for our project. Our own source/art distribution license still needs an owner decision in Phase 5. The project remains independent; “silicon quality” describes the craft and audience, not NVIDIA sponsorship.
 
-## Current kickoff status
+## Implementation status — 2026-11-02
 
 - [x] Owner's Phase 4–7 sequence and paid-photo exception recorded.
 - [x] Phase 4 branch created from merged main.
 - [x] Concrete feature, garden, content, catalogue, host and validation direction prepared.
-- [ ] Phase 4 implementation slices delivered and verified.
-- [ ] Phase 4 PR ready to merge.
+- [x] Phase 4 implementation delivered as extension 0.4.3, desktop 0.1.1, the expanded gallery and disabled Photo Studio foundation.
+- [x] Approved navigation A, motivation default, reminders and the complete 95-candidate review gallery verified locally.
+- [ ] Fresh hosted checks and Phase 4 merge recorded on PR #19.
 - [ ] Phase 5 store/publication decisions completed.
 
-Current 0.3.2 remains the tested installable build. No feature in this plan should be advertised as available until its implementation and evidence land.
+The owner authorized resuming the project and continuing on separate phase branches on November 2. Merge the verified Phase 4 engineering work before starting Phase 5. The 95 redraws remain review candidates; final artwork selection, licensing and live merchant/store setup are release decisions. Current evidence and limitations are in [Phase 4 verification](phase-4-validation.md).
