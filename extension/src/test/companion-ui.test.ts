@@ -1,7 +1,9 @@
 import { test, expect, _electron as electron, type ElectronApplication, type Page, type TestInfo } from '@playwright/test';
+import { spawnSync } from 'node:child_process';
+import { resolveCliPathFromVSCodeExecutablePath } from '@vscode/test-electron';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { applyCompanionAction, defaultCompanionState } from '../companion-core';
 import { DEFAULT_STATE } from '../charm-state';
 import { learningCard } from '../learning-cards';
@@ -18,7 +20,7 @@ interface OwnedEditor {
 	window: Page;
 }
 
-async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor, 'app' | 'window'>) => void): Promise<OwnedEditor> {
+async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor, 'app' | 'window'>) => void, installed = false): Promise<OwnedEditor> {
 	const profile = mkdtempSync(join(tmpdir(), prefix));
 	const scratchFile = join(profile, 'companion-trial.ts');
 	const storage = join(profile, 'user', 'User', 'globalStorage', 'gautham-nvidia.charmlet');
@@ -38,13 +40,41 @@ async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor,
 	const executablePath = process.env.VSCODE_EXECUTABLE
 		?? (process.platform === 'win32' ? 'C:\\Program Files\\Microsoft VS Code\\Code.exe' : undefined);
 	if (!executablePath) { throw new Error('Set VSCODE_TEST_VERSION or VSCODE_EXECUTABLE for this desktop editor.'); }
+	if (installed) {
+		const version = JSON.parse(readFileSync(resolve('package.json'), 'utf8')).version as string;
+		expect(version).toMatch(/^\d+\.\d+\.\d+$/);
+		const cliPath = resolveCliPathFromVSCodeExecutablePath(executablePath);
+		const args = [`--user-data-dir=${join(profile, 'user')}`, `--extensions-dir=${join(profile, 'extensions')}`,
+			'--install-extension', resolve(`charmlet-${version}.vsix`), '--force'];
+		let executable = cliPath;
+		const cliEnvironment = { ...environment };
+		if (process.platform === 'win32') {
+			// The vendor wrapper locates versioned resources in recent Windows archives.
+			// Invoke its Node entry directly so profile paths never pass through a shell.
+			const match = readFileSync(cliPath, 'utf8').match(/"%~dp0\.\.\\([^"]+cli\.js)"/);
+			if (!match) { throw new Error('Cannot locate the VS Code CLI in its vendor wrapper.'); }
+			args.unshift(resolve(dirname(cliPath), '..', match[1]));
+			executable = executablePath;
+			cliEnvironment.ELECTRON_RUN_AS_NODE = '1';
+			cliEnvironment.VSCODE_DEV = '';
+		}
+		const install = spawnSync(executable, args, { env: cliEnvironment, encoding: 'utf8', timeout: 90000 });
+		expect(install.error, 'The isolated VSIX installer must start.').toBeUndefined();
+		expect(install.status, install.stderr || install.stdout).toBe(0);
+		const installedManifest = JSON.parse(readFileSync(join(profile, 'extensions', `gautham-nvidia.charmlet-${version}`, 'package.json'), 'utf8'));
+		expect(installedManifest.version).toBe(version);
+		writeFileSync(join(profile, 'user', 'User', 'settings.json'), JSON.stringify({
+			'security.workspace.trust.emptyWindow': false,
+			'security.workspace.trust.startupPrompt': 'never',
+		}));
+	}
 	const app = await electron.launch({
 		executablePath,
 		args: [
 			'--new-window', `--user-data-dir=${join(profile, 'user')}`, `--extensions-dir=${join(profile, 'extensions')}`,
-			`--extensionDevelopmentPath=${resolve('.')}`,
+			...(installed ? [] : [`--extensionDevelopmentPath=${resolve('.')}`, '--disable-workspace-trust']),
 			...(process.platform === 'linux' ? ['--no-sandbox', '--disable-gpu-sandbox'] : []),
-			'--skip-welcome', '--skip-release-notes', '--disable-workspace-trust', '--disable-telemetry', '--disable-updates', scratchFile,
+			'--skip-welcome', '--skip-release-notes', '--disable-telemetry', '--disable-updates', scratchFile,
 		],
 		env: environment,
 		timeout: 45000,
@@ -411,6 +441,7 @@ test('navigation A searches installed charms and exposes quiet reminders and bui
 		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
 		await expect(frame.locator('#charm-search')).toBeFocused();
 		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(10);
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('navigation-picker.png') });
 		await frame.locator('#charm-groups').getByRole('button', { name: 'Good Luck', exact: true }).click();
 		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(4);
 		await frame.locator('#charm-search').fill('evil');
@@ -434,6 +465,7 @@ test('navigation A searches installed charms and exposes quiet reminders and bui
 		await expect(frame.locator('#settings-toggle')).toBeFocused();
 		await expect(frame.locator('#message-meta')).toBeVisible();
 		await editor.window.screenshot({ path: testInfo.outputPath('navigation-a.png') });
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('navigation-app.png') });
 		const reviewPack = resolve('..', 'website', 'packs', 'review', 'review-starter-redraws-1.charmlet.json');
 		await editor.app.evaluate(({ dialog }, path) => {
 			dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [path] });
@@ -452,3 +484,36 @@ test('navigation A searches installed charms and exposes quiet reminders and bui
 		await closeOwnedEditor(editor, testInfo);
 	}
 });
+
+if (process.env.CHARMLET_TEST_PACKAGED === '1') {
+	test('installed VSIX runs in Restricted Mode and keeps garden progress', async ({}, testInfo) => {
+		const editor = await launchOwnedEditor('charmlet-installed-', () => {}, true);
+		try {
+			const restricted = editor.window.getByRole('button', { name: /^Restricted Mode/ });
+			await expect(restricted).toBeVisible();
+			await command(editor.window, 'Charmlet: Show Charm');
+			let frame = await readyFrame(editor.window);
+			const version = JSON.parse(readFileSync(resolve('package.json'), 'utf8')).version;
+			await expect(frame.locator('#app-version')).toHaveText(`v${version}`);
+			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+			await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(10);
+			await frame.locator('#picker-close').click();
+			await command(editor.window, 'Charmlet: Open Garden');
+			await frame.getByRole('button', { name: 'Plant a seed', exact: true }).click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
+			await frame.getByRole('button', { name: 'Water plant', exact: true }).click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
+			await expect(frame.locator('#garden-count')).toHaveText('1 / 11 waterings');
+			const plantId = JSON.parse(readFileSync(editor.companionPath, 'utf8')).garden.plant.id;
+			frame = await reloadCharm(editor.window);
+			await expect(restricted).toBeVisible();
+			await command(editor.window, 'Charmlet: Open Garden');
+			await expect(frame.locator('#garden-count')).toHaveText('1 / 11 waterings');
+			await expect(frame.getByRole('button', { name: 'Water plant', exact: true })).toBeDisabled();
+			expect(JSON.parse(readFileSync(editor.companionPath, 'utf8')).garden.plant.id).toBe(plantId);
+			await frame.locator('#app').screenshot({ path: testInfo.outputPath('installed-garden.png') });
+		} finally {
+			await closeOwnedEditor(editor, testInfo);
+		}
+	});
+}

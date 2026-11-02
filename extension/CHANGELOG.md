@@ -3,6 +3,22 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.5.0 - 2026-11-02 (Store release preparation)
+
+### Added
+
+- A packaged privacy notice explaining local storage, imported photos, external links and data removal.
+- Explicit project/support links in the extension's store metadata.
+- Release checks for matching source/VSIX identities, built assets, required notices and exact website download bytes.
+- A manual release workflow with review artifacts and separate Marketplace/Open VSX destinations.
+- Support for VS Code Restricted Mode. The extension uses its own storage and explicit pack imports without executing workspace code.
+- An installed-VSIX check that keeps Restricted Mode enabled and verifies charm selection, watering and reload persistence.
+
+### Release status
+
+- The core, original bundled artwork, garden and free importer retain their Phase 4 behavior.
+- Source/art licence selection, publisher credentials, verified fork onboarding and the public website remain release prerequisites. This version is not yet a store release.
+
 ## 0.4.3 - 2026-10-09 (Navigation and motivation)
 
 ### Changed

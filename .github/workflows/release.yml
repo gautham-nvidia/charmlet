@@ -1,0 +1,92 @@
+name: Extension Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact version in extension/package.json
+        required: true
+        type: string
+      destination:
+        description: Artifact prepares files; store destinations upload the checked VSIX
+        required: true
+        default: artifact
+        type: choice
+        options: [artifact, marketplace, open-vsx, both]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: extension-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CHARMLET_RELEASE_VERSION: ${{ inputs.version }}
+      CHARMLET_RELEASE_TARGET: ${{ inputs.destination }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: extension/package-lock.json
+      - name: Require accepted editor CI before a store upload
+        if: inputs.destination != 'artifact'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          accepted="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&event=push&per_page=20" | jq --arg sha "$GITHUB_SHA" '[.workflow_runs[] | select(.head_sha == $sha and .conclusion == "success")] | length')"
+          test "$accepted" -gt 0 || { echo "Wait for successful main-branch CI at this exact commit."; exit 1; }
+      - name: Install locked dependencies
+        run: npm ci --prefix extension
+      - name: Build and test the candidate
+        run: |
+          npm run compile --prefix extension
+          npm run test:unit --prefix extension
+          node --test release/check.test.mjs website/art-cutout.test.mjs website/studio/test/core.test.mjs website/studio/test/service.test.mjs
+      - name: Package a review artifact
+        if: inputs.destination == 'artifact'
+        run: npm run package:vsix --prefix extension
+      - name: Package with required licence documents
+        if: inputs.destination != 'artifact'
+        run: npm run package:release --prefix extension
+      - name: Build gallery and verify the exact download
+        run: |
+          node website/build.mjs
+          node release/check.mjs
+      - name: Retain the reviewed extension and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: charmlet-release-${{ inputs.version }}-${{ github.sha }}
+          path: |
+            extension/*.vsix
+            release/dist/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Validate credentials and publish the same VSIX
+        if: inputs.destination != 'artifact'
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node release/check.mjs --strict
+          package="charmlet-$CHARMLET_RELEASE_VERSION.vsix"
+          cd extension
+          if [[ "$CHARMLET_RELEASE_TARGET" == marketplace || "$CHARMLET_RELEASE_TARGET" == both ]]; then
+            npx --no-install vsce verify-pat gautham-nvidia
+            npx --no-install vsce publish --packagePath "$package"
+          fi
+          if [[ "$CHARMLET_RELEASE_TARGET" == open-vsx || "$CHARMLET_RELEASE_TARGET" == both ]]; then
+            npx --no-install ovsx publish "$package"
+          fi
