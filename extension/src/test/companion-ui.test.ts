@@ -8,7 +8,7 @@ import { applyCompanionAction, defaultCompanionState } from '../companion-core';
 import { DEFAULT_STATE } from '../charm-state';
 import { learningCard } from '../learning-cards';
 import { MESSAGES } from '../messages';
-import { localDayKey } from '../garden-core';
+import { localDayKey, type GardenState } from '../garden-core';
 import { command, readyFrame, reloadCharm } from './editor-helpers';
 
 interface OwnedEditor {
@@ -493,6 +493,13 @@ if (process.env.CHARMLET_TEST_PACKAGED === '1') {
 			await expect(restricted).toBeVisible();
 			await command(editor.window, 'Charmlet: Show Charm');
 			let frame = await readyFrame(editor.window);
+			const expectDailyWatering = async (lastWateredDay: string | null) => {
+				expect(lastWateredDay).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+				await expect.poll(async () => {
+					const enabled = await frame.getByRole('button', { name: 'Water plant', exact: true }).isEnabled();
+					return enabled === (localDayKey(Date.now()) > lastWateredDay!);
+				}, { message: 'Watering eligibility must follow the current local day.' }).toBe(true);
+			};
 			const version = JSON.parse(readFileSync(resolve('package.json'), 'utf8')).version;
 			await expect(frame.locator('#app-version')).toHaveText(`v${version}`);
 			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
@@ -504,14 +511,40 @@ if (process.env.CHARMLET_TEST_PACKAGED === '1') {
 			await frame.getByRole('button', { name: 'Water plant', exact: true }).click();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
 			await expect(frame.locator('#garden-count')).toHaveText('1 / 11 waterings');
-			const plantId = JSON.parse(readFileSync(editor.companionPath, 'utf8')).garden.plant.id;
+			const watered = JSON.parse(readFileSync(editor.companionPath, 'utf8')).garden as GardenState;
+			await expectDailyWatering(watered.lastWateredDay);
 			frame = await reloadCharm(editor.window);
 			await expect(restricted).toBeVisible();
 			await command(editor.window, 'Charmlet: Open Garden');
 			await expect(frame.locator('#garden-count')).toHaveText('1 / 11 waterings');
-			await expect(frame.getByRole('button', { name: 'Water plant', exact: true })).toBeDisabled();
-			expect(JSON.parse(readFileSync(editor.companionPath, 'utf8')).garden.plant.id).toBe(plantId);
+			expect(JSON.parse(readFileSync(editor.companionPath, 'utf8')).garden).toEqual(watered);
+			// A real reload can cross midnight. The saved watering stays unchanged,
+			// but the next local calendar day correctly permits another watering.
+			await expectDailyWatering(watered.lastWateredDay);
+			writeFileSync(testInfo.outputPath('garden-calendar.json'), JSON.stringify({
+				watered, observedDayAfterReload: localDayKey(Date.now()),
+			}, null, 2));
 			await frame.locator('#app').screenshot({ path: testInfo.outputPath('installed-garden.png') });
+
+			// Exercise a previous-day restoration on every run, without
+			// changing the machine clock or touching a normal editor profile.
+			const priorDay = new Date();
+			priorDay.setDate(priorDay.getDate() - 1);
+			const overnight = JSON.parse(readFileSync(editor.companionPath, 'utf8'));
+			overnight.garden.lastWateredDay = localDayKey(priorDay.getTime());
+			overnight.garden.lastWateredAt = priorDay.getTime();
+			overnight.garden.plant.plantedAt = priorDay.getTime() - 1000;
+			writeFileSync(editor.companionPath, `${JSON.stringify(overnight)}\n`);
+			frame = await reloadCharm(editor.window);
+			await expect(restricted).toBeVisible();
+			await command(editor.window, 'Charmlet: Open Garden');
+			await expect(frame.locator('#garden-count')).toHaveText('1 / 11 waterings');
+			expect(JSON.parse(readFileSync(editor.companionPath, 'utf8')).garden.plant.id).toBe(watered.plant?.id);
+			await expect(frame.getByRole('button', { name: 'Water plant', exact: true })).toBeEnabled();
+			await frame.getByRole('button', { name: 'Water plant', exact: true }).click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
+			await expect(frame.locator('#garden-count')).toHaveText('2 / 11 waterings');
+			await expectDailyWatering(JSON.parse(readFileSync(editor.companionPath, 'utf8')).garden.lastWateredDay);
 		} finally {
 			await closeOwnedEditor(editor, testInfo);
 		}
