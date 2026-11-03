@@ -3,7 +3,7 @@
 Ten original hanging charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus/Learn tools, a gentle garden and optional reminders.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Store preparation candidate, version 0.5.0.** Charmlet lives in a dockable VS Code view, not over your code
+**Store preparation candidate, version 0.5.1.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 It also works in Restricted Mode without asking you to trust workspace code.
 
@@ -18,7 +18,7 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 
 1. Open the Command Palette and run **Charmlet: Show Charm**.
 2. For a right-side dock, run **View: Move View**, select **Charmlet**, then **New Secondary Side Bar Entry**.
-3. Click a charm to nudge it. Pull downward and release to return to rest; pull straight upward toward the peg to retract, then use the restore arrow to bring it back.
+3. Click a charm to nudge it. Pull downward and release for a rebound and smaller settling bounces; Reduced Motion returns directly to rest. Pull straight upward toward the peg to retract, then use the restore arrow to bring it back.
 4. Click **Charms** to open the visual picker, search by name and filter installed collections. Choose **Settings → Appearance** for size, resting cord, visibility, motion and layout.
 5. Switch to **Orbit layout** for a full loop around the fixed peg; Hanging layout keeps a compact top peg and pull room.
 6. Click **Focus** or run **Charmlet: Focus Session** for a focus/break timer with presets, custom minutes, pause/resume/stop and an optional intention.

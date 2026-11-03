@@ -411,34 +411,81 @@ test('rapid circular drags keep the body in view and recover after release', () 
 	}
 });
 
-test('a stretched cord eases back to its resting length before settling', () => {
+test('a released stretch rebounds across rest with diminishing bounces and then sleeps', () => {
 	const pendulum = new Pendulum(280, 800, 126);
 	try {
 		const resting = pendulum.position;
-		const stretchedLength = pendulum.layout.maximumCord;
+		const stretchedLength = 246;
 		pendulum.setLength(stretchedLength);
 		pendulum.settle();
 		pendulum.returnToLength(126);
 		assert.equal(pendulum.layout.cordLength, stretchedLength);
 		assert.equal(pendulum.moving, true);
-		let previous = stretchedLength;
-		for (let step = 0; step < 30; step++) {
+		let previousSign = 1;
+		const peaks = [stretchedLength - 126];
+		for (let step = 0; step < 240; step++) {
 			pendulum.step();
-			assert.ok(pendulum.layout.cordLength <= previous && pendulum.layout.cordLength >= 126);
+			const displacement = pendulum.position.y - resting.y;
+			const sign = Math.sign(displacement);
+			if (Math.abs(displacement) > 0.75) {
+				if (sign !== previousSign) { peaks.push(0); previousSign = sign; }
+				peaks[peaks.length - 1] = Math.max(peaks[peaks.length - 1], Math.abs(displacement));
+			}
+			assert.ok(pendulum.position.y - pendulum.layout.visualRadius >= 0);
+			assert.ok(pendulum.position.y + pendulum.layout.visualRadius <= pendulum.layout.height);
 			if (step === 0) {
 				assert.ok(pendulum.layout.cordLength > 126 && pendulum.layout.cordLength < stretchedLength);
-				assert.ok(pendulum.position.y > resting.y);
+				assert.ok(displacement > 110, 'release must start at the held position, without a jump to rest');
 			}
-			previous = pendulum.layout.cordLength;
 		}
+		assert.ok(peaks.length >= 4, 'the actual charm must cross its resting position repeatedly');
+		assert.ok(peaks[1] > 10, 'the first rebound must be clearly visible');
+		assert.ok(peaks[2] > 4 && peaks[2] < peaks[1], 'the next bounce must be smaller');
+		assert.ok(peaks[3] < peaks[2], 'subsequent bounces must lose energy');
 		assert.equal(pendulum.layout.cordLength, 126);
-		for (let step = 0; step < 1500; step++) {
-			pendulum.step();
-		}
 		assert.equal(pendulum.moving, false);
 		assert.deepEqual(pendulum.position, resting);
 	} finally {
 		pendulum.dispose();
+	}
+});
+
+test('release before the next physics frame does not jump to an unrendered pointer target', () => {
+	const p = new Pendulum(280, 800, 126);
+	try {
+		const rest = p.position;
+		p.grab(rest);
+		p.drag({ x: rest.x, y: rest.y + 200 });
+		assert.deepEqual(p.position, rest);
+		p.returnToLength(126);
+		p.step();
+		assert.ok(Math.abs(p.position.y - rest.y) < 1, 'release must start at the visible charm');
+		assert.equal(p.layout.cordLength, 126);
+	} finally { p.dispose(); }
+});
+
+test('imported attachment geometry scales with the image and remains bounded during a rebound', () => {
+	for (const mode of ['hanging', 'orbit'] as const) {
+		for (const attachment of [{ x: 0.5, y: 0 }, { x: 0.45, y: 14 / 84 }, { x: 0.55, y: 0.5 }]) {
+			const p = new Pendulum(180, 140, 48, 140, mode, attachment);
+			try {
+				const rest = p.position;
+				assert.ok(Math.abs(p.layout.attachmentX - (attachment.x - 0.5) * p.layout.charmWidth) < 0.001);
+				assert.ok(Math.abs(p.layout.attachmentOffset - (0.5 - attachment.y) * p.layout.charmHeight) < 0.001);
+				p.grab(rest);
+				p.drag({ x: rest.x, y: rest.y + 100 }, true);
+				p.returnToLength(48);
+				for (let step = 0; step < 240; step++) {
+					p.step();
+					const { x, y } = p.position;
+					assert.ok(x - p.layout.visualRadius >= -0.001 && x + p.layout.visualRadius <= p.layout.width + 0.001);
+					assert.ok(y - p.layout.visualRadius >= -0.001 && y + p.layout.visualRadius <= p.layout.height + 0.001);
+				}
+				assert.deepEqual(p.position, rest);
+				assert.equal(p.moving, false);
+				assert.equal(p.engine.world.constraints.length, 1);
+			} finally { p.dispose(); }
+		}
 	}
 });
 

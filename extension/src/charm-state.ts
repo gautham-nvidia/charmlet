@@ -1,5 +1,6 @@
 import { CHARMS, getCharm, type CharmDefinition, type CharmId } from './charm-catalog';
 import { MESSAGES } from './messages';
+import { DEFAULT_ATTACHMENT, type CharmAttachment } from './charm-attachment';
 
 export type LayoutMode = 'hanging' | 'orbit';
 
@@ -77,11 +78,12 @@ export function resetState(state: CharmState): CharmState {
 	};
 }
 
-export function getLayout(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode) {
+export function getLayout(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode, attachment: CharmAttachment = DEFAULT_ATTACHMENT) {
 	const factor = clamp(size, 60, 140) / 100;
 	const charmWidth = 72 * factor;
 	const charmHeight = 84 * factor;
-	const attachmentOffset = 32 * factor;
+	const attachmentX = (attachment.x * 72 - 36) * factor;
+	const attachmentOffset = (42 - attachment.y * 84) * factor;
 	const visualRadius = Math.hypot(charmWidth, charmHeight) / 2;
 	const edgePadding = 8;
 	const minimumDragCord = Math.max(16, 16 * factor);
@@ -89,16 +91,17 @@ export function getLayout(width: number, height: number, cordLength: number, siz
 	const anchorY = mode === 'orbit' ? visualRadius + orbitRadius + edgePadding : 12;
 	const minimumWidth = mode === 'orbit' ? Math.max(144, 2 * anchorY) : Math.max(144, 2 * (visualRadius + edgePadding) + 40);
 	const pullAllowance = 32;
-	const minimumHeight = anchorY + 48 + attachmentOffset + visualRadius + edgePadding + pullAllowance;
+	const minimumCord = Math.max(48, visualRadius + edgePadding - anchorY - attachmentOffset);
+	const minimumHeight = anchorY + minimumCord + attachmentOffset + visualRadius + edgePadding + pullAllowance;
 	const safeWidth = Math.max(minimumWidth, width);
 	const safeHeight = Math.max(minimumHeight, height);
-	const maximumDragCord = Math.max(48 + pullAllowance, safeHeight - anchorY - attachmentOffset - visualRadius - edgePadding);
-	const maximumCord = Math.max(48, maximumDragCord - pullAllowance);
+	const maximumDragCord = Math.max(minimumCord + pullAllowance, safeHeight - anchorY - attachmentOffset - visualRadius - edgePadding);
+	const maximumCord = Math.max(minimumCord, maximumDragCord - pullAllowance);
 	return {
 		width: safeWidth, height: safeHeight, minimumWidth, minimumHeight,
-		charmWidth, charmHeight, bodyRadius: 34 * factor, attachmentOffset,
+		charmWidth, charmHeight, bodyRadius: 34 * factor, attachmentOffset, attachmentX,
 		visualRadius, edgePadding, minimumDragCord, orbitRadius, mode, pullAllowance,
 		maximumDragCord, anchorX: safeWidth / 2, anchorY,
-		cordLength: clamp(cordLength, 48, maximumCord), maximumCord,
+		cordLength: clamp(cordLength, minimumCord, maximumCord), minimumCord, maximumCord,
 	};
 }

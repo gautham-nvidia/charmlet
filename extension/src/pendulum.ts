@@ -1,5 +1,6 @@
 import { Bodies, Body, Composite, Constraint, Engine, Sleeping } from 'matter-js';
 import { DEFAULT_STATE, clamp, getLayout, type LayoutMode } from './charm-state';
+import { DEFAULT_ATTACHMENT, type CharmAttachment } from './charm-attachment';
 
 export type Point = { x: number; y: number };
 
@@ -13,8 +14,8 @@ export class Pendulum {
 	private quietFrames = 0;
 	private returnMotion?: { from: number; target: number; elapsed: number; fromAngle?: number };
 
-	constructor(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode) {
-		this.layout = getLayout(width, height, cordLength, size, mode);
+	constructor(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode, attachment: CharmAttachment = DEFAULT_ATTACHMENT) {
+		this.layout = getLayout(width, height, cordLength, size, mode, attachment);
 		this.body = Bodies.circle(this.layout.anchorX, this.layout.anchorY + this.layout.cordLength + this.layout.attachmentOffset, this.layout.bodyRadius, {
 			frictionAir: 0.025,
 			restitution: 0.2,
@@ -29,7 +30,7 @@ export class Pendulum {
 			damping: 0.08,
 		});
 		Composite.add(this.engine.world, [this.body, this.tether]);
-		this.resize(width, height, cordLength, size, mode);
+		this.resize(width, height, cordLength, size, mode, attachment);
 	}
 
 	get moving() {
@@ -44,11 +45,11 @@ export class Pendulum {
 		return -Math.atan2(this.body.position.x - this.layout.anchorX, this.body.position.y - this.layout.anchorY);
 	}
 
-	resize(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode) {
+	resize(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode, attachment: CharmAttachment = DEFAULT_ATTACHMENT) {
 		this.returnMotion = undefined;
 		this.release();
 		const previousRadius = this.layout.bodyRadius;
-		this.layout = getLayout(width, height, cordLength, size, mode);
+		this.layout = getLayout(width, height, cordLength, size, mode, attachment);
 		const ratio = this.layout.bodyRadius / previousRadius;
 		Body.scale(this.body, ratio, ratio);
 		Body.setInertia(this.body, Infinity);
@@ -68,23 +69,27 @@ export class Pendulum {
 
 	setLength(length: number) {
 		this.returnMotion = undefined;
-		this.layout.cordLength = clamp(length, 48, this.layout.maximumCord);
+		this.layout.cordLength = clamp(length, this.layout.minimumCord, this.layout.maximumCord);
 		this.tether.length = this.layout.cordLength + this.layout.attachmentOffset;
 		this.wake();
 	}
 
 	returnToLength(length: number, immediate = false) {
 		this.release();
-		const target = clamp(length, 48, this.layout.maximumCord);
+		const target = clamp(length, this.layout.minimumCord, this.layout.maximumCord);
 		const angle = this.angle;
+		// A fast pointer move may not have reached the rendered body yet.
+		const from = Math.max(0, Math.hypot(this.body.position.x - this.layout.anchorX, this.body.position.y - this.layout.anchorY) - this.layout.attachmentOffset);
 		const needsArc = this.body.position.y < this.layout.anchorY
 			|| target + this.layout.attachmentOffset > this.radiusLimit(angle) + 0.01;
-		if (immediate || (!needsArc && Math.abs(target - this.layout.cordLength) < 0.001)) {
+		if (immediate || (!needsArc && Math.abs(target - from) < 0.001)) {
 			this.setLength(target);
 			if (immediate) { this.settle(); }
 			return;
 		}
-		this.returnMotion = { from: this.layout.cordLength, target, elapsed: 0, fromAngle: needsArc ? angle : undefined };
+		this.layout.cordLength = from;
+		this.tether.length = from + this.layout.attachmentOffset;
+		this.returnMotion = { from, target, elapsed: 0, fromAngle: needsArc ? angle : undefined };
 		this.wake();
 	}
 
@@ -153,30 +158,34 @@ export class Pendulum {
 		if (this.returnMotion) {
 			const motion = this.returnMotion;
 			motion.elapsed += 1000 / 60;
+			const seconds = motion.elapsed / 1000;
+			// An underdamped return: a strong first rebound, then progressively smaller
+			// ones. Its initial slope is zero, so a held stretch releases smoothly.
+			const decay = Math.exp(-4 * seconds) * (Math.cos(12 * seconds) + Math.sin(12 * seconds) / 3);
+			const desired = seconds >= 2 ? motion.target : motion.target + (motion.from - motion.target) * decay;
 			const progress = Math.min(1, motion.elapsed / 350);
 			const eased = progress * progress * (3 - 2 * progress);
-			if (motion.fromAngle !== undefined) {
-				const angle = motion.fromAngle * (1 - eased);
-				const desired = motion.from + (motion.target - motion.from) * eased;
-				const radius = Math.min(desired + this.layout.attachmentOffset, this.radiusLimit(angle));
-				this.layout.cordLength = radius - this.layout.attachmentOffset;
-				this.tether.length = radius;
+			const returningArc = motion.fromAngle !== undefined && motion.elapsed <= 350;
+			const angle = returningArc ? motion.fromAngle! * (1 - eased) : this.angle;
+			const lowerRadius = this.layout.mode === 'hanging'
+				? Math.max(this.layout.orbitRadius, (this.layout.visualRadius + this.layout.edgePadding - this.layout.anchorY) / Math.max(0.001, Math.cos(angle)))
+				: this.layout.orbitRadius;
+			const upperRadius = this.radiusLimit(angle);
+			const radius = clamp(desired + this.layout.attachmentOffset, Math.min(lowerRadius, upperRadius), upperRadius);
+			this.layout.cordLength = radius - this.layout.attachmentOffset;
+			this.tether.length = radius;
+			Sleeping.set(this.body, false);
+			if (returningArc) {
+				const previous = this.position;
 				Body.setPosition(this.body, this.positionAt(angle, radius));
 				this.constrainPosition();
-				Body.setVelocity(this.body, { x: 0, y: 0 });
-				Sleeping.set(this.body, false);
-				if (progress === 1) {
-					this.returnMotion = undefined;
-					this.setLength(motion.target);
-					this.settle();
-				}
+				// Carry the arc's last movement into the free swing rather than parking.
+				Body.setVelocity(this.body, { x: this.body.position.x - previous.x, y: this.body.position.y - previous.y });
 				return;
 			}
-			this.layout.cordLength = progress === 1 ? motion.target : motion.from + (motion.target - motion.from) * eased;
-			this.tether.length = this.layout.cordLength + this.layout.attachmentOffset;
-			Sleeping.set(this.body, false);
-			if (progress === 1) {
+			if (seconds >= 2) {
 				this.returnMotion = undefined;
+				this.setLength(motion.target);
 			}
 		}
 		Engine.update(this.engine, 1000 / 60);

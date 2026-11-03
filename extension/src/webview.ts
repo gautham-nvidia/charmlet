@@ -232,11 +232,11 @@ function controls() {
 }
 
 function render() {
-	const { anchorX, anchorY, cordLength, attachmentOffset } = pendulum.layout;
+	const { anchorX, anchorY, cordLength, attachmentOffset, attachmentX } = pendulum.layout;
 	const { x: positionX, y: positionY } = pendulum.position;
 	const angle = pendulum.angle;
-	const hookX = positionX + Math.sin(angle) * attachmentOffset;
-	const hookY = positionY - Math.cos(angle) * attachmentOffset;
+	const hookX = positionX + Math.cos(angle) * attachmentX + Math.sin(angle) * attachmentOffset;
+	const hookY = positionY + Math.sin(angle) * attachmentX - Math.cos(angle) * attachmentOffset;
 	charm.style.transform = `translate(${positionX}px, ${positionY}px) rotate(${angle}rad)`;
 	anchor.style.left = `${anchorX}px`;
 	anchor.style.top = `${anchorY}px`;
@@ -265,6 +265,8 @@ function render() {
 	stage.dataset.anchorX = String(anchorX);
 	stage.dataset.anchorY = String(anchorY);
 	stage.dataset.orbitRadius = String(pendulum.layout.orbitRadius);
+	stage.dataset.attachmentX = String(attachmentX);
+	stage.dataset.attachmentY = String(-attachmentOffset);
 	charm.dataset.positionX = positionX.toFixed(2);
 	charm.dataset.positionY = positionY.toFixed(2);
 	charm.dataset.angle = angle.toFixed(6);
@@ -376,9 +378,10 @@ function resize() {
 	cancelDrag();
 	updateOverlays();
 	const { width, height } = stage.getBoundingClientRect();
-	const layout = getLayout(width, height, state.cordLength, state.size, state.layoutMode);
+	const attachment = getCharm(state.charmId, charms).attachment;
+	const layout = getLayout(width, height, state.cordLength, state.size, state.layoutMode, attachment);
 	scale = Math.max(0.01, Math.min(1, width / layout.minimumWidth, height / layout.minimumHeight));
-	pendulum.resize(width / scale, height / scale, state.cordLength, state.size, state.layoutMode);
+	pendulum.resize(width / scale, height / scale, state.cordLength, state.size, state.layoutMode, attachment);
 	rig.style.width = `${pendulum.layout.width}px`;
 	rig.style.height = `${pendulum.layout.height}px`;
 	rig.style.transform = `scale(${scale})`;

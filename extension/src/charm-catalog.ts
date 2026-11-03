@@ -1,4 +1,5 @@
 import builtinCharms from './builtin-charms.json';
+import type { CharmAttachment } from './charm-attachment';
 export interface CharmDefinition {
 	id: string;
 	name: string;
@@ -7,6 +8,7 @@ export interface CharmDefinition {
 	accent: string;
 	group: string;
 	source?: string;
+	attachment?: CharmAttachment;
 }
 export const CHARMS: readonly CharmDefinition[] = builtinCharms;
 export type CharmId = string;
