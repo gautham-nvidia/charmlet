@@ -90,6 +90,7 @@ async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor,
 		executablePath,
 		args: [
 			'--new-window', `--user-data-dir=${join(profile, 'user')}`, `--extensions-dir=${join(profile, 'extensions')}`,
+			'--force-device-scale-factor=1', // Use the CI pixel grid on high-DPI developer displays too.
 			...(installed ? [] : [`--extensionDevelopmentPath=${resolve('.')}`, '--disable-workspace-trust']),
 			...(process.platform === 'linux' ? ['--no-sandbox', '--disable-gpu-sandbox'] : []),
 			'--skip-welcome', '--skip-release-notes', '--disable-telemetry', '--disable-updates', scratchFile,
@@ -624,9 +625,13 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', id);
 		}
 		const [pumpkin, ball] = imported;
-		// Fix only the owned browser's Date. Host and machine clocks stay intact,
-		// while real timers continue to drive physics and save acknowledgements.
-		await window.clock.setFixedTime(new Date(2026, 9, 31, 12));
+		// Only Charmlet reads the simulated date. Keep the IDE's clock, native
+		// event timestamps, animation frames and real timers intact.
+		const setReviewDate = (date: Date) => frame.evaluate(now => {
+			Date.now = () => now;
+			globalThis.window.dispatchEvent(new Event('focus'));
+		}, date.getTime());
+		await setReviewDate(new Date(2026, 9, 31, 12));
 		await frame.locator('#settings-toggle').click();
 		await frame.locator('#menu-appearance').click();
 		await expect(frame.locator('#charm-pinned')).toBeChecked();
@@ -639,18 +644,15 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 			charmId: ball, charmPinned: false, festiveEnabled: true,
 		});
 		await frame.locator('#settings-close').click();
-		await window.clock.setFixedTime(new Date(2026, 10, 1, 0));
-		await frame.evaluate(() => globalThis.window.dispatchEvent(new Event('focus')));
+		await setReviewDate(new Date(2026, 10, 1, 0));
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
-		await window.clock.setFixedTime(new Date(2026, 9, 31, 12));
-		await frame.evaluate(() => globalThis.window.dispatchEvent(new Event('focus')));
+		await setReviewDate(new Date(2026, 9, 31, 12));
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', pumpkin);
 		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
 		await frame.getByRole('button', { name: 'Select Stress Ball', exact: true }).click();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
-		await window.clock.setFixedTime(new Date(2027, 9, 31, 12));
-		await frame.evaluate(() => globalThis.window.dispatchEvent(new Event('focus')));
+		await setReviewDate(new Date(2027, 9, 31, 12));
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
 		expect(JSON.parse(readFileSync(preferencesPath, 'utf8')).charmPinned).toBe(true);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
@@ -663,8 +665,9 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 					globalThis.window.addEventListener(type, event => {
 						const pointer = event as PointerEvent;
 						const target = event.target instanceof Element ? event.target : undefined;
-						events.push({ type, id: pointer.pointerId, buttons: pointer.buttons,
-							x: pointer.clientX, y: pointer.clientY, target: target?.id ?? target?.tagName,
+						events.push({ type, id: pointer.pointerId, buttons: pointer.buttons, trusted: event.isTrusted,
+							x: pointer.clientX, y: pointer.clientY, target: target?.id || target?.tagName,
+							classes: target?.getAttribute('class'),
 							captured: document.getElementById('charm')?.hasPointerCapture(pointer.pointerId),
 							time: performance.now() });
 						document.documentElement.dataset.pointerTrace = JSON.stringify(events.slice(-40));
@@ -682,8 +685,11 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 			return matrix.a > 1.05 && matrix.d < .9;
 		});
 		await expect.poll(squeezed).toBe(true);
+		// Exercise a sustained hold, without interrupting pointer capture with
+		// a screenshot. Capture evidence once the native release has completed.
+		await window.waitForTimeout(500);
+		await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(.86);
 		expect(await alphaAtCordTip(frame), 'Squeezing must leave the cord touching the visible ball').toBeGreaterThanOrEqual(128);
-		await frame.locator('#app').screenshot({ path: testInfo.outputPath('stress-ball-held.png') });
 		await window.mouse.up();
 		writeFileSync(testInfo.outputPath('squeeze-release.json'), JSON.stringify(await frame.evaluate(() => ({
 			active: document.getElementById('charm')!.matches(':active'),
@@ -706,6 +712,7 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 				})).catch(error => ({ error: String(error) })))),
 			}, null, 2));
 		}
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('stress-ball-released.png') });
 		await frame.locator('#settings-toggle').click();
 		await frame.locator('#menu-appearance').click();
 		await frame.locator('#motion').click();
