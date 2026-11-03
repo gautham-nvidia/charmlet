@@ -448,3 +448,15 @@ The owner requested better cord contact and a visible bounce after release. Vers
 Local checks passed63 units, type/lint/build, seven real-editor scenarios on Windows VSCode1.140, six desktop models and the isolated desktop source smoke. One earlier desktop run reported a companion-save error and retained the paused state; the unchanged serial run passed. The underlying filesystem error was not captured, so no storage-fix claim is made. Hosted follow-up checks remain pending.
 
 The review VSIX is128896bytes, SHA25666623fb83c1d824afc498395c4f048594e25f0581301797ae11f5505188586bb; its41files and website copy agree. Publication remains blocked by the existing source/art licence gates. Separate new artwork feedback requests a smaller recognizable collection, original Terminal, heritage/cricket/BayArea additions and seasonal defaults; that refresh remains in review.
+
+## 2026-11-03 — curated artwork and tactile/seasonal review
+
+Motion PR #22 merged at b4e298c after eight successful checks; both post-merge workflows succeeded. Continued on `feat/phase-5-art-refresh` under the owner's phase-by-phase authorization.
+
+Applied the supplied keep/redraw/retire decisions, preserved the original Terminal and removed the language prefix from displayed names. Seventeen Gemini 3 Pro Image samples cover seven replacements, two Stress Busters, Kovil, Cricket, Robot Assistant and five seasonal objects. The selected review contains 64 designs, 51 individual imports and sixteen packs, including Refresh Sample and Bay Area Days. Historical pack identities remain intact. No candidate replaced bundled production art.
+
+Version 0.5.2 adds an entirely motivational 80-message deck, attachment-centred pointer/keyboard squeezing and optional local-date festive selection. Manual choices/imports and legacy selections are pinned; automatic dates never overwrite the usual selection. Reduced Motion removes animated compression/rebound.
+
+Passed 66 units and all nine Windows VS Code 1.140 editor scenarios, including actual installed VSIX persistence. Main/review website checks passed with no overflow or console errors. Twenty-five real installed-app captures at 100% cover dark/light backgrounds; the comparison sheets are in `website/assets/app-review/` and linked from the review page. The final VSIX is 131204 bytes, SHA-256 bf5764257050b3219fcdab536e2a87ffcfe565a6ebee5b362719f6d461c09e3c.
+
+Desktop 0.1.2 passed type/build, six model checks, developer smoke and extracted-archive smoke. Its unsigned Windows ZIP is 158278080 bytes, SHA-256 1b39b8a32f908010b33f6674e9bc69c00280c69fb69014036a60c0df47872b21. Hosted checks follow in the PR. Owner artwork/free-paid decisions and existing licensing/publishing/native-OS gates remain open.

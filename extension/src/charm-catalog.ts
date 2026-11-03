@@ -15,3 +15,8 @@ export type CharmId = string;
 export function getCharm(id: unknown, charms: readonly CharmDefinition[] = CHARMS): CharmDefinition {
 	return charms.find(charm => charm.id === id) ?? CHARMS[0];
 }
+
+export function isSoftCharm(id: string): boolean {
+	const key = id.split(':').at(-1)?.replace(/^new-/, '');
+	return key === 'stress-ball' || key === 'squishy-star';
+}

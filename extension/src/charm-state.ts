@@ -15,6 +15,8 @@ export interface CharmState {
 	size: number;
 	hidden: boolean;
 	reducedMotion: boolean;
+	festiveEnabled: boolean;
+	charmPinned: boolean;
 }
 
 export const DEFAULT_STATE: Readonly<CharmState> = Object.freeze({
@@ -28,6 +30,8 @@ export const DEFAULT_STATE: Readonly<CharmState> = Object.freeze({
 	size: 100,
 	hidden: false,
 	reducedMotion: false,
+	festiveEnabled: false,
+	charmPinned: false,
 });
 
 export function clamp(value: number, minimum: number, maximum: number): number {
@@ -57,6 +61,10 @@ export function restoreState(value: unknown, charms: readonly CharmDefinition[] 
 		reducedMotion: typeof candidate.reducedMotion === 'boolean'
 			? candidate.reducedMotion
 			: DEFAULT_STATE.reducedMotion,
+		festiveEnabled: candidate.festiveEnabled === true,
+		// Older profiles have no pin setting. Treat their saved choice as pinned.
+		charmPinned: typeof candidate.charmPinned === 'boolean' ? candidate.charmPinned
+			: typeof candidate.charmId === 'string' && charms.some(charm => charm.id === candidate.charmId),
 	};
 }
 
@@ -75,6 +83,8 @@ export function resetState(state: CharmState): CharmState {
 		showMessages: state.showMessages,
 		rotateMessages: state.rotateMessages,
 		messageIndex: state.messageIndex,
+		festiveEnabled: state.festiveEnabled,
+		charmPinned: state.charmPinned,
 	};
 }
 

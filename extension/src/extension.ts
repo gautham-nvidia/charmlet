@@ -380,7 +380,8 @@ class CharmletView implements vscode.WebviewViewProvider {
 
 	async setCatalogue(catalogue: readonly CharmDefinition[], selectedId?: string) {
 		this.catalogue = catalogue;
-		this.state = restoreState({ ...this.state, charmId: selectedId ?? this.state.charmId }, catalogue);
+		this.state = restoreState({ ...this.state, charmId: selectedId ?? this.state.charmId,
+			charmPinned: selectedId !== undefined ? true : this.state.charmPinned }, catalogue);
 		this.trace('catalogue-state');
 		this.changed(this.state);
 		await this.persist({ ...this.state });

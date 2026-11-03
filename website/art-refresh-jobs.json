@@ -1,0 +1,42 @@
+[
+  {
+    "id": "stress-ball", "name": "Stress Ball", "group": "Stress Busters", "accent": "#e7b64a",
+    "subject": "One round sunny-yellow squeeze stress ball made of soft opaque polyurethane foam. Show very fine foam pores, a subtle shallow thumb indentation and natural soft surface shading. A tactile, satisfying physical object with a simple circular silhouette. No face, eyes, smile, lettering, seams, sport-ball panels, mesh, surrounding hand or extra object. Keep it round rather than flattened; the app will animate the squeeze."
+  },
+  {
+    "id": "squishy-star", "name": "Squishy Star", "group": "Stress Busters", "accent": "#e69d93",
+    "subject": "One soft coral-peach foam squeeze toy shaped like a plump five-pointed star, viewed almost from the front with a little thickness visible. Five gently rounded tips, finely textured matte foam, tiny believable compression creases and restrained studio highlights. A tactile physical toy, not a flat star icon or animated character. No face, eyes, text, glitter, hanging hardware or extra object."
+  },
+  {
+    "id": "kovil", "name": "Kovil", "group": "Local Culture", "accent": "#c49a78",
+    "subject": "An original South Indian kovil gopuram temple entrance tower, seen almost straight on with subtle depth. A wide weathered stone gateway beneath a tall stepped pyramidal tower of clearly separated narrowing tiers. Respectful detailed carved stone ornament and small painted sculptural niches in restrained terracotta, faded turquoise, cream and muted blue; a simple dark entrance opening at the base and traditional small finials along the narrow top. Believable architectural proportions and stone material. Show the entire freestanding tower as an architectural cutout, without a scene, sky, floor, backing plaque, invented neon decoration or text. Do not reproduce a specific modern copyrighted sculpture or temple photograph."
+  },
+  {
+    "id": "cricket", "name": "Cricket", "group": "Sports", "accent": "#c59c68",
+    "subject": "A recognizable unbranded cricket bat and one red leather cricket ball. The bat stands nearly upright with a dark charcoal rubber grip at the top and a broad pale willow blade below; show natural wood grain, the straight blade face, gently curved shoulders and rounded toe. A small dark-red leather ball with a clear pale stitched seam sits closely beside the lower blade. Keep the pair compact and physically believable. No baseball bat, tennis racket, player, jersey, athlete likeness, brand, sponsor, league mark, writing or hanging hardware."
+  },
+  {
+    "id": "robot-assistant", "name": "Robot Assistant", "group": "AI", "accent": "#93b8c8",
+    "subject": "An original compact desktop assistant robot with a believable matte ivory shell, graphite joints, a rounded rectangular head and a dark glass face display with two small cool-blue indicator lights. A modest head-to-body proportion, two short articulated arms and two stable feet; one hand is raised in a restrained welcoming gesture. Clear physical construction, subtle seams and realistic ceramic-like plastic and metal. A friendly useful machine, not a chibi mascot, cartoon face, famous character, branded robot, abstract neural network, badge or purple sculpture. No text, logo or loose decoration."
+  },
+  {
+    "id": "pumpkin-patch", "name": "Pumpkin Patch", "group": "Seasonal", "accent": "#d68b45",
+    "subject": "A compact Halloween pumpkin grouping: one large warm-orange pumpkin in the centre and two smaller pumpkins nestled closely at its base, with short curved brown stems and two russet autumn leaves. The large pumpkin has a simple neatly carved jack-o-lantern face with two triangular eyes and a friendly broad mouth, faint warm amber light inside. Natural ribbed pumpkin skins, believable proportions and subtle surface variation. Complete isolated grouping without a field, ground, sky, sign, plaque, spooky character or extra ornament."
+  },
+  {
+    "id": "christmas-tree", "name": "Christmas Tree", "group": "Seasonal", "accent": "#749c82",
+    "subject": "One small Christmas evergreen tree with realistic deep forest-green needles, natural layered branches and a visible short brown trunk. A few simple red and warm-gold round baubles are spaced clearly among the branches, with one modest golden five-pointed star on top. Warm restrained festive colour, believable tree texture and clean triangular silhouette. Show the entire star, tree and trunk. No bright chroma-green foliage, pot, presents, snow scene, floor, decorative frame, text or hanging hardware."
+  },
+  {
+    "id": "harvest-pie", "name": "Harvest Pie", "group": "Seasonal", "accent": "#ce995e",
+    "subject": "One inviting Thanksgiving pumpkin-pie slice seen from a slightly elevated three-quarter angle. A crisp golden-brown pastry crust around a rich warm-orange pumpkin filling, with one modest soft ivory whipped-cream rosette on top and a small russet maple leaf close beside the crust. Believable baked texture, appetizing natural materials and a complete triangular slice silhouette. No plate, fork, table, full pie, face, text, label or surrounding scene."
+  },
+  {
+    "id": "black-friday-bag", "name": "Black Friday", "group": "Seasonal", "accent": "#9b919e",
+    "subject": "One unbranded charcoal-black paper shopping bag, upright and slightly turned so the front and one side are visible. Two short natural twisted-paper handles and one small warm-gold discount tag tied closely to the handle. The tag shows a single clearly drawn percent symbol and no other writing. Realistic folded kraft-paper edges, subtle texture and soft silver edge lighting keep the dark bag readable. A compact physical shopping object, not a flat sale icon, poster, badge or advertisement. No brand, price, product, giant tag, long cord or extra bags."
+  },
+  {
+    "id": "cyber-monday-keyboard", "name": "Cyber Monday", "group": "Seasonal", "accent": "#91b5c4",
+    "subject": "A small unbranded compact mechanical computer keyboard seen from above at a slight angle, with believable orderly key rows, a long spacebar, charcoal keycaps and a clean silver frame. A few restrained ice-blue accent keys and one small pale-gold discount tag with a simple percent symbol resting at the upper right corner. Keep the whole keyboard and short tag attachment visible, with clear tactile key shapes. No brand, invented giant keys, laptop, screen, RGB glow, trailing cable, poster, surrounding scene or illegible tiny lettering."
+  }
+]

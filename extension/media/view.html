@@ -50,7 +50,17 @@
     </section>
     <section id="settings" class="tool-popup" role="dialog" aria-labelledby="appearance-title" aria-modal="false" hidden>
       <header class="popup-heading"><div><h2 id="appearance-title">Appearance</h2><p>Make a little room for your charm.</p></div><button id="settings-close" class="popup-close" type="button" aria-label="Close appearance settings"></button></header>
-      <div class="appearance-fields"><label for="charm-select">Charm</label><select id="charm-select" aria-describedby="charm-description"></select><p id="charm-description"></p><label for="size">Size</label><input id="size" type="range" min="60" max="140" step="10" value="100"><output id="size-value" for="size">100%</output><label for="cord-length">Cord</label><input id="cord-length" type="range" min="48" step="2" value="126"><output id="cord-value" for="cord-length">126 px</output><div class="appearance-actions"><button id="layout-mode" type="button" aria-label="Orbit layout" title="Orbit layout" aria-pressed="false">Orbit layout</button><button id="motion" type="button" role="switch" aria-checked="true" aria-label="Motion" title="Motion">Motion</button></div><label class="message-choice"><input id="show-messages" type="checkbox" checked> Show coding messages</label><label class="message-choice"><input id="rotate-messages" type="checkbox" checked> Rotate messages automatically</label></div>
+      <div class="appearance-fields">
+        <label for="charm-select">Charm</label><select id="charm-select" aria-describedby="charm-description"></select><p id="charm-description"></p>
+        <label for="size">Size</label><input id="size" type="range" min="60" max="140" step="10" value="100"><output id="size-value" for="size">100%</output>
+        <label for="cord-length">Cord</label><input id="cord-length" type="range" min="48" step="2" value="126"><output id="cord-value" for="cord-length">126 px</output>
+        <div class="appearance-actions"><button id="layout-mode" type="button" aria-label="Orbit layout" title="Orbit layout" aria-pressed="false">Orbit layout</button><button id="motion" type="button" role="switch" aria-checked="true" aria-label="Motion" title="Motion">Motion</button></div>
+        <label class="message-choice"><input id="festive-enabled" type="checkbox" aria-describedby="festive-hint"> Use festive defaults</label>
+        <label class="message-choice"><input id="charm-pinned" type="checkbox" aria-describedby="festive-hint"> Pin this charm</label>
+        <p id="festive-hint"></p>
+        <label class="message-choice"><input id="show-messages" type="checkbox" checked> Show message card</label>
+        <label class="message-choice"><input id="rotate-messages" type="checkbox" checked> Rotate messages automatically</label>
+      </div>
     </section>
     <section id="companion-tools" class="tool-popup" role="dialog" aria-modal="false" aria-labelledby="companion-title" hidden>
       <header class="popup-heading"><h2 id="companion-title">Focus</h2><button id="companion-close" class="popup-close" type="button" aria-label="Close companion tools"></button></header>

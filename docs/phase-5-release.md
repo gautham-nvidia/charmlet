@@ -78,3 +78,15 @@ Local validation passed 63 unit cases, type checking/lint/build, all seven Windo
 One earlier desktop smoke reported a companion-save failure during Resume and correctly retained the paused state. Its captured renderer reported `companionPersisted: error` and the retry message. The unchanged isolated rerun passed; the underlying filesystem cause was not captured. This is not a claimed storage fix. Hosted checks remain required.
 
 The locally checked 0.5.1 VSIX contains 41 files, 128896 bytes, SHA-256 `66623fb83c1d824afc498395c4f048594e25f0581301797ae11f5505188586bb`. The website download matches. Source/art licence gates still block publication. This follow-up does not replace the artwork catalogue.
+
+## 0.5.2 collection review — November 3
+
+The motion follow-up passed all eight PR checks and merged in #22 at `b4e298c`. Both post-merge workflows also succeeded (`41708987673`, `41708987616`).
+
+The collection review implements the owner's curation, seventeen new/revised samples, an entirely motivational 80-message deck, soft squeeze interaction and optional local-date festive choices. The original Terminal and bundled originals remain; review imports have separate identities. Manual selections/imports pin across dates and reloads. See the [actual-app review](art-refresh-review.md).
+
+Local Windows VS Code 1.140 validation passed 66 units, type/lint/build and all nine editor scenarios, including installed-package Restricted Mode/garden persistence. The new scenario checks holiday selection without overwriting the usual charm, year-to-year pins, squeeze contact at an opaque image pixel, Space/blur cancellation, Reduced Motion and reload. An initial soft-release assertion failed once and passed on unchanged rerun; its cause was not established. The final implementation uses explicit input-held state rather than browser `:active`, and passed the full run.
+
+Website checks passed 51 review downloads, ten originals, fourteen categories, 105 prepared PNGs, 64 featured records, sixteen packs, archived-download compatibility, desktop/mobile bounds and empty console/page errors. The gallery's VSIX exactly matches the installed candidate: 41 files, 131204 bytes, SHA-256 `bf5764257050b3219fcdab536e2a87ffcfe565a6ebee5b362719f6d461c09e3c`.
+
+Desktop 0.1.2 passed six models, the developer smoke and an extracted Windows ZIP smoke. The ZIP is 158278080 bytes, SHA-256 `1b39b8a32f908010b33f6674e9bc69c00280c69fb69014036a60c0df47872b21`. Hosted editor/macOS archive checks are tracked in the PR. Native OS checks, artwork/licence decisions, publisher credentials and public release remain separate gates.

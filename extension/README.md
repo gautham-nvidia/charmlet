@@ -3,7 +3,7 @@
 Ten original hanging charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus/Learn tools, a gentle garden and optional reminders.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Store preparation candidate, version 0.5.1.** Charmlet lives in a dockable VS Code view, not over your code
+**Collection review candidate, version 0.5.2.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 It also works in Restricted Mode without asking you to trust workspace code.
 
@@ -70,7 +70,11 @@ a planted species cannot reroll on reload, and the eleventh valid watering adds 
 **Grown by you** before the UI confirms it. A new seed does not reset that day's allowance. Water and move
 reminders are off by default, bounded to 15–180 minutes, and show one quiet cue with Done/Snooze/Skip without stealing focus or stacking catch-up notices. Done and Skip schedule the next full interval; Snooze waits ten minutes. **Wait for a break** defers the cue during a running focus session.
 
-The footer shows **Website — coming soon**, **Made in Silicon Valley** and the actual installed host version. The website's separate artwork-review gallery contains 95 illustrated candidates and free review packs; importing those adds separate items rather than replacing bundled art or saved progress.
+The footer shows **Website — coming soon**, **Made in Silicon Valley** and the actual installed host version. The artwork-review gallery contains a smaller curated selection and free review packs; importing those adds separate items rather than replacing bundled art or saved progress. The original Terminal stays.
+
+The Stress Ball and Squishy Star review charms squeeze when held with the pointer or Space/Enter. Their cord attachment stays fixed as the artwork compresses. Reduced Motion removes the transition and the release bounce.
+
+**Settings → Appearance → Use festive defaults** is optional and off initially. Import the Seasonal review pack and unpin your charm to allow local-date choices for Halloween, Christmas, US Thanksgiving, Black Friday and Cyber Monday. **Pin this charm**, a manual charm selection, or an import protects that choice across dates and reloads. Existing saved selections are treated as pinned. On other days, or when the relevant seasonal artwork is missing, the usual saved charm remains. Automatic holiday choices never overwrite it.
 
 ## Free and local
 

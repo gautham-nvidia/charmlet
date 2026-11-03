@@ -1,6 +1,6 @@
 # Charmlet companion gallery
 
-This directory contains the Charmlet collection playground using the locked extension build dependencies. The original ten bundled charms and 60 classic downloads remain available. A separate **Art review** page presents 95 transparent illustrated Gemini candidates, 83 individually importable designs and 14 collection packs, including Animals, Local Culture, Space and Sports. The twelve-world playground, earlier style studies, Garden guide and real development VSIX remain separate from final artwork/pricing approval. Public hosting and live paid access are not configured.
+This directory contains the Charmlet collection playground using the locked extension build dependencies. The fourteen-category gallery features **51 curated review downloads**. The **Art review** page shows **64 selected designs**, including the original Terminal and twelve earned-flower previews, with **16 packs** including Refresh Sample, Stress Busters, Bay Area Days and Seasonal. There are 105 current/archive records; retired designs are excluded from the featured view. The original ten bundled charms and previously shared downloads remain intact. Public hosting, final artwork/pricing approval and live paid access remain open.
 
 ## Inputs and generated output
 
@@ -8,14 +8,15 @@ This directory contains the Charmlet collection playground using the locked exte
 |---|---|
 | `index.html`, `styles.css`, `app.js` | Static website source |
 | `extras.json`, `assets/` | Frozen classic metadata and source-authored SVGs |
-| `collections.json` | Twelve-world taxonomy, four preview records and the sports wishlist |
+| `collections.json` | Fourteen categories, preserved legacy mapping, four early studies and the sports wishlist |
 | `assets/previews/` | Earlier photographic/playful style studies |
 | `review.html`, `review.js`, `review.css`, `art-review.json` | Searchable full redraw review, original comparison, dark backdrop and review downloads |
 | `assets/review/`, `packs/review/` | Transparent PNG/WebP candidates and separately namespaced review packs |
-| `art-review-jobs.mjs`, `art-review-revisions.json` | Complete 95-design briefs and preserved targeted revisions |
+| `art-review-jobs.mjs`, `art-review-revisions.json`, `art-refresh-jobs.json` | Historical briefs, realistic replacements and bounded new concepts |
+| `art-curation.json`, `art-curation.mjs` | Owner keep/redraw/retire decisions, displayed names and collection groups |
 | `generate-art-review.mjs` | Explicit, resumable authoring requests only; never called by the app or normal build |
 | `art-cutout.mjs`, `prepare-art-review.mjs`, `bundle-art-review.mjs` | Checked cutouts, bounded parser validation and review-only collections |
-| `check-review.mjs` | 95-image/83-design/14-bundle validation and browser/download checks |
+| `check-review.mjs` | Image integrity, curation, earned-flower boundaries, actual-size previews and download checks |
 | `studio/` | Disabled-by-default Photo Studio foundation and fake-provider verification |
 | `ARTWORK.md` | Website-specific artwork provenance and frozen/export boundaries |
 | `packs/` | Validated generated `.charmlet.json` downloads |
@@ -70,7 +71,16 @@ npm.cmd --prefix extension run package:vsix
 node website/build.mjs
 ```
 
-The build validates all 60 packs, verifies ten included and 60 extra IDs, retains the original 18/12/14/16 source grouping checks, and validates exactly one browsing world per classic extra. It copies the four labelled concept previews, garden-stage illustrations and real VSIX, bundles the shared-physics demo, and writes relative catalogue URLs under `website/dist/`. Ordinary builds reuse frozen images/packs and never call an image-generation service.
+The build validates the historical 60 packs and ten bundled originals, then exports the curated review items and their current category counts. It checks that each advertised download matches its image and curation decision, and retains archived download URLs. The demo uses the imported image's attachment point and supports soft squeezing. Ordinary builds never call an image-generation service.
+
+After an intentional art or curation change, run the bundler before building. It gives changed payloads new pack identities and preserves earlier files.
+
+**On the Windows PC (PowerShell), from the repository root:**
+
+```powershell
+node website/bundle-art-review.mjs
+node website/build.mjs
+```
 
 ## Preview locally
 
@@ -95,7 +105,7 @@ node --test website/art-cutout.test.mjs website/studio/test/core.test.mjs websit
 node website/studio/check.mjs
 ```
 
-The check uses installed Edge to cover desktop/mobile overflow, all sourced images through test-only eager decode, twelve collection filters, the labelled sports wishlist, preview-dialog keyboard behavior, garden-stage navigation, search/reset, old/new pack parsing, real VSIX bytes, the shared-physics swing/pull/reset lifecycle, and console/page errors. It validates null store configuration and injects matching synthetic URLs only to verify rendering without navigating or claiming publication. It writes ignored evidence under `extension/test-results/website-check-<extension-version>/`.
+The check uses installed Edge to cover desktop/mobile overflow, image loading, category filters, the named-sports wishlist, dialogs, garden-stage navigation, retired-design search exclusion, archived/current downloads, real VSIX bytes and the swing/pull/reset lifecycle. Store-link fixtures verify rendering without navigating or claiming publication. Evidence is written under `extension/test-results/website-check-<extension-version>/`.
 
 This is a local development preview. No domain, public deployment, account, checkout, payment provider, Marketplace listing or Open VSX publication is configured here.
 
@@ -103,7 +113,7 @@ This is a local development preview. No domain, public deployment, account, chec
 
 The owner-authorized [Phase 4 companion plan](../docs/phase-4-plan.md) develops focus/learning/garden features, original free collections, Photo Studio preparation and a parallel desktop beta. The [original collection brief](../docs/phase-4-original-collections.md) is the reviewed direction implemented by the current sixty-design gallery.
 
-The current preview distributes the **0.4.3 development candidate** with Charms/Focus/Garden/Settings navigation, motivation by default and quiet recurring reminder notices. The artwork review has 95 candidates: 10 starter redraws, 60 website redraws, 12 flower studies and 13 new-world designs. It offers 83 individual review downloads and 14 grouped packs; the flowers remain earned, not downloadable unlocks. Importing a review pack preserves existing originals and saved progress. Final inclusion and paid-art choices require owner approval.
+The current source builds the **0.5.2 review candidate**, adding a strictly motivational deck, soft squeezing and optional festive defaults. Curation keeps the original Terminal, removes unclear abstract concepts from the featured lineup and adds recognizable components, heritage, cricket, Stress Busters and seasonal review art. Flowers remain earned. Final bundled, website and paid-art placement requires owner approval.
 
 Photo Studio stays unavailable unless explicitly configured with validated merchant identity and secrets. Its tests use fake licence/order responses and isolated local HTTP sessions, not purchases or real vendor access. Selected photo bytes stay in browser memory; dimensions are checked before decoding, late loads are discarded after locking, expired access preserves crop/name/frame only in memory, and a manual lock clears the photo. Live merchant validation, purchase/refund operations and deployment remain separate gates.
 

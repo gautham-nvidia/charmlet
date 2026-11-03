@@ -186,7 +186,8 @@ function fullCatalogue() {
 }
 async function saveCatalogue(selectedId?: string, generation = rendererGeneration) {
 	catalogue = fullCatalogue();
-	state = restoreState({ ...state, charmId: selectedId ?? state.charmId }, catalogue);
+	state = restoreState({ ...state, charmId: selectedId ?? state.charmId,
+		charmPinned: selectedId !== undefined ? true : state.charmPinned }, catalogue);
 	await preferenceWriter!.save({ ...state });
 	sendForGeneration(generation, { type: 'catalogue', catalogue, state });
 }

@@ -1,7 +1,9 @@
 import { Pendulum, type Point } from '../extension/src/pendulum';
 import { getLayout } from '../extension/src/charm-state';
+import { DEFAULT_ATTACHMENT, type CharmAttachment } from '../extension/src/charm-attachment';
+import { isSoftCharm } from '../extension/src/charm-catalog';
 
-interface DemoCharm { id: string; name: string; preview: string; }
+interface DemoCharm { id: string; name: string; preview: string; attachment?: CharmAttachment; }
 
 function required<Kind extends Element>(id: string): Kind {
 	const value = document.getElementById(id);
@@ -29,17 +31,19 @@ let frames = 0;
 let visible = true;
 let intersecting = true;
 let drag: { id: number; startX: number; startY: number; moved: boolean } | undefined;
+let attachment: CharmAttachment = DEFAULT_ATTACHMENT;
+let keyboardHeld = false;
 
 function canAnimate() {
 	return visible && intersecting && !reducedMotion.matches;
 }
 
 function render() {
-	const { anchorX, anchorY, cordLength, attachmentOffset } = pendulum.layout;
+	const { anchorX, anchorY, cordLength, attachmentOffset, attachmentX } = pendulum.layout;
 	const { x, y } = pendulum.position;
 	const angle = pendulum.angle;
-	const hookX = x + Math.sin(angle) * attachmentOffset;
-	const hookY = y - Math.cos(angle) * attachmentOffset;
+	const hookX = x + Math.cos(angle) * attachmentX + Math.sin(angle) * attachmentOffset;
+	const hookY = y + Math.sin(angle) * attachmentX - Math.cos(angle) * attachmentOffset;
 	charm.style.transform = `translate(${x}px, ${y}px) rotate(${angle}rad)`;
 	anchor.style.left = `${anchorX}px`;
 	anchor.style.top = `${anchorY}px`;
@@ -80,9 +84,9 @@ function start() {
 function resize() {
 	clearPointer();
 	const { width, height } = stage.getBoundingClientRect();
-	const layout = getLayout(width, height, 126, 100, 'hanging');
+	const layout = getLayout(width, height, 126, 100, 'hanging', attachment);
 	scale = Math.max(0.01, Math.min(1, width / layout.minimumWidth, height / layout.minimumHeight));
-	pendulum.resize(width / scale, height / scale, 126, 100, 'hanging');
+	pendulum.resize(width / scale, height / scale, 126, 100, 'hanging', attachment);
 	rig.style.width = `${pendulum.layout.width}px`;
 	rig.style.height = `${pendulum.layout.height}px`;
 	rig.style.transform = `scale(${scale})`;
@@ -98,6 +102,8 @@ function point(event: PointerEvent): Point {
 }
 
 function clearPointer() {
+	keyboardHeld = false;
+	charm.dataset.keyboardHeld = 'false';
 	const pointerId = drag?.id;
 	drag = undefined;
 	charm.classList.remove('dragging');
@@ -157,6 +163,22 @@ charm.addEventListener('pointerup', event => {
 charm.addEventListener('pointercancel', () => resetPose('The demo reset safely after an interrupted drag.'));
 charm.addEventListener('lostpointercapture', () => { if (drag) { resetPose('The demo reset safely after losing the pointer.'); } });
 charm.addEventListener('click', event => { if (event.detail === 0) { nudge(); } });
+charm.addEventListener('keydown', event => {
+	if ((event.key === ' ' || event.key === 'Enter') && charm.dataset.soft === 'true') {
+		event.preventDefault();
+		keyboardHeld = true;
+		charm.dataset.keyboardHeld = 'true';
+	}
+});
+charm.addEventListener('keyup', event => {
+	if ((event.key === ' ' || event.key === 'Enter') && keyboardHeld) {
+		event.preventDefault();
+		keyboardHeld = false;
+		charm.dataset.keyboardHeld = 'false';
+		nudge();
+	}
+});
+charm.addEventListener('blur', () => { keyboardHeld = false; charm.dataset.keyboardHeld = 'false'; });
 window.addEventListener('blur', () => resetPose());
 nudgeButton.addEventListener('click', nudge);
 resetButton.addEventListener('click', () => resetPose('Demo reset.'));
@@ -178,9 +200,13 @@ export function setCharm(selected: DemoCharm) {
 	const assets = new URL('./assets/', document.baseURI);
 	if (preview.origin !== location.origin || !preview.pathname.startsWith(assets.pathname)) { return; }
 	image.src = preview.href;
+	attachment = selected.attachment ?? DEFAULT_ATTACHMENT;
+	image.style.transformOrigin = `${attachment.x * 100}% ${attachment.y * 100}%`;
+	charm.dataset.soft = String(isSoftCharm(selected.id));
 	image.alt = `${selected.name} charm`;
 	name.textContent = selected.name;
 	charm.setAttribute('aria-label', `Swing ${selected.name} charm`);
+	resize();
 	resetPose(`${selected.name} is ready to try.`);
 }
 
