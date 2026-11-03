@@ -675,30 +675,31 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 				}
 			});
 		}
-		const bounds = await frame.locator('#charm').boundingBox();
-		if (!bounds) { throw new Error('The stress ball must be visible.'); }
-		await frame.locator('#app').screenshot({ path: testInfo.outputPath('stress-ball-rest.png') });
-		await window.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
-		await window.mouse.down();
 		const squeezed = () => frame.locator('#charm-image').evaluate(image => {
 			const matrix = new DOMMatrix(getComputedStyle(image).transform);
 			return matrix.a > 1.05 && matrix.d < .9;
 		});
-		await expect.poll(squeezed).toBe(true);
-		// Exercise a sustained hold, without interrupting pointer capture with
-		// a screenshot. Capture evidence once the native release has completed.
-		await window.waitForTimeout(500);
-		await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(.86);
-		expect(await alphaAtCordTip(frame), 'Squeezing must leave the cord touching the visible ball').toBeGreaterThanOrEqual(128);
-		await window.mouse.up();
-		writeFileSync(testInfo.outputPath('squeeze-release.json'), JSON.stringify(await frame.evaluate(() => ({
-			active: document.getElementById('charm')!.matches(':active'),
-			classes: document.getElementById('charm')!.className,
-			phase: document.getElementById('phase')!.textContent,
-			running: document.getElementById('stage')!.dataset.running,
-			transform: getComputedStyle(document.getElementById('charm-image')!).transform,
-		})), null, 2));
 		try {
+			await frame.locator('#app').screenshot({ path: testInfo.outputPath('stress-ball-rest.png') });
+			// Hover waits for the current iframe target to be stable and receive
+			// input; coordinates cached before a screenshot cannot establish that.
+			await frame.locator('#charm').hover();
+			await window.mouse.down();
+			await expect(frame.locator('#charm')).toHaveClass(/\bdragging\b/);
+			await expect.poll(squeezed).toBe(true);
+			// Exercise a sustained hold, without interrupting pointer capture with
+			// a screenshot. Capture evidence once the native release has completed.
+			await window.waitForTimeout(500);
+			await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(.86);
+			expect(await alphaAtCordTip(frame), 'Squeezing must leave the cord touching the visible ball').toBeGreaterThanOrEqual(128);
+			await window.mouse.up();
+			writeFileSync(testInfo.outputPath('squeeze-release.json'), JSON.stringify(await frame.evaluate(() => ({
+				active: document.getElementById('charm')!.matches(':active'),
+				classes: document.getElementById('charm')!.className,
+				phase: document.getElementById('phase')!.textContent,
+				running: document.getElementById('stage')!.dataset.running,
+				transform: getComputedStyle(document.getElementById('charm-image')!).transform,
+			})), null, 2));
 			await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(1);
 		} finally {
 			writeFileSync(testInfo.outputPath('squeeze-pointer-events.json'), JSON.stringify({
@@ -708,6 +709,9 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 					visible: document.visibilityState, focused: document.hasFocus(),
 					viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
 					captured: document.getElementById('charm')?.hasPointerCapture(1),
+					classes: document.getElementById('charm')?.className,
+					soft: document.getElementById('charm')?.dataset.soft,
+					phase: document.getElementById('phase')?.textContent,
 					events: JSON.parse(document.documentElement.dataset.pointerTrace ?? '[]'),
 				})).catch(error => ({ error: String(error) })))),
 			}, null, 2));
