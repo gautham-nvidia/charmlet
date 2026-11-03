@@ -3,6 +3,15 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.5.1 - 2026-11-03 (Motion review)
+
+### Changed
+
+- Pulling and releasing a charm produces a clear rebound and progressively smaller bounces before coming to rest. Returns from above the peg keep their momentum.
+- Imported PNG charms attach the cord to their visible upper shape. The connection follows the artwork as it rotates and scales.
+- Reduced Motion still returns directly to rest. Saved preferences, original artwork and pack files keep their existing formats.
+- Artwork selection and the proposed productivity cards remain under review; this is not a store release.
+
 ## 0.5.0 - 2026-11-02 (Store release preparation)
 
 ### Added

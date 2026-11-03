@@ -485,6 +485,115 @@ test('navigation A searches installed charms and exposes quiet reminders and bui
 	}
 });
 
+test('imported artwork attaches to its silhouette and rebounds while focus ticks', async ({}, testInfo) => {
+	const editor = await launchOwnedEditor('charmlet-bounce-', ({ preferencesPath, companionPath }) => {
+		writeFileSync(preferencesPath, `${JSON.stringify({ ...DEFAULT_STATE, reducedMotion: false, rotateMessages: false })}\n`);
+		const state = applyCompanionAction(defaultCompanionState(), {
+			type: 'focus-start', phase: 'focus', focusMinutes: 25, breakMinutes: 5, intent: 'Review charm motion',
+		}, Date.now()).state;
+		writeFileSync(companionPath, `${JSON.stringify(state)}\n`);
+	});
+	const { window } = editor;
+	try {
+		await window.emulateMedia({ reducedMotion: 'no-preference' });
+		await command(window, 'Charmlet: Show Charm');
+		const frame = await readyFrame(window);
+		const reviewPack = resolve('..', 'website', 'packs', 'review', 'art-new-red-panda-r1-p2.charmlet.json');
+		const pack = JSON.parse(readFileSync(reviewPack, 'utf8'));
+		await editor.app.evaluate(({ dialog }, path) => {
+			dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [path] });
+		}, reviewPack);
+		await command(window, 'Charmlet: Import Charm Pack');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', `pack:${pack.id}:${pack.charms[0].id}`);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+		await expect.poll(() => frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+		const alphaAtConnection = await frame.evaluate(() => {
+			const image = document.getElementById('charm-image') as HTMLImageElement;
+			const path = document.getElementById('thread') as unknown as SVGPathElement;
+			const point = path.getPointAtLength(path.getTotalLength());
+			const matrix = path.getScreenCTM()!;
+			const tip = { x: matrix.a * point.x + matrix.c * point.y + matrix.e, y: matrix.b * point.x + matrix.d * point.y + matrix.f };
+			const bounds = image.getBoundingClientRect();
+			const canvas = document.createElement('canvas');
+			canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+			const context = canvas.getContext('2d')!;
+			context.drawImage(image, 0, 0);
+			const x = Math.floor((tip.x - bounds.left) * canvas.width / bounds.width);
+			const y = Math.floor((tip.y - bounds.top) * canvas.height / bounds.height);
+			return context.getImageData(x, y, 1, 1).data[3];
+		});
+		expect(alphaAtConnection, 'The cord tip must touch the visible panda, not transparent padding').toBeGreaterThanOrEqual(128);
+		const restingY = Number(await frame.locator('#charm').getAttribute('data-position-y'));
+		const focusBefore = await frame.locator('#focus-readout').innerText();
+		const bounds = await frame.locator('#charm').boundingBox();
+		if (!bounds) { throw new Error('The imported charm must be visible before dragging.'); }
+		const x = bounds.x + bounds.width / 2;
+		const y = bounds.y + bounds.height / 2;
+		await window.mouse.move(x, y);
+		await window.mouse.down();
+		await window.mouse.move(x, y + 90, { steps: 12 });
+		await expect.poll(async () => Number(await frame.locator('#charm').getAttribute('data-position-y'))).toBeGreaterThan(restingY + 70);
+		type Recording = { values: number[]; elapsed: number; done: boolean; timedOut: boolean };
+		await frame.evaluate(() => {
+			const recording: Recording = { values: [], elapsed: 0, done: false, timedOut: false };
+			(window as unknown as { __charmletBounce: Recording }).__charmletBounce = recording;
+			const charm = document.getElementById('charm')!;
+			const stage = document.getElementById('stage')!;
+			charm.addEventListener('pointerup', () => {
+				const start = performance.now();
+				const sample = () => {
+					recording.values.push(Number(charm.dataset.positionY));
+					recording.elapsed = performance.now() - start;
+					recording.timedOut = recording.elapsed > 7000;
+					recording.done = stage.dataset.running === 'false' || recording.timedOut;
+					if (!recording.done) { requestAnimationFrame(sample); }
+				};
+				requestAnimationFrame(sample);
+			}, { once: true });
+		});
+		await window.mouse.up();
+		await expect.poll(() => frame.evaluate(() => (window as unknown as { __charmletBounce: Recording }).__charmletBounce.done),
+			{ timeout: 10000 }).toBe(true);
+		const recording = await frame.evaluate(() => (window as unknown as { __charmletBounce: Recording }).__charmletBounce);
+		writeFileSync(testInfo.outputPath('bounce-samples.json'), `${JSON.stringify({ restingY, ...recording }, null, 2)}\n`);
+		expect(recording.timedOut).toBe(false);
+		expect(recording.elapsed, 'A timer tick must not cut the return animation short').toBeGreaterThan(1500);
+		expect(Math.min(...recording.values)).toBeLessThan(restingY - 8);
+		let previousSign = 1;
+		let crossings = 0;
+		for (const value of recording.values) {
+			const displacement = value - restingY;
+			if (Math.abs(displacement) <= 0.75) { continue; }
+			if (Math.sign(displacement) !== previousSign) { crossings++; previousSign = Math.sign(displacement); }
+		}
+		expect(crossings).toBeGreaterThanOrEqual(3);
+		expect(Math.abs(recording.values.at(-1)! - restingY)).toBeLessThan(1);
+		expect(await frame.locator('#focus-readout').innerText()).not.toBe(focusBefore);
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('attached-panda.png') });
+
+		await frame.locator('#settings-toggle').click();
+		await frame.locator('#menu-appearance').click();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		const framesBefore = await frame.locator('#stage').getAttribute('data-frames');
+		const reducedBounds = await frame.locator('#charm').boundingBox();
+		if (!reducedBounds) { throw new Error('Reduced-motion charm must remain visible.'); }
+		const reducedX = reducedBounds.x + reducedBounds.width / 2;
+		const reducedY = reducedBounds.y + reducedBounds.height / 2;
+		await window.mouse.move(reducedX, reducedY);
+		await window.mouse.down();
+		await window.mouse.move(reducedX, reducedY + 55, { steps: 6 });
+		await expect(frame.locator('#phase')).toHaveText('Held');
+		await window.mouse.up();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-frames', framesBefore!);
+		expect(Number(await frame.locator('#charm').getAttribute('data-position-y'))).toBeCloseTo(restingY, 1);
+	} finally {
+		await closeOwnedEditor(editor, testInfo);
+	}
+});
+
 if (process.env.CHARMLET_TEST_PACKAGED === '1') {
 	test('installed VSIX runs in Restricted Mode and keeps garden progress', async ({}, testInfo) => {
 		const editor = await launchOwnedEditor('charmlet-installed-', () => {}, true);

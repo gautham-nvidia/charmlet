@@ -440,3 +440,11 @@ The actual installed VSIX exposed a release defect hidden by development profile
 PR #20 passed all eight jobs at `fd3ed4a` (CI `41547297794`, desktop `41547297792`) and merged at `e363f50`. The manual artifact-only release run `41548742464` passed; its publish step was skipped and its report remained blocked by absent licence documents.
 
 Main run `41548689144` passed the source scenarios but the two macOS installed-package checks crossed midnight during reload and failed their unconditional disabled-water-button expectation. Job logs `125630513435` / `125630513592` show assertions after 00:00 UTC, while the first watering/reload started on the preceding date. macOS 1.140 evidence artifact `13189878191` was downloaded and matched its logged SHA-256. The 1.90 evidence upload separately timed out in GitHub's artifact service. The Phase 5 follow-up corrects the test's date assumption, preserves whole-garden equality checks and adds an explicit previous-day reload/watering case in the disposable profile. No runtime behavior or system clock is changed.
+
+## 2026-11-03 — attachment and release motion review
+
+The owner requested better cord contact and a visible bounce after release. Version0.5.1 derives supported attachment points from validated PNG pixels and uses a damped radial return, preserving Reduced Motion. Review also found and fixed a fast-release jump to an unrendered pointer target and attachment averaging across disconnected contours.
+
+Local checks passed63 units, type/lint/build, seven real-editor scenarios on Windows VSCode1.140, six desktop models and the isolated desktop source smoke. One earlier desktop run reported a companion-save error and retained the paused state; the unchanged serial run passed. The underlying filesystem error was not captured, so no storage-fix claim is made. Hosted follow-up checks remain pending.
+
+The review VSIX is128896bytes, SHA25666623fb83c1d824afc498395c4f048594e25f0581301797ae11f5505188586bb; its41files and website copy agree. Publication remains blocked by the existing source/art licence gates. Separate new artwork feedback requests a smaller recognizable collection, original Terminal, heritage/cricket/BayArea additions and seasonal defaults; that refresh remains in review.

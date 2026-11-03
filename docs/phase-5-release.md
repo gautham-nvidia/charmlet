@@ -66,3 +66,15 @@ The subsequent main run exposed an incorrect test assumption: both macOS install
 The publishing-tool audit identified an existing critical `shell-quote` advisory and a high-severity MSAL advisory. Compatible targeted updates now resolve `shell-quote` 1.12.0, `@azure/identity` 4.14.1 and `@azure/msal-node` 7.1.2. `npm audit --omit=dev` reports zero advisories. The full toolchain still reports one low and nineteen moderate advisories, chiefly glob/minimatch denial-of-service issues and indirect dependents. No forced dependency downgrade or install-script approval was applied.
 
 Post-merge main run [41541368400](https://github.com/gautham-nvidia/charmlet/actions/runs/41541368400) passed five editor jobs and failed Linux 1.140 while reopening Settings during the ten-charm loop. All 59 units and the five companion/navigation scenarios passed in that job. The failed screenshot shows the menu closed; the previous trace did not capture pointer delivery. The test now checks closed-panel/focus/open-menu transitions explicitly and captures pointer targets and menu state. This is diagnostic coverage, not a claimed product fix. Subsequent Phase 5 CI determines the next step.
+
+## 0.5.1 motion follow-up — November 3
+
+Released stretches now rebound across rest with diminishing amplitude. The return starts at the actual rendered position, including when pointer events arrive before the next physics frame. The above-peg return keeps its safe arc and transfers its last velocity into the settling swing. Reduced Motion still settles immediately.
+
+Imported PNGs derive their cord connection from supported opaque pixels near the upper centre of the image. The decoder handles all five allowed PNG row filters; separate hooks cannot average into a transparent gap. Pack format and stored bytes are unchanged.
+
+Local validation passed 63 unit cases, type checking/lint/build, all seven Windows VS Code 1.140 editor scenarios, six desktop model cases and an isolated desktop source smoke. The editor checks the real panda image at the cord tip, records a visible rebound while focus ticks, and verifies Reduced Motion advances no animation frames.
+
+One earlier desktop smoke reported a companion-save failure during Resume and correctly retained the paused state. Its captured renderer reported `companionPersisted: error` and the retry message. The unchanged isolated rerun passed; the underlying filesystem cause was not captured. This is not a claimed storage fix. Hosted checks remain required.
+
+The locally checked 0.5.1 VSIX contains 41 files, 128896 bytes, SHA-256 `66623fb83c1d824afc498395c4f048594e25f0581301797ae11f5505188586bb`. The website download matches. Source/art licence gates still block publication. This follow-up does not replace the artwork catalogue.

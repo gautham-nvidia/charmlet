@@ -2,6 +2,7 @@ import * as fs from 'node:fs/promises';
 import { join } from 'node:path';
 import { inflateSync } from 'node:zlib';
 import type { CharmDefinition } from './charm-catalog';
+import { attachmentFromPixels, type CharmAttachment } from './charm-attachment';
 
 export interface PackCharm {
 	id: string;
@@ -28,6 +29,8 @@ const PACK_ID = /^[a-z][a-z0-9-]{0,47}$/;
 const PACK_FILE = /^[a-z][a-z0-9-]{0,47}\.charmlet\.json$/;
 const DEVICE_ID = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/;
 const FORBIDDEN_TEXT = /[\u0000-\u001f\u007f\u200e\u200f\u202a-\u202e\u2066-\u2069]/;
+// Derived geometry is not part of the pack format or its canonical stored bytes.
+const attachments = new WeakMap<PackCharm, CharmAttachment>();
 
 function crc32(bytes: Uint8Array): number {
 	let crc = 0xffffffff;
@@ -40,7 +43,7 @@ function crc32(bytes: Uint8Array): number {
 	return (crc ^ 0xffffffff) >>> 0;
 }
 
-function validatePng(bytes: Buffer): void {
+function validatePng(bytes: Buffer): CharmAttachment {
 	if (bytes.length > MAX_PNG_BYTES || bytes.length < 45
 		|| !bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) {
 		throw new Error('A charm must contain a bounded static PNG image.');
@@ -106,6 +109,30 @@ function validatePng(bytes: Buffer): void {
 	for (let row = 0; row < height; row++) {
 		if (inflated[row * stride] > 4) { throw new Error('The PNG scanline filter is invalid.'); }
 	}
+	if (channels === 3) { return { x: 0.5, y: 1 / 84 }; }
+	const pixels = new Uint8Array(width * height * channels);
+	for (let row = 0; row < height; row++) {
+		const filter = inflated[row * stride];
+		for (let column = 0; column < width * channels; column++) {
+			const index = row * width * channels + column;
+			const left = column >= channels ? pixels[index - channels] : 0;
+			const above = row > 0 ? pixels[index - width * channels] : 0;
+			const upperLeft = row > 0 && column >= channels ? pixels[index - width * channels - channels] : 0;
+			let prediction = 0;
+			if (filter === 1) { prediction = left; }
+			else if (filter === 2) { prediction = above; }
+			else if (filter === 3) { prediction = Math.floor((left + above) / 2); }
+			else if (filter === 4) {
+				const estimate = left + above - upperLeft;
+				const a = Math.abs(estimate - left);
+				const b = Math.abs(estimate - above);
+				const c = Math.abs(estimate - upperLeft);
+				prediction = a <= b && a <= c ? left : b <= c ? above : upperLeft;
+			}
+			pixels[index] = (inflated[row * stride + column + 1] + prediction) & 255;
+		}
+	}
+	return attachmentFromPixels(width, height, pixels);
 }
 
 function record(value: unknown, field: string): Record<string, unknown> {
@@ -155,8 +182,8 @@ export function parseCharmPack(input: string | Uint8Array): CharmPack {
 		}
 		const png = Buffer.from(value.png, 'base64');
 		if (png.toString('base64') !== value.png) { throw new Error('The PNG base64 encoding is invalid.'); }
-		validatePng(png);
-		return {
+		const attachment = validatePng(png);
+		const charm = {
 			id,
 			name: text(value.name, 'Charm name', 48),
 			group: text(value.group, 'Charm group', 48),
@@ -164,6 +191,8 @@ export function parseCharmPack(input: string | Uint8Array): CharmPack {
 			accent: accent.toLowerCase(),
 			png: value.png,
 		};
+		attachments.set(charm, attachment);
+		return charm;
 	});
 	return {
 		format: 'charmlet-pack',
@@ -184,6 +213,7 @@ export function packCharms(packs: readonly CharmPack[]): CharmDefinition[] {
 		accent: charm.accent,
 		group: charm.group,
 		source: `data:image/png;base64,${charm.png}`,
+		attachment: attachments.get(charm) ?? validatePng(Buffer.from(charm.png, 'base64')),
 	})));
 }
 

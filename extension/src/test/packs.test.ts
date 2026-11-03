@@ -9,6 +9,7 @@ import {
 	installPack, loadPacks, MAX_PACK_BYTES, MAX_PNG_BYTES, packCharms, parseCharmPack, removePack,
 } from '../charm-packs';
 import { restoreState } from '../charm-state';
+import { attachmentFromPixels, DEFAULT_ATTACHMENT } from '../charm-attachment';
 
 const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAEgAAABUCAYAAAAh+XGnAAAAp0lEQVR4Ae3BAQGAQACEMLxqdrKGkf0EkoDtut/nI79G1IgaUSNqRI2oETWiRtSIGlEjakSNqBE1okbUiBpRI2pEjagRNaJG1IgaUSNqRI2oETWiRtSIGlEjakSNqBE1okbUiBpRI2pEjagRNaJG1IgaUSNqRI2oETWiRtSIGlEjakSNqBE1okbUiBpRI2pEjagRNaJG1IgaUSNqRI2oETWiRtSIGlEHeOoC77RBk0cAAAAASUVORK5CYII=';
 
@@ -42,6 +43,46 @@ test('valid packs project only approved fields with namespaced PNG sources', () 
 	assert.equal(projected[0].file, '');
 	assert.equal(projected[0].source, `data:image/png;base64,${PNG}`);
 	assert.equal(projected.some(charm => CHARMS.some(builtin => builtin.id === charm.id)), false);
+});
+
+test('attachment decoding handles all PNG filters without changing pack bytes or trusting supplied geometry', async () => {
+	const original = (pack().charms as Record<string, unknown>[])[0];
+	// Identical artwork encoded with filters 0–4 and independently decoded using
+	// the Windows PNG codec. Hook: y=12; isolated pixel: y=2; faint fringe: y=10.
+	for (let filter = 0; filter < 5; filter++) {
+		const png = (await readFile(join(__dirname, '../../src/test/fixtures', `attachment-filter-${filter}.png`))).toString('base64');
+		const parsed = parseCharmPack(encoded(pack({ charms: [{ ...original, png, attachment: { x: 1, y: 1 } }] })));
+		assert.equal(parsed.charms[0].png, png);
+		assert.equal(Object.hasOwn(parsed.charms[0], 'attachment'), false);
+		assert.deepEqual(packCharms([parsed])[0].attachment, { x: 0.5, y: 13 / 84 });
+		assert.deepEqual(packCharms([JSON.parse(encoded(parsed))])[0].attachment, { x: 0.5, y: 13 / 84 });
+	}
+});
+
+test('attachment follows a central head or offset hook rather than ears and falls back for empty artwork', () => {
+	const pixels = new Uint8Array(72 * 84 * 4);
+	const fill = (left: number, top: number, width: number, height: number) => {
+		for (let y = top; y < top + height; y++) {
+			for (let x = left; x < left + width; x++) { pixels[(y * 72 + x) * 4 + 3] = 255; }
+		}
+	};
+	assert.deepEqual(attachmentFromPixels(72, 84, pixels), DEFAULT_ATTACHMENT);
+	fill(26, 22, 20, 50);
+	fill(14, 4, 8, 22);
+	fill(50, 4, 8, 22);
+	assert.deepEqual(attachmentFromPixels(72, 84, pixels), { x: 0.5, y: 23 / 84 });
+	pixels.fill(0);
+	fill(24, 24, 24, 50);
+	fill(29, 10, 5, 15);
+	const hook = attachmentFromPixels(72, 84, pixels);
+	assert.ok(hook.x < 0.49 && hook.y < 20 / 84, 'the cord should find the offset hook above the body');
+	pixels.fill(0);
+	fill(27, 2, 3, 35);
+	fill(42, 2, 3, 35);
+	fill(26, 30, 20, 40);
+	const split = attachmentFromPixels(72, 84, pixels);
+	const alpha = pixels[(Math.floor(split.y * 84) * 72 + Math.floor(split.x * 72)) * 4 + 3];
+	assert.equal(alpha, 255, 'equally good separated contours must not create a connection in their transparent gap');
 });
 
 test('invalid metadata, identifiers, text, sizes and payloads are rejected before storage', async () => {

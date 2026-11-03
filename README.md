@@ -2,7 +2,7 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-11-02:** Phase 4 merged in [PR #19](https://github.com/gautham-nvidia/charmlet/pull/19). **0.5.0** prepares the extension-store release with privacy/support information, checked download artifacts and a manual publishing workflow. The app retains **Charms / Focus / Garden / Settings**, searchable charm selection, motivation, gentle reminders and saved garden progress.
+**Status, 2026-11-03:** Phase 4 and Phase 5 release preparation are merged. **0.5.1** adds a damped release bounce and connects imported artwork to the cord using its visible silhouette. Reduced Motion returns directly to rest. The app includes **Charms / Focus / Garden / Settings**, searchable charm selection, motivation, gentle reminders and saved garden progress.
 
 The website's separate **Art review** gallery contains **95 transparent Gemini illustration candidates**, **83 importable designs** and **14 review packs**, while the ten original defaults and sixty classic downloads remain unchanged. Photo Studio's local/fake-provider foundation is verified but live paid access remains disabled. The unsigned [`desktop0.1.1`](desktop/README.md) Windows portable ZIP has been extracted and tested; it is not part of the VSIX or a public release.
 
@@ -18,7 +18,7 @@ These captures show the 0.5.0 candidate's four labelled navigation buttons and o
 
 Choose among installed charms in the searchable **Charms** picker. The default **Hanging** layout keeps the peg near
 the top and reserves pull room; **Settings → Appearance → Orbit layout** reserves space for full fixed-peg loops. A
-straight upward pull retracts the charm and the arrow restores it. The Cord setting is the saved resting
+straight upward pull retracts the charm and the arrow restores it. Releasing a stretch produces diminishing bounces before settling. The Cord setting is the saved resting
 preference, while the visible cord may temporarily shorten to fit the current panel.
 
 The card below the charm offers 80 motivational messages by default, with optional 60 sourced facts and 30 sourced trivia questions under **Settings → Messages**. Existing saved feed choices stay unchanged. Use **Next coding message**, choose the saved feed mode, reveal trivia
