@@ -654,6 +654,24 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
 		expect(JSON.parse(readFileSync(preferencesPath, 'utf8')).charmPinned).toBe(true);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+		const pointerFrames = window.frames();
+		for (const target of pointerFrames) {
+			await target.evaluate(() => {
+				const events: Record<string, unknown>[] = [];
+				for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel',
+					'gotpointercapture', 'lostpointercapture', 'mousedown', 'mouseup']) {
+					globalThis.window.addEventListener(type, event => {
+						const pointer = event as PointerEvent;
+						const target = event.target instanceof Element ? event.target : undefined;
+						events.push({ type, id: pointer.pointerId, buttons: pointer.buttons,
+							x: pointer.clientX, y: pointer.clientY, target: target?.id ?? target?.tagName,
+							captured: document.getElementById('charm')?.hasPointerCapture(pointer.pointerId),
+							time: performance.now() });
+						document.documentElement.dataset.pointerTrace = JSON.stringify(events.slice(-40));
+					}, true);
+				}
+			});
+		}
 		const bounds = await frame.locator('#charm').boundingBox();
 		if (!bounds) { throw new Error('The stress ball must be visible.'); }
 		await frame.locator('#app').screenshot({ path: testInfo.outputPath('stress-ball-rest.png') });
@@ -674,7 +692,20 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 			running: document.getElementById('stage')!.dataset.running,
 			transform: getComputedStyle(document.getElementById('charm-image')!).transform,
 		})), null, 2));
-		await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(1);
+		try {
+			await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(1);
+		} finally {
+			writeFileSync(testInfo.outputPath('squeeze-pointer-events.json'), JSON.stringify({
+				host: await editor.app.evaluate(({ app }) => ({ version: app.getVersion(), engines: process.versions })),
+				frames: await Promise.all(pointerFrames.map(target => target.evaluate(() => ({
+					name: globalThis.window.name, agent: navigator.userAgent,
+					visible: document.visibilityState, focused: document.hasFocus(),
+					viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
+					captured: document.getElementById('charm')?.hasPointerCapture(1),
+					events: JSON.parse(document.documentElement.dataset.pointerTrace ?? '[]'),
+				})).catch(error => ({ error: String(error) })))),
+			}, null, 2));
+		}
 		await frame.locator('#settings-toggle').click();
 		await frame.locator('#menu-appearance').click();
 		await frame.locator('#motion').click();
