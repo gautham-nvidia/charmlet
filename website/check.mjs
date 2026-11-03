@@ -11,16 +11,19 @@ const require = createRequire(join(repo, 'extension', 'package.json'));
 const { chromium, expect } = require('@playwright/test');
 const { parseCharmPack } = require('./out/charm-packs.js');
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
-const target = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
+const archived = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
+const review = JSON.parse(await readFile(join(root, 'art-review.json'), 'utf8'));
+const target = review.items.filter(item => item.featured && item.download);
 const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
-const expectedWorldCounts = { ai: 7, coding: 7, silicon: 18, testing: 12, animals: 0, trees: 2, space: 1, parks: 6, cities: 5, culture: 0, sports: 0, luck: 2 };
+const expectedWorldCounts = { ai: 1, coding: 0, silicon: 7, testing: 1, animals: 3, trees: 3, space: 3, parks: 6, cities: 6, culture: 7, sports: 5, luck: 2, stress: 2, seasonal: 5 };
 const output = join(repo, 'extension', 'test-results', `website-check-${manifest.version}`);
 await mkdir(output, { recursive: true });
 const base = process.env.CHARMLET_GALLERY_URL || 'http://127.0.0.1:4173/';
 const marketplace = `https://marketplace.visualstudio.com/items?itemName=${manifest.publisher}.${manifest.name}`;
 const openVsx = `https://open-vsx.org/extension/${manifest.publisher}/${manifest.name}`;
 const expectedCollections = { 'Compute & Silicon': 18, 'Test Bench': 12, 'AI & Code': 14, 'Places & Nature': 16 };
-assert.equal(target.length, 60);
+assert.equal(archived.length, 60);
+assert.equal(target.length, Object.values(expectedWorldCounts).reduce((sum, count) => sum + count, 0));
 assert.deepEqual(validateDistribution({ marketplace: null, openVsx: null }, manifest), { marketplace: null, openVsx: null });
 assert.deepEqual(validateDistribution({ marketplace, openVsx }, manifest), { marketplace, openVsx });
 assert.throws(() => validateDistribution({ marketplace: 'https://marketplace.visualstudio.com/items?itemName=wrong.charmlet', openVsx: null }, manifest));
@@ -28,7 +31,7 @@ assert.throws(() => validateDistribution({ marketplace: marketplace.replace('htt
 assert.throws(() => validateDistribution({ marketplace: 'javascript:alert(1)', openVsx: null }, manifest));
 assert.throws(() => validateDistribution({ marketplace: null, openVsx: `https://example.com/extension/${manifest.publisher}/${manifest.name}` }, manifest));
 assert.throws(() => validateDistribution({ marketplace: `${marketplace}&unexpected=true`, openVsx: null }, manifest));
-for (const [collection, count] of Object.entries(expectedCollections)) assert.equal(target.filter(item => item.collection === collection).length, count);
+for (const [collection, count] of Object.entries(expectedCollections)) assert.equal(archived.filter(item => item.collection === collection).length, count);
 const errors = [];
 let browser;
 const checkOverflow = async page => page.evaluate(() => ({ width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
@@ -44,7 +47,9 @@ async function downloadPack(page, id) {
   const path = join(output, `downloaded-${id}.charmlet.json`);
   await download.saveAs(path);
   const parsed = parseCharmPack(await readFile(path));
-  assert.equal(parsed.id, id);
+  const item = target.find(item => item.key === id);
+  assert.ok(item);
+  assert.equal(parsed.id, item.download.split('/').pop().replace('.charmlet.json', ''));
   assert.equal(parsed.charms[0].id, id);
   return { parsed, path };
 }
@@ -59,8 +64,8 @@ try {
   const response = await page.goto(base, { waitUntil: 'networkidle' });
   assert.equal(response?.status(), 200);
   await page.locator('.charm-card').first().waitFor();
-  assert.equal(await page.locator('.charm-card').count(), 60);
-  assert.equal(await page.locator('#extra-count').textContent(), '60');
+  assert.equal(await page.locator('.charm-card').count(), target.length);
+  assert.equal(await page.locator('#extra-count').textContent(), String(target.length));
   assert.equal(await page.locator('#included-count').textContent(), '10');
   assert.equal(await page.locator('.site-header a[href="#install"]').last().getAttribute('href'), '#install');
   assert.equal(await page.getByRole('link', { name: 'Photo Studio', exact: true }).getAttribute('href'), './studio/');
@@ -88,7 +93,7 @@ try {
   assert.ok(desktopOverflow.scroll <= desktopOverflow.width);
   await page.screenshot({ path: join(output, 'desktop.png'), fullPage: true });
 
-  assert.equal(await page.locator('#collection-worlds .world-card').count(), 12);
+  assert.equal(await page.locator('#collection-worlds .world-card').count(), worldConfig.collections.length);
   assert.equal(await page.locator('#art-studies .art-study').count(), 4);
   for (const world of worldConfig.collections) {
     const filter = page.locator('#group-filters').getByRole('button', { name: world.name, exact: true });
@@ -103,11 +108,12 @@ try {
   const sports = page.locator('#collection-story');
   await expect(sports).toContainText('Football');
   await expect(sports).toContainText('Basketball');
-  for (const name of ['Cristiano Ronaldo (CR7)', 'Lionel Messi', 'Stephen Curry', 'LeBron James', 'Michael Jordan', 'NFL', 'EPL', 'UEFA Champions League', 'Baseball']) {
+  for (const name of ['Cristiano Ronaldo (CR7)', 'Lionel Messi', 'Stephen Curry', 'LeBron James', 'Michael Jordan',
+    'Sachin Tendulkar', 'MS Dhoni', 'Virat Kohli', 'IPL', 'NFL', 'EPL', 'UEFA Champions League', 'Baseball']) {
     await expect(sports).toContainText(name);
   }
   await expect(sports).toContainText('not available downloads');
-  assert.equal(await page.locator('.download-link').count(), 0);
+  assert.equal(await page.locator('.download-link').count(), expectedWorldCounts.sports);
   await sports.getByRole('button', { name: 'View Bring your game art preview', exact: true }).click();
   await expect(page.locator('#art-dialog')).toBeVisible();
   await page.locator('#art-dialog-image').evaluate(image => image.decode());
@@ -122,19 +128,18 @@ try {
   await expect(page.locator('#garden-help')).toContainText('Charmlet: Open Garden');
   await expect(page.locator('#garden-help')).toContainText('Plant a seed');
   await page.locator('[data-garden-stage="0"]').click();
-  assert.equal(await page.locator('.charm-card').count(), 60);
+  assert.equal(await page.locator('.charm-card').count(), target.length);
 
   await page.locator('#search').fill('golden die');
-  assert.equal(await page.locator('.charm-card').count(), 1);
-  assert.equal(await page.locator('.charm-card').getAttribute('data-charm-id'), 'golden-die');
+  assert.equal(await page.locator('.charm-card').count(), 0, 'Retired designs must not appear in the gallery.');
   await page.locator('#search').fill('');
-  assert.equal(await page.locator('.charm-card').count(), 60);
+  assert.equal(await page.locator('.charm-card').count(), target.length);
   await page.locator('#search').fill('GPU');
-  assert.ok(await page.locator('.charm-card[data-charm-id="gpu-tile"]').isVisible());
+  assert.ok(await page.locator('.charm-card[data-charm-id="extra-gpu-tile"]').isVisible());
   await page.locator('#search').fill('no-such-charm');
   assert.equal(await page.locator('.charm-card').count(), 0);
   await page.getByRole('button', { name: 'Reset filters', exact: true }).click();
-  assert.equal(await page.locator('.charm-card').count(), 60);
+  assert.equal(await page.locator('.charm-card').count(), target.length);
   assert.equal(await page.evaluate(() => document.activeElement?.id), 'search');
 
   await page.locator('.hero').screenshot({ path: join(output, 'visual-refresh-hero.png') });
@@ -153,11 +158,16 @@ try {
   assert.equal(await page.locator('#demo-name').textContent(), 'Evil Eye');
   assert.match(await page.locator('#demo-image').getAttribute('src'), /evil-eye\.svg$/);
   await page.getByRole('button', { name: /Extra downloads/ }).click();
-  const oldPack = await downloadPack(page, 'probe-card');
-  const newPack = await downloadPack(page, 'gpu-tile');
+  const oldPack = await downloadPack(page, 'extra-probe-card');
+  const newPack = await downloadPack(page, 'extra-gpu-tile');
+  const legacy = await page.request.get(new URL('packs/review/review-starter-redraws-1.charmlet.json', base).href);
+  assert.equal(legacy.status(), 200);
+  const legacyPack = parseCharmPack(await legacy.body());
+  assert.equal(legacyPack.charms.length, 10);
+  assert.equal(legacyPack.charms[0].id, 'starter-terminal');
 
   await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; });
-  await page.locator('.charm-card[data-charm-id="gpu-tile"]').getByRole('button', { name: /Preview GPU Tile/ }).click();
+  await page.locator('.charm-card[data-charm-id="extra-gpu-tile"]').getByRole('button', { name: /Preview GPU Tile/ }).click();
   const hero = page.locator('.hero');
   const demo = page.locator('#demo-stage');
   const demoButton = page.locator('#demo-charm');
@@ -281,6 +291,20 @@ try {
   await page.getByRole('button', { name: 'Try a swing', exact: true }).click();
   assert.equal(await demo.getAttribute('data-running'), 'false');
   assert.equal(await demo.getAttribute('data-dragging'), 'false');
+  await page.locator('.charm-card[data-charm-id="new-stress-ball"]').getByRole('button', { name: /Preview Stress Ball/ }).click();
+  await page.locator('.hero-demo').scrollIntoViewIfNeeded();
+  await page.locator('#demo-image').evaluate(image => image.decode());
+  await expect(demoButton).toHaveAttribute('data-soft', 'true');
+  await demoButton.focus();
+  await page.keyboard.down('Space');
+  assert.ok(await page.locator('#demo-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d < 0.9));
+  await page.keyboard.up('Space');
+  await expect(page.locator('#demo-image')).toHaveCSS('transform', 'none');
+  await page.keyboard.down('Space');
+  await page.getByRole('button', { name: 'Reset demo', exact: true }).focus();
+  await expect(page.locator('#demo-image')).toHaveCSS('transform', 'none');
+  await page.keyboard.up('Space');
+  assert.equal(await demo.getAttribute('data-running'), 'false');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 
   const [vsixDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.extension-download').first().click()]);
@@ -292,7 +316,7 @@ try {
   assert.ok(downloadedVsix.equals(sourceVsix));
 
   const actualCatalogue = JSON.parse(await readFile(join(root, 'dist', 'catalogue.json'), 'utf8'));
-  assert.equal(new Set(actualCatalogue.charms.map(item => item.id)).size, 70);
+  assert.equal(new Set(actualCatalogue.charms.map(item => item.id)).size, target.length + 10);
   await page.route('**/catalogue.json', route => route.fulfill({ json: { ...actualCatalogue, distribution: { marketplace, openVsx } } }));
   await page.reload({ waitUntil: 'networkidle' });
   const storeLinks = page.locator('#store-links a');
@@ -310,7 +334,7 @@ try {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(base, { waitUntil: 'networkidle' });
   await page.locator('.charm-card').first().waitFor();
-  assert.equal(await page.locator('.charm-card').count(), 60);
+  assert.equal(await page.locator('.charm-card').count(), target.length);
   const mobileImages = await decodeImages(page);
   assert.ok(mobileImages.every(image => image.complete && image.width > 0 && image.height > 0));
   const mobileOverflow = await checkOverflow(page);
@@ -319,13 +343,13 @@ try {
   assert.deepEqual(errors, []);
   const result = {
     url: base,
-    extras: 60,
+    extras: target.length,
     included: 10,
-    uniqueIds: 70,
+    uniqueIds: target.length + 10,
     collections: expectedWorldCounts,
     artPreviews: 4,
     gardenEntry: 'growth preview and direct Open Garden installation guidance',
-    sportsIdeas: 'athletes and leagues labelled as a wishlist, without download links',
+    sportsIdeas: 'generic sports downloads; named athletes and leagues remain a separate wishlist',
     downloadedPacks: [oldPack.parsed.id, newPack.parsed.id],
     demo: 'swing, drag-return, offscreen-stop, reduced-motion-stop',
     distributionFixture: 'validated matching URLs rendered without navigation',

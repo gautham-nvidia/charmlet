@@ -1,17 +1,19 @@
 {
   "collections": [
-    {"id":"ai","name":"AI","code":"AI","accent":"#bda9fa","description":"Curiosity, connections and a little machine imagination.","charmIds":["token-train","attention-lens","embedding-stars","gradient-trail","inference-engine","vector-index","language-tile"],"ideas":["Neural cloud","Friendly robot","Attention prism"]},
-    {"id":"coding","name":"Coding","code":"</>","accent":"#a8dcc9","description":"For the builders, debuggers and one-more-commit crowd.","charmIds":["debug-duck","merge-branch","passing-build","stack-frame","regex-knot","async-loop","recursion-shell"],"ideas":["Debug duck","Tiny terminal","Merge celebration"]},
-    {"id":"silicon","name":"Compute & Silicon","code":"Si","accent":"#a5c9ef","description":"Chips, memory and beautiful things beneath the package.","charmIds":["logic-gate","finfet","photon-link","gpu-tile","cpu-tile","hbm-tower","cache-stack","chiplet-bridge","vector-lane","tensor-array","neural-tile","silicon-lattice","bump-grid","interposer","memory-bus","alu-key","register-file","clock-tree"],"ideas":["GPU package","Chiplet city","Memory tower"]},
-    {"id":"testing","name":"Test Bench","code":"01","accent":"#f4c68b","description":"Probes, pulses and the small joy of a passing result.","charmIds":["probe-card","probe-needle","wafer-map","sweep-curve","signal-eye","test-socket","scope-pulse","loopback-link","boundary-scan","self-test-loop","calibration-dial","golden-die"],"ideas":["Oscilloscope","Probe station","Golden die"]},
+    {"id":"ai","name":"AI","code":"AI","accent":"#bda9fa","description":"Recognizable companions for a day of building with AI.","charmIds":["token-train","attention-lens","embedding-stars","gradient-trail","inference-engine","vector-index","language-tile"],"ideas":["Robot assistant","Desktop helper","Voice microphone"]},
+    {"id":"coding","name":"Coding","code":"</>","accent":"#a8dcc9","description":"The original Terminal stays in the app. Find it in Included with Charmlet.","charmIds":["debug-duck","merge-branch","passing-build","stack-frame","regex-knot","async-loop","recursion-shell"],"ideas":["Original Terminal","Mechanical keyboard","Coding laptop"]},
+    {"id":"silicon","name":"Compute & Silicon","code":"Si","accent":"#a5c9ef","description":"Familiar components with believable shapes and materials.","charmIds":["logic-gate","finfet","photon-link","gpu-tile","cpu-tile","hbm-tower","cache-stack","chiplet-bridge","vector-lane","tensor-array","neural-tile","silicon-lattice","bump-grid","interposer","memory-bus","alu-key","register-file","clock-tree"],"ideas":["Chip","Wafer","Circuit board","Transistor","RAM","GPU","CPU"]},
+    {"id":"testing","name":"Test Bench","code":"01","accent":"#f4c68b","description":"Real bench equipment you can recognize at a glance.","charmIds":["probe-card","probe-needle","wafer-map","sweep-curve","signal-eye","test-socket","scope-pulse","loopback-link","boundary-scan","self-test-loop","calibration-dial","golden-die"],"ideas":["Probe card","Oscilloscope","Digital multimeter"]},
     {"id":"animals","name":"Animals","code":"Aa","accent":"#f5b8a2","description":"A little personality. A lot of very good company.","charmIds":[],"preview":"red-panda","ideas":["Red panda","Fox","Cat","Elephant","Snow leopard"]},
     {"id":"trees","name":"Trees & Forests","code":"Y","accent":"#b3d69e","description":"Redwoods, bonsai and a breath of green between tasks.","charmIds":["redwood-grove","pine-ridge"],"ideas":["Redwood canopy","Bonsai","Autumn maple","Banyan tree"]},
     {"id":"space","name":"Stars & Galaxies","code":"*","accent":"#babef2","description":"A tiny piece of a very big universe.","charmIds":["night-sky"],"preview":"ringed-planet","ideas":["Ringed planet","Nebula","Crescent moon","Shooting star"]},
     {"id":"parks","name":"National Parks","code":"NP","accent":"#dcc79b","description":"Original park-inspired landscapes, never official park badges.","charmIds":["mountain-sun","granite-dome","desert-arch","canyon-river","alpine-lake","coastal-trail"],"preview":"yosemite","ideas":["Yosemite","Yellowstone","Zion","Grand Canyon","Acadia","Joshua Tree"]},
-    {"id":"cities","name":"Cities","code":"Ct","accent":"#f4afbb","description":"Skylines, neighbourhoods and places that feel like home.","charmIds":["foggy-bay","bridge-lights","city-tram","campus-path","coffee-street"],"ideas":["San Francisco","Chennai","Kyoto","London","New York"]},
-    {"id":"culture","name":"Local Culture","code":"Co","accent":"#ecc28f","description":"Small objects with a place, a craft and a story.","charmIds":[],"ideas":["Tamil Drishti doll","Chennai filter coffee","Jaipur window","Kyoto lantern","Handmade folk art"]},
-    {"id":"sports","name":"Sports","code":"Go","accent":"#f1ae83","description":"For match days, court time and your favourite sporting moments.","charmIds":[],"preview":"basketball","ideas":["Football","Basketball","American football","Baseball"],"rightsReview":true},
-    {"id":"luck","name":"Luck & Little Joys","code":"+","accent":"#e7b4d6","description":"Familiar good-luck favourites and a bright little start.","charmIds":["lotus","sunrise"],"ideas":["Lotus","Sunrise","Evil eye","Lemon & chilies"]}
+    {"id":"cities","name":"Cities","code":"Ct","accent":"#f4afbb","description":"Bay Area fog, bridge lights, Silicon Valley campus walks and places that feel like home.","charmIds":["foggy-bay","bridge-lights","city-tram","campus-path","coffee-street"],"ideas":["San Francisco","Silicon Valley","Chennai","Kyoto","London","New York"]},
+    {"id":"culture","name":"Local Culture","code":"Co","accent":"#ecc28f","description":"Heritage, everyday rituals and familiar objects with a story.","charmIds":[],"ideas":["Kovil","Kuthuvilakku","Kolam","Pongal pot","Filter coffee","Ganesha","Murugan"]},
+    {"id":"sports","name":"Sports","code":"Go","accent":"#f1ae83","description":"For match days, court time and your favourite sporting moments.","charmIds":[],"preview":"basketball","ideas":["Cricket","Football","Basketball","American football","Baseball"],"rightsReview":true},
+    {"id":"luck","name":"Luck & Little Joys","code":"+","accent":"#e7b4d6","description":"Familiar good-luck favourites and a bright little start.","charmIds":["lotus","sunrise"],"ideas":["Lotus","Sunrise","Evil eye","Lemon & chilies"]},
+    {"id":"stress","name":"Stress Busters","code":"Sq","accent":"#f1c972","description":"Soft, tactile companions. Hold to squeeze, then release for a gentle bounce.","charmIds":[],"ideas":["Stress ball","Squishy star","Smooth worry stone"]},
+    {"id":"seasonal","name":"Seasonal","code":"Yr","accent":"#cfad8e","description":"A little celebration for the season. Optional festive defaults always respect your pinned charm.","charmIds":[],"ideas":["Pumpkin patch","Christmas tree","Thanksgiving","Black Friday","Cyber Monday"]}
   ],
   "previews": [
     {"id":"red-panda","name":"A curious little friend","collection":"animals","file":"red-panda.webp","note":"Natural fur and proportions, with a playful pose."},
@@ -20,8 +22,8 @@
     {"id":"basketball","name":"Bring your game","collection":"sports","file":"basketball.webp","note":"Realistic leather, detailed seams and a sports-first silhouette."}
   ],
   "sportsWishlist": {
-    "athletes":["Cristiano Ronaldo (CR7)","Lionel Messi","Stephen Curry","LeBron James","Michael Jordan"],
-    "competitions":["NFL","EPL","UEFA Champions League","Baseball"],
-    "notice":"Collection ideas, not available downloads. Athlete and league-branded editions need a separate image and branding rights review."
+    "athletes":["Cristiano Ronaldo (CR7)","Lionel Messi","Stephen Curry","LeBron James","Michael Jordan","Sachin Tendulkar","MS Dhoni","Virat Kohli"],
+    "competitions":["IPL","NFL","EPL","UEFA Champions League","Baseball"],
+    "notice":"Named athlete and league editions are not available downloads. They need a separate image and branding rights review."
   }
 }

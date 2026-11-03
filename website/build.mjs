@@ -1,12 +1,14 @@
 import { createRequire } from 'node:module';
-import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from '../extension/node_modules/esbuild/lib/main.js';
 import { validateDistribution } from './distribution.mjs';
+import { curateArtwork, validateCuration } from './art-curation.mjs';
 
 const require = createRequire(import.meta.url);
-const { parseCharmPack } = require('../extension/out/charm-packs.js');
+const { parseCharmPack, packCharms } = require('../extension/out/charm-packs.js');
 const { FLOWERS } = require('../extension/out/garden-core.js');
 const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
@@ -14,6 +16,7 @@ const dist = join(root, 'dist');
 const builtins = JSON.parse(await readFile(join(repo, 'extension', 'src', 'builtin-charms.json'), 'utf8'));
 const extras = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
 const collectionConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
+const curation = JSON.parse(await readFile(join(root, 'art-curation.json'), 'utf8'));
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
 const distribution = validateDistribution(JSON.parse(await readFile(join(root, 'distribution.json'), 'utf8')), manifest);
 if (builtins.length !== 10 || extras.length !== 60) throw new Error('Expected ten included and sixty extra charms.');
@@ -24,10 +27,10 @@ for (const [name, count] of Object.entries(expectedCollections)) {
   if (extras.filter(item => item.collection === name).length !== count) throw new Error(`Unexpected collection size: ${name}`);
 }
 if (extras.some(item => !Object.hasOwn(expectedCollections, item.collection))) throw new Error('Unknown collection.');
-const expectedWorlds = { ai: 7, coding: 7, silicon: 18, testing: 12, animals: 0, trees: 2, space: 1, parks: 6, cities: 5, culture: 0, sports: 0, luck: 2 };
+const expectedWorlds = { ai: 7, coding: 7, silicon: 18, testing: 12, animals: 0, trees: 2, space: 1, parks: 6, cities: 5, culture: 0, sports: 0, luck: 2, stress: 0, seasonal: 0 };
 const worlds = collectionConfig.collections;
 const previews = collectionConfig.previews;
-if (!Array.isArray(worlds) || worlds.length !== 12 || !Array.isArray(previews) || previews.length !== 4) throw new Error('Expected twelve collection worlds and four art previews.');
+if (!Array.isArray(worlds) || worlds.length !== Object.keys(expectedWorlds).length || !Array.isArray(previews) || previews.length !== 4) throw new Error('Unexpected collection worlds or art previews.');
 const worldIds = new Set();
 const worldByCharm = new Map();
 const extraIds = new Set(extras.map(item => item.id));
@@ -64,7 +67,7 @@ for (const extra of extras) {
   validated.push({ extra, packPath });
 }
 await rm(dist, { recursive: true, force: true });
-for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'assets/garden', 'packs', 'downloads', 'studio']) {
+for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'assets/garden', 'assets/app-review', 'packs', 'downloads', 'studio']) {
   await mkdir(join(dist, path), { recursive: true });
 }
 for (const name of ['index.html', 'styles.css', 'app.js']) await copyFile(join(root, name), join(dist, name));
@@ -77,6 +80,10 @@ for (const { extra, packPath } of validated) {
 }
 for (const preview of previews) {
   await copyFile(join(root, 'assets', 'previews', preview.file), join(dist, 'assets', 'previews', preview.file));
+}
+for (const name of ['terminal-chip-stress', 'refresh-nine', 'heritage-sports-seasonal', 'light-background']) {
+  const file = `${name}-at-100-percent.png`;
+  await copyFile(join(root, 'assets/app-review', file), join(dist, 'assets/app-review', file));
 }
 for (const stage of ['seed', 'sprout', 'leaves', 'bud', ...FLOWERS.map(flower => flower.id)]) {
   await copyFile(join(repo, 'extension', 'media', `garden-${stage}.svg`), join(dist, 'assets', 'garden', `${stage}.svg`));
@@ -98,13 +105,8 @@ const vsix = `charmlet-${manifest.version}.vsix`;
 await copyFile(join(repo, 'extension', vsix), join(dist, 'downloads', 'charmlet.vsix'));
 const charms = [
   ...builtins.map(item => ({ ...item, kind: 'included', preview: `./assets/default/${item.file}` })),
-  ...extras.map(item => ({ ...item, kind: 'extra', collectionId: worldByCharm.get(item.id).id,
-    collectionLabel: worldByCharm.get(item.id).name, preview: `./assets/extras/${item.file}`, download: `./packs/${item.id}.charmlet.json` })),
 ];
 const artPreviews = previews.map(item => ({ ...item, preview: `./assets/previews/${item.file}` }));
-await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version,
-  extensionDownload: './downloads/charmlet.vsix', distribution, charms, collections: worlds, artPreviews,
-  sportsWishlist: collectionConfig.sportsWishlist }, null, 2)}\n`, 'utf8');
 const review = await readFile(join(root, 'art-review.json'), 'utf8').then(JSON.parse, error => {
   if (error.code === 'ENOENT') return undefined;
   throw error;
@@ -112,25 +114,55 @@ const review = await readFile(join(root, 'art-review.json'), 'utf8').then(JSON.p
 if (review) {
   if (review.status !== 'review-only' || !Array.isArray(review.items) || review.items.length > 120
     || new Set(review.items.map(item => item.key)).size !== review.items.length) throw new Error('Invalid bounded art review.');
+  validateCuration(curation, review.items);
   await mkdir(join(dist, 'assets/review'), { recursive: true });
   await mkdir(join(dist, 'packs/review'), { recursive: true });
   for (const item of review.items) {
+    const selected = curateArtwork(item, curation);
+    if (selected.featured !== item.featured || selected.decision !== item.decision || selected.name !== item.name
+      || selected.group !== item.group) throw new Error('Refresh the curated review packs before building.');
     if (!/^\.\/assets\/review\/[a-z0-9-]+\.png$/.test(item.image)
       || !/^\.\/assets\/review\/[a-z0-9-]+\.webp$/.test(item.preview)) throw new Error('Invalid review image path.');
     await copyFile(join(root, item.image), join(dist, item.image));
     await copyFile(join(root, item.preview), join(dist, item.preview));
     if (item.download) {
-      if (item.family === 'flowers' || !/^\.\/packs\/review\/[a-z0-9-]+\.charmlet\.json$/.test(item.download)) throw new Error('Invalid review download.');
-      parseCharmPack(await readFile(join(root, item.download)));
-      await copyFile(join(root, item.download), join(dist, item.download));
+      if (!item.featured || item.decision === 'original' || item.family === 'flowers'
+        || !/^\.\/packs\/review\/[a-z0-9-]+\.charmlet\.json$/.test(item.download)) throw new Error('Invalid review download.');
+      const pack = parseCharmPack(await readFile(join(root, item.download)));
+      const entry = pack.charms[0];
+      if (pack.charms.length !== 1 || entry.id !== item.key || entry.name !== item.name || entry.group !== item.group
+        || createHash('sha256').update(Buffer.from(entry.png, 'base64')).digest('hex') !== item.pngSha256) {
+        throw new Error(`Review download does not match its artwork: ${item.key}`);
+      }
+      const alias = { 'Silicon & Code': 'silicon', 'Good Luck': 'luck' }[item.group];
+      const world = worlds.find(world => world.name === item.group || world.id === alias);
+      if (!world) throw new Error(`Missing curated collection: ${item.group}`);
+      charms.push({ id: item.key, name: item.name, description: entry.description, accent: item.accent,
+        kind: 'extra', review: true, group: item.group, collectionId: world.id, collectionLabel: world.name,
+        preview: item.preview, download: item.download, attachment: packCharms([pack])[0].attachment });
     }
   }
   for (const bundle of review.bundles ?? []) {
     if (!/^\.\/packs\/review\/[a-z0-9-]+\.charmlet\.json$/.test(bundle.download)) throw new Error('Invalid review bundle path.');
     const pack = parseCharmPack(await readFile(join(root, bundle.download)));
-    if (pack.charms.length !== bundle.count) throw new Error('Review bundle count mismatch.');
-    await copyFile(join(root, bundle.download), join(dist, bundle.download));
+    if (pack.charms.length !== bundle.count || pack.charms.some(charm =>
+      !review.items.some(item => item.key === charm.id && item.featured && item.download))) {
+      throw new Error('Review bundle includes unavailable artwork or has the wrong count.');
+    }
+  }
+  // Keep previously shared download URLs usable without advertising retired
+  // designs. Pack identities and the archived bytes remain unchanged.
+  for (const file of await readdir(join(root, 'packs/review'), { withFileTypes: true })) {
+    if (!file.isFile() || !/^[a-z0-9-]+\.charmlet\.json$/.test(file.name)) continue;
+    const source = join(root, 'packs/review', file.name);
+    parseCharmPack(await readFile(source));
+    await copyFile(source, join(dist, 'packs/review', file.name));
   }
   for (const name of ['review.html', 'review.js', 'review.css', 'art-review.json']) await copyFile(join(root, name), join(dist, name));
 }
-console.log(`Built Charmlet gallery ${manifest.version}: ${builtins.length} included, ${extras.length} extras, ${review?.items.length ?? 0} art-review candidates.`);
+const collections = worlds.map(world => ({ ...world, charmIds: charms
+  .filter(charm => charm.kind === 'extra' && charm.collectionId === world.id).map(charm => charm.id) }));
+await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version,
+  extensionDownload: './downloads/charmlet.vsix', distribution, charms, collections, artPreviews,
+  sportsWishlist: collectionConfig.sportsWishlist }, null, 2)}\n`, 'utf8');
+console.log(`Built Charmlet gallery ${manifest.version}: ${builtins.length} included originals, ${charms.length - builtins.length} curated review downloads, ${review?.featured ?? 0} selected review designs.`);

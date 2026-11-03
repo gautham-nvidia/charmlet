@@ -1,0 +1,52 @@
+{
+  "reviewedAt": "2026-11-03",
+  "original": ["terminal"],
+  "retain": [
+    "wafer", "hamsa", "lemon-chilies", "lotus", "sunrise", "gpu-tile", "cpu-tile",
+    "foggy-bay", "bridge-lights", "city-tram", "campus-path", "coffee-street",
+    "mountain-sun", "granite-dome", "redwood-grove", "desert-arch", "canyon-river",
+    "alpine-lake", "pine-ridge", "coastal-trail", "night-sky",
+    "sunflower", "marigold", "hibiscus", "bluebell", "iris", "poppy",
+    "orchid", "daisy", "lavender", "cosmos", "sakura", "wild-rose",
+    "red-panda", "curled-cat", "loyal-dog", "bonsai-tree", "ringed-planet",
+    "spiral-galaxy", "filter-coffee", "tamil-kolam", "city-auto",
+    "basketball", "football", "gridiron-ball", "baseball-glove"
+  ],
+  "redraw": {
+    "chip": 3,
+    "circuit": 2,
+    "transistor": 3,
+    "memory-stack": 2,
+    "probe-card": 2,
+    "evil-eye": 2,
+    "drishti": 2
+  },
+  "retire": [
+    "logic-gate", "finfet", "photon-link", "hbm-tower", "cache-stack",
+    "chiplet-bridge", "vector-lane", "tensor-array", "neural-tile",
+    "silicon-lattice", "bump-grid", "interposer", "memory-bus", "alu-key",
+    "register-file", "clock-tree", "probe-needle", "wafer-map", "sweep-curve",
+    "signal-eye", "test-socket", "scope-pulse", "loopback-link", "boundary-scan",
+    "self-test-loop", "calibration-dial", "golden-die", "debug-duck",
+    "token-train", "attention-lens", "embedding-stars", "gradient-trail",
+    "inference-engine", "vector-index", "language-tile", "merge-branch",
+    "passing-build", "stack-frame", "regex-knot", "async-loop", "recursion-shell"
+  ],
+  "names": {
+    "tamil-kolam": "Kolam",
+    "circuit": "Circuit Board",
+    "memory-stack": "RAM"
+  },
+  "groups": {
+    "terminal": "Coding",
+    "chip": "Compute & Silicon",
+    "wafer": "Compute & Silicon",
+    "circuit": "Compute & Silicon",
+    "transistor": "Compute & Silicon",
+    "memory-stack": "Compute & Silicon",
+    "evil-eye": "Local Culture",
+    "drishti": "Local Culture",
+    "hamsa": "Local Culture",
+    "lemon-chilies": "Local Culture"
+  }
+}

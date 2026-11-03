@@ -3,6 +3,19 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.5.2 - 2026-11-03 (Collection review)
+
+### Added
+
+- Soft Stress Ball and Squishy Star review charms squeeze when held, with the cord fixed to their attachment point. Reduced Motion disables the squeeze transition.
+- Optional festive defaults choose an installed seasonal charm on Halloween, Christmas, US Thanksgiving, Black Friday or Cyber Monday using the local date. Pinned and manually selected charms stay selected; missing festive artwork falls back to the usual charm.
+- Pin this charm in Appearance. Older saved choices are treated as pinned, and reset position preserves the preference.
+
+### Changed
+
+- All 80 original messages now focus on motivation, discipline, progress and success.
+- Artwork review uses a smaller curated collection, retains the original Terminal and shows designs at default app size. Changed review packs receive new identities.
+
 ## 0.5.1 - 2026-11-03 (Motion review)
 
 ### Changed

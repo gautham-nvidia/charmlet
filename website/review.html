@@ -3,18 +3,45 @@
 <head>
  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'">
- <title>Charmlet — Full Artwork Review</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./review.css">
+ <title>Charmlet — Artwork Refresh</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./review.css">
 </head>
 <body>
  <a class="skip-link" href="#review-grid">Skip to artwork</a>
  <header class="site-header"><a class="brand" href="./">charmlet<span class="brand-dot" aria-hidden="true"></span></a><nav aria-label="Review navigation"><a href="./">Collection playground</a><a href="./#garden-help">Garden help</a><a href="./#install">Install the app</a></nav><span class="status-pill">Art review · not a release</span></header>
  <main class="review-main">
-  <section class="review-intro"><p class="eyebrow">A NEW LOOK, ONE LITTLE COMPANION AT A TIME</p><h1>More character.<br><span class="serif-note">Still entirely yours.</span></h1><p>Gemini-generated illustrated redraws with more depth and detail—not literal photo cutouts. Compare the old and new designs, try a review pack, and decide what should ship.</p><div class="review-facts"><span id="review-total">Loading review…</span><span>Originals preserved</span><span>No paid checkout</span></div><p class="small-note">These are review candidates, not final art or an approved free/paid lineup. Review packs import as separate items and do not overwrite existing charms. Flower artwork is shown for review but remains an earned reward in the app.</p></section>
-  <section id="review-bundles" class="review-bundles" hidden aria-labelledby="bundle-title"><div><p class="eyebrow">TRY THE NEW LOOK IN YOUR APP</p><h2 id="bundle-title">Review packs.</h2><p>Download a pack, then run <strong>Charmlet: Import Charm Pack</strong>. All review packs are free; nothing is charged here.</p></div><div id="bundle-links"></div></section>
-  <section class="review-browser" aria-label="Artwork review browser"><div class="review-controls"><label><span>Search artwork</span><input id="review-search" type="search" placeholder="Try CPU, cat, flower or coffee…"></label><label><span>Collection</span><select id="review-group"><option value="all">All collections</option></select></label><div class="review-view" role="group" aria-label="Artwork view"><button id="view-new" type="button" aria-pressed="true">New art</button><button id="view-compare" type="button" aria-pressed="false">Compare originals</button><button id="view-dark" type="button" aria-pressed="false">Dark backdrop</button></div></div><div id="review-families" class="group-filters" role="group" aria-label="Review families"><button class="group-filter" data-family="all" type="button" aria-pressed="true">All designs</button><button class="group-filter" data-family="starters" type="button" aria-pressed="false">Starter redraws</button><button class="group-filter" data-family="classics" type="button" aria-pressed="false">Website redraws</button><button class="group-filter" data-family="new-worlds" type="button" aria-pressed="false">New worlds</button><button class="group-filter" data-family="flowers" type="button" aria-pressed="false">Earned flowers</button></div><p id="review-count" role="status" aria-live="polite"></p><div id="review-grid" class="review-grid"></div><p id="review-empty" hidden>No designs match. Try another search or collection.</p></section>
+  <section class="review-intro">
+   <p class="eyebrow">FEWER DESIGNS. MORE CONNECTION.</p>
+   <h1>Objects you know.<br><span class="serif-note">Charms that feel like you.</span></h1>
+   <p>A smaller collection built around recognizable shapes and believable materials. The original Terminal stays alongside the nature, places and cultural designs you liked. Revised designs join the review as they are ready.</p>
+   <div class="review-facts"><span id="review-total">Loading review…</span><span>Originals preserved</span><span>No paid checkout</span></div>
+   <p class="small-note">Start at the default 100% charm size, then enlarge any design for a closer look. Artwork and the final free/paid lineup still need review. Packs import as separate items and preserve your existing charms. Flowers remain earned rewards.</p>
+   <details class="review-captures"><summary>See the artwork inside Charmlet 0.5.2</summary><p>Actual installed-app captures at 100% charm size. Each panel is a separate selection.</p><div class="review-view"><a class="button button-secondary" href="./assets/app-review/terminal-chip-stress-at-100-percent.png" target="_blank" rel="noopener">Original Terminal + two new designs</a><a class="button button-secondary" href="./assets/app-review/refresh-nine-at-100-percent.png" target="_blank" rel="noopener">Nine-design sample</a><a class="button button-secondary" href="./assets/app-review/heritage-sports-seasonal-at-100-percent.png" target="_blank" rel="noopener">Heritage, cricket and seasonal</a><a class="button button-secondary" href="./assets/app-review/light-background-at-100-percent.png" target="_blank" rel="noopener">Light backgrounds</a></div></details>
+  </section>
+  <section id="review-bundles" class="review-bundles" hidden aria-labelledby="bundle-title"><div><p class="eyebrow">TRY THE NEW LOOK IN YOUR APP</p><h2 id="bundle-title">Review packs.</h2><p>Start with <strong>Refresh Sample</strong>, then run <strong>Charmlet: Import Charm Pack</strong>. All review packs are free. Some packs share designs, so choose the collection you want to try.</p></div><div id="bundle-links"></div></section>
+  <section class="review-browser" aria-label="Artwork review browser">
+   <div class="review-controls">
+    <label><span>Search artwork</span><input id="review-search" type="search" placeholder="Try CPU, cat, flower or coffee…"></label>
+    <label><span>Collection</span><select id="review-group"><option value="all">All collections</option></select></label>
+    <div class="review-view" role="group" aria-label="Artwork view">
+     <button id="view-new" type="button" aria-pressed="true">Selected art</button>
+     <button id="view-compare" type="button" aria-pressed="false">Compare originals</button>
+     <button id="view-size" type="button" aria-pressed="true">100% charm size</button>
+     <button id="view-dark" type="button" aria-pressed="false">Dark backdrop</button>
+    </div>
+   </div>
+   <div id="review-families" class="group-filters" role="group" aria-label="Review families">
+    <button class="group-filter" data-family="all" type="button" aria-pressed="true">All selected</button>
+    <button class="group-filter" data-family="starters" type="button" aria-pressed="false">Starter selection</button>
+    <button class="group-filter" data-family="classics" type="button" aria-pressed="false">Website selection</button>
+    <button class="group-filter" data-family="new-worlds" type="button" aria-pressed="false">More collections</button>
+    <button class="group-filter" data-family="flowers" type="button" aria-pressed="false">Earned flowers</button>
+   </div>
+   <p id="review-count" role="status" aria-live="polite"></p><div id="review-grid" class="review-grid"></div>
+   <p id="review-empty" hidden>No designs match. Try another search or collection.</p>
+  </section>
  </main>
- <dialog id="review-dialog" aria-labelledby="review-title"><button id="review-close" class="quiet-button" type="button" aria-label="Close enlarged artwork">Close ×</button><p class="eyebrow">ILLUSTRATED REVIEW CANDIDATE</p><h2 id="review-title"></h2><div class="review-large"><img id="review-image" alt="" width="432" height="504"></div><p id="review-detail" class="small-note"></p></dialog>
- <footer class="site-footer"><a class="brand" href="./">charmlet</a><p>Made in Silicon Valley.<br>Independent project. No company or league endorsement.</p><span id="review-release">Phase 4 review</span></footer>
+ <dialog id="review-dialog" aria-labelledby="review-title"><button id="review-close" class="quiet-button" type="button" aria-label="Close enlarged artwork">Close ×</button><p id="review-kind" class="eyebrow">ARTWORK REVIEW</p><h2 id="review-title"></h2><div class="review-large"><img id="review-image" alt="" width="432" height="504"></div><p id="review-detail" class="small-note"></p></dialog>
+ <footer class="site-footer"><a class="brand" href="./">charmlet</a><p>Made in Silicon Valley.<br>Independent project. No company or league endorsement.</p><span id="review-release">Artwork refresh review</span></footer>
  <script type="module" src="./review.js"></script>
 </body>
 </html>

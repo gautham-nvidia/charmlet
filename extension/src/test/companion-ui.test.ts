@@ -1,4 +1,4 @@
-import { test, expect, _electron as electron, type ElectronApplication, type Page, type TestInfo } from '@playwright/test';
+import { test, expect, _electron as electron, type ElectronApplication, type Frame, type Page, type TestInfo } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
 import { resolveCliPathFromVSCodeExecutablePath } from '@vscode/test-electron';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
@@ -18,6 +18,24 @@ interface OwnedEditor {
 	companionPath: string;
 	app: ElectronApplication;
 	window: Page;
+}
+
+async function alphaAtCordTip(frame: Frame): Promise<number> {
+	return frame.evaluate(() => {
+		const image = document.getElementById('charm-image') as HTMLImageElement;
+		const path = document.getElementById('thread') as unknown as SVGPathElement;
+		const point = path.getPointAtLength(path.getTotalLength());
+		const matrix = path.getScreenCTM()!;
+		const tip = { x: matrix.a * point.x + matrix.c * point.y + matrix.e, y: matrix.b * point.x + matrix.d * point.y + matrix.f };
+		const bounds = image.getBoundingClientRect();
+		const canvas = document.createElement('canvas');
+		canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+		const context = canvas.getContext('2d')!;
+		context.drawImage(image, 0, 0);
+		const x = Math.floor((tip.x - bounds.left) * canvas.width / bounds.width);
+		const y = Math.floor((tip.y - bounds.top) * canvas.height / bounds.height);
+		return context.getImageData(x, y, 1, 1).data[3];
+	});
 }
 
 async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor, 'app' | 'window'>) => void, installed = false): Promise<OwnedEditor> {
@@ -72,6 +90,7 @@ async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor,
 		executablePath,
 		args: [
 			'--new-window', `--user-data-dir=${join(profile, 'user')}`, `--extensions-dir=${join(profile, 'extensions')}`,
+			'--force-device-scale-factor=1', // Use the CI pixel grid on high-DPI developer displays too.
 			...(installed ? [] : [`--extensionDevelopmentPath=${resolve('.')}`, '--disable-workspace-trust']),
 			...(process.platform === 'linux' ? ['--no-sandbox', '--disable-gpu-sandbox'] : []),
 			'--skip-welcome', '--skip-release-notes', '--disable-telemetry', '--disable-updates', scratchFile,
@@ -507,21 +526,7 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', `pack:${pack.id}:${pack.charms[0].id}`);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 		await expect.poll(() => frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-		const alphaAtConnection = await frame.evaluate(() => {
-			const image = document.getElementById('charm-image') as HTMLImageElement;
-			const path = document.getElementById('thread') as unknown as SVGPathElement;
-			const point = path.getPointAtLength(path.getTotalLength());
-			const matrix = path.getScreenCTM()!;
-			const tip = { x: matrix.a * point.x + matrix.c * point.y + matrix.e, y: matrix.b * point.x + matrix.d * point.y + matrix.f };
-			const bounds = image.getBoundingClientRect();
-			const canvas = document.createElement('canvas');
-			canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
-			const context = canvas.getContext('2d')!;
-			context.drawImage(image, 0, 0);
-			const x = Math.floor((tip.x - bounds.left) * canvas.width / bounds.width);
-			const y = Math.floor((tip.y - bounds.top) * canvas.height / bounds.height);
-			return context.getImageData(x, y, 1, 1).data[3];
-		});
+		const alphaAtConnection = await alphaAtCordTip(frame);
 		expect(alphaAtConnection, 'The cord tip must touch the visible panda, not transparent padding').toBeGreaterThanOrEqual(128);
 		const restingY = Number(await frame.locator('#charm').getAttribute('data-position-y'));
 		const focusBefore = await frame.locator('#focus-readout').innerText();
@@ -589,6 +594,150 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-frames', framesBefore!);
 		expect(Number(await frame.locator('#charm').getAttribute('data-position-y'))).toBeCloseTo(restingY, 1);
+	} finally {
+		await closeOwnedEditor(editor, testInfo);
+	}
+});
+
+test('soft charms squeeze at their attachment and festive defaults protect manual choices', async ({}, testInfo) => {
+	const editor = await launchOwnedEditor('charmlet-festive-soft-', ({ preferencesPath, companionPath }) => {
+		writeFileSync(preferencesPath, `${JSON.stringify({ ...DEFAULT_STATE, rotateMessages: false })}\n`);
+		writeFileSync(companionPath, `${JSON.stringify(defaultCompanionState())}\n`);
+	});
+	const { window, preferencesPath } = editor;
+	try {
+		await window.emulateMedia({ reducedMotion: 'no-preference' });
+		await command(window, 'Charmlet: Show Charm');
+		let frame = await readyFrame(window);
+		await expect(frame.locator('#message-text')).toHaveText(MESSAGES[0]);
+		const review = JSON.parse(readFileSync(resolve('..', 'website', 'art-review.json'), 'utf8'));
+		const imported: string[] = [];
+		for (const key of ['new-pumpkin-patch', 'new-stress-ball']) {
+			const item = review.items.find((item: { key: string }) => item.key === key);
+			const path = resolve('..', 'website', item.download);
+			const pack = JSON.parse(readFileSync(path, 'utf8'));
+			await editor.app.evaluate(({ dialog }, path) => {
+				dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [path] });
+			}, path);
+			await command(window, 'Charmlet: Import Charm Pack');
+			const id = `pack:${pack.id}:${pack.charms[0].id}`;
+			imported.push(id);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', id);
+		}
+		const [pumpkin, ball] = imported;
+		// Only Charmlet reads the simulated date. Keep the IDE's clock, native
+		// event timestamps, animation frames and real timers intact.
+		const setReviewDate = (date: Date) => frame.evaluate(now => {
+			Date.now = () => now;
+			globalThis.window.dispatchEvent(new Event('focus'));
+		}, date.getTime());
+		await setReviewDate(new Date(2026, 9, 31, 12));
+		await frame.locator('#settings-toggle').click();
+		await frame.locator('#menu-appearance').click();
+		await expect(frame.locator('#charm-pinned')).toBeChecked();
+		await frame.locator('#festive-enabled').check();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
+		await frame.locator('#charm-pinned').uncheck();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', pumpkin);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		expect(JSON.parse(readFileSync(preferencesPath, 'utf8'))).toMatchObject({
+			charmId: ball, charmPinned: false, festiveEnabled: true,
+		});
+		await frame.locator('#settings-close').click();
+		await setReviewDate(new Date(2026, 10, 1, 0));
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
+		await setReviewDate(new Date(2026, 9, 31, 12));
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', pumpkin);
+		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+		await frame.getByRole('button', { name: 'Select Stress Ball', exact: true }).click();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		await setReviewDate(new Date(2027, 9, 31, 12));
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
+		expect(JSON.parse(readFileSync(preferencesPath, 'utf8')).charmPinned).toBe(true);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+		const pointerFrames = window.frames();
+		for (const target of pointerFrames) {
+			await target.evaluate(() => {
+				const events: Record<string, unknown>[] = [];
+				for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel',
+					'gotpointercapture', 'lostpointercapture', 'mousedown', 'mouseup']) {
+					globalThis.window.addEventListener(type, event => {
+						const pointer = event as PointerEvent;
+						const target = event.target instanceof Element ? event.target : undefined;
+						events.push({ type, id: pointer.pointerId, buttons: pointer.buttons, trusted: event.isTrusted,
+							x: pointer.clientX, y: pointer.clientY, target: target?.id || target?.tagName,
+							classes: target?.getAttribute('class'),
+							captured: document.getElementById('charm')?.hasPointerCapture(pointer.pointerId),
+							time: performance.now() });
+						document.documentElement.dataset.pointerTrace = JSON.stringify(events.slice(-40));
+					}, true);
+				}
+			});
+		}
+		const bounds = await frame.locator('#charm').boundingBox();
+		if (!bounds) { throw new Error('The stress ball must be visible.'); }
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('stress-ball-rest.png') });
+		await window.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+		await window.mouse.down();
+		const squeezed = () => frame.locator('#charm-image').evaluate(image => {
+			const matrix = new DOMMatrix(getComputedStyle(image).transform);
+			return matrix.a > 1.05 && matrix.d < .9;
+		});
+		await expect.poll(squeezed).toBe(true);
+		// Exercise a sustained hold, without interrupting pointer capture with
+		// a screenshot. Capture evidence once the native release has completed.
+		await window.waitForTimeout(500);
+		await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(.86);
+		expect(await alphaAtCordTip(frame), 'Squeezing must leave the cord touching the visible ball').toBeGreaterThanOrEqual(128);
+		await window.mouse.up();
+		writeFileSync(testInfo.outputPath('squeeze-release.json'), JSON.stringify(await frame.evaluate(() => ({
+			active: document.getElementById('charm')!.matches(':active'),
+			classes: document.getElementById('charm')!.className,
+			phase: document.getElementById('phase')!.textContent,
+			running: document.getElementById('stage')!.dataset.running,
+			transform: getComputedStyle(document.getElementById('charm-image')!).transform,
+		})), null, 2));
+		try {
+			await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(1);
+		} finally {
+			writeFileSync(testInfo.outputPath('squeeze-pointer-events.json'), JSON.stringify({
+				host: await editor.app.evaluate(({ app }) => ({ version: app.getVersion(), engines: process.versions })),
+				frames: await Promise.all(pointerFrames.map(target => target.evaluate(() => ({
+					name: globalThis.window.name, agent: navigator.userAgent,
+					visible: document.visibilityState, focused: document.hasFocus(),
+					viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
+					captured: document.getElementById('charm')?.hasPointerCapture(1),
+					events: JSON.parse(document.documentElement.dataset.pointerTrace ?? '[]'),
+				})).catch(error => ({ error: String(error) })))),
+			}, null, 2));
+		}
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('stress-ball-released.png') });
+		await frame.locator('#settings-toggle').click();
+		await frame.locator('#menu-appearance').click();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		const framesBefore = await frame.locator('#stage').getAttribute('data-frames');
+		await frame.locator('#charm').focus();
+		await window.keyboard.down('Space');
+		await expect.poll(squeezed).toBe(true);
+		await expect(frame.locator('#charm-image')).toHaveCSS('transition-duration', '0s');
+		await window.keyboard.up('Space');
+		await expect(frame.locator('#charm-image')).toHaveCSS('transform', 'none');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-frames', framesBefore!);
+		await window.keyboard.down('Space');
+		await expect.poll(squeezed).toBe(true);
+		await frame.evaluate(() => globalThis.window.dispatchEvent(new Event('blur')));
+		await expect(frame.locator('#charm-image')).toHaveCSS('transform', 'none');
+		await window.keyboard.up('Space');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-frames', framesBefore!);
+		frame = await reloadCharm(window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
+		expect(JSON.parse(readFileSync(preferencesPath, 'utf8'))).toMatchObject({
+			charmId: ball, charmPinned: true, festiveEnabled: true, reducedMotion: true,
+		});
 	} finally {
 		await closeOwnedEditor(editor, testInfo);
 	}

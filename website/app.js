@@ -116,8 +116,8 @@ function renderStory() {
   copy.append(element('p', 'eyebrow', 'YOUR NEXT LITTLE WORLD'), element('h3', '', world.name), element('p', '', world.description));
   const ideas = element('ul', 'idea-tags');
   for (const idea of world.ideas) ideas.append(element('li', '', idea));
-  copy.append(ideas);
-  if (!world.charmIds.length) copy.append(element('p', 'collection-note', 'This collection is being drawn. These are ideas and previews, not downloadable packs yet.'));
+  copy.append(element('p', 'collection-note', 'Collection inspiration'), ideas);
+  if (!world.charmIds.length && world.id !== 'coding') copy.append(element('p', 'collection-note', 'These ideas are being explored. Review downloads will appear as designs are ready.'));
   if (world.rightsReview && sportsWishlist) {
     const wishlist = element('div', 'sports-wishlist');
     wishlist.append(element('h4', '', 'Athletes & match-day wishlist'));
@@ -155,11 +155,11 @@ function render() {
     image.width = 144;
     image.height = 168;
     image.loading = 'lazy';
-    art.append(element('span', 'card-cord'), image);
+    art.append(image);
     const copy = element('div', 'card-copy');
     copy.append(element('span', 'card-group', presentationGroup(item)), element('h3', '', item.name), element('p', 'card-description', item.description));
     const foot = element('div', 'card-foot');
-    foot.append(element('span', item.kind === 'extra' ? 'price-label' : 'included-label', item.kind === 'extra' ? 'Free classic' : 'Included with Charmlet'));
+    foot.append(element('span', item.kind === 'extra' ? 'price-label' : 'included-label', item.kind === 'extra' ? 'Free review pack' : 'Included with Charmlet'));
     const preview = element('button', 'preview-link', 'Try it');
     preview.type = 'button';
     preview.setAttribute('aria-label', `Preview ${item.name} in the live swing demo`);
@@ -168,7 +168,7 @@ function render() {
     if (item.kind === 'extra') {
       const download = element('a', 'download-link', 'Download charm');
       download.href = item.download;
-      download.download = `${item.id}.charmlet.json`;
+      download.download = item.download.split('/').pop();
       download.setAttribute('aria-label', `Download ${item.name} charm`);
       foot.append(download);
     }

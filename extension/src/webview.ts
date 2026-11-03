@@ -1,6 +1,9 @@
 import { createElement, ArrowDown, ArrowRight, Eye, EyeOff, Orbit, Pause, Play, RotateCcw, Timer, X } from 'lucide';
 import { resetState, clamp, getLayout, restoreState, type CharmState } from './charm-state';
-import { CHARMS, getCharm, type CharmDefinition } from './charm-catalog';
+import { CHARMS, getCharm, isSoftCharm, type CharmDefinition } from './charm-catalog';
+import { DEFAULT_ATTACHMENT } from './charm-attachment';
+import { displayedCharm, festiveCharm, festiveDay } from './festive-charms';
+import { nextLocalMidnight } from './garden-core';
 import { createCompanionView } from './companion-view';
 import { createNavigationView, type NavigationView } from './navigation-view';
 import { MessageRotation } from './message-rotation';
@@ -53,6 +56,9 @@ const charmSelect = element<HTMLSelectElement>('charm-select');
 const charmDescription = element<HTMLParagraphElement>('charm-description');
 const showMessages = element<HTMLInputElement>('show-messages');
 const rotateMessages = element<HTMLInputElement>('rotate-messages');
+const festiveEnabled = element<HTMLInputElement>('festive-enabled');
+const charmPinned = element<HTMLInputElement>('charm-pinned');
+const festiveHint = element<HTMLParagraphElement>('festive-hint');
 const messageCard = element<HTMLDivElement>('message-card');
 const nextMessage = element<HTMLButtonElement>('next-message');
 const importPack = element<HTMLButtonElement>('import-pack');
@@ -60,6 +66,9 @@ const removePack = element<HTMLButtonElement>('remove-pack');
 const mediaRoot = new URL('.', charmImage.src);
 let charms: readonly CharmDefinition[] = CHARMS;
 let state = restoreState(api.getState(), charms);
+let activeCharm = getCharm(state.charmId, charms);
+let festiveTimer: number | undefined;
+let keyboardHeld = false;
 let saveRevision = 0;
 let visible = true;
 let ready = false;
@@ -134,8 +143,10 @@ function openAppearance() {
 function selectCharm(id: string) {
 	cancelDrag();
 	state.charmId = getCharm(id, charms).id;
+	state.charmPinned = true;
 	applyCharm();
 	resize();
+	controls();
 	save();
 }
 
@@ -158,7 +169,9 @@ function save() {
 }
 
 function applyCharm() {
-	const selected = getCharm(state.charmId, charms);
+	setKeyboardHeld(false);
+	const selected = displayedCharm(state, charms, Date.now());
+	activeCharm = selected;
 	const source = selected.source ?? new URL(selected.file, mediaRoot).toString();
 	if (charmImage.src !== source) {
 		charmImage.src = source;
@@ -167,9 +180,46 @@ function applyCharm() {
 	charmSwatch.style.backgroundColor = selected.accent;
 	charmDescription.textContent = selected.description;
 	charmSelect.value = selected.id;
-	charm.setAttribute('aria-label', `Nudge ${selected.name.toLowerCase()} charm`);
+	const soft = isSoftCharm(selected.id);
+	charm.dataset.soft = String(soft);
+	const attachment = selected.attachment ?? DEFAULT_ATTACHMENT;
+	charmImage.style.transformOrigin = `${attachment.x * 100}% ${attachment.y * 100}%`;
+	charm.setAttribute('aria-label', `${soft ? 'Squeeze' : 'Nudge'} ${selected.name.toLowerCase()} charm`);
 	stage.dataset.charm = selected.id;
+	stage.dataset.preferredCharm = state.charmId;
 	navigationUI?.setCatalogue(charms, selected.id);
+	updateFestiveControls();
+}
+
+function updateFestiveControls() {
+	festiveEnabled.checked = state.festiveEnabled;
+	charmPinned.checked = state.charmPinned;
+	const day = festiveDay(Date.now());
+	festiveHint.textContent = !state.festiveEnabled
+		? 'Optional holiday picks use your local date. Thanksgiving follows the US calendar.'
+		: state.charmPinned ? 'Your charm is pinned. Unpin it to allow festive defaults.'
+			: !day ? 'Your usual charm stays until a holiday. Selecting a charm pins it.'
+				: festiveCharm(day, charms) ? `${day.name}: using the installed festive charm for today.`
+					: `${day.name}: no matching festive charm is installed, so your usual charm stays.`;
+}
+
+function refreshFestiveSelection() {
+	if (!drag && !keyboardHeld && displayedCharm(state, charms, Date.now()).id !== activeCharm.id) {
+		applyCharm();
+		resize();
+		showState();
+	}
+	updateFestiveControls();
+	scheduleFestiveRefresh();
+}
+
+function scheduleFestiveRefresh() {
+	if (festiveTimer !== undefined) { window.clearTimeout(festiveTimer); festiveTimer = undefined; }
+	if (!ready || !visible || document.hidden || !state.festiveEnabled || state.charmPinned) { return; }
+	const now = Date.now();
+	// Also notice timezone/clock changes while a stationary charm is visible.
+	const delay = drag || keyboardHeld ? 1000 : Math.min(60000, Math.max(25, nextLocalMidnight(now) - now + 25));
+	festiveTimer = window.setTimeout(refreshFestiveSelection, delay);
 }
 
 function updateMessage() {
@@ -187,7 +237,7 @@ const messageRotation = new MessageRotation(advanceMessage);
 
 function scheduleMessages() {
 	const enabled = ready && stage.dataset.companionReady === 'true' && visible && !document.hidden
-		&& state.showMessages && state.rotateMessages && settings.hidden && !navigationUI?.isOpen() && !drag && companionUI.canRotate();
+		&& state.showMessages && state.rotateMessages && settings.hidden && !navigationUI?.isOpen() && !drag && !keyboardHeld && companionUI.canRotate();
 	messageRotation.setEnabled(enabled);
 	messageCard.dataset.rotation = enabled ? 'active' : 'paused';
 }
@@ -211,8 +261,9 @@ function populateCharms() {
 }
 
 function controls() {
-	const selected = getCharm(state.charmId, charms);
-	charm.title = state.layoutMode === 'orbit'
+	const selected = activeCharm;
+	charm.title = isSoftCharm(selected.id) ? 'Hold or press Space to squeeze; drag and release to bounce.'
+		: state.layoutMode === 'orbit'
 		? `Nudge ${selected.name} charm; drag around the peg for a full loop`
 		: `Nudge ${selected.name} charm; pull up to retract. Use Orbit layout for full loops.`;
 	toggle.replaceChildren(createElement(state.hidden ? Eye : EyeOff, { width: 16, height: 16 }), document.createTextNode(state.hidden ? 'Show charm' : 'Hide charm'));
@@ -229,6 +280,7 @@ function controls() {
 		restore.focus({ preventScroll: true });
 	}
 	hanging.inert = state.hidden || popupOpen();
+	updateFestiveControls();
 }
 
 function render() {
@@ -238,6 +290,7 @@ function render() {
 	const hookX = positionX + Math.cos(angle) * attachmentX + Math.sin(angle) * attachmentOffset;
 	const hookY = positionY + Math.sin(angle) * attachmentX - Math.cos(angle) * attachmentOffset;
 	charm.style.transform = `translate(${positionX}px, ${positionY}px) rotate(${angle}rad)`;
+	charm.dataset.reducedMotion = String(reducedMotion());
 	anchor.style.left = `${anchorX}px`;
 	anchor.style.top = `${anchorY}px`;
 	focusRing.style.left = `${anchorX}px`;
@@ -253,7 +306,7 @@ function render() {
 	cordValue.value = `${Math.round(state.cordLength)} px`;
 	sizeInput.setAttribute('aria-valuetext', sizeValue.value);
 	cordInput.setAttribute('aria-valuetext', cordValue.value);
-	const status = state.hidden ? 'Retracted' : drag ? 'Held' : pendulum.moving && !reducedMotion() ? 'Swinging' : 'Parked';
+	const status = state.hidden ? 'Retracted' : drag || keyboardHeld ? 'Held' : pendulum.moving && !reducedMotion() ? 'Swinging' : 'Parked';
 	if (phase.textContent !== status) {
 		phase.textContent = status;
 	}
@@ -351,6 +404,7 @@ function showState(drop = false) {
 	}
 	render();
 	scheduleMessages();
+	scheduleFestiveRefresh();
 }
 
 function finishDrag() {
@@ -364,7 +418,16 @@ function finishDrag() {
 	return completed;
 }
 
+function setKeyboardHeld(held: boolean) {
+	if (keyboardHeld === held) { return; }
+	keyboardHeld = held;
+	charm.dataset.keyboardHeld = String(held);
+	render();
+	scheduleMessages();
+}
+
 function cancelDrag() {
+	setKeyboardHeld(false);
 	const cancelled = finishDrag();
 	if (!cancelled) { return; }
 	pendulum.setLength(state.cordLength);
@@ -378,7 +441,7 @@ function resize() {
 	cancelDrag();
 	updateOverlays();
 	const { width, height } = stage.getBoundingClientRect();
-	const attachment = getCharm(state.charmId, charms).attachment;
+	const attachment = activeCharm.attachment;
 	const layout = getLayout(width, height, state.cordLength, state.size, state.layoutMode, attachment);
 	scale = Math.max(0.01, Math.min(1, width / layout.minimumWidth, height / layout.minimumHeight));
 	pendulum.resize(width / scale, height / scale, state.cordLength, state.size, state.layoutMode, attachment);
@@ -401,6 +464,7 @@ charm.addEventListener('pointerdown', event => {
 		return;
 	}
 	transition?.cancel();
+	setKeyboardHeld(false);
 	const startPoint = point(event);
 	drag = {
 		id: event.pointerId, start: startPoint, screenStart: { x: event.clientX, y: event.clientY }, moved: false,
@@ -488,8 +552,20 @@ window.addEventListener('pointermove', event => {
 	}
 }, true);
 charm.addEventListener('click', event => { if (event.detail === 0) { nudge(); } });
+charm.addEventListener('blur', () => setKeyboardHeld(false));
+charm.addEventListener('keyup', event => {
+	if ((event.key === ' ' || event.key === 'Enter') && keyboardHeld) {
+		event.preventDefault();
+		setKeyboardHeld(false);
+		nudge();
+		render();
+	}
+});
 charm.addEventListener('keydown', event => {
-	if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+	if ((event.key === ' ' || event.key === 'Enter') && isSoftCharm(activeCharm.id)) {
+		event.preventDefault();
+		setKeyboardHeld(true);
+	} else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
 		event.preventDefault();
 		nudge(event.key === 'ArrowLeft' ? -1 : 1);
 	} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
@@ -543,6 +619,24 @@ motion.addEventListener('click', () => {
 	save();
 });
 
+festiveEnabled.addEventListener('change', () => {
+	cancelDrag();
+	state.festiveEnabled = festiveEnabled.checked;
+	applyCharm();
+	resize();
+	showState();
+	save();
+});
+charmPinned.addEventListener('change', () => {
+	cancelDrag();
+	if (charmPinned.checked) { state.charmId = activeCharm.id; }
+	state.charmPinned = charmPinned.checked;
+	applyCharm();
+	resize();
+	showState();
+	save();
+});
+
 settings.addEventListener('keydown', event => {
 	if (event.key === 'Escape') {
 		event.preventDefault();
@@ -582,6 +676,7 @@ function synchronizeVisibility() {
 	transition?.cancel();
 	pendulum.settle();
 	stop();
+	refreshFestiveSelection();
 	hanging.hidden = state.hidden;
 	render();
 	scheduleMessages();
@@ -651,7 +746,11 @@ window.addEventListener('message', event => {
 });
 
 document.addEventListener('visibilitychange', synchronizeVisibility);
-window.addEventListener('pagehide', () => messageRotation.stop());
+window.addEventListener('focus', refreshFestiveSelection);
+window.addEventListener('pagehide', () => {
+	messageRotation.stop();
+	if (festiveTimer !== undefined) { window.clearTimeout(festiveTimer); festiveTimer = undefined; }
+});
 systemMotion.addEventListener('change', updateMotionPreference);
 new MutationObserver(updateMotionPreference).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 new ResizeObserver(resize).observe(stage);

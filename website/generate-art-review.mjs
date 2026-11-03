@@ -13,7 +13,9 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 await mkdir(join(output, 'raw'), { recursive: true });
 await writeFile(join(output, 'jobs.json'), `${JSON.stringify(jobs, null, 2)}\n`);
 if (command === 'plan') {
-  console.log(JSON.stringify({ jobs: jobs.length, starters: 10, websiteClassics: 60, earnedFlowers: 12, newWorlds: 13, output, networkRequests: 0 }));
+  console.log(JSON.stringify({ jobs: jobs.length,
+    families: Object.fromEntries([...new Set(jobs.map(job => job.family))].map(family => [family, jobs.filter(job => job.family === family).length])),
+    output, networkRequests: 0 }));
 } else if (command === 'generate') {
   const selected = requested.length === 1 && requested[0] === '--all' ? jobs : jobs.filter(job => requested.includes(job.key));
   if (!selected.length || (requested[0] !== '--all' && selected.length !== new Set(requested).size)) throw new Error('Specify known unique job IDs or --all.');
@@ -29,16 +31,26 @@ if (command === 'plan') {
     const receiptPath = join(output, 'raw', `${job.variant}.json`);
     const promptHash = hash(job.prompt);
     const exists = path => access(path).then(() => true, error => { if (error.code === 'ENOENT') return false; throw error; });
+    const preservePrompt = async () => {
+      const path = join(output, 'raw', `${job.variant}.prompt.txt`);
+      if (await exists(path)) {
+        if (await readFile(path, 'utf8') !== job.prompt) throw new Error(`Use a new revision instead of replacing the prompt for ${job.key}.`);
+      } else {
+        await writeFile(path, job.prompt, { flag: 'wx' });
+      }
+    };
     const hasImage = await exists(imagePath);
     const hasReceipt = await exists(receiptPath);
     if (hasImage !== hasReceipt) throw new Error(`Partial saved result needs review before retrying: ${job.key}`);
     if (hasImage) {
       const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
       if (receipt.promptHash !== promptHash || receipt.model !== model || receipt.sha256 !== hash(await readFile(imagePath))) throw new Error(`Existing artwork differs from the requested job: ${job.key}`);
+      await preservePrompt();
       completed++;
       console.log(JSON.stringify({ key: job.key, status: 'reused', completed, total: selected.length }));
       return;
     }
+    await preservePrompt();
     const response = await fetch(endpoint, {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(240000),
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Accept: 'application/json', 'x-nv-application': 'charmlet-art-review' },

@@ -96,7 +96,9 @@ try {
     }
     const ordered = allJobs.flatMap(job => {
       const item = items.get(job.key);
-      return item?.profile === 2 && item.revision === job.revision ? [item] : [];
+      // Keep earlier candidates as archive entries while a requested redraw is
+      // still being prepared. Curation excludes them from the visible lineup.
+      return item?.profile === 2 && item.revision <= job.revision ? [item] : [];
     });
     await writeFile(manifestPath, `${JSON.stringify({ ...existing, status: 'review-only', expected: allJobs.length, prepared: ordered.length,
       note: 'Illustrated Gemini redraw candidates. No final bundled/free/paid decisions are implied. Flowers remain earned rewards.', items: ordered }, null, 2)}\n`);

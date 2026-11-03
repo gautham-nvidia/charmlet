@@ -1,14 +1,14 @@
 {
   "status": "review-only",
-  "expected": 95,
-  "prepared": 95,
+  "expected": 105,
+  "prepared": 105,
   "note": "Illustrated Gemini redraw candidates. No final bundled/free/paid decisions are implied. Flowers remain earned rewards.",
   "items": [
     {
       "key": "starter-terminal",
       "id": "terminal",
       "name": "Terminal",
-      "group": "Silicon & Code",
+      "group": "Coding",
       "family": "starters",
       "accent": "#85d8bc",
       "original": "default/keycap.svg",
@@ -16,7 +16,7 @@
       "image": "./assets/review/starter-terminal-r2-p2.png",
       "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-starter-terminal-r2-p2.charmlet.json",
+      "download": null,
       "pngBytes": 59400,
       "pngSha256": "88e462800ee718a43980cbeb1f0714fd29961eeb603ee48b8eb23c077e0f8876",
       "rawSha256": "76d38cc57a5ee796d7d28643a606fcae35ebe2e49924c55bde2d87612a2b3abc",
@@ -24,35 +24,39 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "original",
+      "featured": true
     },
     {
       "key": "starter-chip",
       "id": "chip",
       "name": "Chip",
-      "group": "Silicon & Code",
+      "group": "Compute & Silicon",
       "family": "starters",
       "accent": "#b0a6f2",
       "original": "default/chip.svg",
-      "preview": "./assets/review/starter-chip-p2.webp",
-      "image": "./assets/review/starter-chip-p2.png",
-      "revision": 1,
+      "preview": "./assets/review/starter-chip-r3-p2.webp",
+      "image": "./assets/review/starter-chip-r3-p2.png",
+      "revision": 3,
       "profile": 2,
-      "download": "./packs/review/art-starter-chip-r1-p2.charmlet.json",
-      "pngBytes": 74199,
-      "pngSha256": "47f5f1cb2b9b89d8147380761cdd473ae69ecb58051090e8d786a7da4079e01f",
-      "rawSha256": "8903170511cacf0615b080211045c1e86b1c99eea7fdb2141536d089765d355f",
-      "promptHash": "2a09d7f8ac34d69428ba8bae3b9cb36b0172e0578a091771bfa4d5d6b04b9d89",
+      "download": "./packs/review/art-starter-chip-r3-p2.charmlet.json",
+      "pngBytes": 67936,
+      "pngSha256": "31e5f7ffc832997b7bae415b9e87a6facc0b950cd443a22ef114d23ccf7d2f79",
+      "rawSha256": "70f31203a4920c88b6ade63b9a3dca036952ed97469d2c09f832dbd8811e0e41",
+      "promptHash": "9e556bf65c1817a20abf39ec0c70e3fcbac3ab9948bd1c43419b2d6a7dc3ba81",
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "redrawn",
+      "featured": true
     },
     {
       "key": "starter-wafer",
       "id": "wafer",
       "name": "Wafer",
-      "group": "Silicon & Code",
+      "group": "Compute & Silicon",
       "family": "starters",
       "accent": "#efbc87",
       "original": "default/wafer.svg",
@@ -60,7 +64,7 @@
       "image": "./assets/review/starter-wafer-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-starter-wafer-r1-p2.charmlet.json",
+      "download": "./packs/review/art-starter-wafer-r1-p2-c142f2b9.charmlet.json",
       "pngBytes": 79670,
       "pngSha256": "97aaa9c85868bfa24f3e4e89f06ab383adbd37617a8877d4bc2624df8bdc7fa0",
       "rawSha256": "cf600365a3ed897c13c6150aad5a4153f4a7735827e3345af7a8bda647ab47d4",
@@ -68,123 +72,135 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "starter-circuit",
       "id": "circuit",
-      "name": "Circuit",
-      "group": "Silicon & Code",
+      "name": "Circuit Board",
+      "group": "Compute & Silicon",
       "family": "starters",
       "accent": "#88cee0",
       "original": "default/circuit.svg",
-      "preview": "./assets/review/starter-circuit-p2.webp",
-      "image": "./assets/review/starter-circuit-p2.png",
-      "revision": 1,
+      "preview": "./assets/review/starter-circuit-r2-p2.webp",
+      "image": "./assets/review/starter-circuit-r2-p2.png",
+      "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-starter-circuit-r1-p2.charmlet.json",
-      "pngBytes": 73040,
-      "pngSha256": "2bde2781489e6b4638d414113fe00015dbc84e05c7d9da1b08b76d4cda682305",
-      "rawSha256": "3055420e9a26fa1db2ccd61518887069b9c6dd2fa7d1f40888d2bd0547a9af5e",
-      "promptHash": "9b636bb5ede07be8f1b4cdf19b0b814f38f07728cf39ddb15beb794460ae13de",
+      "download": "./packs/review/art-starter-circuit-r2-p2.charmlet.json",
+      "pngBytes": 52454,
+      "pngSha256": "054e7c92ed46764f4cfd5d9bb1cb89e5b1b4577adb47229f145c2d019aeaf82d",
+      "rawSha256": "67d8b3accd7fe19d0ece8599f2c7bc6336f40e2cdf5e868a239d1ae0ae2a6f43",
+      "promptHash": "cc027f26da6238ad4a28c7fac22a679448be22dbbc2624044a6bd089cecb4b42",
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "redrawn",
+      "featured": true
     },
     {
       "key": "starter-transistor",
       "id": "transistor",
       "name": "Transistor",
-      "group": "Silicon & Code",
+      "group": "Compute & Silicon",
       "family": "starters",
       "accent": "#e6ae73",
       "original": "default/transistor.svg",
-      "preview": "./assets/review/starter-transistor-r2-p2.webp",
-      "image": "./assets/review/starter-transistor-r2-p2.png",
-      "revision": 2,
+      "preview": "./assets/review/starter-transistor-r3-p2.webp",
+      "image": "./assets/review/starter-transistor-r3-p2.png",
+      "revision": 3,
       "profile": 2,
-      "download": "./packs/review/art-starter-transistor-r2-p2.charmlet.json",
-      "pngBytes": 56162,
-      "pngSha256": "c0cee1483eeb97b3c19e5c9b7b4738d1e5b383561f02c19fa661e93709b91c16",
-      "rawSha256": "50f080f43d7a0a4daeac0913642f432c56ebc89aec41a6ff753740b58ca8cd20",
-      "promptHash": "464912de2be2ea78ead2b792325cfc1491037b9d38f096fd88f9497300d94c90",
+      "download": "./packs/review/art-starter-transistor-r3-p2.charmlet.json",
+      "pngBytes": 29999,
+      "pngSha256": "513a58e7cb3baffff9efb96b997baa17c50aa2a6e89166f3878d61c59dba635a",
+      "rawSha256": "8e5da3f72e335fa39ffff053903d9048276fb856d62d0f8194a291dc3023bf7a",
+      "promptHash": "975da6502fadb344c2c4dfc0c7a7207f6a308097f9887ff98ff68b1783f338a2",
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "redrawn",
+      "featured": true
     },
     {
       "key": "starter-memory-stack",
       "id": "memory-stack",
-      "name": "Memory Stack",
-      "group": "Silicon & Code",
+      "name": "RAM",
+      "group": "Compute & Silicon",
       "family": "starters",
       "accent": "#9eb5ec",
       "original": "default/memory-stack.svg",
-      "preview": "./assets/review/starter-memory-stack-p2.webp",
-      "image": "./assets/review/starter-memory-stack-p2.png",
-      "revision": 1,
+      "preview": "./assets/review/starter-memory-stack-r2-p2.webp",
+      "image": "./assets/review/starter-memory-stack-r2-p2.png",
+      "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-starter-memory-stack-r1-p2.charmlet.json",
-      "pngBytes": 95440,
-      "pngSha256": "0035974c29c8f509a65e38fb197a4b25e7087f79294fc5185df8283ce66e7b4f",
-      "rawSha256": "697e620ae4b0a99080fcbf0785bece5fa5701d79a06c9c26bb1bd38d66cb58d8",
-      "promptHash": "77e22624646c913631b9cb94c9b9b0dda382389324e75179e5b8c1c7ccd98cd5",
+      "download": "./packs/review/art-starter-memory-stack-r2-p2.charmlet.json",
+      "pngBytes": 39035,
+      "pngSha256": "8a470fdeda8da3a7aaae84628895d321f19995d8f700460a7b87d95a535a03c8",
+      "rawSha256": "53282bdebade793295f86d1c2c39359055a68a2fcacd18e49cd23665566a301e",
+      "promptHash": "68d465bd378abfd4a37a493cbe4ab34b184da9ecd100feb17cbb4a5fefeb6e42",
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "redrawn",
+      "featured": true
     },
     {
       "key": "starter-evil-eye",
       "id": "evil-eye",
       "name": "Evil Eye",
-      "group": "Good Luck",
+      "group": "Local Culture",
       "family": "starters",
       "accent": "#6e9fed",
       "original": "default/evil-eye.svg",
-      "preview": "./assets/review/starter-evil-eye-p2.webp",
-      "image": "./assets/review/starter-evil-eye-p2.png",
-      "revision": 1,
+      "preview": "./assets/review/starter-evil-eye-r2-p2.webp",
+      "image": "./assets/review/starter-evil-eye-r2-p2.png",
+      "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-starter-evil-eye-r1-p2.charmlet.json",
-      "pngBytes": 75395,
-      "pngSha256": "cb1932736d1489cae1afe2c7e640617a56bb2da0e8f22baafdb6540077e86ffa",
-      "rawSha256": "df595f5ab219be351db59dbcf605cd6e979eee78076b9191118a6c094f0a3065",
-      "promptHash": "74a55c7ac4a43bc2066c3755368bd65c24d715b65dbc520b7bce0fe531fc7ea4",
+      "download": "./packs/review/art-starter-evil-eye-r2-p2.charmlet.json",
+      "pngBytes": 72221,
+      "pngSha256": "5566a89999cd7ec34bc268451752ecd9f597be82b6d5d30eb7a23e87c4023a1d",
+      "rawSha256": "d652b968e527b94f0ea6fb19d54c854a99d774e4d7e7fe56984f16fdcaec1d27",
+      "promptHash": "a61e29f743c77874f54cc8bc1b01283f0fa277352a8c0b4320a3b2e6a339b29b",
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "redrawn",
+      "featured": true
     },
     {
       "key": "starter-drishti",
       "id": "drishti",
       "name": "Drishti Doll",
-      "group": "Good Luck",
+      "group": "Local Culture",
       "family": "starters",
       "accent": "#e99379",
       "original": "default/drishti.svg",
-      "preview": "./assets/review/starter-drishti-p2.webp",
-      "image": "./assets/review/starter-drishti-p2.png",
-      "revision": 1,
+      "preview": "./assets/review/starter-drishti-r2-p2.webp",
+      "image": "./assets/review/starter-drishti-r2-p2.png",
+      "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-starter-drishti-r1-p2.charmlet.json",
-      "pngBytes": 60783,
-      "pngSha256": "54af7d915331d368ddb144cf9fd375364419af82c1363fdc60747b2aa3afcd75",
-      "rawSha256": "cb12aa38599943fe5aa7af11650594f7b82f2f2de09a78ea66121440785bda20",
-      "promptHash": "8cc57585e379aa325664c90fedb7492f5d6c7f452cd25eec515beb5d502120e1",
+      "download": "./packs/review/art-starter-drishti-r2-p2.charmlet.json",
+      "pngBytes": 63198,
+      "pngSha256": "0108d913a4233e22b51ca2b72a42b17428eb1ade922e6fefdfca5504ce2caec1",
+      "rawSha256": "3d798af61735df93fe6e844d6ce56e82192646a7d23dbb144bab0b0d5e6776fa",
+      "promptHash": "89c321132f89be2e93a6786678952c82dd2cd223481531fc99c28820d6206b1a",
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "redrawn",
+      "featured": true
     },
     {
       "key": "starter-hamsa",
       "id": "hamsa",
       "name": "Hamsa",
-      "group": "Good Luck",
+      "group": "Local Culture",
       "family": "starters",
       "accent": "#e1c68f",
       "original": "default/hamsa.svg",
@@ -192,7 +208,7 @@
       "image": "./assets/review/starter-hamsa-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-starter-hamsa-r1-p2.charmlet.json",
+      "download": "./packs/review/art-starter-hamsa-r1-p2-61f2db8a.charmlet.json",
       "pngBytes": 83902,
       "pngSha256": "db279d972cf1b8a67fcdc9a4788aa2db052476603187448bf5eeedcd9db1dc70",
       "rawSha256": "ee754f17351b5f1f170ef4b9493c12992931c330cdf02bd653258aca1541933f",
@@ -200,13 +216,15 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "starter-lemon-chilies",
       "id": "lemon-chilies",
       "name": "Lemon & Chilies",
-      "group": "Good Luck",
+      "group": "Local Culture",
       "family": "starters",
       "accent": "#d5c563",
       "original": "default/lemon-chilies.svg",
@@ -214,7 +232,7 @@
       "image": "./assets/review/starter-lemon-chilies-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-starter-lemon-chilies-r1-p2.charmlet.json",
+      "download": "./packs/review/art-starter-lemon-chilies-r1-p2-c8bb9099.charmlet.json",
       "pngBytes": 47775,
       "pngSha256": "9a80d52381c14a1b9420d1d9807bf0d20633bf21ddba7d38cd52de89123c82d0",
       "rawSha256": "40e2e12e5ec9527872c13f9a053f28a7e53047a7426339b038a9ee7331eadc8f",
@@ -222,7 +240,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-probe-card",
@@ -232,19 +252,21 @@
       "family": "classics",
       "accent": "#8db7a6",
       "original": "extras/probe-card.svg",
-      "preview": "./assets/review/extra-probe-card-p2.webp",
-      "image": "./assets/review/extra-probe-card-p2.png",
-      "revision": 1,
+      "preview": "./assets/review/extra-probe-card-r2-p2.webp",
+      "image": "./assets/review/extra-probe-card-r2-p2.png",
+      "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-extra-probe-card-r1-p2.charmlet.json",
-      "pngBytes": 82498,
-      "pngSha256": "127ae2e39744a070613f95d81f0d4e3fa0ee5284114788c694ac6212d7497985",
-      "rawSha256": "1eafae4bce5861ff5bb6abe748907c9c863a52f186ef4eb54e32937fbe2ad34b",
-      "promptHash": "f563dd6f0457ebb6c20d109854352b3b996ff5adb0fea2decebfae8a8809c3be",
+      "download": "./packs/review/art-extra-probe-card-r2-p2.charmlet.json",
+      "pngBytes": 62790,
+      "pngSha256": "ea056da619b8a222442472a8c9eaa2568ad777fff1cc3f11e8af50ec0d700897",
+      "rawSha256": "64b8412b8f1964f506d7d4dc049fdef4d93e482b80afe2296f992c5f74ffb523",
+      "promptHash": "692200dedb1f0b89f353982aea7cf8b3399f03c6e769f9a37c8047d2ff0a0ea8",
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "redrawn",
+      "featured": true
     },
     {
       "key": "extra-logic-gate",
@@ -258,7 +280,7 @@
       "image": "./assets/review/extra-logic-gate-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-logic-gate-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 44028,
       "pngSha256": "698fbc2d39a782e0527ece0e67770f9fd99292a6c56d368742de180cd1423bf2",
       "rawSha256": "4146c0f9ad71f790943b4cc8d73c0158bd90777a862b8fe00ccf5f58ea9bfe42",
@@ -266,7 +288,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-finfet",
@@ -280,7 +304,7 @@
       "image": "./assets/review/extra-finfet-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-finfet-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 79327,
       "pngSha256": "de7098705f1ed5d3d93b1941fc784679824bc05ff91b413ad1239718ac227028",
       "rawSha256": "8ded72aea28fd7183216e435bca4a0d4e3bbea40642619e436335c6d5a37de23",
@@ -288,7 +312,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-photon-link",
@@ -302,7 +328,7 @@
       "image": "./assets/review/extra-photon-link-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-photon-link-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 71489,
       "pngSha256": "d146eb841babbd26dea9acc4ecc1bcfe0dd77fbec6973320a68ac205795b6234",
       "rawSha256": "65e09fd4cb960997fff465e88082577d09e1dab0d68ef4b93c5499e8cfa01308",
@@ -310,7 +336,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-lotus",
@@ -332,7 +360,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-sunrise",
@@ -354,7 +384,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-gpu-tile",
@@ -376,7 +408,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-cpu-tile",
@@ -398,7 +432,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-hbm-tower",
@@ -412,7 +448,7 @@
       "image": "./assets/review/extra-hbm-tower-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-hbm-tower-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 65969,
       "pngSha256": "2e69f8f0d283c6313ccb6bc396c2ff9dce14e1f563b71bacb79511a6f5147ef2",
       "rawSha256": "271c2cd7a99b7d8135e02af5bdfb3b85bbc91058a9434e882ffea442602832eb",
@@ -420,7 +456,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-cache-stack",
@@ -434,7 +472,7 @@
       "image": "./assets/review/extra-cache-stack-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-cache-stack-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 75239,
       "pngSha256": "0feee86a4c424a639ac14ac08e59d578d1544cfe70b6006fe2b94adf0f26eec3",
       "rawSha256": "ee8522a779477a2a5d84201d6e175da615125448d7884518a497b6769d7e6ea2",
@@ -442,7 +480,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-chiplet-bridge",
@@ -456,7 +496,7 @@
       "image": "./assets/review/extra-chiplet-bridge-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-chiplet-bridge-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 64023,
       "pngSha256": "02e2e5ce5c6b9f41f8317f2642517cf108f6dca1cf95855a908524ac20a444a3",
       "rawSha256": "c167eeb6ad3d6589e7e4b2ce9c9403eacd95c3c1e4635973130e02f44aab5973",
@@ -464,7 +504,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-vector-lane",
@@ -478,7 +520,7 @@
       "image": "./assets/review/extra-vector-lane-r2-p2.png",
       "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-extra-vector-lane-r2-p2.charmlet.json",
+      "download": null,
       "pngBytes": 68503,
       "pngSha256": "088db6d45f70984d3df5d83158beed4f62a2f6f9071a5fbb15c245b0059ce7bf",
       "rawSha256": "09f0acedc17c3481e9fb95b354539e9c3d28a34cad42fb60ab918e69ddf5704e",
@@ -486,7 +528,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-tensor-array",
@@ -500,7 +544,7 @@
       "image": "./assets/review/extra-tensor-array-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-tensor-array-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 76830,
       "pngSha256": "adcdfa42b646c578a6adc766b622f8da7907403e0ba8db8d2476fe9f9da2f76c",
       "rawSha256": "ba4b17fabd57d5c8e74d62b4100b7a8a88563b4c9a4cb0a65010b1cd76d6d1e5",
@@ -508,7 +552,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-neural-tile",
@@ -522,7 +568,7 @@
       "image": "./assets/review/extra-neural-tile-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-neural-tile-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 40051,
       "pngSha256": "1730b417570486951f42f90625a39de4103605db49a7e5af8ae5924008e40ae4",
       "rawSha256": "d78ec8c2fc62ca5d0a9935e2b79714751aea792aa4fc1d2e80e78df70ba7fd12",
@@ -530,7 +576,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-silicon-lattice",
@@ -544,7 +592,7 @@
       "image": "./assets/review/extra-silicon-lattice-r3-p2.png",
       "revision": 3,
       "profile": 2,
-      "download": "./packs/review/art-extra-silicon-lattice-r3-p2.charmlet.json",
+      "download": null,
       "pngBytes": 65761,
       "pngSha256": "8d9f41e3ed8ec48b11d20f2e5984c726fb4f0ee963a486189321ea4adbcfc087",
       "rawSha256": "06df2d653f7a8e8154197527d6022367e6bb44c5c03fb797b07ae1a424f2cfd3",
@@ -552,7 +600,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-bump-grid",
@@ -566,7 +616,7 @@
       "image": "./assets/review/extra-bump-grid-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-bump-grid-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 68659,
       "pngSha256": "c676d3ae57cc95b9bb8b1711350b3b245ed70a295b2d839f6589234e27a7856c",
       "rawSha256": "5add3efc06e81282a03e7d9ee0456cadeec25f7a3504b8409d8309d4f02408ef",
@@ -574,7 +624,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-interposer",
@@ -588,7 +640,7 @@
       "image": "./assets/review/extra-interposer-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-interposer-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 43841,
       "pngSha256": "a84317a116ff59545ccdb04748a215fa81a7015bad26231bba89eb16fe8c01e9",
       "rawSha256": "8d5e7b1dec076ba879e723a4145b3cf3a6621e3c095f780911ff401ac341f06b",
@@ -596,7 +648,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-memory-bus",
@@ -610,7 +664,7 @@
       "image": "./assets/review/extra-memory-bus-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-memory-bus-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 50601,
       "pngSha256": "20778988534c0dd60a67f37ba0b77c181f01966098b43f1a1371f5758470fe32",
       "rawSha256": "a51a6f68d6f8e8695f5e5a3c7e0767f1fa6f35b399100b3c4c91c169067ca7b6",
@@ -618,7 +672,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-alu-key",
@@ -632,7 +688,7 @@
       "image": "./assets/review/extra-alu-key-r2-p2.png",
       "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-extra-alu-key-r2-p2.charmlet.json",
+      "download": null,
       "pngBytes": 45269,
       "pngSha256": "1cc00a514856be1364be6b30414c9e45e5acd346ba77a2013d7ecf8106c1617c",
       "rawSha256": "b049fde672aeed8718ab5db5a5c719191624790f76455ca9c3bb6291e823364c",
@@ -640,7 +696,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-register-file",
@@ -654,7 +712,7 @@
       "image": "./assets/review/extra-register-file-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-register-file-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 70411,
       "pngSha256": "c9f1040953946aa2446fa6af463ab5773b448417c669b61967b569e5edb7e0f4",
       "rawSha256": "7f7ccfa044b723a566946b0114556ae1f3b01ffba05632127b1ac8adfc19ffc8",
@@ -662,7 +720,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-clock-tree",
@@ -676,7 +736,7 @@
       "image": "./assets/review/extra-clock-tree-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-clock-tree-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 53514,
       "pngSha256": "d4232f503f5ba0e4ca32c02a9ddcf5f22a87072fbdc70daf3065fea61368088f",
       "rawSha256": "96bd60cf9f4c64d50080684f11fd533235353bc2167b7a0e2a533c22822a8f5c",
@@ -684,7 +744,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-probe-needle",
@@ -698,7 +760,7 @@
       "image": "./assets/review/extra-probe-needle-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-probe-needle-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 37804,
       "pngSha256": "dfe8a2c9ecbb12a657c0af288ae2bbb2090ad7aecbe14ad6bebc29546515f55a",
       "rawSha256": "a24b69e6cdbd82842c7e731142f488daef39dc704f840f209ecfba3b35f297ea",
@@ -706,7 +768,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-wafer-map",
@@ -720,7 +784,7 @@
       "image": "./assets/review/extra-wafer-map-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-wafer-map-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 77327,
       "pngSha256": "879332d0074191c9c2983e967dc3f9e64be1af725570a5fa1a8166d76499b166",
       "rawSha256": "51a4dd3883727b8a91e0feb4fcbafd249c0d9f4b78ffeaf615650ff8bb0ef650",
@@ -728,7 +792,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-sweep-curve",
@@ -742,7 +808,7 @@
       "image": "./assets/review/extra-sweep-curve-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-sweep-curve-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 51342,
       "pngSha256": "4d59f7e3fd9689036c6148a1cdb67f158f5b82f62a49ed7d1c1b04eddedc0733",
       "rawSha256": "5d375e685ca37bb47b95a94821516bbc65da58f46cde07b1d1babaca91c135b1",
@@ -750,7 +816,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-signal-eye",
@@ -764,7 +832,7 @@
       "image": "./assets/review/extra-signal-eye-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-signal-eye-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 79689,
       "pngSha256": "ca4202917f71d1975301f77d539ab039dd0b3c916ba3b07193eb11955fab2b1e",
       "rawSha256": "26cd41633585c547f122f9a84ed8f924cf57b556abbeb04c12fbcddb3686d950",
@@ -772,7 +840,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-test-socket",
@@ -786,7 +856,7 @@
       "image": "./assets/review/extra-test-socket-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-test-socket-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 58939,
       "pngSha256": "084160e95d52fd67c164f0ca422e0c7f78d928077a363bc2c346783c912a7241",
       "rawSha256": "10858b169d08fbc7a74e7fc657d969f35b4b22576bf771faed7fd685b3c1ed64",
@@ -794,7 +864,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-scope-pulse",
@@ -808,7 +880,7 @@
       "image": "./assets/review/extra-scope-pulse-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-scope-pulse-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 84292,
       "pngSha256": "d2414a2e86267205d794c05ef672004fe12ad321f89e4e49de50de1ee2cff44a",
       "rawSha256": "607403c2697a993b4e9bc267834a43a840c67f5778b4893b7958ea0bfdf0f477",
@@ -816,7 +888,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-loopback-link",
@@ -830,7 +904,7 @@
       "image": "./assets/review/extra-loopback-link-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-loopback-link-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 57732,
       "pngSha256": "20724ca779bfcad1394643565738319aef4f6edf3fab887afebe02aa7f065545",
       "rawSha256": "a24da46114c418e115484b05d389b913df60289ceda5506623aac0de9d1fac79",
@@ -838,7 +912,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-boundary-scan",
@@ -852,7 +928,7 @@
       "image": "./assets/review/extra-boundary-scan-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-boundary-scan-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 53502,
       "pngSha256": "bfe851472e77f37bb53e192c8b6a165e245de8e45b276e0a76f686eff6b9e281",
       "rawSha256": "115f2f986b3e0bfc2bd49236cfe277f5235bde5682ebf15f21ffdece6f464284",
@@ -860,7 +936,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-self-test-loop",
@@ -874,7 +952,7 @@
       "image": "./assets/review/extra-self-test-loop-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-self-test-loop-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 56588,
       "pngSha256": "81fc1fb24a9dd283320990f6f0a84b7bc38b2835d3d121664ef6f015884408ad",
       "rawSha256": "7181019e4d082fe71910514924dc3498c83d5b5a6e693418fdbda845972cf3c8",
@@ -882,7 +960,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-calibration-dial",
@@ -896,7 +976,7 @@
       "image": "./assets/review/extra-calibration-dial-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-calibration-dial-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 74548,
       "pngSha256": "086a16461ad5ba8aab6a0eabc01067d6ff495602af051ca8150e011b3dee01cd",
       "rawSha256": "aff19641f16c611b308616a932183e77f02b9662d5d2ebb2a6d86bf4600cb77f",
@@ -904,7 +984,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-golden-die",
@@ -918,7 +1000,7 @@
       "image": "./assets/review/extra-golden-die-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-golden-die-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 66337,
       "pngSha256": "11611c7b991facc910d7e19fb02820d3e0ded60801dcaaa465a2c5534be78bb3",
       "rawSha256": "7d30b231550854a446dc055e033eb1c90d8cddc4616236a9e5e74b24e3b6bbfc",
@@ -926,7 +1008,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-debug-duck",
@@ -940,7 +1024,7 @@
       "image": "./assets/review/extra-debug-duck-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-debug-duck-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 58036,
       "pngSha256": "759d071d48f01cd142a01749aa2231e3a11fd6734dde96dea9ccbb508e949c53",
       "rawSha256": "25e1f2749b82fdc422ec7cef48cc9c82180519d72695c42caa6aec812c867568",
@@ -948,7 +1032,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-token-train",
@@ -962,7 +1048,7 @@
       "image": "./assets/review/extra-token-train-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-token-train-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 43942,
       "pngSha256": "00784e5685c28e5ea4bfd91d7eba9c0d93d7c72fe7ca0a058c38ef1ee9e78282",
       "rawSha256": "c4b22b53c8562b7513cf20fbdccfdd273823849ca91b09b645e8cbba757eec2f",
@@ -970,7 +1056,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-attention-lens",
@@ -984,7 +1072,7 @@
       "image": "./assets/review/extra-attention-lens-r2-p2.png",
       "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-extra-attention-lens-r2-p2.charmlet.json",
+      "download": null,
       "pngBytes": 83437,
       "pngSha256": "00bde91a010c8806d4f70a076071eca199a6f2ecbff4f9c706cc7de9ed7df45f",
       "rawSha256": "5123db92807bb6332c1677366041def77b9019797775a785d364c0729358753a",
@@ -992,7 +1080,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-embedding-stars",
@@ -1006,7 +1096,7 @@
       "image": "./assets/review/extra-embedding-stars-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-embedding-stars-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 57905,
       "pngSha256": "40314517cab60a2036ab641fa78fd89544191a30573abea0b87d77a606479f74",
       "rawSha256": "5ab11a9092695eae05fb213c28586b66376702e6729cb3efeaeda387c8235a57",
@@ -1014,7 +1104,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-gradient-trail",
@@ -1028,7 +1120,7 @@
       "image": "./assets/review/extra-gradient-trail-r2-p2.png",
       "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-extra-gradient-trail-r2-p2.charmlet.json",
+      "download": null,
       "pngBytes": 66980,
       "pngSha256": "5e22d5a2c56a079d9b9e4fffd06cbabfaa735109a67e02444a2af22bcc119781",
       "rawSha256": "39ea8ac5fcd5ddc0ecfe6250067d0a4222edf43f530cc3fe29f44bb9cf31a88f",
@@ -1036,7 +1128,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-inference-engine",
@@ -1050,7 +1144,7 @@
       "image": "./assets/review/extra-inference-engine-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-inference-engine-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 52048,
       "pngSha256": "b426137e70cecdd641405423713edcb45fcc9c18f4e4ebd994c554cd28582618",
       "rawSha256": "86773213efe6a754172048a7b2c79d3c71740a2b2cb46f903b0b09518c6fbe21",
@@ -1058,7 +1152,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-vector-index",
@@ -1072,7 +1168,7 @@
       "image": "./assets/review/extra-vector-index-r2-p2.png",
       "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-extra-vector-index-r2-p2.charmlet.json",
+      "download": null,
       "pngBytes": 71284,
       "pngSha256": "e59fa580892509bd98e140744eaa68438c707e1aa12a6f466c1490025d746758",
       "rawSha256": "0e34f64739b79f3c62fa89b92b59ca3f10306cdedbeafaca07def722487ea371",
@@ -1080,7 +1176,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-language-tile",
@@ -1094,7 +1192,7 @@
       "image": "./assets/review/extra-language-tile-r2-p2.png",
       "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-extra-language-tile-r2-p2.charmlet.json",
+      "download": null,
       "pngBytes": 67989,
       "pngSha256": "c69c9f6576bd2f99f9782cced9cd774ae981a1e8669f030083114595a402e69f",
       "rawSha256": "8cf00f9ac95d32c6e4bf08f8efa5d16e64c41fa964ef4a42a8adb20f0f256d67",
@@ -1102,7 +1200,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-merge-branch",
@@ -1116,7 +1216,7 @@
       "image": "./assets/review/extra-merge-branch-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-merge-branch-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 40300,
       "pngSha256": "be4138cd00746c7acbaf7d0997e93da8b0a113a395e8c9b2d492551a59f16a8d",
       "rawSha256": "292692938ef7bd4ed40cfc4975b56f321641fb38045d4c275ffb8f3cb923d809",
@@ -1124,7 +1224,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-passing-build",
@@ -1138,7 +1240,7 @@
       "image": "./assets/review/extra-passing-build-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-passing-build-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 35558,
       "pngSha256": "a4c580f52dbd24b370d71972b825fee2261ca5abd67f5eb9605ab53fb7d97dc8",
       "rawSha256": "312d305896cb9266f5a491780ca4373ae6f75dd32e8d64e5b7dd02976ec8b56a",
@@ -1146,7 +1248,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-stack-frame",
@@ -1160,7 +1264,7 @@
       "image": "./assets/review/extra-stack-frame-r2-p2.png",
       "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-extra-stack-frame-r2-p2.charmlet.json",
+      "download": null,
       "pngBytes": 59082,
       "pngSha256": "cb09e46fdf96e43211a6d3d700e4452c5ca52616a90d2ad207cabb58decd4b1a",
       "rawSha256": "55df3c4baedf2f5eed9d4628ec9bd2333b85e00daa2c1c1d26c5a6a63c997d2b",
@@ -1168,7 +1272,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-regex-knot",
@@ -1182,7 +1288,7 @@
       "image": "./assets/review/extra-regex-knot-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-regex-knot-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 85533,
       "pngSha256": "cd660169ef9ab6cf5dab0b951973736a43dc65dc83c3d8da739e0fe937ce754f",
       "rawSha256": "e958c7e1503ba3c5408b7e716c14afa17ea0ab9578e441eee61fee9ab3ef02d3",
@@ -1190,7 +1296,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-async-loop",
@@ -1204,7 +1312,7 @@
       "image": "./assets/review/extra-async-loop-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-async-loop-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 64097,
       "pngSha256": "676e5984c91360f35cc8e8c2cf145f7ad735cbea4f248635b0db2f4669ebb072",
       "rawSha256": "5847523e78cb597613ad5a1e63baf711a7c9fffddfd13660c17861ff01c64d2d",
@@ -1212,7 +1320,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-recursion-shell",
@@ -1226,7 +1336,7 @@
       "image": "./assets/review/extra-recursion-shell-p2.png",
       "revision": 1,
       "profile": 2,
-      "download": "./packs/review/art-extra-recursion-shell-r1-p2.charmlet.json",
+      "download": null,
       "pngBytes": 74622,
       "pngSha256": "f4b5e598373b4e6d8790ffff46195cbb833045ed6ee80687c9bdd6f838016825",
       "rawSha256": "f11d6e05aa38372eb67ad294d8f5e10b5d0f377aa8eb6f8e6f2ea4c291368d1c",
@@ -1234,7 +1344,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retired",
+      "featured": false
     },
     {
       "key": "extra-foggy-bay",
@@ -1256,7 +1368,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-bridge-lights",
@@ -1278,7 +1392,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-city-tram",
@@ -1300,7 +1416,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-campus-path",
@@ -1322,7 +1440,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-coffee-street",
@@ -1344,7 +1464,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-mountain-sun",
@@ -1366,7 +1488,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-granite-dome",
@@ -1388,7 +1512,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-redwood-grove",
@@ -1410,7 +1536,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-desert-arch",
@@ -1432,7 +1560,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-canyon-river",
@@ -1454,7 +1584,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-alpine-lake",
@@ -1476,7 +1608,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-pine-ridge",
@@ -1498,7 +1632,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-coastal-trail",
@@ -1520,7 +1656,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "extra-night-sky",
@@ -1542,7 +1680,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-sunflower",
@@ -1564,7 +1704,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-marigold",
@@ -1586,7 +1728,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-hibiscus",
@@ -1608,7 +1752,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-bluebell",
@@ -1630,7 +1776,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-iris",
@@ -1652,7 +1800,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-poppy",
@@ -1674,7 +1824,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-orchid",
@@ -1696,7 +1848,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-daisy",
@@ -1718,7 +1872,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-lavender",
@@ -1740,7 +1896,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-cosmos",
@@ -1762,7 +1920,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-sakura",
@@ -1784,7 +1944,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "flower-wild-rose",
@@ -1806,7 +1968,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-red-panda",
@@ -1828,7 +1992,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-curled-cat",
@@ -1850,7 +2016,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-loyal-dog",
@@ -1872,7 +2040,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-bonsai-tree",
@@ -1894,7 +2064,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-ringed-planet",
@@ -1916,7 +2088,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-spiral-galaxy",
@@ -1938,7 +2112,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-filter-coffee",
@@ -1960,12 +2136,14 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-tamil-kolam",
       "id": "tamil-kolam",
-      "name": "Tamil Kolam",
+      "name": "Kolam",
       "group": "Local Culture",
       "family": "new-worlds",
       "accent": "#d5b69a",
@@ -1974,7 +2152,7 @@
       "image": "./assets/review/new-tamil-kolam-r2-p2.png",
       "revision": 2,
       "profile": 2,
-      "download": "./packs/review/art-new-tamil-kolam-r2-p2.charmlet.json",
+      "download": "./packs/review/art-new-tamil-kolam-r2-p2-8d52f97a.charmlet.json",
       "pngBytes": 78634,
       "pngSha256": "b9420037b674c072c19e100d40e4c80b25d3f180479e7e2254f35d035d67e112",
       "rawSha256": "86745f86dfb603c805448a49662d4ee4f2f53bfbd91f5c4fa50d00a84d0bf28e",
@@ -1982,7 +2160,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-city-auto",
@@ -2004,7 +2184,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-basketball",
@@ -2026,7 +2208,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-football",
@@ -2048,7 +2232,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-gridiron-ball",
@@ -2070,7 +2256,9 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
     },
     {
       "key": "new-baseball-glove",
@@ -2092,29 +2280,266 @@
       "model": "Gemini 3 Pro Image",
       "status": "review-candidate",
       "width": 216,
-      "height": 252
+      "height": 252,
+      "decision": "retained",
+      "featured": true
+    },
+    {
+      "key": "new-stress-ball",
+      "id": "stress-ball",
+      "name": "Stress Ball",
+      "group": "Stress Busters",
+      "family": "new-worlds",
+      "accent": "#e7b64a",
+      "original": null,
+      "preview": "./assets/review/new-stress-ball-p2.webp",
+      "image": "./assets/review/new-stress-ball-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-stress-ball-r1-p2.charmlet.json",
+      "pngBytes": 62353,
+      "pngSha256": "77ab97bced9a63ffb5276d876b9feee4d2ebe918a2bcf74f0a1d9a1e288162f5",
+      "rawSha256": "b9c514cf4b348f817222be1d8f7976524a63d4c3dac71425ca59e3d5ad5a4d16",
+      "promptHash": "0c225e7a2ada889a2eaa32933958b109576cebe3b6f0703934d88345bd4e62b3",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "new-squishy-star",
+      "id": "squishy-star",
+      "name": "Squishy Star",
+      "group": "Stress Busters",
+      "family": "new-worlds",
+      "accent": "#e69d93",
+      "original": null,
+      "preview": "./assets/review/new-squishy-star-p2.webp",
+      "image": "./assets/review/new-squishy-star-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-squishy-star-r1-p2.charmlet.json",
+      "pngBytes": 59753,
+      "pngSha256": "1249038f25476f393cd010c7ceb2aca7a164077f056c0cee329dc4422155686a",
+      "rawSha256": "a63fc7c11c51a30e527197cfb67dae00f2b43006cfff9c4af90442e6a4e3f347",
+      "promptHash": "0002e93704e9a97c2793f071cf2954ea028b9e75527cb3b5f7b7f8fb4f298e81",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "new-kovil",
+      "id": "kovil",
+      "name": "Kovil",
+      "group": "Local Culture",
+      "family": "new-worlds",
+      "accent": "#c49a78",
+      "original": null,
+      "preview": "./assets/review/new-kovil-p2.webp",
+      "image": "./assets/review/new-kovil-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-kovil-r1-p2.charmlet.json",
+      "pngBytes": 77284,
+      "pngSha256": "6c33bd2a681b2be03caa5057d35552ad68fbb6a3e2db0e6fdbe404d44f1649f9",
+      "rawSha256": "183e1802a31a02bb9644c103aa2568b325134105aaaf42bd00cd955b1647cd30",
+      "promptHash": "98fa9569d3f4c817cdc76887d30dfa16ae9f7f1ae9040ea6d7196768f85b7835",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "new-cricket",
+      "id": "cricket",
+      "name": "Cricket",
+      "group": "Sports",
+      "family": "new-worlds",
+      "accent": "#c59c68",
+      "original": null,
+      "preview": "./assets/review/new-cricket-p2.webp",
+      "image": "./assets/review/new-cricket-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-cricket-r1-p2.charmlet.json",
+      "pngBytes": 23768,
+      "pngSha256": "c4aeb22bcf8cd1928331b54b0f8d4645038de3b3b205c156524f8c7c9e1316f3",
+      "rawSha256": "25219c59f11b58350fc7eb2045db1446a3e145166daf7a97c0cab16addd0d680",
+      "promptHash": "2fbb724b713e31a6020f0ccea97161eba95d5ea320e846709506847948716ba9",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "new-robot-assistant",
+      "id": "robot-assistant",
+      "name": "Robot Assistant",
+      "group": "AI",
+      "family": "new-worlds",
+      "accent": "#93b8c8",
+      "original": null,
+      "preview": "./assets/review/new-robot-assistant-p2.webp",
+      "image": "./assets/review/new-robot-assistant-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-robot-assistant-r1-p2.charmlet.json",
+      "pngBytes": 62067,
+      "pngSha256": "e6396660dde3a8bb8ebef7a113b5da876816d05a252f2d37c39eb0f682a219aa",
+      "rawSha256": "df02880fa532cd92fe64b1327d55be459eb904b74dc14a8f43977300c0ed9e2d",
+      "promptHash": "70465979831c781746dd3bad61a4b5208b08f09b4e361208086f07a4abdba21e",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "new-pumpkin-patch",
+      "id": "pumpkin-patch",
+      "name": "Pumpkin Patch",
+      "group": "Seasonal",
+      "family": "new-worlds",
+      "accent": "#d68b45",
+      "original": null,
+      "preview": "./assets/review/new-pumpkin-patch-p2.webp",
+      "image": "./assets/review/new-pumpkin-patch-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-pumpkin-patch-r1-p2.charmlet.json",
+      "pngBytes": 61509,
+      "pngSha256": "6747908e7c2fb20e0a751a7090e640c57bdcd7bfef8de3c71811b0a14a9629f5",
+      "rawSha256": "d45e96d076a4361ce3d0977f60e494ce0df0de83924cb89b7f781dd12a391f41",
+      "promptHash": "9f1f07a9f99a3bbc95b5991ec0d1d5d6999dcec5cffc707910422207864f1677",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "new-christmas-tree",
+      "id": "christmas-tree",
+      "name": "Christmas Tree",
+      "group": "Seasonal",
+      "family": "new-worlds",
+      "accent": "#749c82",
+      "original": null,
+      "preview": "./assets/review/new-christmas-tree-p2.webp",
+      "image": "./assets/review/new-christmas-tree-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-christmas-tree-r1-p2.charmlet.json",
+      "pngBytes": 58605,
+      "pngSha256": "a1cf0175ea2a72d9cbddc6629734e52f703cc0e7beec6564853b1c09626813cc",
+      "rawSha256": "b5b73e22cdab5a62d5ca033869d7738c4fcd4614d2e6cad481f36c63753352b8",
+      "promptHash": "fde2a7a99ba13df811193d0177be018fdadc1329d2093a8b89d25e9dc881f270",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "new-harvest-pie",
+      "id": "harvest-pie",
+      "name": "Harvest Pie",
+      "group": "Seasonal",
+      "family": "new-worlds",
+      "accent": "#ce995e",
+      "original": null,
+      "preview": "./assets/review/new-harvest-pie-p2.webp",
+      "image": "./assets/review/new-harvest-pie-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-harvest-pie-r1-p2.charmlet.json",
+      "pngBytes": 54759,
+      "pngSha256": "9dfa139b4724c4a2c28acdfd7fc612089797a860ddcc25571e18381142a1b603",
+      "rawSha256": "7304063c965dd093d9af770af97b27e51789d56f5618626eb80d06db3cc240a6",
+      "promptHash": "8de3267ea4c35d955338824f2209bd5354a5f0a79d869fa6395dc3f78c5d762d",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "new-black-friday-bag",
+      "id": "black-friday-bag",
+      "name": "Black Friday",
+      "group": "Seasonal",
+      "family": "new-worlds",
+      "accent": "#9b919e",
+      "original": null,
+      "preview": "./assets/review/new-black-friday-bag-p2.webp",
+      "image": "./assets/review/new-black-friday-bag-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-black-friday-bag-r1-p2.charmlet.json",
+      "pngBytes": 61114,
+      "pngSha256": "cc04e20ab5a23aeff28326c1f161bc25c8e549c5b9a5ce614c7a9175b507f5cd",
+      "rawSha256": "88f1b2914ead65feb0e57466ac44e12f9a5e11b6b89b7fdcc3505c38dc557b04",
+      "promptHash": "386e8d683bfb10d915ea864b0921284babc717103b3d256647c264b9d978100e",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "new-cyber-monday-keyboard",
+      "id": "cyber-monday-keyboard",
+      "name": "Cyber Monday",
+      "group": "Seasonal",
+      "family": "new-worlds",
+      "accent": "#91b5c4",
+      "original": null,
+      "preview": "./assets/review/new-cyber-monday-keyboard-p2.webp",
+      "image": "./assets/review/new-cyber-monday-keyboard-p2.png",
+      "revision": 1,
+      "profile": 2,
+      "download": "./packs/review/art-new-cyber-monday-keyboard-r1-p2.charmlet.json",
+      "pngBytes": 49640,
+      "pngSha256": "393fd490cad175d57b7f89bc04dfdca10004c2fe0ae4844518bc257b2d0afe5a",
+      "rawSha256": "904edcc27afa9e6d5563206f3fbe5defc6dadc64e487f8b91ba8adb61abc8ef8",
+      "promptHash": "e3b0d5f5bb0f66c50d6e59f6d457d3af23edb83c50df4ea958286f40f94e78c4",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 216,
+      "height": 252,
+      "decision": "new",
+      "featured": true
     }
   ],
   "bundles": [
     {
+      "name": "Refresh Sample",
+      "count": 9,
+      "download": "./packs/review/review-refresh-sample-1.charmlet.json"
+    },
+    {
       "name": "Starter Redraws",
-      "count": 10,
-      "download": "./packs/review/review-starter-redraws-1.charmlet.json"
+      "count": 9,
+      "download": "./packs/review/review-starter-redraws-1-713b1946.charmlet.json"
     },
     {
       "name": "Test Bench",
-      "count": 12,
-      "download": "./packs/review/review-test-bench-1.charmlet.json"
-    },
-    {
-      "name": "Compute & Silicon 1",
-      "count": 12,
-      "download": "./packs/review/review-compute-silicon-1.charmlet.json"
-    },
-    {
-      "name": "Compute & Silicon 2",
-      "count": 6,
-      "download": "./packs/review/review-compute-silicon-2.charmlet.json"
+      "count": 1,
+      "download": "./packs/review/review-test-bench-1-77d5623d.charmlet.json"
     },
     {
       "name": "Luck & Little Joys",
@@ -2122,14 +2547,9 @@
       "download": "./packs/review/review-luck-little-joys-1.charmlet.json"
     },
     {
-      "name": "Coding",
-      "count": 7,
-      "download": "./packs/review/review-coding-1.charmlet.json"
-    },
-    {
-      "name": "AI",
-      "count": 7,
-      "download": "./packs/review/review-ai-1.charmlet.json"
+      "name": "Compute & Silicon",
+      "count": 2,
+      "download": "./packs/review/review-compute-silicon-1-74fb9378.charmlet.json"
     },
     {
       "name": "Cities",
@@ -2158,13 +2578,35 @@
     },
     {
       "name": "Local Culture",
-      "count": 2,
-      "download": "./packs/review/review-local-culture-1.charmlet.json"
+      "count": 3,
+      "download": "./packs/review/review-local-culture-1-5f08a9bf.charmlet.json"
     },
     {
       "name": "Sports",
-      "count": 4,
-      "download": "./packs/review/review-sports-1-6ba08035.charmlet.json"
+      "count": 5,
+      "download": "./packs/review/review-sports-1-c92ad475.charmlet.json"
+    },
+    {
+      "name": "Stress Busters",
+      "count": 2,
+      "download": "./packs/review/review-stress-busters-1.charmlet.json"
+    },
+    {
+      "name": "AI",
+      "count": 1,
+      "download": "./packs/review/review-ai-1-c0745eac.charmlet.json"
+    },
+    {
+      "name": "Seasonal",
+      "count": 5,
+      "download": "./packs/review/review-seasonal-1.charmlet.json"
+    },
+    {
+      "name": "Bay Area Days",
+      "count": 5,
+      "download": "./packs/review/review-bay-area-days-1.charmlet.json"
     }
-  ]
+  ],
+  "curationDate": "2026-11-03",
+  "featured": 64
 }

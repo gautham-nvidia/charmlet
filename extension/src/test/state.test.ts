@@ -11,6 +11,7 @@ import { MESSAGE_ROTATION_MS, MessageRotation } from '../message-rotation';
 import { Pendulum } from '../pendulum';
 import { StateStore } from '../state-store';
 import { StateWriter } from '../state-writer';
+import { displayedCharm, festiveDay } from '../festive-charms';
 
 test('missing or invalid saved values restore a usable charm', () => {
 	assert.deepEqual(restoreState(undefined), DEFAULT_STATE);
@@ -26,6 +27,7 @@ test('hide and motion preferences survive a reload without trusting unknown fiel
 	assert.deepEqual(restoreState({ cordLength: 180, hidden: true, reducedMotion: true, extra: 'ignored' }), {
 		version: 1, charmId: 'terminal', layoutMode: 'hanging', showMessages: true, rotateMessages: true, messageIndex: 0,
 		cordLength: 180, size: 100, hidden: true, reducedMotion: true,
+		festiveEnabled: false, charmPinned: false,
 	});
 });
 
@@ -61,7 +63,57 @@ test('reset retains the selected charm and motion preference', () => {
 	const state = restoreState({ charmId: 'wafer', layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: 5, cordLength: 700, size: 140, hidden: true, reducedMotion: true });
 	assert.deepEqual(resetState(state), {
 		...DEFAULT_STATE, charmId: 'wafer', reducedMotion: true, layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: 5,
+		charmPinned: true,
 	});
+});
+
+test('seasonal dates follow local days and Cyber Monday can cross into December', () => {
+	const local = (year: number, month: number, day: number, hour = 12) => new Date(year, month - 1, day, hour).getTime();
+	for (const [year, thanksgiving, mondayMonth, mondayDay] of [
+		[2024, 28, 12, 2], [2025, 27, 12, 1], [2026, 26, 11, 30], [2029, 22, 11, 26],
+	]) {
+		assert.equal(festiveDay(local(year, 11, thanksgiving))?.name, 'Thanksgiving');
+		assert.equal(festiveDay(local(year, 11, thanksgiving + 1))?.name, 'Black Friday');
+		assert.equal(festiveDay(local(year, mondayMonth, mondayDay))?.name, 'Cyber Monday');
+		assert.equal(festiveDay(local(year, 11, thanksgiving - 1)), undefined);
+	}
+	const halloween = local(2026, 10, 31, 0);
+	assert.equal(festiveDay(halloween - 1), undefined);
+	assert.equal(festiveDay(halloween)?.name, 'Halloween');
+	assert.equal(festiveDay(local(2026, 11, 1, 0) - 1)?.name, 'Halloween');
+	assert.equal(festiveDay(local(2026, 11, 1, 0)), undefined);
+	assert.equal(festiveDay(local(2026, 12, 25))?.name, 'Christmas');
+	assert.equal(festiveDay(local(2026, 12, 26)), undefined);
+	assert.equal(festiveDay(Number.NaN), undefined);
+});
+
+test('festive display preserves manual state and falls back for pins or absent artwork', () => {
+	const pumpkin = { ...CHARMS[0], id: 'pack:seasonal:new-pumpkin-patch', name: 'Pumpkin Patch' };
+	const catalogue = [...CHARMS, pumpkin];
+	const state = { ...DEFAULT_STATE, charmId: 'wafer', festiveEnabled: true };
+	const saved = JSON.stringify(state);
+	const halloween = new Date(2026, 9, 31, 12).getTime();
+	assert.equal(displayedCharm(state, catalogue, halloween).id, pumpkin.id);
+	assert.equal(JSON.stringify(state), saved, 'Automatic display must not overwrite the saved selection.');
+	assert.equal(displayedCharm(state, catalogue, new Date(2026, 10, 1, 0).getTime()).id, 'wafer');
+	assert.equal(displayedCharm(state, CHARMS, halloween).id, 'wafer');
+	assert.equal(displayedCharm({ ...state, festiveEnabled: false }, catalogue, halloween).id, 'wafer');
+	assert.equal(displayedCharm({ ...state, charmPinned: true }, catalogue, halloween).id, 'wafer');
+	assert.equal(displayedCharm({ ...state, charmPinned: true }, catalogue, new Date(2027, 9, 31, 12).getTime()).id, 'wafer');
+});
+
+test('older favourites are pinned and explicit festive preferences survive restoration and reset', () => {
+	const legacy = restoreState({ charmId: 'wafer', festiveEnabled: true });
+	assert.equal(legacy.charmPinned, true);
+	assert.equal(restoreState(undefined).festiveEnabled, false);
+	assert.equal(restoreState({ festiveEnabled: 'true' }).festiveEnabled, false);
+	const state = { ...DEFAULT_STATE, charmId: 'wafer', festiveEnabled: true, charmPinned: false };
+	assert.deepEqual(restoreState(JSON.parse(JSON.stringify(state))), state);
+	const reset = resetState({ ...state, charmPinned: true, size: 140, cordLength: 250 });
+	assert.equal(reset.charmPinned, true);
+	assert.equal(reset.festiveEnabled, true);
+	assert.equal(reset.charmId, 'wafer');
+	assert.equal(reset.size, DEFAULT_STATE.size);
 });
 
 test('state writes are ordered and flush waits for the final confirmed value', async () => {

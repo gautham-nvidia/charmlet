@@ -2,9 +2,9 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-11-03:** Phase 4 and Phase 5 release preparation are merged. **0.5.1** adds a damped release bounce and connects imported artwork to the cord using its visible silhouette. Reduced Motion returns directly to rest. The app includes **Charms / Focus / Garden / Settings**, searchable charm selection, motivation, gentle reminders and saved garden progress.
+**Status, 2026-11-03:** Phase 4 and Phase 5 release preparation are merged. The **0.5.2 collection review** adds soft Stress Busters, optional festive defaults and an entirely motivational 80-message deck. It retains the 0.5.1 attachment and release bounce improvements. The app includes **Charms / Focus / Garden / Settings**, searchable charm selection, gentle reminders and saved garden progress.
 
-The website's separate **Art review** gallery contains **95 transparent Gemini illustration candidates**, **83 importable designs** and **14 review packs**, while the ten original defaults and sixty classic downloads remain unchanged. Photo Studio's local/fake-provider foundation is verified but live paid access remains disabled. The unsigned [`desktop0.1.1`](desktop/README.md) Windows portable ZIP has been extracted and tested; it is not part of the VSIX or a public release.
+The curated **Art review** shows **64 selected designs**, including the original Terminal and twelve earned-flower previews, with **51 individual downloads** and **16 review packs**. A nine-design **Refresh Sample** compares the revised components, protective charms and two Stress Busters. **Bay Area Days** and **Seasonal** offer themed selections. The ten bundled originals and previously shared pack files remain intact; new artwork has not replaced the defaults. Photo Studio's local/fake-provider foundation is verified but live paid access remains disabled. The [desktop beta](desktop/README.md) is separate from the VSIX and public release.
 
 The accepted Phase 4 head passed all six Windows/Linux/macOS VS Code 1.90/1.140 jobs and both Windows/macOS desktop archive jobs. The automatic post-merge run then exposed an intermittent Linux menu-opening failure; its event capture and subsequent results are tracked in the [Phase 5 release record](docs/phase-5-release.md). Source/art licences, publisher accounts, verified editor forks, public hosting and native desktop/merchant setup remain release gates. See the [Phase 4 verification record](docs/phase-4-validation.md) and [privacy notice](extension/PRIVACY.md).
 
@@ -20,6 +20,10 @@ Choose among installed charms in the searchable **Charms** picker. The default *
 the top and reserves pull room; **Settings → Appearance → Orbit layout** reserves space for full fixed-peg loops. A
 straight upward pull retracts the charm and the arrow restores it. Releasing a stretch produces diminishing bounces before settling. The Cord setting is the saved resting
 preference, while the visible cord may temporarily shorten to fit the current panel.
+
+Hold the Stress Ball or Squishy Star to squeeze, or hold Space/Enter with the charm focused. Release to let it recover. The cord stays attached; Reduced Motion removes the transition and bounce.
+
+In **Settings → Appearance**, optional **Use festive defaults** selects an installed festive charm for the device's local Halloween, Christmas, US Thanksgiving, Black Friday or Cyber Monday. **Pin this charm** protects the current choice. Selecting or importing a charm pins it automatically; older saved selections are also protected. Unpin to allow automatic choices. Missing seasonal artwork and ordinary dates keep the saved usual charm.
 
 The card below the charm offers 80 motivational messages by default, with optional 60 sourced facts and 30 sourced trivia questions under **Settings → Messages**. Existing saved feed choices stay unchanged. Use **Next coding message**, choose the saved feed mode, reveal trivia
 answers or open a trusted source. Automatic five-minute rotation pauses while the view is unavailable,
@@ -97,8 +101,8 @@ Local Windows evidence covers the five frozen placement cases, one suspend/lock 
 
 ## Companion gallery
 
-The source under [website/](website/) builds a local collection playground with twelve browsing worlds,
-four labelled art-direction previews, a Garden growth demonstration and sixty classic free downloads.
+The source under [website/](website/) builds a local collection playground with fourteen browsing worlds,
+four earlier style studies, a Garden growth demonstration and the curated artwork review downloads.
 Real pack/VSIX downloads and a bounded live swing/pull preview use the extension's
 shared Pendulum model. A `.vsix` installs the extension; a `.charmlet.json` adds artwork only after Charmlet
 is installed. Store links are driven by validated `website/distribution.json` values and remain null until

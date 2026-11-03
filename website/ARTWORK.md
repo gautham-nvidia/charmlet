@@ -31,3 +31,13 @@ Gemini 3 Pro Image produced the raw 1024×1024 PNGs. Ignored raw files, prompt h
 Every prepared candidate has a 216×252 static RGBA PNG below the existing 256 KiB cap and a 432px WebP presentation copy. `art-review.json` records source/prompt/output hashes, revisions and review status. All95 images passed local validation; 83 non-flower designs are available as individual review imports and fourteen bounded collection packs. Review namespaces differ from bundled/original IDs. Original SVGs and sixty classic packs remain unchanged, and twelve flower studies have no downloadable unlock.
 
 The review page supports original/new comparison, collection/family search, dark-background inspection and enlargement. The gallery and importer checks verify bytes and behavior, not artistic approval, trademark clearance or distribution rights. The owner must still choose final bundled/free/premium artwork and the source/art licence before public release. No NVIDIA or other corporate endorsement is implied.
+
+## 2026-11-03 — recognizable collection refresh
+
+The owner supplied explicit keep/redraw/retire feedback. `art-curation.json` records those decisions: retain the original Terminal, keep recognizable favourites and nature/place designs, replace seven unclear components/protective designs, and retire forty-one abstract concepts from the featured collection. Display names omit the requested language prefix. Historical records and original files remain available.
+
+Gemini 3 Pro Image produced seventeen current new/revised candidates: seven replacements, Stress Ball, Squishy Star, Kovil, Cricket, Robot Assistant and five seasonal objects. Prompts and model receipts remain in the ignored authoring output. The subjects use generic components, traditional motifs and unbranded objects; they are not engineering drawings or verified replicas of company hardware. Named athlete and league ideas were not generated.
+
+There are 105 archive/current records, of which 64 are featured: 51 importable candidates, twelve earned flowers and the original Terminal. Sixteen curated packs include Refresh Sample and Bay Area Days. Changed pack payloads receive distinct identities rather than overwriting earlier downloads. All 105 prepared PNGs passed hash, transparency and bounded importer validation.
+
+`assets/app-review/` contains four comparison sheets assembled from actual installed 0.5.2 captures at 100% charm size. The native captures retain their original pixels and show only an isolated review profile. They demonstrate appearance, not final artwork or distribution approval.

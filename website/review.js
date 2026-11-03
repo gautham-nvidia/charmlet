@@ -3,7 +3,7 @@ const search = document.querySelector('#review-search');
 const groups = document.querySelector('#review-group');
 const count = document.querySelector('#review-count');
 const dialog = document.querySelector('#review-dialog');
-const state = { family: 'all', group: 'all', query: '', compare: false, dark: false };
+const state = { family: 'all', group: 'all', query: '', compare: false, dark: false, appSize: true };
 let items = [];
 const create = (tag, className, text) => {
   const element = document.createElement(tag);
@@ -13,8 +13,14 @@ const create = (tag, className, text) => {
 };
 function show(item) {
   document.querySelector('#review-title').textContent = item.name;
-  const image = document.querySelector('#review-image'); image.src = item.preview; image.alt = `${item.name}, illustrated art-review candidate`;
-  document.querySelector('#review-detail').textContent = `${item.group} · Gemini 3 Pro Image · transparent artwork · revision ${item.revision}. ${item.family === 'flowers' ? 'Flower artwork remains an earned reward; this page does not unlock it.' : 'Review packs import separately without replacing your existing charms.'}`;
+  const original = item.decision === 'original';
+  document.querySelector('#review-kind').textContent = original ? 'ORIGINAL KEPT' : 'ARTWORK REVIEW';
+  const image = document.querySelector('#review-image');
+  image.src = original ? `./assets/${item.original}` : item.preview;
+  image.alt = original ? `${item.name}, retained original` : `${item.name}, art-review candidate`;
+  document.querySelector('#review-detail').textContent = original
+    ? 'The original Terminal stays. Select Terminal in the app’s Charms picker; no download is needed.'
+    : `${item.group} · ${item.model === 'gcp/google/gemini-3-pro-image' ? 'Gemini 3 Pro Image' : 'AI-generated artwork'} · revision ${item.revision}. ${item.family === 'flowers' ? 'Flower artwork remains an earned reward; this page does not unlock it.' : 'Review packs import separately without replacing your existing charms.'}`;
   document.querySelector('.review-large').classList.toggle('dark', state.dark);
   dialog.showModal();
 }
@@ -30,25 +36,30 @@ function render() {
     && (state.group === 'all' || item.group === state.group)
     && `${item.name} ${item.group} ${item.family}`.toLowerCase().includes(query));
   grid.classList.toggle('comparing', state.compare); grid.classList.toggle('dark', state.dark);
+  grid.classList.toggle('app-size', state.appSize);
   grid.replaceChildren();
   for (const item of matches) {
-    const card = create('article', 'review-card'); card.dataset.artwork = item.key;
+    const card = create('article', 'review-card'); card.dataset.artwork = item.key; card.dataset.decision = item.decision;
+    const original = item.decision === 'original';
     const art = create('button', 'review-art'); art.type = 'button'; art.setAttribute('aria-label', `Enlarge ${item.name}`);
-    if (state.compare) {
+    if (state.compare && !original) {
       if (item.original) art.append(artwork(`./assets/${item.original}`, 'Original', item.name));
       else art.append(create('span', 'review-missing', 'New collection design'));
     }
-    art.append(artwork(item.preview, 'New illustration', item.name));
+    art.append(artwork(original ? `./assets/${item.original}` : item.preview, original ? 'Original kept' : 'Review artwork', item.name));
     art.addEventListener('click', () => show(item));
     const copy = create('div', 'review-copy');
-    copy.append(create('span', 'card-group', item.group), create('h3', '', item.name), create('span', 'review-tag', 'Review candidate'));
+    const label = original ? 'Original kept' : item.decision === 'retained' ? 'Retained design' : 'New draft';
+    copy.append(create('span', 'card-group', item.group), create('h3', '', item.name), create('span', 'review-tag', label));
     if (item.download) {
-      const download = create('a', '', 'Try this redraw'); download.href = item.download; download.download = item.download.split('/').pop(); download.setAttribute('aria-label', `Download ${item.name} review pack`);
+      const download = create('a', '', 'Try in Charmlet'); download.href = item.download; download.download = item.download.split('/').pop(); download.setAttribute('aria-label', `Download ${item.name} review pack`);
       copy.append(create('p', '', `${Math.ceil(item.pngBytes / 1024)} KB transparent PNG · imports separately`), download);
-    } else copy.append(create('p', '', 'Earned flower artwork preview. Unlock flowers through your eleven-day garden.'));
+    } else copy.append(create('p', '', original
+      ? 'Already included in the app. Select Terminal in Charms.'
+      : 'Earned flower artwork preview. Unlock flowers through your eleven-day garden.'));
     card.append(art, copy); grid.append(card);
   }
-  count.textContent = `${matches.length} ${matches.length === 1 ? 'design' : 'designs'} shown`;
+  count.textContent = `${matches.length} ${matches.length === 1 ? 'design' : 'designs'} shown · ${state.appSize ? '100% charm size' : 'enlarged previews'}`;
   document.querySelector('#review-empty').hidden = matches.length !== 0;
   for (const button of document.querySelectorAll('[data-family]')) button.setAttribute('aria-pressed', String(button.dataset.family === state.family));
 }
@@ -58,17 +69,22 @@ for (const button of document.querySelectorAll('[data-family]')) button.addEvent
 document.querySelector('#view-new').addEventListener('click', () => { state.compare = false; document.querySelector('#view-new').setAttribute('aria-pressed', 'true'); document.querySelector('#view-compare').setAttribute('aria-pressed', 'false'); render(); });
 document.querySelector('#view-compare').addEventListener('click', () => { state.compare = true; document.querySelector('#view-new').setAttribute('aria-pressed', 'false'); document.querySelector('#view-compare').setAttribute('aria-pressed', 'true'); render(); });
 document.querySelector('#view-dark').addEventListener('click', event => { state.dark = !state.dark; event.currentTarget.setAttribute('aria-pressed', String(state.dark)); render(); });
+document.querySelector('#view-size').addEventListener('click', event => {
+  state.appSize = !state.appSize; event.currentTarget.setAttribute('aria-pressed', String(state.appSize)); render();
+});
 document.querySelector('#review-close').addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
 try {
   const response = await fetch('./art-review.json');
   if (!response.ok) throw new Error('Review catalogue unavailable');
   const catalogue = await response.json();
-  items = catalogue.items;
-  document.querySelector('#review-total').textContent = `${items.length} of ${catalogue.expected} designs prepared for review`;
+  items = catalogue.items.filter(item => item.featured);
+  document.querySelector('#review-total').textContent = `${items.length} selected designs · original Terminal kept`;
   for (const group of [...new Set(items.map(item => item.group))]) {
     const option = create('option', '', group); option.value = group; groups.append(option);
   }
+  const requestedGroup = new URLSearchParams(location.search).get('group');
+  if (items.some(item => item.group === requestedGroup)) { state.group = requestedGroup; groups.value = requestedGroup; }
   for (const bundle of catalogue.bundles ?? []) {
     const link = create('a', '', `${bundle.name} · ${bundle.count}`); link.href = bundle.download; link.download = bundle.download.split('/').pop(); document.querySelector('#bundle-links').append(link);
   }
