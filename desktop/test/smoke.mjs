@@ -126,11 +126,11 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
       // Configure the owned profile through the same controls as a user.
       await window.emulateMedia({ reducedMotion: 'no-preference' });
       await openTools(window);
-      await window.getByRole('button', { name: 'Settings', exact: true }).click();
+      await window.getByRole('button', { name: 'Charm settings', exact: true }).click();
       await window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
       if (await window.locator('#motion').getAttribute('aria-checked') === 'false') await window.locator('#motion').click();
       await window.locator('#settings-close').click();
-      await window.getByRole('button', { name: 'Settings', exact: true }).click();
+      await window.getByRole('button', { name: 'Charm settings', exact: true }).click();
       for (const id of ['desktop-background', 'desktop-pin-toolbar', 'desktop-pin-messages']) {
         if (await window.locator(`#${id}`).getAttribute('aria-pressed') === 'true') await window.locator(`#${id}`).click();
       }
@@ -300,7 +300,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     await expect(window.locator('#phase')).toHaveText('Held');
     await expect.poll(async () => Number(await window.locator('#charm').getAttribute('data-position-y')))
       .toBeGreaterThan(Math.min(grab.y + 300, targetY - 20));
-    assert.equal(Number(await window.locator('#stage').getAttribute('data-anchor-y')), start.anchor.y);
+    assert.equal(Number(await window.locator('#stage').getAttribute('data-anchor-y')), start.geometry.anchor.y);
   } finally { await window.mouse.up(); }
   await expect(window.locator('#charm')).not.toHaveClass(/dragging/);
   await expect.poll(async () => Math.abs(Number(await window.locator('#charm').getAttribute('data-position-y')) - grab.y)).toBeLessThan(2);
