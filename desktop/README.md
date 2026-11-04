@@ -10,6 +10,8 @@ Under **Tools > Settings**, **Background**, **Keep toolbar visible** and **Keep 
 
 The trial shares the extension's 152 offline charms, including 142 rendered designs and ten preserved originals. The full collection is available in **Charms**, including four smiley stress balls, three soft emoji designs and both full-body Drishti variations. Existing imports, garden progress, holiday defaults, pin controls and the motivational deck are preserved. The final release artwork and download pricing remain undecided.
 
+<img src="../docs/store-assets/desktop-minimal.png" width="960" alt="Actual Charmlet desktop views: charm only, optional background and toolbar, and the selected Focus panel">
+
 ## Local commands
 
 **On the Windows PC (PowerShell), from the repository root:**
@@ -67,10 +69,12 @@ Windows 0.1.1 includes the same Charms/Focus/Garden/Settings navigation, motivat
 
 The owned Electron smoke test verifies profile isolation, renderer security flags, shared state/restart behavior, earned artwork, explicit-control focus, saved placement, long pulls and the restricted hit-test IPC configuration. The transparent canvas spans one monitor's work area while visible controls occupy a compact frame. CDP input and the diagnostic ignored-state do **not** prove that native clicks pass through to another application.
 
+The Windows archive job also checks real OS input on its isolated desktop. It has passed native Move and saved placement, clicks reaching an owned window underneath, and a long pull/bounce/settle while that background window keeps focus. That evidence covers one Windows display at 100% scaling. Local test commands leave the system cursor alone.
+
 ## Manual gates before any wider beta
 
-- Real native click-through over empty transparent regions on Windows and macOS.
-- Ordinary charm play does not steal focus from the active editor; explicit controls do.
+- Native behavior over the owner's active editor on Windows and macOS; Windows CI covers an owned background window.
+- Ordinary charm play does not steal focus from the active editor; explicit controls do. Windows CI verifies this distinction between its owned windows.
 - Tray/menu-bar Show/Hide, Focus/Learn/Garden, pack dialogs and Quit.
 - Monitor disconnect/reconnect, negative-coordinate displays and mixed-DPI movement.
 - OS suspend/lock and macOS Spaces behavior; running focus pauses and never auto-resumes.

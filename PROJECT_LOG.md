@@ -502,3 +502,9 @@ Desktop type/build and twelve models pass. The development-host smoke passes 500
 Productivity suggestions remain optional: next-step note, a small focus cue, brief small-win celebration and a fading motivational bubble, with calendar-file import later. The owner prefers the charm alone for now, so no automatic bubble or calendar access was added.
 
 The Windows archive workflow now includes an OS-input check on the isolated runner, guarded against running on a shared local desktop. It uses native window bounds and an owned background surface to verify movement, click-through, long pulls, return and focus behavior. The fresh local desktop run still passes all twelve models and the full smoke; native CI results remain pending.
+
+The Phase 7 candidate `b1daf31` now passes all eight hosted jobs: CI `41930913743` and Desktop Beta `41930913791`. Windows native input passes Move and saved placement, click-through to its owned background, and long pull/bounce/settle without taking focus. The verification runs at 100% scaling; owner/editor, mixed-display and macOS native behavior remain manual gates.
+
+The checks were corrected to compare local renderer coordinates against the monitor work-area origin, use the Settings button's actual accessible name, inject native movement through `SendInput`, and keep the test background below the always-on-top charm. These were test corrections; the app's appearance and VS Code renderer are unchanged. An actual-app comparison now shows the minimal view, optional background and selected Focus panel.
+
+The local Windows 0.3.0 portable archive also passed its extracted-app check (37.2 seconds), including persistence and the long-pull area. It is 167,106,972 bytes with SHA-256 `dbac0b03bf3fb0be5858c6a3cc7dc280eccf41e2cd211f6f56907c2667a9a64e`. The local run checks renderer behavior and host configuration; the separate hosted Windows build supplies the native-input proof. The package remains unsigned.
