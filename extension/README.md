@@ -1,9 +1,9 @@
 # Charmlet: Coding Charms
 
-144 offline trial charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus/Learn tools, a gentle garden and optional reminders.
+152 offline trial charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus/Learn tools, a gentle garden and optional reminders.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Complete-collection trial candidate, version 0.6.0.** Charmlet lives in a dockable VS Code view, not over your code
+**Complete-collection trial candidate, version 0.6.1.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 It also works in Restricted Mode without asking you to trust workspace code.
 
@@ -26,7 +26,9 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 8. Click **Garden**, then **Plant a seed**, or run **Charmlet: Open Garden**. Water once per local day and earn an original flower after eleven valid waterings. Optional water/move schedules live under **Settings → Reminders**.
 9. Run **Charmlet: Import Charm Pack** for a free downloaded `.charmlet.json`; remove imported packs with **Charmlet: Remove Charm Pack**.
 
-The trial includes 134 rendered designs: recognizable components and lab instruments, animals, trees, cities and parks, local culture and sports, Stress Busters, all eight planets plus Sun and Moon, galaxies, eight gemstones, twelve zodiac signs, 22 seasonal designs, fourteen sacred-tradition designs and twelve flower illustrations. Open **Charms** to search and filter them; no separate imports are needed.
+The trial includes 142 rendered designs: recognizable components and lab instruments, animals, trees, cities and parks, local culture and sports, Stress Busters, all eight planets plus Sun and Moon, galaxies, eight gemstones, twelve zodiac signs, 22 seasonal designs, fourteen sacred-tradition designs and twelve flower illustrations. Open **Charms** to search and filter them; no separate imports are needed.
+
+Stress Busters include happy, determined, calm and winking smiley balls, plus a soft heart, thumbs-up and rocket. Hold the charm or hold Space/Enter while it is focused to squeeze, then release. The cord follows the visible outline and stays attached while the shape compresses. The full-body Drishti Doll is joined by a red-faced, horned Drishti Guardian; both remain available.
 
 Flower illustrations do not unlock garden achievements or change watering progress. Existing imported packs keep their stored files and selected IDs. Exact copies of trial artwork share one picker entry; different older imports remain labelled **Imported**.
 

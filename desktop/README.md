@@ -2,7 +2,7 @@
 
 Charmlet Desktop is an unpublished Windows/macOS developer beta. It reuses the extension's charm renderer, physics, Focus/Learn/Garden controller, validated pack parser and confirmed JSON stores in one floating tray-managed window.
 
-The **0.2.0 trial** shares the extension's 144 offline charms, including 134 rendered designs and ten preserved originals. The full collection is available in **Charms**. It keeps existing imports and garden progress, and offers the same holiday defaults, pin controls and motivational deck. The final release artwork and download pricing remain undecided.
+The **0.2.1 trial** shares the extension's 152 offline charms, including 142 rendered designs and ten preserved originals. The full collection is available in **Charms**, including four smiley stress balls, three soft emoji designs and both full-body Drishti variations. It keeps existing imports and garden progress, and offers the same holiday defaults, pin controls and motivational deck. The final release artwork and download pricing remain undecided.
 
 ## Local commands
 
@@ -14,7 +14,7 @@ npm.cmd --prefix desktop run test
 npm.cmd --prefix desktop run package
 ```
 
-The Windows 0.2.0 packaging target is an unsigned folder under `desktop/release/0.2.0/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. Current-version extracted Windows and macOS checks are recorded in the Phase 6 verification log when complete. There is no installer, signing, notarization, update service, store listing or public distribution in this slice.
+The Windows 0.2.1 packaging target is an unsigned folder under `desktop/release/0.2.1/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. Current-version extracted Windows and macOS checks are recorded in the Phase 6 verification log when complete. There is no installer, signing, notarization, update service, store listing or public distribution in this slice.
 
 For a portable download, archive and test the extracted application.
 
@@ -28,7 +28,7 @@ This writes a Windows ZIP under `desktop/distribution/`. The hosted Mac job writ
 
 ## Current local evidence - 2026-11-03
 
-Version 0.2.0 adds the shared complete trial catalogue and broader holiday defaults. Current-version package and archive checks are recorded in [Phase 6](../docs/phase-6-trial-catalogue.md); the earlier evidence below does not establish the new candidate's result.
+Version 0.2.1 adds smiley and emoji Stress Busters and a second Drishti variation to the complete catalogue and holiday defaults introduced in 0.2.0. Current-version package and archive checks are recorded in [Phase 6](../docs/phase-6-trial-catalogue.md); the earlier evidence below does not establish the new candidate's result.
 
 ## Historical local evidence - 0.1.2
 

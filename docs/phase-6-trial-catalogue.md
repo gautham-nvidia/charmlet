@@ -6,7 +6,7 @@ Owner direction recorded 2026-11-03, after the verified 0.5.2 review.
 
 Make the curated collection and the requested additions available immediately in the extension's visual picker. The owner should install one review build and try the artwork without importing separate packs. This is a trial distribution decision; the final bundled, free-download and paid-download split remains undecided.
 
-Target review versions: extension 0.6.0 and shared desktop 0.2.0. These are planned versions until packaging and verification complete.
+Initial review versions: extension 0.6.0 and shared desktop 0.2.0. The later smiley and guardian follow-up uses extension 0.6.1 and desktop 0.2.1, preserving the earlier trial artifacts.
 
 ## Accepted artwork and correction
 
@@ -85,3 +85,20 @@ Thirty-four actual installed-app captures cover dark and light backgrounds at 10
 | `desktop/distribution/Charmlet-desktop-0.2.0-win32-x64.zip` | 166,591,969 | `3f937d0c3210c6e632b30e3a4ea17dd43e968878e9852c30d5154f5318b7b80d` |
 
 The branch/PR and post-merge workflow must additionally pass the six hosted VS Code jobs (1.90/1.140 on Windows, Linux and macOS) and both desktop archive jobs. Current results are available in [GitHub Actions](https://github.com/gautham-nvidia/charmlet/actions); local results above are not evidence for a different OS. Native desktop click-through, signing, editor forks, artwork/licensing and store-account gates remain separate.
+
+## Smiley and guardian follow-up - 2026-11-03
+
+The owner accepted the complete Drishti Doll and requested one additional variation using a supplied traditional reference. The original stays; the new Drishti Guardian has a red face, white horns and a complete clay body. Four smiley stress balls show happy, determined, calm and winking expressions. Soft Heart, Thumbs-Up and Rocket Emoji designs complete the eight additions. The reference and original-generation provenance are recorded in [ARTWORK.md](../extension/ARTWORK.md).
+
+Extension **0.6.1** and desktop **0.2.1** now offer **152 offline charms**: 142 PNG designs plus ten originals. The review has 143 selected entries, 184 authored subjects and 22 optional packs. Earlier artifacts and image revisions remain preserved.
+
+The follow-up passed type/lint/build and all 69 model tests. The extended soft/holiday editor scenario checks sustained pointer squeeze, keyboard squeeze of a bundled smiley and heart, opaque pixels at the cord tip during compression, complete release and Reduced Motion. The actual installed VSIX passed Restricted Mode, twelve representative PNG selections, flower-preview separation and garden persistence. Twelve additional captures from that installed package use normal motion at 100% size on dark and light backgrounds, with no imported packs.
+
+Both website suites passed: 152 gallery entries, every collection, 184 validated PNGs, real pack/VSIX downloads, all thirteen current/historical app-comparison links and mobile layouts without overflow or console errors. Desktop type/build, six model tests, developer smoke and extracted Windows archive smoke passed, including the new smiley/guardian selections and unchanged earned garden state. The artifact checker still reports publication blocked by source/art licensing.
+
+| Follow-up artifact | Bytes | SHA-256 |
+|---|---:|---|
+| `extension/charmlet-0.6.1.vsix` | 8,918,059 | `d2e2519924223d7f19dd51b0227a9b03a1f09b5de1172e2b6a162e44745f3813` |
+| `desktop/distribution/Charmlet-desktop-0.2.1-win32-x64.zip` | 167,081,397 | `60bf646422760cf1038d661edcfa25bce86da0a817ad23f99ed5ba53e3dd0391` |
+
+All eight hosted jobs passed for the preceding `7195b75` candidate after the workflow budget correction. The follow-up requires its own complete PR and post-merge checks; the prior result does not substitute for those gates.

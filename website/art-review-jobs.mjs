@@ -111,6 +111,7 @@ function realisticPrompt(subject, style = 'object') {
     gemstone: 'STYLE: a believable gemstone or mineral specimen with accurate faceting or natural crystal structure, clear material depth and carefully directed neutral studio lighting. Rich photographic-style CGI, not a flat icon or photograph. Preserve the characteristic colour and optical detail without reflecting the green backdrop through the stone. No jewellery mount, repeated badge or cartoon face.',
     symbol: 'STYLE: a precise conventional symbol rendered as a solid finely crafted metal or ceramic object with believable thickness and subtle studio highlights. Preserve the exact recognizable glyph rather than inventing decorative strokes. No flat printed icon, enclosing badge, lettering, emoji face or repeated plaque.',
     cosmos: 'STYLE: detailed photographic-style astronomical CGI with clearly separated celestial forms and a readable compact silhouette. Follow the stated scientific appearance for real subjects; use imaginative forms only when the subject explicitly asks for them. No decorative metalwork, enclosing badge, emoji face, flat icon or full-bleed background.',
+    soft: 'STYLE: an original tactile slow-rising foam or soft-silicone toy with photographic-style CGI lighting, fine matte surface texture, rounded edges and gentle material depth. Use clear expressive emoji features when requested, designed for easy recognition at tiny sizes. It must look like a real squeezable object, not a flat glyph, printed sticker, hard enamel badge or copy of a platform emoji asset. Keep facial marks bold and simple, with no extra face on objects that do not request one.',
   };
   if (!Object.hasOwn(styles, style)) throw new Error('Unknown artwork rendering style.');
   return [
@@ -136,7 +137,7 @@ export async function artworkJobs(repo) {
     !/^[a-z][a-z0-9-]{0,31}$/.test(item.id) || typeof item.name !== 'string' || item.name.length > 48
     || typeof item.group !== 'string' || item.group.length > 48 || !/^#[0-9a-f]{6}$/i.test(item.accent)
     || typeof item.subject !== 'string' || item.subject.length > 2500
-    || (item.style !== undefined && !['object', 'gemstone', 'symbol', 'cosmos'].includes(item.style)))) throw new Error('Invalid bounded art-expansion inventory.');
+    || (item.style !== undefined && !['object', 'gemstone', 'symbol', 'cosmos', 'soft'].includes(item.style)))) throw new Error('Invalid bounded art-expansion inventory.');
   const records = [
     ...builtins.map(item => ({ ...item, key: `starter-${item.id}`, family: 'starters', subject: motifs[item.id], original: `default/${item.file}` })),
     ...extras.map(item => ({ ...item, key: `extra-${item.id}`, family: 'classics', subject: motifs[item.id], original: `extras/${item.file}` })),

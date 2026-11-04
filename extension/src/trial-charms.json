@@ -1874,5 +1874,117 @@
       "x": 0.5,
       "y": 0.05952380952380952
     }
+  },
+  {
+    "id": "trial:new-smiley-happy",
+    "name": "Happy Smiley Ball",
+    "file": "trial-new-smiley-happy-r1-p2.png",
+    "description": "Happy Smiley Ball, included in the complete trial collection.",
+    "accent": "#e9bd42",
+    "group": "Stress Busters",
+    "artworkKey": "new-smiley-happy",
+    "artworkHash": "ba0f0cdac0e58a557ddb0e220e46adae6bd23791441a84250e2e9fa8fd92dfc9",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-smiley-determined",
+    "name": "Determined Smiley Ball",
+    "file": "trial-new-smiley-determined-r1-p2.png",
+    "description": "Determined Smiley Ball, included in the complete trial collection.",
+    "accent": "#e4a347",
+    "group": "Stress Busters",
+    "artworkKey": "new-smiley-determined",
+    "artworkHash": "7800fa3c27f20bd9741e2adb9496dc23aa0a7ca828b0942542ea6ef8b874e240",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-smiley-calm",
+    "name": "Calm Smiley Ball",
+    "file": "trial-new-smiley-calm-r1-p2.png",
+    "description": "Calm Smiley Ball, included in the complete trial collection.",
+    "accent": "#e8bf79",
+    "group": "Stress Busters",
+    "artworkKey": "new-smiley-calm",
+    "artworkHash": "0d73670cd2df639fd5e67c13fc412670782129173b9531d41540d184bebe0f3f",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-smiley-wink",
+    "name": "Winking Smiley Ball",
+    "file": "trial-new-smiley-wink-r2-p2.png",
+    "description": "Winking Smiley Ball, included in the complete trial collection.",
+    "accent": "#edbb4f",
+    "group": "Stress Busters",
+    "artworkKey": "new-smiley-wink",
+    "artworkHash": "d4172d2f0cffaab8a0174e1ab8c9bbea163a642f18f0dd946f562f9cda4ff943",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-emoji-heart",
+    "name": "Heart Emoji",
+    "file": "trial-new-emoji-heart-r1-p2.png",
+    "description": "Heart Emoji, included in the complete trial collection.",
+    "accent": "#d95f75",
+    "group": "Stress Busters",
+    "artworkKey": "new-emoji-heart",
+    "artworkHash": "182c0d6a84862a8825bfc45f5dce65ee610436861267fc2c7beb17c2fb90c75c",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.15873015873015872
+    }
+  },
+  {
+    "id": "trial:new-emoji-thumbs-up",
+    "name": "Thumbs-Up Emoji",
+    "file": "trial-new-emoji-thumbs-up-r1-p2.png",
+    "description": "Thumbs-Up Emoji, included in the complete trial collection.",
+    "accent": "#e8b751",
+    "group": "Stress Busters",
+    "artworkKey": "new-emoji-thumbs-up",
+    "artworkHash": "a13bb0fe5e641356dc0a7dbeb0fc7ccc7fd9a58ad1b6bbc103338c3b97190fe7",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.1111111111111111
+    }
+  },
+  {
+    "id": "trial:new-emoji-rocket",
+    "name": "Rocket Emoji",
+    "file": "trial-new-emoji-rocket-r1-p2.png",
+    "description": "Rocket Emoji, included in the complete trial collection.",
+    "accent": "#da8c6b",
+    "group": "Stress Busters",
+    "artworkKey": "new-emoji-rocket",
+    "artworkHash": "6492023732467003cc30e8767fee6aa015cb99b33ecb26371ea74d446f47ff87",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.15079365079365079
+    }
+  },
+  {
+    "id": "trial:new-drishti-guardian",
+    "name": "Drishti Guardian",
+    "file": "trial-new-drishti-guardian-r1-p2.png",
+    "description": "Drishti Guardian, included in the complete trial collection.",
+    "accent": "#c45b43",
+    "group": "Local Culture",
+    "artworkKey": "new-drishti-guardian",
+    "artworkHash": "4884913ebdf308847c020598334206a0fe71f372fc587a86d8624ce74bab08e8",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.15079365079365079
+    }
   }
 ]

@@ -42,7 +42,13 @@ export function getCharm(id: unknown, charms: readonly CharmDefinition[] = CHARM
 	return charms.find(charm => charm.id === id) ?? CHARMS[0];
 }
 
+const SOFT_CHARM_KEYS = new Set([
+	'stress-ball', 'squishy-star',
+	'smiley-happy', 'smiley-determined', 'smiley-calm', 'smiley-wink',
+	'emoji-heart', 'emoji-thumbs-up', 'emoji-rocket',
+]);
+
 export function isSoftCharm(id: string): boolean {
 	const key = id.split(':').at(-1)?.replace(/^new-/, '');
-	return key === 'stress-ball' || key === 'squishy-star';
+	return key !== undefined && SOFT_CHARM_KEYS.has(key);
 }

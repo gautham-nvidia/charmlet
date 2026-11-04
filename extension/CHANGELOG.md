@@ -3,6 +3,14 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.6.1 - 2026-11-03 (Smiley trial)
+
+### Added
+
+- Happy, Determined, Calm and Winking Smiley Balls, plus soft Heart, Thumbs-Up and Rocket Emoji charms. All support pointer and keyboard squeezing with a fixed cord attachment.
+- A red-faced, horned Drishti Guardian inspired by the owner's traditional reference; the accepted full-body Drishti Doll stays available.
+- The complete trial now includes 152 offline charms, with no separate imports required.
+
 ## 0.6.0 - 2026-11-03 (Complete collection trial)
 
 ### Added

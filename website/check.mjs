@@ -17,7 +17,7 @@ const target = review.items.filter(item => item.featured && item.decision !== 'o
 const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
 const expectedWorldCounts = {
   ai: 1, coding: 0, silicon: 7, testing: 9, animals: 3, trees: 3, space: 5, parks: 6,
-  cities: 6, culture: 7, sports: 5, luck: 2, stress: 2, seasonal: 22,
+  cities: 6, culture: 8, sports: 5, luck: 2, stress: 9, seasonal: 22,
   'solar-system': 10, gemstones: 8, zodiac: 12, sacred: 14, flowers: 12,
 };
 const output = join(repo, 'extension', 'test-results', `website-check-${manifest.version}`);

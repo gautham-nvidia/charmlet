@@ -2,9 +2,9 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-11-03:** The **0.6.0 complete-collection trial** is built and verified locally in the installed extension and Windows desktop beta. Its picker includes **144 offline charms**: 134 rendered designs plus the ten preserved originals. New collections cover lab instruments, all eight planets, Sun and Moon, galaxies, gemstones, zodiac, US holidays and sacred traditions. The app keeps **Charms / Focus / Garden / Settings**, release bounce, soft Stress Busters and the strictly motivational 80-message deck. [Verification and release gates](docs/phase-6-trial-catalogue.md) are recorded separately.
+**Status, 2026-11-03:** The **0.6.1 complete-collection trial** includes **152 offline charms**: 142 rendered designs plus the ten preserved originals. Collections cover lab instruments, all eight planets, Sun and Moon, galaxies, gemstones, zodiac, US holidays and sacred traditions. The latest additions are four smiley stress balls, three soft emoji designs and a second full-body Drishti variation. The app keeps **Charms / Focus / Garden / Settings**, release bounce and the strictly motivational 80-message deck. [Verification and release gates](docs/phase-6-trial-catalogue.md) are recorded separately.
 
-Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **135 selected designs**, including the original Terminal and all twelve flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. Photo Studio's live paid access remains disabled; the [desktop beta](desktop/README.md) remains a separate application.
+Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **143 selected designs**, including the original Terminal and all twelve flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. Photo Studio's live paid access remains disabled; the [desktop beta](desktop/README.md) remains a separate application.
 
 Holiday defaults follow **21 US celebration dates** and rotate Christmas designs through December. They are on for new profiles. An update preserves existing opt-outs and pins; use **Settings > Appearance > Follow holiday defaults** to enable and unpin in one click. Picking a charm pins it. Automatic choices use the local date and never replace the saved usual charm. [Phase 6 scope and verification](docs/phase-6-trial-catalogue.md) tracks the candidate's remaining checks.
 
@@ -14,16 +14,16 @@ The accepted Phase 4 head passed all six Windows/Linux/macOS VS Code 1.90/1.140 
 [dated validation record](docs/phase-3-gallery-validation.md), and the frozen [desktop platform summary](docs/phase-3-platforms.json)
 show the checks and remaining review items.
 
-<img src="docs/store-assets/navigation.png" width="240" alt="Charmlet 0.5.0 navigation and learning card"> <img src="docs/store-assets/picker.png" width="240" alt="Charmlet 0.5.0 searchable original collection">
+<img src="docs/store-assets/navigation.png" width="240" alt="Charmlet 0.6.1 navigation and motivational card"> <img src="docs/store-assets/picker.png" width="240" alt="Charmlet 0.6.1 searchable trial collection">
 
-These captures show the 0.5.0 candidate's four labelled navigation buttons and original bundled artwork.
+These installed-app captures show the four labelled navigation buttons and searchable trial collection.
 
 Choose among installed charms in the searchable **Charms** picker. The default **Hanging** layout keeps the peg near
 the top and reserves pull room; **Settings → Appearance → Orbit layout** reserves space for full fixed-peg loops. A
 straight upward pull retracts the charm and the arrow restores it. Releasing a stretch produces diminishing bounces before settling. The Cord setting is the saved resting
 preference, while the visible cord may temporarily shorten to fit the current panel.
 
-Hold the Stress Ball or Squishy Star to squeeze, or hold Space/Enter with the charm focused. Release to let it recover. The cord stays attached; Reduced Motion removes the transition and bounce.
+Hold a Stress Buster to squeeze, or hold Space/Enter with the charm focused. Choose happy, determined, calm or winking smiley balls, a soft heart, thumbs-up or rocket, or the original Stress Ball and Squishy Star. Release to let it recover. The cord stays attached; Reduced Motion removes the transition and bounce.
 
 In **Settings → Appearance**, optional **Use festive defaults** selects an installed festive charm for the device's local Halloween, Christmas, US Thanksgiving, Black Friday or Cyber Monday. **Pin this charm** protects the current choice. Selecting or importing a charm pins it automatically; older saved selections are also protected. Unpin to allow automatic choices. Missing seasonal artwork and ordinary dates keep the saved usual charm.
 

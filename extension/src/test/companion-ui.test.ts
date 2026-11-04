@@ -22,8 +22,19 @@ interface OwnedEditor {
 }
 
 async function alphaAtCordTip(frame: Frame): Promise<number> {
-	return frame.evaluate(() => {
+	const id = await frame.locator('#stage').getAttribute('data-charm');
+	const bundled = TRIAL_CHARMS.find(charm => charm.id === id);
+	// VS Code serves bundled images from a different origin. Read the same
+	// packaged pixels locally while measuring the real rendered geometry.
+	const png = bundled ? readFileSync(resolve('media', bundled.file)).toString('base64') : undefined;
+	return frame.evaluate(async png => {
 		const image = document.getElementById('charm-image') as HTMLImageElement;
+		let pixels = image;
+		if (png) {
+			pixels = new Image();
+			pixels.src = `data:image/png;base64,${png}`;
+			await pixels.decode();
+		}
 		const path = document.getElementById('thread') as unknown as SVGPathElement;
 		const point = path.getPointAtLength(path.getTotalLength());
 		const matrix = path.getScreenCTM()!;
@@ -32,11 +43,11 @@ async function alphaAtCordTip(frame: Frame): Promise<number> {
 		const canvas = document.createElement('canvas');
 		canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
 		const context = canvas.getContext('2d')!;
-		context.drawImage(image, 0, 0);
+		context.drawImage(pixels, 0, 0);
 		const x = Math.floor((tip.x - bounds.left) * canvas.width / bounds.width);
 		const y = Math.floor((tip.y - bounds.top) * canvas.height / bounds.height);
 		return context.getImageData(x, y, 1, 1).data[3];
-	});
+	}, png);
 }
 
 async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor, 'app' | 'window'>) => void, installed = false): Promise<OwnedEditor> {
@@ -746,6 +757,29 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 		expect(JSON.parse(readFileSync(preferencesPath, 'utf8'))).toMatchObject({
 			charmId: ball, charmPinned: true, festiveEnabled: true, reducedMotion: true,
 		});
+		await frame.locator('#settings-toggle').click();
+		await frame.locator('#menu-appearance').click();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		for (const key of ['new-smiley-happy', 'new-emoji-heart']) {
+			const entry = TRIAL_CHARMS.find(charm => charm.artworkKey === key)!;
+			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+			await frame.locator('#charm-search').fill(entry.name);
+			await frame.locator(`.charm-tile[data-charm-id="${entry.id}"]`).click();
+			await expect(frame.locator('#charm')).toHaveAttribute('data-soft', 'true');
+			await frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).decode());
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+			await frame.locator('#charm').focus();
+			try {
+				await window.keyboard.down('Space');
+				await expect.poll(squeezed).toBe(true);
+				expect(await frame.locator('#charm-image').evaluate(image => parseFloat(getComputedStyle(image).transitionDuration))).toBeGreaterThan(0);
+				expect(await alphaAtCordTip(frame), `${entry.name} must stay attached while squeezed`).toBeGreaterThanOrEqual(128);
+			} finally {
+				await window.keyboard.up('Space');
+			}
+			await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(1);
+		}
 	} finally {
 		await closeOwnedEditor(editor, testInfo);
 	}
@@ -779,6 +813,7 @@ if (process.env.CHARMLET_TEST_PACKAGED === '1') {
 			for (const key of [
 				'starter-drishti', 'new-ate-tester', 'new-earth', 'new-milky-way',
 				'new-emerald', 'new-zodiac-libra', 'new-santa-claus', 'new-murugan', 'flower-sunflower',
+				'new-smiley-happy', 'new-emoji-heart', 'new-drishti-guardian',
 			]) {
 				const entry = TRIAL_CHARMS.find(charm => charm.artworkKey === key)!;
 				expect(entry, `${key} must be present without importing a pack`).toBeTruthy();

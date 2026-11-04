@@ -52,3 +52,11 @@ These are original prompt-generated review candidates made with **Gemini 3 Pro I
 The latest Drishti revision is a complete painted-clay doll. The expanded collection includes generic lab equipment, astronomical illustrations, gemstones, zodiac, seasonal designs and respectful devotional figures/symbols. These images are artistic interpretations, not technical diagrams, astronomical photographs or claims of supernatural effects. No proprietary device reference or named athlete/league artwork was used for this expansion.
 
 All 176 authored candidates remain in the review archive; 135 are selected for review, comprising the original Terminal and 134 PNG designs. Retired technical concepts and earlier image revisions are preserved as history. Optional packs keep their immutable URLs. Public release still requires the owner's artwork choices and a source/art licensing decision.
+
+## 2026-11-03 - Smiley and guardian follow-up
+
+The owner requested four emotional smiley stress balls and other emoji designs, and accepted the complete Drishti Doll while requesting one more variation. The 0.6.1 collection adds Happy, Determined, Calm and Winking Smiley Balls, Heart Emoji, Thumbs-Up Emoji, Rocket Emoji and Drishti Guardian. All seven soft objects use the app's existing squeeze interaction; the clay guardian uses ordinary charm motion.
+
+The owner supplied [The Accha Studio's Drishti reference, slide 7](https://www.instagram.com/p/C9e_MaFSVlW/?img_index=7). It was inspected through the public page: the photograph shows traditional red guardian masks with wide eyes, tall white horns, curled black moustaches, white teeth and bold painted forehead/ear details. Those general features informed the text prompt for an original full-body clay variation. The photograph itself is not bundled or used as a cutout. The accepted earlier full-body doll is preserved.
+
+These eight additional Gemini 3 Pro Image designs bring the current inventory to 184 authored subjects, 143 selected review entries and 142 included PNG designs, plus ten original SVGs. Earlier exports and generation receipts remain archived. The four smiley faces use original foam-toy compositions rather than platform emoji assets.

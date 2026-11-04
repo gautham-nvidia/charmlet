@@ -165,7 +165,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
 
   const gardenBeforeTrial = JSON.parse(readFileSync(companionPath, 'utf8')).garden;
   await expect(window.locator('#charm-select option[value^="trial:"]')).toHaveCount(trial.length);
-  for (const key of ['starter-drishti', 'new-earth']) {
+  for (const key of ['starter-drishti', 'new-smiley-happy', 'new-drishti-guardian', 'new-earth']) {
     const entry = trial.find(charm => charm.artworkKey === key);
     assert.ok(entry);
     await window.getByRole('button', { name: 'Browse charms', exact: true }).click();
@@ -176,6 +176,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     assert.equal(await window.locator('#charm-image').evaluate(image => image.naturalWidth), 216);
     await expect(window.locator('#charm-image')).toHaveAttribute('src', new RegExp(`${entry.file.replace('.', '\\.')}$`));
     await expect(window.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+    await expect(window.locator('#charm')).toHaveAttribute('data-soft', String(key === 'new-smiley-happy'));
   }
   await window.screenshot({ path: join(output, 'desktop-trial-earth.png') });
   assert.deepEqual(JSON.parse(readFileSync(companionPath, 'utf8')).garden, gardenBeforeTrial);

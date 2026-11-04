@@ -282,5 +282,37 @@
   {
     "id": "star-of-david", "name": "Star of David", "group": "Sacred Traditions", "accent": "#a9b8c7", "style": "symbol",
     "subject": "The precise traditional Star of David as a respectful satin-silver sculptural object: TWO equal equilateral triangular outlines, one upright and one inverted, interlaced to form exactly SIX outer points and a clearly open central hexagon. Simple balanced geometry, believable thin metal thickness and understated highlights. No flag, letters, extra points, political imagery, necklace, surrounding plaque or invented decoration."
+  },
+  {
+    "id": "smiley-happy", "name": "Happy Smiley Ball", "group": "Stress Busters", "accent": "#e9bd42", "style": "soft",
+    "subject": "One complete round sunshine-yellow foam stress ball with a joyful original smiley face. Two bold dark oval eyes and one broad simple curved black smile are printed directly onto the rounded foam surface, with a tiny warm blush on each cheek. The facial marks follow the curvature of the sphere. Believable fine foam texture, softly rounded volume and a subtle shallow squeeze dimple at one side, while retaining a circular silhouette. Face almost directly forward so the happiness is immediately readable at 72 pixels. No arms, legs, teeth, tongue, accessories or small distracting details."
+  },
+  {
+    "id": "smiley-determined", "name": "Determined Smiley Ball", "group": "Stress Busters", "accent": "#e4a347", "style": "soft",
+    "subject": "One complete golden-yellow soft foam stress ball with a determined, optimistic original smiley expression. Two dark oval eyes look straight ahead beneath confident gently angled black eyebrows, with a broad closed upward-curving smile. Convey ready-to-work energy and cheerful resolve, not anger, aggression or sadness. Bold uncomplicated facial marks printed directly onto the curved sphere, readable at tiny size. Believable matte foam texture, soft volume, gentle neutral highlights and one very shallow side dimple. No sweat, tears, arms, fists, legs, accessories, words or small details."
+  },
+  {
+    "id": "smiley-calm", "name": "Calm Smiley Ball", "group": "Stress Busters", "accent": "#e8bf79", "style": "soft",
+    "subject": "One complete soft warm apricot-yellow foam stress ball with an original serene contented smiley face. Both eyes are closed as two bold curved dark lines; below them sits a small clear upward-curved relaxed smile, with restrained peach cheek blush. Show quiet contentment rather than sleep or sadness. All marks lie directly on the softly rounded ball surface and remain clear at tiny size. Realistic fine foam texture, gentle rounded shading and a slight shallow squeeze dimple. No sleep symbols, tears, droplets, arms, legs, accessories or text."
+  },
+  {
+    "id": "smiley-wink", "name": "Winking Smiley Ball", "group": "Stress Busters", "accent": "#edbb4f", "style": "soft",
+    "subject": "One complete bright butter-yellow soft foam stress ball with a playful original winking face. One bold dark oval eye stays open, the other is a clearly closed angled wink, and a friendly asymmetric curved black smile tilts gently upward. The wink should be obvious at 72 pixels. Facial marks are printed onto the curved foam sphere, not floating parts. Fine matte foam texture and softly lit rounded volume with a gentle side indentation. No tongue, tears, teeth, arms, legs, hats, accessories or text."
+  },
+  {
+    "id": "emoji-heart", "name": "Heart Emoji", "group": "Stress Busters", "accent": "#d95f75", "style": "soft",
+    "subject": "One original puffy coral-red heart-shaped slow-rising foam toy, clearly recognizable as the universal heart emoji silhouette. TWO equal rounded upper lobes with a clean central notch, a softly tapered lower point and believable inflated thickness visible along the side. A mostly frontal view, fine matte velvety foam texture and soft neutral highlights. It must look yielding and tactile rather than glass, metal, candy or a flat icon. No eyes, mouth, additional hearts, ribbon, wings, jewellery, backing disk, hand or text."
+  },
+  {
+    "id": "emoji-thumbs-up", "name": "Thumbs-Up Emoji", "group": "Stress Busters", "accent": "#e8b751", "style": "soft",
+    "subject": "One original small golden-yellow soft-silicone THUMBS-UP hand toy. Show one upright thumb and exactly FOUR fingers curled naturally into a compact fist, with a short rounded integrated wrist base and no arm. Clear familiar thumbs-up silhouette in a modest three-quarter view, the raised thumb and folded fingers immediately readable at tiny size. Believable simple hand anatomy formed from matte yielding yellow rubber, softly rounded surfaces and subtle creases. No second hand, extra fingers, fingernail polish, face, sleeve, pedestal, symbols, brand or text."
+  },
+  {
+    "id": "emoji-rocket", "name": "Rocket Emoji", "group": "Stress Busters", "accent": "#da8c6b", "style": "soft",
+    "subject": "One original chubby rocket-shaped soft foam toy, a tactile interpretation of the familiar rocket emoji. A short pearl-ivory rounded fuselage, coral-red pointed nose, one clearly circular blue porthole, two small rounded red side fins, and one short integrated orange-yellow foam exhaust plume. Tilt the complete rocket slightly upward to the right. Make every part thick, rounded, connected and visibly squeezable, with fine matte foam texture and restrained dimensional lighting. No realistic fire, smoke, stars, launchpad, detached parts, face, words, brand or copied character."
+  },
+  {
+    "id": "drishti-guardian", "name": "Drishti Guardian", "group": "Local Culture", "accent": "#c45b43",
+    "subject": "One original COMPLETE FULL-BODY traditional South Indian Drishti Bommai guardian doll, rendered as a hand-painted terracotta folk-art object. A vivid RED protective face with very large wide white eyes, round black pupils, yellow eye outlines, thick curled BLACK moustache, two modest white fangs and a small red tongue. Black sculpted hair supports exactly TWO tall tapered ivory-white horns that curve slightly inward. Three short white painted forehead stripes with a small central red dot, broad red ears edged in warm yellow and simple round golden ear ornaments. Beneath the prominent horned head, show a stocky charcoal-black clay torso with a round belly, TWO complete arms with hands at the hips, a short painted red dhoti, and TWO short legs with fully visible bare feet. The head and horns occupy about half the full height, leaving enough room to clearly see the whole body and limbs. Handmade matte clay grain and small natural brushstroke irregularities, confident traditional guardian character, fearsome yet approachable. One complete free-standing figure only, never just a mask, severed head, bust or face hanging. No tree, street, background scene, other dolls, pedestal, jewellery chain, hanging cord, lettering, logo or copied contemporary artwork."
   }
 ]
