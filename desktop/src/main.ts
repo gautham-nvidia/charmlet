@@ -17,7 +17,11 @@ import { learningCard } from '../../extension/src/learning-cards';
 import { StateStore } from '../../extension/src/state-store';
 import { StateWriter } from '../../extension/src/state-writer';
 import { pauseForAway } from './power-behavior';
-import { fitDesktopBounds, type DesktopBounds } from './window-placement';
+import {
+	DEFAULT_DESKTOP_SIZE, desktopGeometry, fitDesktopAnchor, legacyDesktopAnchor, matchesDesktopAnchor,
+	type DesktopAnchor, type DesktopBounds,
+} from './window-placement';
+import { DESKTOP_HEADER, matchesDesktopView, MESSAGES_HEIGHT, restoreDesktopView, TOOLS_HEIGHT, type DesktopView } from './desktop-view';
 
 protocol.registerSchemesAsPrivileged([{
 	scheme: 'charmlet', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: false },
@@ -34,7 +38,13 @@ let mainWindow: BrowserWindow | undefined;
 let tray: Tray | undefined;
 let companion: CompanionController | undefined;
 let preferenceWriter: StateWriter<CharmState> | undefined;
-let placementWriter: StateWriter<DesktopBounds> | undefined;
+let placementWriter: StateWriter<DesktopAnchor> | undefined;
+let desktopViewWriter: StateWriter<DesktopView> | undefined;
+let desktopView = restoreDesktopView(undefined);
+let desktopAnchor: DesktopAnchor;
+let toolsExpanded = false;
+let windowDrag: { cursor: { x: number; y: number }; anchor: DesktopAnchor } | undefined;
+let pendingTools = false;
 let placementTimer: ReturnType<typeof setTimeout> | undefined;
 let unsubscribeCompanion: (() => void) | undefined;
 let quitting = false;
@@ -100,24 +110,61 @@ function schedulePlacement() {
 	placementTimer = setTimeout(() => {
 		placementTimer = undefined;
 		if (mainWindow && !mainWindow.isDestroyed()) {
-			void placementWriter?.save(mainWindow.getBounds()).catch(() => latchBackgroundNotice('Window position could not be saved.'));
+			void placementWriter?.save({ ...desktopAnchor }).catch(() => latchBackgroundNotice('Window position could not be saved.'));
 		}
 	}, 300);
 }
 function resetWindowPosition() {
 	if (!mainWindow) { return; }
-	mainWindow.setBounds(fitDesktopBounds(undefined, workAreas()));
+	desktopAnchor = fitDesktopAnchor(undefined, workAreas());
+	applyWindowSize();
 	schedulePlacement();
 }
 function fitCurrentWindow() {
 	if (!mainWindow) { return; }
-	mainWindow.setBounds(fitDesktopBounds(mainWindow.getBounds(), workAreas()));
+	desktopAnchor = fitDesktopAnchor(desktopAnchor, workAreas());
+	applyWindowSize();
+	schedulePlacement();
+}
+function setWindowBounds(bounds: DesktopBounds) {
+	if (!mainWindow) { return; }
+	if (sameBounds(bounds, mainWindow.getBounds())) { return; }
+	mainWindow.setBounds(bounds);
+}
+function currentGeometry() {
+	return desktopGeometry(desktopAnchor, workAreas(),
+		toolsExpanded ? TOOLS_HEIGHT : desktopView.messagesPinned ? MESSAGES_HEIGHT : DEFAULT_DESKTOP_SIZE.height);
+}
+function applyWindowSize() {
+	const geometry = currentGeometry();
+	setWindowBounds(geometry.bounds);
+	if (rendererReady) { send({ type: 'desktop-placement', ...geometry }); }
+}
+function setToolsExpanded(expanded: boolean) {
+	if (!mainWindow || expanded === toolsExpanded) { return; }
+	toolsExpanded = expanded;
+	applyWindowSize();
+}
+function recordWindowMove() {
+	if (!mainWindow || quitting) { return; }
+	const expected = currentGeometry().bounds;
+	const actual = mainWindow.getBounds();
+	// Allow native mixed-DPI rounding without starting a resize loop.
+	if (Object.keys(expected).every(key => Math.abs(expected[key as keyof DesktopBounds] - actual[key as keyof DesktopBounds]) <= 1)) { return; }
+	applyWindowSize();
+}
+function moveAnchor(x: number, y: number) {
+	if (!mainWindow) { return; }
+	desktopAnchor = fitDesktopAnchor({ x, y }, workAreas());
+	applyWindowSize();
 	schedulePlacement();
 }
 function setMouseIgnored(ignore: boolean) {
+	if (windowDrag) { ignore = false; }
 	if (!mainWindow || mouseIgnored === ignore) { return; }
 	mouseIgnored = ignore;
 	mainWindow.setIgnoreMouseEvents(ignore, { forward: true });
+	if (rendererReady) { send({ type: 'desktop-hit-state', ignore }); }
 }
 function showInactive() {
 	if (!mainWindow) { return; }
@@ -126,12 +173,14 @@ function showInactive() {
 	notifyVisibility();
 }
 function hideWindow() {
+	windowDrag = undefined;
 	mainWindow?.hide();
 	notifyVisibility();
 }
 function openControls(tab: 'focus' | 'learn' | 'garden') {
 	if (!mainWindow) { return; }
 	pendingTab = tab;
+	setToolsExpanded(true);
 	setMouseIgnored(false);
 	mainWindow.setFocusable(true);
 	mainWindow.show();
@@ -141,6 +190,16 @@ function openControls(tab: 'focus' | 'learn' | 'garden') {
 		send({ type: 'companion-open', tab });
 		pendingTab = undefined;
 	}
+}
+function openDesktopTools() {
+	if (!mainWindow) { return; }
+	setToolsExpanded(false);
+	setMouseIgnored(false);
+	mainWindow.setFocusable(true);
+	mainWindow.show();
+	mainWindow.focus();
+	if (rendererReady) { send({ type: 'desktop-tools-open' }); }
+	else { pendingTools = true; }
 }
 
 async function registerResources() {
@@ -161,7 +220,7 @@ async function registerResources() {
 					.replaceAll('__STYLE__', 'charmlet://app/view.css')
 					.replaceAll('__CHARM__', 'charmlet://app/media/keycap.svg')
 					.replace('</head>', '<link rel="stylesheet" href="charmlet://app/desktop.css"></head>')
-					.replace('<body>', '<body class="desktop"><header id="desktop-header"><span>Charmlet</span><button id="desktop-hide" type="button" aria-label="Hide Charmlet to tray" title="Hide to tray">—</button></header>')
+					.replace('<body>', `<body class="desktop" data-desktop-tools="false" data-desktop-reveal="false">${DESKTOP_HEADER}`)
 					.replace(`<script nonce="${nonce}" src="charmlet://app/renderer.js"></script>`, `<script nonce="${nonce}" src="charmlet://app/overlay.js"></script><script nonce="${nonce}" src="charmlet://app/renderer.js"></script>`);
 				return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8' } });
 			}
@@ -238,11 +297,14 @@ async function handleAction(event: IpcMainEvent, message: unknown) {
 	const generation = rendererGeneration;
 	const value = message as Record<string, unknown>;
 	if (value.type === 'ready') {
-		await Promise.all([preferenceWriter!.flush(), companion!.flush(), placementWriter!.flush()]);
+		await Promise.all([preferenceWriter!.flush(), companion!.flush(), placementWriter!.flush(), desktopViewWriter!.flush()]);
 		if (generation !== rendererGeneration) { return; }
 		rendererReady = true;
 		const tab = pendingTab;
+		applyWindowSize();
+		send({ type: 'desktop-view', value: desktopView });
 		send({ type: 'state', state, catalogue, companion: companion!.snapshot(), visible: mainWindow!.isVisible(), ...(tab ? { companionTab: tab } : {}) });
+		if (pendingTools) { send({ type: 'desktop-tools-open' }); pendingTools = false; }
 		if (pendingTab === tab) { pendingTab = undefined; }
 	} else if (value.type === 'save' && 'state' in value) {
 		const revision = Number.isSafeInteger(value.revision) && Number(value.revision) >= 0 ? Number(value.revision) : undefined;
@@ -284,6 +346,30 @@ async function handleAction(event: IpcMainEvent, message: unknown) {
 		mainWindow!.focus();
 	} else if (value.type === 'desktop-hide') {
 		hideWindow();
+	} else if (value.type === 'desktop-tools' && typeof value.expanded === 'boolean') {
+		setToolsExpanded(value.expanded);
+	} else if (value.type === 'desktop-view-save' && Number.isSafeInteger(value.revision) && Number(value.revision) >= 0) {
+		desktopView = restoreDesktopView(value.value);
+		applyWindowSize();
+		try {
+			await desktopViewWriter!.save({ ...desktopView });
+			sendForGeneration(generation, { type: 'desktop-view-saved', revision: value.revision });
+		} catch {
+			sendForGeneration(generation, { type: 'desktop-view-saved', revision: value.revision, error: 'Display preferences could not be saved. Try again.' });
+		}
+	} else if (value.type === 'desktop-move-start') {
+		windowDrag = { cursor: screen.getCursorScreenPoint(), anchor: { ...desktopAnchor } };
+		setMouseIgnored(false);
+	} else if (value.type === 'desktop-move-drag' && windowDrag) {
+		const cursor = screen.getCursorScreenPoint();
+		moveAnchor(windowDrag.anchor.x + cursor.x - windowDrag.cursor.x, windowDrag.anchor.y + cursor.y - windowDrag.cursor.y);
+	} else if (value.type === 'desktop-move-end') {
+		windowDrag = undefined;
+	} else if (value.type === 'desktop-move-step' && Number.isSafeInteger(value.dx) && Number.isSafeInteger(value.dy)
+		&& Math.abs(Number(value.dx)) <= 40 && Math.abs(Number(value.dy)) <= 40) {
+		moveAnchor(desktopAnchor.x + Number(value.dx), desktopAnchor.y + Number(value.dy));
+	} else if (value.type === 'desktop-reset-position') {
+		resetWindowPosition();
 	}
 }
 
@@ -292,6 +378,7 @@ function createTray() {
 	tray = new Tray(icon);
 	tray.setContextMenu(Menu.buildFromTemplate([
 		{ label: 'Show / Hide', click: () => mainWindow?.isVisible() ? hideWindow() : showInactive() },
+		{ label: 'Open Controls', click: openDesktopTools },
 		{ type: 'separator' },
 		{ label: 'Focus', click: () => openControls('focus') },
 		{ label: 'Learn', click: () => openControls('learn') },
@@ -324,9 +411,10 @@ async function shutdown() {
 	unsubscribeCompanion?.();
 	const tasks: Promise<unknown>[] = [];
 	if (companion) { tasks.push(companion.dispose()); }
-	if (mainWindow && !mainWindow.isDestroyed() && placementWriter) { tasks.push(placementWriter.save(mainWindow.getBounds())); }
+	if (mainWindow && !mainWindow.isDestroyed() && placementWriter) { tasks.push(placementWriter.save({ ...desktopAnchor })); }
 	if (preferenceWriter) { tasks.push(preferenceWriter.flush()); }
 	if (placementWriter) { tasks.push(placementWriter.flush()); }
+	if (desktopViewWriter) { tasks.push(desktopViewWriter.flush()); }
 	const results = await Promise.allSettled(tasks);
 	if (results.some(result => result.status === 'rejected')) { latchBackgroundNotice('Some desktop state could not be flushed while quitting.'); }
 	tray?.destroy();
@@ -337,7 +425,7 @@ async function failInitialization(error: unknown) {
 	quitting = true;
 	if (placementTimer) { clearTimeout(placementTimer); placementTimer = undefined; }
 	unsubscribeCompanion?.();
-	await Promise.allSettled([companion?.dispose(), preferenceWriter?.flush(), placementWriter?.flush()].filter((value): value is Promise<void> => value !== undefined));
+	await Promise.allSettled([companion?.dispose(), preferenceWriter?.flush(), placementWriter?.flush(), desktopViewWriter?.flush()].filter((value): value is Promise<void> => value !== undefined));
 	tray?.destroy();
 	if (mainWindow && !mainWindow.isDestroyed()) { mainWindow.destroy(); }
 	dialog.showErrorBox('Charmlet could not start', error instanceof Error ? error.message : 'Unknown startup error.');
@@ -364,10 +452,19 @@ async function initialize() {
 	latestCompanion = companion.snapshot();
 	gardenKey = gardenCharms(latestCompanion.state.garden).map(charm => charm.id).join('|');
 
-	const placementStore = new StateStore<DesktopBounds>(join(profile, 'window'));
+	const legacyPlacementStore = new StateStore<DesktopBounds>(join(profile, 'window'));
+	const legacyPlacement = await legacyPlacementStore.load(undefined);
+	const placementStore = new StateStore<DesktopAnchor>(join(profile, 'anchor'));
 	const loadedPlacement = await placementStore.load(undefined);
-	placementWriter = new StateWriter(value => placementStore.write(value), () => placementStore.read(), sameBounds);
-	const bounds = fitDesktopBounds(loadedPlacement.value, workAreas());
+	if (loadedPlacement.error) { throw new Error('Desktop position is unreadable. The file was preserved; repair or move it before retrying.'); }
+	desktopAnchor = fitDesktopAnchor(loadedPlacement.value ?? legacyDesktopAnchor(legacyPlacement.value), workAreas());
+	placementWriter = new StateWriter(value => placementStore.write(value), () => placementStore.read(), matchesDesktopAnchor);
+	const viewStore = new StateStore<DesktopView>(join(profile, 'desktop-view'));
+	const loadedView = await viewStore.load(undefined);
+	if (loadedView.error) { throw new Error('Desktop display preferences are unreadable. The file was preserved; repair or move it before retrying.'); }
+	desktopView = restoreDesktopView(loadedView.value);
+	desktopViewWriter = new StateWriter(value => viewStore.write(value), () => viewStore.read(), matchesDesktopView);
+	const bounds = currentGeometry().bounds;
 	mainWindow = new BrowserWindow({
 		...bounds, title: 'Charmlet', frame: false, transparent: true, backgroundColor: '#00000000',
 		resizable: false, thickFrame: false, alwaysOnTop: true, skipTaskbar: true, focusable: false, show: false,
@@ -377,14 +474,16 @@ async function initialize() {
 	mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
 	mainWindow.webContents.on('will-navigate', event => event.preventDefault());
 	mainWindow.webContents.on('did-start-navigation', (_event, _url, isInPlace, isMainFrame) => {
-		if (isMainFrame && !isInPlace) { rendererGeneration++; rendererReady = false; }
+		if (isMainFrame && !isInPlace) { rendererGeneration++; rendererReady = false; setToolsExpanded(false); }
 	});
-	mainWindow.on('blur', () => mainWindow?.setFocusable(false));
-	mainWindow.on('move', schedulePlacement);
+	mainWindow.on('blur', () => { windowDrag = undefined; mainWindow?.setFocusable(false); });
+	mainWindow.on('move', recordWindowMove);
+	mainWindow.on('resize', recordWindowMove);
 	mainWindow.on('show', notifyVisibility);
 	mainWindow.on('hide', notifyVisibility);
 	mainWindow.on('close', event => { if (!quitting) { event.preventDefault(); hideWindow(); } });
 	mainWindow.webContents.on('did-finish-load', showInactive);
+	applyWindowSize();
 	await mainWindow.loadURL('charmlet://app/');
 	createTray();
 	unsubscribeCompanion = companion.subscribe(snapshot => {
@@ -406,6 +505,7 @@ async function initialize() {
 			return {
 				appName: app.getName(), profile, bounds: mainWindow?.getBounds(), ignored: mouseIgnored, focusable: mainWindow?.isFocusable(),
 				visible: mainWindow?.isVisible(), rendererReady, rendererGeneration, backgroundNotice,
+				desktopView: { ...desktopView }, anchor: { ...desktopAnchor }, geometry: currentGeometry(), toolsExpanded,
 				measuredWindowState: { resizable: mainWindow?.isResizable(), alwaysOnTop: mainWindow?.isAlwaysOnTop(), focusable: mainWindow?.isFocusable() },
 				configuredWindowFlags: { frame: false, transparent: true, skipTaskbar: true },
 				webPreferences: contents?.getLastWebPreferences(), state: { ...state }, companion: companion?.snapshot(),

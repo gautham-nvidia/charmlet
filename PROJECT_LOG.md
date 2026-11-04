@@ -490,3 +490,15 @@ The follow-up passes type/lint checks and the complete general editor scenario o
 PR #26's first run passed the Windows/Linux jobs and both desktop jobs. Mac 1.90 never obtained a hosted runner; GitHub explicitly reported capacity constraints. Mac 1.140 passed the keyboard collection check but failed while opening the second pack-import command, before squeezing. Its state trace shows the first pumpkin import saved successfully. The import handler updates the catalogue before awaiting `show()` and restoring editor focus, so the next command palette could open before that focus change completed. The sequential-import test now waits for the existing `Imported <pack name>.` notification, which is emitted after that work finishes. The command helper and application behavior remain unchanged.
 
 The import-completion wait passes fresh type/lint checks and the full soft-charm/holiday scenario on Windows VS Code 1.140 (`1 passed (21.3s)`), including both imports, festive pinning, native pointer squeezing and the bundled smiley/heart keyboard checks.
+
+## 2026-11-04 - Phase 7 minimal desktop trial
+
+The owner requested a desktop-only charm default, optional background and visible controls, and movable placement. Desktop 0.3.0 adds contextual Move/Tools controls, one selected panel at a time, independent saved background/toolbar/message preferences, and keyboard/drag placement. Existing artwork, imports, focus and garden data are retained.
+
+The owner then found that the compact 260-pixel stage stopped pulls too early. The desktop now uses a transparent monitor work-area canvas with compact controls placed separately from the peg. Old window positions migrate to an anchor store; the default peg sits at the top edge. The editor's existing resize function is exported for the desktop host, while the production VS Code renderer remains byte-identical.
+
+Desktop type/build and twelve models pass. The development-host smoke passes 500-pixel downward/sideways pulls, return, keyboard placement, saved preferences, migration, panel changes and restart alongside existing focus/garden/security checks. Extension type/lint passes. Native mouse probes did not establish a pass amid unrelated pointer activity; OS click-through remains an open gate. Package and hosted results are recorded in `docs/phase-7-desktop-minimal.md` as they complete.
+
+Productivity suggestions remain optional: next-step note, a small focus cue, brief small-win celebration and a fading motivational bubble, with calendar-file import later. The owner prefers the charm alone for now, so no automatic bubble or calendar access was added.
+
+The Windows archive workflow now includes an OS-input check on the isolated runner, guarded against running on a shared local desktop. It uses native window bounds and an owned background surface to verify movement, click-through, long pulls, return and focus behavior. The fresh local desktop run still passes all twelve models and the full smoke; native CI results remain pending.

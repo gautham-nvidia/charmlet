@@ -11,13 +11,21 @@ await mkdir(dist, { recursive: true });
 const sharedNode = {
   bundle: true, platform: 'node', format: 'cjs', target: 'node20', external: ['electron'], sourcemap: false,
 };
+const desktopLayout = {
+  name: 'desktop-layout',
+  setup(builder) {
+    builder.onResolve({ filter: /^\.\/charm-state$/ }, () => ({ path: join(root, 'src', 'desktop-layout.ts') }));
+  },
+};
 await Promise.all([
   build({ ...sharedNode, entryPoints: [join(root, 'src', 'main.ts')], outfile: join(dist, 'main.cjs') }),
   build({ ...sharedNode, entryPoints: [join(root, 'src', 'preload.ts')], outfile: join(dist, 'preload.cjs') }),
   build({ ...sharedNode, entryPoints: [join(root, 'src', 'window-placement.ts')], outfile: join(dist, 'window-placement.cjs') }),
+  build({ ...sharedNode, entryPoints: [join(root, 'src', 'desktop-view.ts')], outfile: join(dist, 'desktop-view.cjs') }),
+  build({ ...sharedNode, entryPoints: [join(root, 'src', 'desktop-layout.ts')], outfile: join(dist, 'desktop-layout.cjs') }),
   build({ ...sharedNode, entryPoints: [join(root, 'src', 'power-behavior.ts')], outfile: join(dist, 'power-behavior.cjs') }),
   build({ entryPoints: [join(root, 'src', 'overlay.ts')], bundle: true, platform: 'browser', format: 'iife', target: 'es2022', outfile: join(dist, 'overlay.js'), sourcemap: false }),
-  build({ entryPoints: [join(repo, 'extension', 'src', 'webview.ts')], bundle: true, platform: 'browser', format: 'iife', target: 'es2022', outfile: join(dist, 'renderer.js'), sourcemap: false }),
+  build({ entryPoints: [join(root, 'src', 'renderer.ts')], plugins: [desktopLayout], bundle: true, platform: 'browser', format: 'iife', target: 'es2022', outfile: join(dist, 'renderer.js'), sourcemap: false }),
 ]);
 await cp(join(repo, 'extension', 'media'), join(dist, 'media'), { recursive: true });
 await copyFile(join(repo, 'extension', 'media', 'view.html'), join(dist, 'view.html'));
