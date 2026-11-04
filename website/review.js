@@ -20,7 +20,7 @@ function show(item) {
   image.alt = original ? `${item.name}, retained original` : `${item.name}, art-review candidate`;
   document.querySelector('#review-detail').textContent = original
     ? 'The original Terminal stays. Select Terminal in the app’s Charms picker; no download is needed.'
-    : `${item.group} · ${item.model === 'gcp/google/gemini-3-pro-image' ? 'Gemini 3 Pro Image' : 'AI-generated artwork'} · revision ${item.revision}. ${item.family === 'flowers' ? 'Flower artwork remains an earned reward; this page does not unlock it.' : 'Review packs import separately without replacing your existing charms.'}`;
+    : `${item.group} · ${item.model === 'gcp/google/gemini-3-pro-image' ? 'Gemini 3 Pro Image' : 'AI-generated artwork'} · revision ${item.revision}. ${item.family === 'flowers' ? 'Included as a trial flower illustration. Garden rewards and watering progress remain separate.' : 'Already included in the trial. Optional packs preserve your existing imports.'}`;
   document.querySelector('.review-large').classList.toggle('dark', state.dark);
   dialog.showModal();
 }
@@ -52,11 +52,11 @@ function render() {
     const label = original ? 'Original kept' : item.decision === 'retained' ? 'Retained design' : 'New draft';
     copy.append(create('span', 'card-group', item.group), create('h3', '', item.name), create('span', 'review-tag', label));
     if (item.download) {
-      const download = create('a', '', 'Try in Charmlet'); download.href = item.download; download.download = item.download.split('/').pop(); download.setAttribute('aria-label', `Download ${item.name} review pack`);
-      copy.append(create('p', '', `${Math.ceil(item.pngBytes / 1024)} KB transparent PNG · imports separately`), download);
+      const download = create('a', '', 'Optional pack'); download.href = item.download; download.download = item.download.split('/').pop(); download.setAttribute('aria-label', `Download ${item.name} review pack`);
+      copy.append(create('p', '', `Included in the trial · ${Math.ceil(item.pngBytes / 1024)} KB artwork`), download);
     } else copy.append(create('p', '', original
       ? 'Already included in the app. Select Terminal in Charms.'
-      : 'Earned flower artwork preview. Unlock flowers through your eleven-day garden.'));
+      : 'Included flower illustration. Grow earned keepsakes separately in your garden.'));
     card.append(art, copy); grid.append(card);
   }
   count.textContent = `${matches.length} ${matches.length === 1 ? 'design' : 'designs'} shown · ${state.appSize ? '100% charm size' : 'enlarged previews'}`;

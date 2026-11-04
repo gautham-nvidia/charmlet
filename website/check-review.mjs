@@ -66,6 +66,15 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
   await page.goto('http://127.0.0.1:4173/review.html', { waitUntil: 'networkidle' });
+  await expect(page.locator('.review-captures summary').first()).toContainText(version);
+  const captureUrls = await page.locator('.review-captures a').evaluateAll(links => links.map(link => link.href));
+  assert.ok(captureUrls.length > 0, 'Actual-app comparisons must be linked from the review page.');
+  for (const url of captureUrls) {
+    const response = await page.request.get(url);
+    assert.equal(response.status(), 200, `App comparison is unavailable: ${url}`);
+    const png = PNG.sync.read(await response.body());
+    assert.ok(png.width > 0 && png.height > 0);
+  }
   await expect(page.locator('.review-card')).toHaveCount(featured.length);
   await expect(page.locator('#view-size')).toHaveAttribute('aria-pressed', 'true');
   const original = page.locator('[data-artwork="starter-terminal"]');
@@ -115,7 +124,7 @@ try {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await page.screenshot({ path: join(output, 'review-mobile.png'), fullPage: true });
   assert.deepEqual(errors, []);
-  const result = { archivedAndCurrent: review.items.length, featured: featured.length, counts,
+  const result = { archivedAndCurrent: review.items.length, featured: featured.length, counts, appComparisons: captureUrls.length,
     downloadableDesigns: downloadable.length, bundles: review.bundles.length, pngsValidated: review.items.length,
     transparentCorners: true, parsedBrowserDownload: pack.id, mobileOverflow: false, errors };
   await writeFile(join(output, 'results.json'), `${JSON.stringify(result, null, 2)}\n`);

@@ -3,6 +3,22 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.6.0 - 2026-11-03 (Complete collection trial)
+
+### Added
+
+- The complete curated trial collection is available offline in the picker: 134 rendered designs and the ten preserved originals, shared by the extension and desktop beta.
+- Lab instruments, all eight planets plus Sun and Moon, Milky Way and imaginative parallel universes, eight gemstones, twelve zodiac signs, more US seasonal designs and respectful sacred-tradition artwork.
+- Holiday defaults for 21 local-calendar occasions and a changing Christmas collection. New profiles follow holidays automatically; saved opt-outs and pinned favourites are preserved. **Follow holiday defaults** enables the feature and unpins in one click.
+- All twelve flower illustrations can be tried immediately without unlocking earned flowers or changing garden progress.
+
+### Changed
+
+- Drishti Doll is a complete figure with a body and limbs. The original Terminal remains available.
+- Existing imported packs retain their stored bytes and IDs. An identical imported review image replaces its duplicate trial tile; older imported artwork remains clearly labelled.
+- Category filters scroll within the picker so the expanded collection leaves room for the artwork.
+- Trial availability does not decide the final bundled, free-download or paid-download release lineup.
+
 ## 0.5.2 - 2026-11-03 (Collection review)
 
 ### Added

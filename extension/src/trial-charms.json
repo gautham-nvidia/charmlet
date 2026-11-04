@@ -1,0 +1,1878 @@
+[
+  {
+    "id": "trial:starter-chip",
+    "name": "Chip",
+    "file": "trial-starter-chip-r3-p2.png",
+    "description": "Chip, included in the complete trial collection.",
+    "accent": "#b0a6f2",
+    "group": "Compute & Silicon",
+    "artworkKey": "starter-chip",
+    "artworkHash": "31e5f7ffc832997b7bae415b9e87a6facc0b950cd443a22ef114d23ccf7d2f79",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:starter-wafer",
+    "name": "Wafer",
+    "file": "trial-starter-wafer-r1-p2.png",
+    "description": "Wafer, included in the complete trial collection.",
+    "accent": "#efbc87",
+    "group": "Compute & Silicon",
+    "artworkKey": "starter-wafer",
+    "artworkHash": "97aaa9c85868bfa24f3e4e89f06ab383adbd37617a8877d4bc2624df8bdc7fa0",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:starter-circuit",
+    "name": "Circuit Board",
+    "file": "trial-starter-circuit-r2-p2.png",
+    "description": "Circuit Board, included in the complete trial collection.",
+    "accent": "#88cee0",
+    "group": "Compute & Silicon",
+    "artworkKey": "starter-circuit",
+    "artworkHash": "054e7c92ed46764f4cfd5d9bb1cb89e5b1b4577adb47229f145c2d019aeaf82d",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.09523809523809523
+    }
+  },
+  {
+    "id": "trial:starter-transistor",
+    "name": "Transistor",
+    "file": "trial-starter-transistor-r3-p2.png",
+    "description": "Transistor, included in the complete trial collection.",
+    "accent": "#e6ae73",
+    "group": "Compute & Silicon",
+    "artworkKey": "starter-transistor",
+    "artworkHash": "513a58e7cb3baffff9efb96b997baa17c50aa2a6e89166f3878d61c59dba635a",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:starter-memory-stack",
+    "name": "RAM",
+    "file": "trial-starter-memory-stack-r2-p2.png",
+    "description": "RAM, included in the complete trial collection.",
+    "accent": "#9eb5ec",
+    "group": "Compute & Silicon",
+    "artworkKey": "starter-memory-stack",
+    "artworkHash": "8a470fdeda8da3a7aaae84628895d321f19995d8f700460a7b87d95a535a03c8",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.3055555555555556
+    }
+  },
+  {
+    "id": "trial:starter-evil-eye",
+    "name": "Evil Eye",
+    "file": "trial-starter-evil-eye-r2-p2.png",
+    "description": "Evil Eye, included in the complete trial collection.",
+    "accent": "#6e9fed",
+    "group": "Local Culture",
+    "artworkKey": "starter-evil-eye",
+    "artworkHash": "5566a89999cd7ec34bc268451752ecd9f597be82b6d5d30eb7a23e87c4023a1d",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:starter-drishti",
+    "name": "Drishti Doll",
+    "file": "trial-starter-drishti-r4-p2.png",
+    "description": "Drishti Doll, included in the complete trial collection.",
+    "accent": "#e99379",
+    "group": "Local Culture",
+    "artworkKey": "starter-drishti",
+    "artworkHash": "9ac3a8090e7a87849ad2f00cb6eb789dd04f97d2d9b96cfd8faed081a261a3cb",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:starter-hamsa",
+    "name": "Hamsa",
+    "file": "trial-starter-hamsa-r1-p2.png",
+    "description": "Hamsa, included in the complete trial collection.",
+    "accent": "#e1c68f",
+    "group": "Local Culture",
+    "artworkKey": "starter-hamsa",
+    "artworkHash": "db279d972cf1b8a67fcdc9a4788aa2db052476603187448bf5eeedcd9db1dc70",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:starter-lemon-chilies",
+    "name": "Lemon & Chilies",
+    "file": "trial-starter-lemon-chilies-r1-p2.png",
+    "description": "Lemon & Chilies, included in the complete trial collection.",
+    "accent": "#d5c563",
+    "group": "Local Culture",
+    "artworkKey": "starter-lemon-chilies",
+    "artworkHash": "9a80d52381c14a1b9420d1d9807bf0d20633bf21ddba7d38cd52de89123c82d0",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:extra-probe-card",
+    "name": "Probe Card",
+    "file": "trial-extra-probe-card-r2-p2.png",
+    "description": "Probe Card, included in the complete trial collection.",
+    "accent": "#8db7a6",
+    "group": "Test Bench",
+    "artworkKey": "extra-probe-card",
+    "artworkHash": "ea056da619b8a222442472a8c9eaa2568ad777fff1cc3f11e8af50ec0d700897",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:extra-lotus",
+    "name": "Lotus",
+    "file": "trial-extra-lotus-r1-p2.png",
+    "description": "Lotus, included in the complete trial collection.",
+    "accent": "#d69caf",
+    "group": "Luck & Little Joys",
+    "artworkKey": "extra-lotus",
+    "artworkHash": "1a8e066d3a0bc38fbc2c559a8efa58832ea0a7b241cab8906f895bb82599ee0c",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:extra-sunrise",
+    "name": "Sunrise",
+    "file": "trial-extra-sunrise-r1-p2.png",
+    "description": "Sunrise, included in the complete trial collection.",
+    "accent": "#e8b577",
+    "group": "Luck & Little Joys",
+    "artworkKey": "extra-sunrise",
+    "artworkHash": "984116f4ed230e46e211793395e7f734f5c3db86829a354e4cc59284fe32ff10",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:extra-gpu-tile",
+    "name": "GPU Tile",
+    "file": "trial-extra-gpu-tile-r1-p2.png",
+    "description": "GPU Tile, included in the complete trial collection.",
+    "accent": "#8db7a6",
+    "group": "Compute & Silicon",
+    "artworkKey": "extra-gpu-tile",
+    "artworkHash": "d7354d927a5e1095dd14d8c4dddb54b6c9d04484f30cb7238746061fc7ae517f",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:extra-cpu-tile",
+    "name": "CPU Tile",
+    "file": "trial-extra-cpu-tile-r1-p2.png",
+    "description": "CPU Tile, included in the complete trial collection.",
+    "accent": "#8cb7d7",
+    "group": "Compute & Silicon",
+    "artworkKey": "extra-cpu-tile",
+    "artworkHash": "e044da9efffbe459b0c62452368cb72c71a965cf7569259a6b342d304a6c9ca7",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:extra-foggy-bay",
+    "name": "Foggy Bay",
+    "file": "trial-extra-foggy-bay-r2-p2.png",
+    "description": "Foggy Bay, included in the complete trial collection.",
+    "accent": "#8cb7d7",
+    "group": "Cities",
+    "artworkKey": "extra-foggy-bay",
+    "artworkHash": "ca825eb7dafb5723a8de201d8c6bccea1c81885441ca8fa886b12237254c34fc",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.12698412698412698
+    }
+  },
+  {
+    "id": "trial:extra-bridge-lights",
+    "name": "Bridge Lights",
+    "file": "trial-extra-bridge-lights-r1-p2.png",
+    "description": "Bridge Lights, included in the complete trial collection.",
+    "accent": "#e8b577",
+    "group": "Cities",
+    "artworkKey": "extra-bridge-lights",
+    "artworkHash": "07eb453a53c8a00fbaaf6124b4302e4ff2001e72f400572c6321e85d01a68944",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:extra-city-tram",
+    "name": "City Tram",
+    "file": "trial-extra-city-tram-r1-p2.png",
+    "description": "City Tram, included in the complete trial collection.",
+    "accent": "#d3927b",
+    "group": "Cities",
+    "artworkKey": "extra-city-tram",
+    "artworkHash": "c5f376fd815224386b5d1cbbf6b1685a08ef6dd9f695448dc6a5f52b855eec20",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.14285714285714285
+    }
+  },
+  {
+    "id": "trial:extra-campus-path",
+    "name": "Campus Path",
+    "file": "trial-extra-campus-path-r1-p2.png",
+    "description": "Campus Path, included in the complete trial collection.",
+    "accent": "#8db7a6",
+    "group": "Cities",
+    "artworkKey": "extra-campus-path",
+    "artworkHash": "52c78d2a8cdf1da2ff85b3be7d115d540e528d8bb2223b8e121b347611f0064a",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.1349206349206349
+    }
+  },
+  {
+    "id": "trial:extra-coffee-street",
+    "name": "Coffee Street",
+    "file": "trial-extra-coffee-street-r1-p2.png",
+    "description": "Coffee Street, included in the complete trial collection.",
+    "accent": "#d3927b",
+    "group": "Cities",
+    "artworkKey": "extra-coffee-street",
+    "artworkHash": "b58d77d58c149d51e3d0867ad0a05109c8842e71edc720898ee0b9c35ef4142a",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:extra-mountain-sun",
+    "name": "Mountain Sun",
+    "file": "trial-extra-mountain-sun-r2-p2.png",
+    "description": "Mountain Sun, included in the complete trial collection.",
+    "accent": "#e8b577",
+    "group": "National Parks",
+    "artworkKey": "extra-mountain-sun",
+    "artworkHash": "1a19dcc7b25a04eef586fd4ce9a6e708da22b98033598246f5f00b2499fcf5d2",
+    "attachment": {
+      "x": 0.4837962962962963,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:extra-granite-dome",
+    "name": "Granite Dome",
+    "file": "trial-extra-granite-dome-r1-p2.png",
+    "description": "Granite Dome, included in the complete trial collection.",
+    "accent": "#b7b8bb",
+    "group": "National Parks",
+    "artworkKey": "extra-granite-dome",
+    "artworkHash": "cb4ef3f53e19d41c9eb8f56c289045af979706c026e6bab0a86f942a713deb3c",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.11904761904761904
+    }
+  },
+  {
+    "id": "trial:extra-redwood-grove",
+    "name": "Redwood Grove",
+    "file": "trial-extra-redwood-grove-r2-p2.png",
+    "description": "Redwood Grove, included in the complete trial collection.",
+    "accent": "#8db7a6",
+    "group": "Trees & Forests",
+    "artworkKey": "extra-redwood-grove",
+    "artworkHash": "70bf89538ea2b290bf82fa37a692764255d065d13897b8f144faf110fb8a3ba4",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:extra-desert-arch",
+    "name": "Desert Arch",
+    "file": "trial-extra-desert-arch-r1-p2.png",
+    "description": "Desert Arch, included in the complete trial collection.",
+    "accent": "#d3927b",
+    "group": "National Parks",
+    "artworkKey": "extra-desert-arch",
+    "artworkHash": "ea1af1c7cc4348f0c9f72a814c0eae2600dc74777e966b8de034ef6cae4e6bf2",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:extra-canyon-river",
+    "name": "Canyon River",
+    "file": "trial-extra-canyon-river-r1-p2.png",
+    "description": "Canyon River, included in the complete trial collection.",
+    "accent": "#81cbd1",
+    "group": "National Parks",
+    "artworkKey": "extra-canyon-river",
+    "artworkHash": "4abb81423c0f21a6fdd31569f042fdd559c8e9375a7a7a6af685ce7b0a512815",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:extra-alpine-lake",
+    "name": "Alpine Lake",
+    "file": "trial-extra-alpine-lake-r1-p2.png",
+    "description": "Alpine Lake, included in the complete trial collection.",
+    "accent": "#8cb7d7",
+    "group": "National Parks",
+    "artworkKey": "extra-alpine-lake",
+    "artworkHash": "09399d46224131ba2a7c800441ef356453018398206bf9bcf6529d0ad602fe1c",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:extra-pine-ridge",
+    "name": "Pine Ridge",
+    "file": "trial-extra-pine-ridge-r1-p2.png",
+    "description": "Pine Ridge, included in the complete trial collection.",
+    "accent": "#8db7a6",
+    "group": "Trees & Forests",
+    "artworkKey": "extra-pine-ridge",
+    "artworkHash": "ab1175c5cc8eeff044aebda7ac4e7f2feb60cc7b97f7eaddb8806acf3ff323eb",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:extra-coastal-trail",
+    "name": "Coastal Trail",
+    "file": "trial-extra-coastal-trail-r1-p2.png",
+    "description": "Coastal Trail, included in the complete trial collection.",
+    "accent": "#81cbd1",
+    "group": "National Parks",
+    "artworkKey": "extra-coastal-trail",
+    "artworkHash": "1814cc14fe18b812a6302addb44c2f6cf9eed3e75d4bc6a2bd556f7ac50bebef",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.08333333333333333
+    }
+  },
+  {
+    "id": "trial:extra-night-sky",
+    "name": "Night Sky",
+    "file": "trial-extra-night-sky-r1-p2.png",
+    "description": "Night Sky, included in the complete trial collection.",
+    "accent": "#c6a3df",
+    "group": "Stars & Galaxies",
+    "artworkKey": "extra-night-sky",
+    "artworkHash": "db223956ca241c158394bf1b39f97ed97b97e115ae4fa5f1822b7221906fa2bc",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:flower-sunflower",
+    "name": "Sunflower",
+    "file": "trial-flower-sunflower-r1-p2.png",
+    "description": "Sunflower artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#e9b951",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-sunflower",
+    "artworkHash": "645d0abad214aa5011e79074b4dcf5809a6ae0cf02812c237ad9900e486a8086",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:flower-marigold",
+    "name": "Marigold",
+    "file": "trial-flower-marigold-r1-p2.png",
+    "description": "Marigold artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#e7a050",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-marigold",
+    "artworkHash": "013995eb978c31171927d7667f5f29d0d19a5c2e395e7f392a902c44f53a9d6e",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07936507936507936
+    }
+  },
+  {
+    "id": "trial:flower-hibiscus",
+    "name": "Hibiscus",
+    "file": "trial-flower-hibiscus-r1-p2.png",
+    "description": "Hibiscus artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#db828c",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-hibiscus",
+    "artworkHash": "064da35b93f2da6aa252a351c542bbdf463546064aab5f03f7f6f12727274c91",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.10714285714285714
+    }
+  },
+  {
+    "id": "trial:flower-bluebell",
+    "name": "Bluebell",
+    "file": "trial-flower-bluebell-r1-p2.png",
+    "description": "Bluebell artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#91b6db",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-bluebell",
+    "artworkHash": "78de55c12b8282ac887b0dc37ced746e338572131e3b964d49dbef65e742903e",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.12698412698412698
+    }
+  },
+  {
+    "id": "trial:flower-iris",
+    "name": "Iris",
+    "file": "trial-flower-iris-r1-p2.png",
+    "description": "Iris artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#ac95cf",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-iris",
+    "artworkHash": "be54445c31fe648c256f9360885c26cd2cc958dcda5688296ab52042b46beeba",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:flower-poppy",
+    "name": "Poppy",
+    "file": "trial-flower-poppy-r1-p2.png",
+    "description": "Poppy artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#dd8172",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-poppy",
+    "artworkHash": "a838d12a7d1dbde0e3d2e66206aa770d90a9b75ec10afbaad286d601cef89a25",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:flower-orchid",
+    "name": "Orchid",
+    "file": "trial-flower-orchid-r1-p2.png",
+    "description": "Orchid artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#c79bd0",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-orchid",
+    "artworkHash": "6eb90aad404d1e4d449b1829dca2b3855d8124ca154ce45c9efad3a6339757d7",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.11507936507936507
+    }
+  },
+  {
+    "id": "trial:flower-daisy",
+    "name": "Daisy",
+    "file": "trial-flower-daisy-r1-p2.png",
+    "description": "Daisy artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#d7cd9c",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-daisy",
+    "artworkHash": "935d5e7a53eb6dd6794fef3a29cc7308de752fb001227cbe1791060032f9ba5a",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:flower-lavender",
+    "name": "Lavender",
+    "file": "trial-flower-lavender-r1-p2.png",
+    "description": "Lavender artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#b5a0d2",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-lavender",
+    "artworkHash": "59926891f0718326f361efc175cdcae56df63f4bd3d06711dabe352ee2e9bc02",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:flower-cosmos",
+    "name": "Cosmos",
+    "file": "trial-flower-cosmos-r1-p2.png",
+    "description": "Cosmos artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#d997b8",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-cosmos",
+    "artworkHash": "26a8963da6c0e165428e0a4468f0bdd0a9457a4bf270e63c0e1678b79c567b25",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.20634920634920634
+    }
+  },
+  {
+    "id": "trial:flower-sakura",
+    "name": "Sakura",
+    "file": "trial-flower-sakura-r1-p2.png",
+    "description": "Sakura artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#dfafbe",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-sakura",
+    "artworkHash": "9769dd29ac72c561d3475d264e2c22a46e07018f0584a11ff142c7411ccc69d3",
+    "attachment": {
+      "x": 0.48842592592592593,
+      "y": 0.1388888888888889
+    }
+  },
+  {
+    "id": "trial:flower-wild-rose",
+    "name": "Wild Rose",
+    "file": "trial-flower-wild-rose-r1-p2.png",
+    "description": "Wild Rose artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#d98d9d",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-wild-rose",
+    "artworkHash": "9116b9e73a9c144a5f213c179a2cd24f1ffb7ed0cf415ffc354d260121096b50",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-red-panda",
+    "name": "Red Panda",
+    "file": "trial-new-red-panda-r1-p2.png",
+    "description": "Red Panda, included in the complete trial collection.",
+    "accent": "#d58c68",
+    "group": "Animals",
+    "artworkKey": "new-red-panda",
+    "artworkHash": "36504beb81e364bf8cdf916ed39c96fc30b3abf6756b88abdacbfacfbbcc8441",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.16666666666666666
+    }
+  },
+  {
+    "id": "trial:new-curled-cat",
+    "name": "Curled Cat",
+    "file": "trial-new-curled-cat-r1-p2.png",
+    "description": "Curled Cat, included in the complete trial collection.",
+    "accent": "#c09bbe",
+    "group": "Animals",
+    "artworkKey": "new-curled-cat",
+    "artworkHash": "352cbcef306e11758e0339c77dbf4470e674357beb9a8b80bf9f6ecc4cc9f706",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:new-loyal-dog",
+    "name": "Loyal Dog",
+    "file": "trial-new-loyal-dog-r1-p2.png",
+    "description": "Loyal Dog, included in the complete trial collection.",
+    "accent": "#d5b18b",
+    "group": "Animals",
+    "artworkKey": "new-loyal-dog",
+    "artworkHash": "10194678c98a61e3d08f6beafd0e4c1b4336563b2534da052efbc2b221fefb15",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.15873015873015872
+    }
+  },
+  {
+    "id": "trial:new-bonsai-tree",
+    "name": "Bonsai Tree",
+    "file": "trial-new-bonsai-tree-r1-p2.png",
+    "description": "Bonsai Tree, included in the complete trial collection.",
+    "accent": "#83ae98",
+    "group": "Trees & Forests",
+    "artworkKey": "new-bonsai-tree",
+    "artworkHash": "773e566a11bfd48f61f1ca3d4bbfffc9178cf29900d6b7cdbf839c26a4da1ebd",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-ringed-planet",
+    "name": "Ringed Planet",
+    "file": "trial-new-ringed-planet-r2-p2.png",
+    "description": "Ringed Planet, included in the complete trial collection.",
+    "accent": "#b4a4dc",
+    "group": "Stars & Galaxies",
+    "artworkKey": "new-ringed-planet",
+    "artworkHash": "49161c83d25eb21e84e07edaac2f3d2737b4a45eed6d3a749cbabdfa8948dfa1",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.1388888888888889
+    }
+  },
+  {
+    "id": "trial:new-spiral-galaxy",
+    "name": "Spiral Galaxy",
+    "file": "trial-new-spiral-galaxy-r1-p2.png",
+    "description": "Spiral Galaxy, included in the complete trial collection.",
+    "accent": "#a598d8",
+    "group": "Stars & Galaxies",
+    "artworkKey": "new-spiral-galaxy",
+    "artworkHash": "7b8fb093a76e1c7a4e4dcd0b036ef280ce6325c719ab5451a88b8346d05f73ca",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-filter-coffee",
+    "name": "Filter Coffee",
+    "file": "trial-new-filter-coffee-r1-p2.png",
+    "description": "Filter Coffee, included in the complete trial collection.",
+    "accent": "#c39267",
+    "group": "Local Culture",
+    "artworkKey": "new-filter-coffee",
+    "artworkHash": "dc0223e0d17947c20e3df1b35fc7caff5633fcf6c23839168450b5e70b4723b2",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-tamil-kolam",
+    "name": "Kolam",
+    "file": "trial-new-tamil-kolam-r2-p2.png",
+    "description": "Kolam, included in the complete trial collection.",
+    "accent": "#d5b69a",
+    "group": "Local Culture",
+    "artworkKey": "new-tamil-kolam",
+    "artworkHash": "b9420037b674c072c19e100d40e4c80b25d3f180479e7e2254f35d035d67e112",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-city-auto",
+    "name": "City Auto",
+    "file": "trial-new-city-auto-r1-p2.png",
+    "description": "City Auto, included in the complete trial collection.",
+    "accent": "#e0bc65",
+    "group": "Cities",
+    "artworkKey": "new-city-auto",
+    "artworkHash": "d90c1942fc3db3c2d06b26e578b70c91e0a4bf58303e790fea2b6ee461b89b14",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-basketball",
+    "name": "Basketball",
+    "file": "trial-new-basketball-r1-p2.png",
+    "description": "Basketball, included in the complete trial collection.",
+    "accent": "#d58d57",
+    "group": "Sports",
+    "artworkKey": "new-basketball",
+    "artworkHash": "55e3d56c14847595a98b2b1bd54e8c261dad4d65960e8bd700a12dd12949f21c",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-football",
+    "name": "Football",
+    "file": "trial-new-football-r2-p2.png",
+    "description": "Football, included in the complete trial collection.",
+    "accent": "#929cac",
+    "group": "Sports",
+    "artworkKey": "new-football",
+    "artworkHash": "b00a280bea9bf313ede392e659956e090d87f1671c68aedeb3e4059fb0af7fe2",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-gridiron-ball",
+    "name": "American Football",
+    "file": "trial-new-gridiron-ball-r1-p2.png",
+    "description": "American Football, included in the complete trial collection.",
+    "accent": "#b78367",
+    "group": "Sports",
+    "artworkKey": "new-gridiron-ball",
+    "artworkHash": "80f0f6bcb42543808c50ca4e14dd00c90205781b714837949aa2dce9325eafc0",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-baseball-glove",
+    "name": "Baseball Glove",
+    "file": "trial-new-baseball-glove-r1-p2.png",
+    "description": "Baseball Glove, included in the complete trial collection.",
+    "accent": "#ba9367",
+    "group": "Sports",
+    "artworkKey": "new-baseball-glove",
+    "artworkHash": "3f5adf817a5b2212dcf6cb8c90e018b6616fdd79591ba216149deb9ae204d977",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07936507936507936
+    }
+  },
+  {
+    "id": "trial:new-stress-ball",
+    "name": "Stress Ball",
+    "file": "trial-new-stress-ball-r1-p2.png",
+    "description": "Stress Ball, included in the complete trial collection.",
+    "accent": "#e7b64a",
+    "group": "Stress Busters",
+    "artworkKey": "new-stress-ball",
+    "artworkHash": "77ab97bced9a63ffb5276d876b9feee4d2ebe918a2bcf74f0a1d9a1e288162f5",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-squishy-star",
+    "name": "Squishy Star",
+    "file": "trial-new-squishy-star-r1-p2.png",
+    "description": "Squishy Star, included in the complete trial collection.",
+    "accent": "#e69d93",
+    "group": "Stress Busters",
+    "artworkKey": "new-squishy-star",
+    "artworkHash": "1249038f25476f393cd010c7ceb2aca7a164077f056c0cee329dc4422155686a",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-kovil",
+    "name": "Kovil",
+    "file": "trial-new-kovil-r1-p2.png",
+    "description": "Kovil, included in the complete trial collection.",
+    "accent": "#c49a78",
+    "group": "Local Culture",
+    "artworkKey": "new-kovil",
+    "artworkHash": "6c33bd2a681b2be03caa5057d35552ad68fbb6a3e2db0e6fdbe404d44f1649f9",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-cricket",
+    "name": "Cricket",
+    "file": "trial-new-cricket-r1-p2.png",
+    "description": "Cricket, included in the complete trial collection.",
+    "accent": "#c59c68",
+    "group": "Sports",
+    "artworkKey": "new-cricket",
+    "artworkHash": "c4aeb22bcf8cd1928331b54b0f8d4645038de3b3b205c156524f8c7c9e1316f3",
+    "attachment": {
+      "x": 0.5393518518518519,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-robot-assistant",
+    "name": "Robot Assistant",
+    "file": "trial-new-robot-assistant-r1-p2.png",
+    "description": "Robot Assistant, included in the complete trial collection.",
+    "accent": "#93b8c8",
+    "group": "AI",
+    "artworkKey": "new-robot-assistant",
+    "artworkHash": "e6396660dde3a8bb8ebef7a113b5da876816d05a252f2d37c39eb0f682a219aa",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-pumpkin-patch",
+    "name": "Pumpkin Patch",
+    "file": "trial-new-pumpkin-patch-r1-p2.png",
+    "description": "Pumpkin Patch, included in the complete trial collection.",
+    "accent": "#d68b45",
+    "group": "Seasonal",
+    "artworkKey": "new-pumpkin-patch",
+    "artworkHash": "6747908e7c2fb20e0a751a7090e640c57bdcd7bfef8de3c71811b0a14a9629f5",
+    "attachment": {
+      "x": 0.5069444444444444,
+      "y": 0.11507936507936507
+    }
+  },
+  {
+    "id": "trial:new-christmas-tree",
+    "name": "Christmas Tree",
+    "file": "trial-new-christmas-tree-r1-p2.png",
+    "description": "Christmas Tree, included in the complete trial collection.",
+    "accent": "#749c82",
+    "group": "Seasonal",
+    "artworkKey": "new-christmas-tree",
+    "artworkHash": "a1cf0175ea2a72d9cbddc6629734e52f703cc0e7beec6564853b1c09626813cc",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-harvest-pie",
+    "name": "Harvest Pie",
+    "file": "trial-new-harvest-pie-r1-p2.png",
+    "description": "Harvest Pie, included in the complete trial collection.",
+    "accent": "#ce995e",
+    "group": "Seasonal",
+    "artworkKey": "new-harvest-pie",
+    "artworkHash": "9dfa139b4724c4a2c28acdfd7fc612089797a860ddcc25571e18381142a1b603",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.07539682539682539
+    }
+  },
+  {
+    "id": "trial:new-black-friday-bag",
+    "name": "Black Friday",
+    "file": "trial-new-black-friday-bag-r1-p2.png",
+    "description": "Black Friday, included in the complete trial collection.",
+    "accent": "#9b919e",
+    "group": "Seasonal",
+    "artworkKey": "new-black-friday-bag",
+    "artworkHash": "cc04e20ab5a23aeff28326c1f161bc25c8e549c5b9a5ce614c7a9175b507f5cd",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-cyber-monday-keyboard",
+    "name": "Cyber Monday",
+    "file": "trial-new-cyber-monday-keyboard-r1-p2.png",
+    "description": "Cyber Monday, included in the complete trial collection.",
+    "accent": "#91b5c4",
+    "group": "Seasonal",
+    "artworkKey": "new-cyber-monday-keyboard",
+    "artworkHash": "393fd490cad175d57b7f89bc04dfdca10004c2fe0ae4844518bc257b2d0afe5a",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.14285714285714285
+    }
+  },
+  {
+    "id": "trial:new-ate-tester",
+    "name": "ATE Tester",
+    "file": "trial-new-ate-tester-r1-p2.png",
+    "description": "ATE Tester, included in the complete trial collection.",
+    "accent": "#93a5ad",
+    "group": "Test Bench",
+    "artworkKey": "new-ate-tester",
+    "artworkHash": "17fd16de77547faf9049b57b9e75a2bbc035d620d3e70ef7b53ca8cb3668a1ab",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.09523809523809523
+    }
+  },
+  {
+    "id": "trial:new-murugan",
+    "name": "Murugan",
+    "file": "trial-new-murugan-r1-p2.png",
+    "description": "Murugan, included in the complete trial collection.",
+    "accent": "#c89c60",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-murugan",
+    "artworkHash": "673e04222b44795ea3151218876bea63f3bfd0d8344039ebb5e27d018bde4ce4",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.0992063492063492
+    }
+  },
+  {
+    "id": "trial:new-oscilloscope",
+    "name": "Oscilloscope",
+    "file": "trial-new-oscilloscope-r1-p2.png",
+    "description": "Oscilloscope, included in the complete trial collection.",
+    "accent": "#80a6bc",
+    "group": "Test Bench",
+    "artworkKey": "new-oscilloscope",
+    "artworkHash": "b1f7d91126dce280427b8f317e7ec60f6b0a692310a6a53d697b728ceeee9a8a",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:new-precision-tweezers",
+    "name": "Precision Tweezers",
+    "file": "trial-new-precision-tweezers-r1-p2.png",
+    "description": "Precision Tweezers, included in the complete trial collection.",
+    "accent": "#a9afb8",
+    "group": "Test Bench",
+    "artworkKey": "new-precision-tweezers",
+    "artworkHash": "9190910b56f8fdd99d596092adbe6037bf1a03372a5d89bb60486a66a58271d2",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.3134920634920635
+    }
+  },
+  {
+    "id": "trial:new-digital-multimeter",
+    "name": "Digital Multimeter",
+    "file": "trial-new-digital-multimeter-r1-p2.png",
+    "description": "Digital Multimeter, included in the complete trial collection.",
+    "accent": "#d5b24c",
+    "group": "Test Bench",
+    "artworkKey": "new-digital-multimeter",
+    "artworkHash": "63d6a1c484c56380330545645e0f61faeb6cac0a6d70c6bd5ba7aa66ea20a9e8",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:new-inspection-microscope",
+    "name": "Inspection Microscope",
+    "file": "trial-new-inspection-microscope-r1-p2.png",
+    "description": "Inspection Microscope, included in the complete trial collection.",
+    "accent": "#b5b4aa",
+    "group": "Test Bench",
+    "artworkKey": "new-inspection-microscope",
+    "artworkHash": "7bc7ed0b71953cff8dbf546ffeea574a365b8a5434482376bb114541829f35cd",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.21428571428571427
+    }
+  },
+  {
+    "id": "trial:new-soldering-iron",
+    "name": "Soldering Iron",
+    "file": "trial-new-soldering-iron-r1-p2.png",
+    "description": "Soldering Iron, included in the complete trial collection.",
+    "accent": "#6f9ba9",
+    "group": "Test Bench",
+    "artworkKey": "new-soldering-iron",
+    "artworkHash": "bd75a5a4312e682366d7776cfc7d4386644d7e48ce12a85bc69a5a76799e90ff",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.29365079365079366
+    }
+  },
+  {
+    "id": "trial:new-bench-power-supply",
+    "name": "Bench Power Supply",
+    "file": "trial-new-bench-power-supply-r1-p2.png",
+    "description": "Bench Power Supply, included in the complete trial collection.",
+    "accent": "#9eabb6",
+    "group": "Test Bench",
+    "artworkKey": "new-bench-power-supply",
+    "artworkHash": "d7334f4c05af898effbae14435cc6b64cb2f8ec22bed2871530018e6c0c8f078",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07936507936507936
+    }
+  },
+  {
+    "id": "trial:new-digital-caliper",
+    "name": "Digital Caliper",
+    "file": "trial-new-digital-caliper-r1-p2.png",
+    "description": "Digital Caliper, included in the complete trial collection.",
+    "accent": "#a0adb3",
+    "group": "Test Bench",
+    "artworkKey": "new-digital-caliper",
+    "artworkHash": "e67899db1697018072639f80186d0c13d5de4b7f17561403b10b5db89a6ce6ad",
+    "attachment": {
+      "x": 0.4791666666666667,
+      "y": 0.30952380952380953
+    }
+  },
+  {
+    "id": "trial:new-mercury",
+    "name": "Mercury",
+    "file": "trial-new-mercury-r1-p2.png",
+    "description": "Mercury, included in the complete trial collection.",
+    "accent": "#a6a29c",
+    "group": "Solar System",
+    "artworkKey": "new-mercury",
+    "artworkHash": "0816daac71b6d4d3d17de5cd5ebff845bc64a424ae0200f2c1096ad07097dc3c",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-venus",
+    "name": "Venus",
+    "file": "trial-new-venus-r1-p2.png",
+    "description": "Venus, included in the complete trial collection.",
+    "accent": "#d6bb85",
+    "group": "Solar System",
+    "artworkKey": "new-venus",
+    "artworkHash": "936b13de51bd558b8249cf235b21552c47cd08784a6f35c57d59a42000f8e11d",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-earth",
+    "name": "Earth",
+    "file": "trial-new-earth-r1-p2.png",
+    "description": "Earth, included in the complete trial collection.",
+    "accent": "#6799c5",
+    "group": "Solar System",
+    "artworkKey": "new-earth",
+    "artworkHash": "977ab0031d58d42a2a51ef81549ecb44ff1fd0cbe7bf2d5af710e18ad4d2e7a6",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-mars",
+    "name": "Mars",
+    "file": "trial-new-mars-r1-p2.png",
+    "description": "Mars, included in the complete trial collection.",
+    "accent": "#c47a56",
+    "group": "Solar System",
+    "artworkKey": "new-mars",
+    "artworkHash": "4db6c30fc089fb4c2cc886032d45341fb2d52c8be3a7e52dace47efb4e932637",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-jupiter",
+    "name": "Jupiter",
+    "file": "trial-new-jupiter-r1-p2.png",
+    "description": "Jupiter, included in the complete trial collection.",
+    "accent": "#c69b7b",
+    "group": "Solar System",
+    "artworkKey": "new-jupiter",
+    "artworkHash": "12c43cdc5a4cd639fb77d6b10ab4c2261b574d1e3e23bb5b114e6bf585e7c792",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-saturn",
+    "name": "Saturn",
+    "file": "trial-new-saturn-r2-p2.png",
+    "description": "Saturn, included in the complete trial collection.",
+    "accent": "#d1bb8e",
+    "group": "Solar System",
+    "artworkKey": "new-saturn",
+    "artworkHash": "c69d8c570d9a221eb8bb60a646f5e91b4ddaa85f685ac59c462d498740f51e59",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.10714285714285714
+    }
+  },
+  {
+    "id": "trial:new-uranus",
+    "name": "Uranus",
+    "file": "trial-new-uranus-r1-p2.png",
+    "description": "Uranus, included in the complete trial collection.",
+    "accent": "#8fc7ce",
+    "group": "Solar System",
+    "artworkKey": "new-uranus",
+    "artworkHash": "abef663ca64d0ac45f8d49fe13c60c6db05ece93babae5bd10db533e6dbb2ccd",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-neptune",
+    "name": "Neptune",
+    "file": "trial-new-neptune-r1-p2.png",
+    "description": "Neptune, included in the complete trial collection.",
+    "accent": "#6495c5",
+    "group": "Solar System",
+    "artworkKey": "new-neptune",
+    "artworkHash": "a8df55a32e992ef332057c2152a64458efda88f0246e9fa6eaa7f411c9da444c",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-sun",
+    "name": "Sun",
+    "file": "trial-new-sun-r2-p2.png",
+    "description": "Sun, included in the complete trial collection.",
+    "accent": "#e7aa4a",
+    "group": "Solar System",
+    "artworkKey": "new-sun",
+    "artworkHash": "940c871ac9291f5318dabd2f0e1f457d1a469a90d3dbf86e8953ab045e14eb26",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-moon",
+    "name": "Moon",
+    "file": "trial-new-moon-r1-p2.png",
+    "description": "Moon, included in the complete trial collection.",
+    "accent": "#b8b8b2",
+    "group": "Solar System",
+    "artworkKey": "new-moon",
+    "artworkHash": "1dc3955e344ce351a45c7a2c2e897d8e7a2a160feb750ec437cafcd7ac9436c6",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-milky-way",
+    "name": "Milky Way",
+    "file": "trial-new-milky-way-r3-p2.png",
+    "description": "Milky Way, included in the complete trial collection.",
+    "accent": "#c9abc9",
+    "group": "Stars & Galaxies",
+    "artworkKey": "new-milky-way",
+    "artworkHash": "90319a1002d32039135cff5e9cae0cb72b5472cf59e2c51c2992bd4c4a43fb39",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-parallel-universes",
+    "name": "Parallel Universes",
+    "file": "trial-new-parallel-universes-r1-p2.png",
+    "description": "Parallel Universes, included in the complete trial collection.",
+    "accent": "#af93d5",
+    "group": "Stars & Galaxies",
+    "artworkKey": "new-parallel-universes",
+    "artworkHash": "3815f254f16a9e5988db31c2e2bf2ad47bb24ab611f8325668490f806666700e",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.10317460317460317
+    }
+  },
+  {
+    "id": "trial:new-diamond",
+    "name": "Diamond",
+    "file": "trial-new-diamond-r1-p2.png",
+    "description": "Diamond, included in the complete trial collection.",
+    "accent": "#c9d8e0",
+    "group": "Gemstones",
+    "artworkKey": "new-diamond",
+    "artworkHash": "133d2f797693a8d62ae20e0e78e61d877c547a4b9ba810f8207e6075d360a796",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-ruby",
+    "name": "Ruby",
+    "file": "trial-new-ruby-r1-p2.png",
+    "description": "Ruby, included in the complete trial collection.",
+    "accent": "#bd5263",
+    "group": "Gemstones",
+    "artworkKey": "new-ruby",
+    "artworkHash": "1ba14840e4ca85c7459fbba4738e0d43f89babb0d05d572dbfcfd15efdb411a7",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.09126984126984126
+    }
+  },
+  {
+    "id": "trial:new-emerald",
+    "name": "Emerald",
+    "file": "trial-new-emerald-r1-p2.png",
+    "description": "Emerald, included in the complete trial collection.",
+    "accent": "#528b75",
+    "group": "Gemstones",
+    "artworkKey": "new-emerald",
+    "artworkHash": "4a1f7aae8305d4eeede6b7c8549e72d0cf5788dc18612c16a2fe048932c9bd7c",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-sapphire",
+    "name": "Sapphire",
+    "file": "trial-new-sapphire-r1-p2.png",
+    "description": "Sapphire, included in the complete trial collection.",
+    "accent": "#526da8",
+    "group": "Gemstones",
+    "artworkKey": "new-sapphire",
+    "artworkHash": "587cc1a12bbf355a91fb213ad6c20ded9fec5cd342f949a99ab66f4e5736827d",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-amethyst",
+    "name": "Amethyst",
+    "file": "trial-new-amethyst-r2-p2.png",
+    "description": "Amethyst, included in the complete trial collection.",
+    "accent": "#a18ac0",
+    "group": "Gemstones",
+    "artworkKey": "new-amethyst",
+    "artworkHash": "6f9f26cdb0779e1f39399ebfc3c5c689ad32f44a45457650532cc5104478ac01",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.14682539682539683
+    }
+  },
+  {
+    "id": "trial:new-opal",
+    "name": "Opal",
+    "file": "trial-new-opal-r1-p2.png",
+    "description": "Opal, included in the complete trial collection.",
+    "accent": "#c3b7c1",
+    "group": "Gemstones",
+    "artworkKey": "new-opal",
+    "artworkHash": "0c29f51e54c884323b4f9e019b74a99f0d92fa2cce8c6cfd8400cb1753895bc6",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-citrine",
+    "name": "Citrine",
+    "file": "trial-new-citrine-r1-p2.png",
+    "description": "Citrine, included in the complete trial collection.",
+    "accent": "#d9b566",
+    "group": "Gemstones",
+    "artworkKey": "new-citrine",
+    "artworkHash": "782377e7c1f238dc98a003e92917db55f9895ebe58b0c9d1fed2edcca606be63",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.14285714285714285
+    }
+  },
+  {
+    "id": "trial:new-rose-quartz",
+    "name": "Rose Quartz",
+    "file": "trial-new-rose-quartz-r1-p2.png",
+    "description": "Rose Quartz, included in the complete trial collection.",
+    "accent": "#d7aaa9",
+    "group": "Gemstones",
+    "artworkKey": "new-rose-quartz",
+    "artworkHash": "daf3d61937a005aa5ed47032f6941589012453b865a29caacd95bc815ed05f9a",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-zodiac-aries",
+    "name": "Aries",
+    "file": "trial-new-zodiac-aries-r1-p2.png",
+    "description": "Aries, included in the complete trial collection.",
+    "accent": "#c58c69",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-aries",
+    "artworkHash": "4740af2e933c89f795dd5632d20e18d082f78dff404bebddd39bf877080c7c67",
+    "attachment": {
+      "x": 0.4375,
+      "y": 0.18253968253968253
+    }
+  },
+  {
+    "id": "trial:new-zodiac-taurus",
+    "name": "Taurus",
+    "file": "trial-new-zodiac-taurus-r1-p2.png",
+    "description": "Taurus, included in the complete trial collection.",
+    "accent": "#a5ad8b",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-taurus",
+    "artworkHash": "c01fc9d4d619f4c6a897b7ae9dfe24276312b3a2a84839689f825e1261950341",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.3333333333333333
+    }
+  },
+  {
+    "id": "trial:new-zodiac-gemini",
+    "name": "Gemini",
+    "file": "trial-new-zodiac-gemini-r1-p2.png",
+    "description": "Gemini, included in the complete trial collection.",
+    "accent": "#c9b67f",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-gemini",
+    "artworkHash": "77b32f8ac76d9a337568adadf90653522a12b457090cd2138b0f036a32d9c0d4",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.11507936507936507
+    }
+  },
+  {
+    "id": "trial:new-zodiac-cancer",
+    "name": "Cancer",
+    "file": "trial-new-zodiac-cancer-r1-p2.png",
+    "description": "Cancer, included in the complete trial collection.",
+    "accent": "#b2bec8",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-cancer",
+    "artworkHash": "42fc2496a04224b4886776a62d4bf2263735cdb31914229b9b34c8827c5bce6b",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-zodiac-leo",
+    "name": "Leo",
+    "file": "trial-new-zodiac-leo-r1-p2.png",
+    "description": "Leo, included in the complete trial collection.",
+    "accent": "#d5aa66",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-leo",
+    "artworkHash": "dffb15814fb128ce99fcb7d768b55bcad967431d9a7543ce0a6f2e4963f99f6a",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-zodiac-virgo",
+    "name": "Virgo",
+    "file": "trial-new-zodiac-virgo-r2-p2.png",
+    "description": "Virgo, included in the complete trial collection.",
+    "accent": "#b49d8d",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-virgo",
+    "artworkHash": "cc9fe19b10f5709ed57b98e16d8d4610fd6cfa4aac945c38a74c25ec969206ee",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.10317460317460317
+    }
+  },
+  {
+    "id": "trial:new-zodiac-libra",
+    "name": "Libra",
+    "file": "trial-new-zodiac-libra-r1-p2.png",
+    "description": "Libra, included in the complete trial collection.",
+    "accent": "#b5c5ca",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-libra",
+    "artworkHash": "0fc7cbf57a2d3361d3c1599e4b3f067aec0a660a4a67e4bee24b012b8f6debd4",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-zodiac-scorpio",
+    "name": "Scorpio",
+    "file": "trial-new-zodiac-scorpio-r1-p2.png",
+    "description": "Scorpio, included in the complete trial collection.",
+    "accent": "#aa7d83",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-scorpio",
+    "artworkHash": "cee5c0ebc1236debea1d5a05ef71ed694d1ad00f31952ee7acfd0f754ac5a367",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-zodiac-sagittarius",
+    "name": "Sagittarius",
+    "file": "trial-new-zodiac-sagittarius-r1-p2.png",
+    "description": "Sagittarius, included in the complete trial collection.",
+    "accent": "#b69dca",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-sagittarius",
+    "artworkHash": "b4c5921939de567487d3df5adef015b0dd0e1c52f6a8da27451783082a788941",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.08333333333333333
+    }
+  },
+  {
+    "id": "trial:new-zodiac-capricorn",
+    "name": "Capricorn",
+    "file": "trial-new-zodiac-capricorn-r1-p2.png",
+    "description": "Capricorn, included in the complete trial collection.",
+    "accent": "#91a79f",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-capricorn",
+    "artworkHash": "7086ec5422c67ea679196b4412f502e810031c900807cb66cd8a108e90644876",
+    "attachment": {
+      "x": 0.4930555555555556,
+      "y": 0.10714285714285714
+    }
+  },
+  {
+    "id": "trial:new-zodiac-aquarius",
+    "name": "Aquarius",
+    "file": "trial-new-zodiac-aquarius-r1-p2.png",
+    "description": "Aquarius, included in the complete trial collection.",
+    "accent": "#87b2c5",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-aquarius",
+    "artworkHash": "a6c0c591fabec91e0ce53776e868eeea2090f673de49698cd4354e8665be878f",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.09126984126984126
+    }
+  },
+  {
+    "id": "trial:new-zodiac-pisces",
+    "name": "Pisces",
+    "file": "trial-new-zodiac-pisces-r1-p2.png",
+    "description": "Pisces, included in the complete trial collection.",
+    "accent": "#a59dbf",
+    "group": "Zodiac",
+    "artworkKey": "new-zodiac-pisces",
+    "artworkHash": "9737296388baa8d3da0fa61264644474856e2ee5aba7c0f6247053bcc59778ff",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.4642857142857143
+    }
+  },
+  {
+    "id": "trial:new-new-year-popper",
+    "name": "New Year Party Popper",
+    "file": "trial-new-new-year-popper-r1-p2.png",
+    "description": "New Year Party Popper, included in the complete trial collection.",
+    "accent": "#c9a15b",
+    "group": "Seasonal",
+    "artworkKey": "new-new-year-popper",
+    "artworkHash": "8e642e1f177b0c566c2564debe7f402d7058294d48c408b5e9312fbc01f3564a",
+    "attachment": {
+      "x": 0.5254629629629629,
+      "y": 0.07539682539682539
+    }
+  },
+  {
+    "id": "trial:new-valentine-chocolates",
+    "name": "Valentine Chocolates",
+    "file": "trial-new-valentine-chocolates-r2-p2.png",
+    "description": "Valentine Chocolates, included in the complete trial collection.",
+    "accent": "#c47784",
+    "group": "Seasonal",
+    "artworkKey": "new-valentine-chocolates",
+    "artworkHash": "c70b7b10cfc89e47a1457fb3dffa864cad29eff3fe48d4ca3e0de302665c0ead",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-shamrock",
+    "name": "Shamrock",
+    "file": "trial-new-shamrock-r1-p2.png",
+    "description": "Shamrock, included in the complete trial collection.",
+    "accent": "#6f9f78",
+    "group": "Seasonal",
+    "artworkKey": "new-shamrock",
+    "artworkHash": "07aac36c7eb505fe2deef6844106e717958aa8b5e3de7983ce9ffdd8188c6c63",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.0992063492063492
+    }
+  },
+  {
+    "id": "trial:new-easter-basket",
+    "name": "Easter Basket",
+    "file": "trial-new-easter-basket-r1-p2.png",
+    "description": "Easter Basket, included in the complete trial collection.",
+    "accent": "#c7adc0",
+    "group": "Seasonal",
+    "artworkKey": "new-easter-basket",
+    "artworkHash": "512633a150bcd18ee0e602901cc8a86e6117dd53bc8d36bbc4f32392af445211",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-peace-dove",
+    "name": "Peace Dove",
+    "file": "trial-new-peace-dove-r1-p2.png",
+    "description": "Peace Dove, included in the complete trial collection.",
+    "accent": "#c7d0c4",
+    "group": "Seasonal",
+    "artworkKey": "new-peace-dove",
+    "artworkHash": "bda9dcbca4d94df243c3bc226be72bc308bae253a8ffe7b97674f212dcdb0f18",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.20238095238095238
+    }
+  },
+  {
+    "id": "trial:new-white-house",
+    "name": "White House",
+    "file": "trial-new-white-house-r1-p2.png",
+    "description": "White House, included in the complete trial collection.",
+    "accent": "#c7c4b5",
+    "group": "Seasonal",
+    "artworkKey": "new-white-house",
+    "artworkHash": "c30eeddb16477b7a3822de704a97163273d8abb1e20530c4d1e528fb3ecf5813",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-freedom-bell",
+    "name": "Freedom Bell",
+    "file": "trial-new-freedom-bell-r1-p2.png",
+    "description": "Freedom Bell, included in the complete trial collection.",
+    "accent": "#ab8f67",
+    "group": "Seasonal",
+    "artworkKey": "new-freedom-bell",
+    "artworkHash": "70cc3a8b70356c1f9db7c5210f863c72b3a8cb18a9271f0ef267f0442cdd1a52",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07539682539682539
+    }
+  },
+  {
+    "id": "trial:new-independence-rockets",
+    "name": "Independence Rockets",
+    "file": "trial-new-independence-rockets-r1-p2.png",
+    "description": "Independence Rockets, included in the complete trial collection.",
+    "accent": "#b66c75",
+    "group": "Seasonal",
+    "artworkKey": "new-independence-rockets",
+    "artworkHash": "feae9efd95bdc8804c919debd7141f8eb72e682acc2a5b93542194cbe2ac38e9",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.14285714285714285
+    }
+  },
+  {
+    "id": "trial:new-labor-day-gear",
+    "name": "Labor Day Gear",
+    "file": "trial-new-labor-day-gear-r1-p2.png",
+    "description": "Labor Day Gear, included in the complete trial collection.",
+    "accent": "#d2b05a",
+    "group": "Seasonal",
+    "artworkKey": "new-labor-day-gear",
+    "artworkHash": "baa61bb1b27d3e98f509060d8c40ee57daab203be92e85f48ee435858866c031",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.09126984126984126
+    }
+  },
+  {
+    "id": "trial:new-remembrance-flag",
+    "name": "Remembrance Flag",
+    "file": "trial-new-remembrance-flag-r1-p2.png",
+    "description": "Remembrance Flag, included in the complete trial collection.",
+    "accent": "#7c8eaa",
+    "group": "Seasonal",
+    "artworkKey": "new-remembrance-flag",
+    "artworkHash": "b45923bf8f31ccc9aad932683db8b4439946a18c37e749b876d4fea7737f84d4",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-santa-claus",
+    "name": "Santa Claus",
+    "file": "trial-new-santa-claus-r1-p2.png",
+    "description": "Santa Claus, included in the complete trial collection.",
+    "accent": "#c67062",
+    "group": "Seasonal",
+    "artworkKey": "new-santa-claus",
+    "artworkHash": "20856743863ce14eb526f0a99110bdb759f74827650ae44ccb0c52ef2522a534",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-reindeer",
+    "name": "Reindeer",
+    "file": "trial-new-reindeer-r1-p2.png",
+    "description": "Reindeer, included in the complete trial collection.",
+    "accent": "#aa9277",
+    "group": "Seasonal",
+    "artworkKey": "new-reindeer",
+    "artworkHash": "6e28d53d3f5694e42a183fa88184165ac9e1d6701e65939a736b58e892547b9a",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-snow-globe",
+    "name": "Snow Globe",
+    "file": "trial-new-snow-globe-r1-p2.png",
+    "description": "Snow Globe, included in the complete trial collection.",
+    "accent": "#a8bbc6",
+    "group": "Seasonal",
+    "artworkKey": "new-snow-globe",
+    "artworkHash": "4d4021cfeb2820bbb2b18337cfd0acba1b5126a77fe727e79ee6da970e4d7f47",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-gingerbread-house",
+    "name": "Gingerbread House",
+    "file": "trial-new-gingerbread-house-r1-p2.png",
+    "description": "Gingerbread House, included in the complete trial collection.",
+    "accent": "#c49a79",
+    "group": "Seasonal",
+    "artworkKey": "new-gingerbread-house",
+    "artworkHash": "49406f03abc45454cd45695b08e7dca0e55b87002facb38e2ddb1983a4979af4",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.09523809523809523
+    }
+  },
+  {
+    "id": "trial:new-holiday-wreath",
+    "name": "Holiday Wreath",
+    "file": "trial-new-holiday-wreath-r1-p2.png",
+    "description": "Holiday Wreath, included in the complete trial collection.",
+    "accent": "#78937a",
+    "group": "Seasonal",
+    "artworkKey": "new-holiday-wreath",
+    "artworkHash": "cf5bcf88fc3cfd88a78611fd02de70e65888917e9f79bbb2046b0b31972afe6b",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-christmas-stocking",
+    "name": "Christmas Stocking",
+    "file": "trial-new-christmas-stocking-r1-p2.png",
+    "description": "Christmas Stocking, included in the complete trial collection.",
+    "accent": "#c07a77",
+    "group": "Seasonal",
+    "artworkKey": "new-christmas-stocking",
+    "artworkHash": "9334b18f9223ba2ea37127ce2489b860d4cea1e8c875fa840d994d5ac608cbed",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.11904761904761904
+    }
+  },
+  {
+    "id": "trial:new-candy-cane",
+    "name": "Candy Cane",
+    "file": "trial-new-candy-cane-r1-p2.png",
+    "description": "Candy Cane, included in the complete trial collection.",
+    "accent": "#c87977",
+    "group": "Seasonal",
+    "artworkKey": "new-candy-cane",
+    "artworkHash": "9a4b5f50972ea167d2c38c9b023529a5f3e18b4f6e3f6b45dc5c9bfd8456cd73",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-ganesha",
+    "name": "Ganesha",
+    "file": "trial-new-ganesha-r1-p2.png",
+    "description": "Ganesha, included in the complete trial collection.",
+    "accent": "#bf9c73",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-ganesha",
+    "artworkHash": "e447bf2141912c3a09ea8d10152af6641097cb241bd8290a677af98d0375fe9c",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-nataraja",
+    "name": "Nataraja",
+    "file": "trial-new-nataraja-r1-p2.png",
+    "description": "Nataraja, included in the complete trial collection.",
+    "accent": "#b29468",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-nataraja",
+    "artworkHash": "7204ccf294884f94af202b4bc2f4b48e722bb129d292221dbbb288f8eeb5e9bf",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-meenakshi",
+    "name": "Meenakshi Amman",
+    "file": "trial-new-meenakshi-r2-p2.png",
+    "description": "Meenakshi Amman, included in the complete trial collection.",
+    "accent": "#b39768",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-meenakshi",
+    "artworkHash": "b59de511c5d102941bb7ee9d690099ad6d1b5a936cc163eb85e0ba1020714ce3",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-perumal",
+    "name": "Perumal",
+    "file": "trial-new-perumal-r2-p2.png",
+    "description": "Perumal, included in the complete trial collection.",
+    "accent": "#a69d7c",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-perumal",
+    "artworkHash": "30ed376847721da951072e3fe00c7bb7b39a9efee6d214fed5d938c88c0f8cd2",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-andal",
+    "name": "Andal",
+    "file": "trial-new-andal-r2-p2.png",
+    "description": "Andal, included in the complete trial collection.",
+    "accent": "#bd9b89",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-andal",
+    "artworkHash": "36e19b14353d53c4be679764aa2bbb5008e9ecd7de110d5de5a39c1a9023b5ff",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-lakshmi",
+    "name": "Lakshmi",
+    "file": "trial-new-lakshmi-r1-p2.png",
+    "description": "Lakshmi, included in the complete trial collection.",
+    "accent": "#bf9972",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-lakshmi",
+    "artworkHash": "00a4bebc50fb1be9d5c25aac4ab773d800ce593fe479274a48be70317ead3f48",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-saraswati",
+    "name": "Saraswati",
+    "file": "trial-new-saraswati-r2-p2.png",
+    "description": "Saraswati, included in the complete trial collection.",
+    "accent": "#c3b998",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-saraswati",
+    "artworkHash": "67647504c0e992cb782e835a2dcd7f12a6891767d3f2d6feabedaad45c41530e",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-om",
+    "name": "Om",
+    "file": "trial-new-om-r1-p2.png",
+    "description": "Om, included in the complete trial collection.",
+    "accent": "#c3a46b",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-om",
+    "artworkHash": "f63fc31c3c17e17246fa45a37a3df37f0dd0f4746bae48c8d362df6b7ddcd083",
+    "attachment": {
+      "x": 0.5115740740740741,
+      "y": 0.12301587301587301
+    }
+  },
+  {
+    "id": "trial:new-buddha",
+    "name": "Buddha",
+    "file": "trial-new-buddha-r1-p2.png",
+    "description": "Buddha, included in the complete trial collection.",
+    "accent": "#b59b78",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-buddha",
+    "artworkHash": "e6d22c0f6f6c42cd5f750e4bfa66f61748c6886b62e1c87b83805a45857a82d3",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.0873015873015873
+    }
+  },
+  {
+    "id": "trial:new-christian-cross",
+    "name": "Christian Cross",
+    "file": "trial-new-christian-cross-r1-p2.png",
+    "description": "Christian Cross, included in the complete trial collection.",
+    "accent": "#b49a79",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-christian-cross",
+    "artworkHash": "e673930610c6fb2d1ea446e3dd89d5085525a0e902f44f98a2a5acb51ed6bc7c",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-khanda",
+    "name": "Khanda",
+    "file": "trial-new-khanda-r1-p2.png",
+    "description": "Khanda, included in the complete trial collection.",
+    "accent": "#aab7c0",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-khanda",
+    "artworkHash": "318dae63486337e8c8c0996cd967f8bf60e496b10e36eabab060da4eb28da2ee",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-crescent-star",
+    "name": "Crescent & Star",
+    "file": "trial-new-crescent-star-r1-p2.png",
+    "description": "Crescent & Star, included in the complete trial collection.",
+    "accent": "#c3b17c",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-crescent-star",
+    "artworkHash": "2e5426e93d3ee91694dc57f92633e8189f886b4bef7a26f0a2a63ad23a832bf1",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-star-of-david",
+    "name": "Star of David",
+    "file": "trial-new-star-of-david-r1-p2.png",
+    "description": "Star of David, included in the complete trial collection.",
+    "accent": "#a9b8c7",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-star-of-david",
+    "artworkHash": "4bda8276900eee87fe8efc41dd08559cb6fe96cd07fd4a93ae1f1b14109f76d8",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  }
+]

@@ -72,6 +72,9 @@ jobs:
       - name: Build and validate companion gallery
         working-directory: .
         run: node website/build.mjs
+      - name: Verify every included trial image and its cord geometry
+        working-directory: .
+        run: node website/sync-trial-catalogue.mjs --check
       - name: Verify release package and website download agree
         working-directory: .
         run: |

@@ -13,6 +13,7 @@ const require = createRequire(import.meta.url);
 const { _electron: electron, expect } = require(join(repo, 'extension', 'node_modules', '@playwright', 'test'));
 const packaged = process.argv.includes('--packaged');
 const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+const trial = JSON.parse(readFileSync(join(repo, 'extension', 'src', 'trial-charms.json'), 'utf8'));
 const bundleRoot = process.env.CHARMLET_DESKTOP_BUNDLE_ROOT
   ? resolve(process.env.CHARMLET_DESKTOP_BUNDLE_ROOT) : join(root, 'release', manifest.version);
 const mode = packaged ? process.env.CHARMLET_DESKTOP_BUNDLE_ROOT ? 'archive' : 'packaged' : 'dev';
@@ -161,6 +162,29 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   await expect.poll(async () => (await diagnostic(application)).ignored, { timeout: 5000 }).toBe(false);
   await window.evaluate(() => globalThis.acquireVsCodeApi().postMessage({ type: 'desktop-hit-test', ignore: true }));
   await expect.poll(async () => (await diagnostic(application)).ignored, { timeout: 5000 }).toBe(true);
+
+  const gardenBeforeTrial = JSON.parse(readFileSync(companionPath, 'utf8')).garden;
+  await expect(window.locator('#charm-select option[value^="trial:"]')).toHaveCount(trial.length);
+  for (const key of ['starter-drishti', 'new-earth']) {
+    const entry = trial.find(charm => charm.artworkKey === key);
+    assert.ok(entry);
+    await window.getByRole('button', { name: 'Browse charms', exact: true }).click();
+    await window.locator('#charm-search').fill(entry.name);
+    await window.getByRole('button', { name: `Select ${entry.name}`, exact: true }).click();
+    await expect(window.locator('#stage')).toHaveAttribute('data-charm', entry.id);
+    await window.locator('#charm-image').evaluate(image => image.decode());
+    assert.equal(await window.locator('#charm-image').evaluate(image => image.naturalWidth), 216);
+    await expect(window.locator('#charm-image')).toHaveAttribute('src', new RegExp(`${entry.file.replace('.', '\\.')}$`));
+    await expect(window.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+  }
+  await window.screenshot({ path: join(output, 'desktop-trial-earth.png') });
+  assert.deepEqual(JSON.parse(readFileSync(companionPath, 'utf8')).garden, gardenBeforeTrial);
+  await window.getByRole('button', { name: 'Browse charms', exact: true }).click();
+  await window.locator('#charm-groups').getByRole('button', { name: 'Grown by you', exact: true }).click();
+  await window.locator('#charm-search').fill('Hibiscus');
+  await window.getByRole('button', { name: 'Select Hibiscus', exact: true }).click();
+  await expect(window.locator('#stage')).toHaveAttribute('data-charm', 'garden:hibiscus');
+  await expect(window.locator('#stage')).toHaveAttribute('data-persisted', 'true');
 
   await window.getByRole('button', { name: 'Focus', exact: true }).click();
   await window.getByRole('tab', { name: 'Focus', exact: true }).click();

@@ -172,7 +172,7 @@ body.vscode-high-contrast #charm:focus-visible { outline-width: 2px; }
 #charm-search-icon { display: flex; color: var(--quiet); }
 #charm-search { width: 100%; min-width: 0; border: 0; outline: 0; padding: 1px; color: var(--vscode-input-foreground, var(--ink)); background: transparent; font: inherit; font-size: 11px; }
 .charm-search-label:focus-within { outline: 1px solid var(--focus); outline-offset: 1px; }
-#charm-groups { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0; }
+#charm-groups { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0; max-height: 90px; overflow-y: auto; }
 #charm-groups button { min-height: 25px; padding: 4px 8px; border: 1px solid var(--vscode-widget-border, #88888840); border-radius: 999px; color: var(--quiet); font: inherit; font-size: 10px; }
 #charm-groups button[aria-pressed="true"] { color: var(--ink); border-color: var(--focus); background: var(--hover); }
 #charm-results { margin: 6px 0 9px; color: var(--quiet); font-size: 10px; }

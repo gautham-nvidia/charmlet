@@ -464,3 +464,15 @@ Desktop 0.1.2 passed type/build, six model checks, developer smoke and extracted
 PR #23 initially passed all 1.90 and desktop jobs but failed the squeeze-release check on all 1.140 targets. Follow-up pointer traces showed release in the outer IDE while the charm retained capture after an in-gesture screenshot. The fixture now captures outside the gesture, checks a sustained complete squeeze/release, uses the CI display scale and simulates dates only inside Charmlet. Runtime code and artwork are unchanged by this verification correction. Hosted results remain recorded in the PR.
 
 PR #23 passed all eight jobs and merged as `f9a0273`. Its first main run passed seven jobs; Linux 1.140 failed before compression at the start of the pointer gesture. The follow-up fixture uses the locator's stability and input-target checks after the rest screenshot before pressing, confirms the held state, and saves diagnostics even when the initial press fails. The full squeeze, cord-contact and release assertions remain. Runtime and review-package bytes are unchanged.
+
+## 2026-11-03 - Phase 6 complete collection trial
+
+Branch `feat/phase-6-trial-catalogue` starts from the verified 0.5.2 follow-up. The owner accepted Evil Eye and the other current designs, requested a complete Drishti doll and broader lab, space, gemstone, zodiac, holiday and sacred-tradition artwork, and authorized all curated designs to be available directly for trial.
+
+The catalogue now contains 176 authored candidates, 135 selected designs and 22 optional review packs. The app includes 134 static PNG designs plus ten preserved originals, sharing the same catalogue with the desktop beta. Authoring corrections include Drishti r4, full green-screen background checks and a recognizable veena for Saraswati. All 72 new/revised designs were inspected at 216x252 and a 72x84 reference size; later corrected PNGs were rechecked. Artwork approval for public release remains separate.
+
+Source versions are extension 0.6.0 and desktop 0.2.0. Import IDs and stored pack bytes are preserved; identical trial art does not create duplicate picker tiles. Flower previews do not change earned garden progress. Holiday handling covers 21 local-calendar occasions and eight Christmas choices, with saved opt-outs and pins preserved.
+
+At the initial implementation checkpoint, type checking, lint, build and 69 model tests pass. Installed packages, actual-app captures, website checks and the branch/hosted/main verification are in progress. Final evidence belongs in `docs/phase-6-trial-catalogue.md`; this entry does not claim those pending checks passed.
+
+The later local checkpoint passes all eight editor scenarios plus installed-VSIX Restricted Mode/catalogue/garden checks, both website suites, artwork sync and release-artifact checks. The Windows 0.2.0 archive was extracted and its executable passed new PNG selection, garden, restart and security configuration checks. Thirty-four actual 0.6.0 app captures at 100% size are saved, with comparisons linked from the review page. Exact artifact hashes and the remaining hosted/OS/release gates are recorded in the Phase 6 verification document.

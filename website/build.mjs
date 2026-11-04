@@ -8,12 +8,14 @@ import { validateDistribution } from './distribution.mjs';
 import { curateArtwork, validateCuration } from './art-curation.mjs';
 
 const require = createRequire(import.meta.url);
-const { parseCharmPack, packCharms } = require('../extension/out/charm-packs.js');
+const { parseCharmPack } = require('../extension/out/charm-packs.js');
 const { FLOWERS } = require('../extension/out/garden-core.js');
 const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
 const dist = join(root, 'dist');
 const builtins = JSON.parse(await readFile(join(repo, 'extension', 'src', 'builtin-charms.json'), 'utf8'));
+const trial = JSON.parse(await readFile(join(repo, 'extension', 'src', 'trial-charms.json'), 'utf8'));
+const trialByKey = new Map(trial.map(charm => [charm.artworkKey, charm]));
 const extras = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
 const collectionConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
 const curation = JSON.parse(await readFile(join(root, 'art-curation.json'), 'utf8'));
@@ -27,7 +29,11 @@ for (const [name, count] of Object.entries(expectedCollections)) {
   if (extras.filter(item => item.collection === name).length !== count) throw new Error(`Unexpected collection size: ${name}`);
 }
 if (extras.some(item => !Object.hasOwn(expectedCollections, item.collection))) throw new Error('Unknown collection.');
-const expectedWorlds = { ai: 7, coding: 7, silicon: 18, testing: 12, animals: 0, trees: 2, space: 1, parks: 6, cities: 5, culture: 0, sports: 0, luck: 2, stress: 0, seasonal: 0 };
+const expectedWorlds = {
+  ai: 7, coding: 7, silicon: 18, testing: 12, animals: 0, trees: 2, space: 1, parks: 6,
+  cities: 5, culture: 0, sports: 0, luck: 2, stress: 0, seasonal: 0,
+  'solar-system': 0, gemstones: 0, zodiac: 0, sacred: 0, flowers: 0,
+};
 const worlds = collectionConfig.collections;
 const previews = collectionConfig.previews;
 if (!Array.isArray(worlds) || worlds.length !== Object.keys(expectedWorlds).length || !Array.isArray(previews) || previews.length !== 4) throw new Error('Unexpected collection worlds or art previews.');
@@ -81,9 +87,10 @@ for (const { extra, packPath } of validated) {
 for (const preview of previews) {
   await copyFile(join(root, 'assets', 'previews', preview.file), join(dist, 'assets', 'previews', preview.file));
 }
-for (const name of ['terminal-chip-stress', 'refresh-nine', 'heritage-sports-seasonal', 'light-background']) {
-  const file = `${name}-at-100-percent.png`;
-  await copyFile(join(root, 'assets/app-review', file), join(dist, 'assets/app-review', file));
+for (const file of await readdir(join(root, 'assets/app-review'), { withFileTypes: true })) {
+  if (file.isFile() && /^[a-z0-9-]+\.png$/.test(file.name)) {
+    await copyFile(join(root, 'assets/app-review', file.name), join(dist, 'assets/app-review', file.name));
+  }
 }
 for (const stage of ['seed', 'sprout', 'leaves', 'bud', ...FLOWERS.map(flower => flower.id)]) {
   await copyFile(join(repo, 'extension', 'media', `garden-${stage}.svg`), join(dist, 'assets', 'garden', `${stage}.svg`));
@@ -112,7 +119,7 @@ const review = await readFile(join(root, 'art-review.json'), 'utf8').then(JSON.p
   throw error;
 });
 if (review) {
-  if (review.status !== 'review-only' || !Array.isArray(review.items) || review.items.length > 120
+  if (review.status !== 'review-only' || !Array.isArray(review.items) || review.items.length > 220
     || new Set(review.items.map(item => item.key)).size !== review.items.length) throw new Error('Invalid bounded art review.');
   validateCuration(curation, review.items);
   await mkdir(join(dist, 'assets/review'), { recursive: true });
@@ -134,12 +141,19 @@ if (review) {
         || createHash('sha256').update(Buffer.from(entry.png, 'base64')).digest('hex') !== item.pngSha256) {
         throw new Error(`Review download does not match its artwork: ${item.key}`);
       }
-      const alias = { 'Silicon & Code': 'silicon', 'Good Luck': 'luck' }[item.group];
-      const world = worlds.find(world => world.name === item.group || world.id === alias);
-      if (!world) throw new Error(`Missing curated collection: ${item.group}`);
-      charms.push({ id: item.key, name: item.name, description: entry.description, accent: item.accent,
-        kind: 'extra', review: true, group: item.group, collectionId: world.id, collectionLabel: world.name,
-        preview: item.preview, download: item.download, attachment: packCharms([pack])[0].attachment });
+    }
+    if (item.featured && item.decision !== 'original') {
+      const bundled = trialByKey.get(item.key);
+      if (!bundled || bundled.artworkHash !== item.pngSha256 || bundled.name !== item.name) {
+        throw new Error(`Trial artwork differs from the gallery: ${item.key}`);
+      }
+      const alias = { 'Silicon & Code': 'silicon', 'Good Luck': 'luck' }[bundled.group];
+      const world = worlds.find(world => world.name === bundled.group || world.id === alias);
+      if (!world) throw new Error(`Missing curated collection: ${bundled.group}`);
+      charms.push({ id: item.key, name: item.name, description: bundled.description, accent: item.accent,
+        kind: 'extra', review: true, includedInTrial: true, group: bundled.group,
+        collectionId: world.id, collectionLabel: world.name, preview: item.preview,
+        download: item.download, attachment: bundled.attachment });
     }
   }
   for (const bundle of review.bundles ?? []) {
@@ -162,7 +176,8 @@ if (review) {
 }
 const collections = worlds.map(world => ({ ...world, charmIds: charms
   .filter(charm => charm.kind === 'extra' && charm.collectionId === world.id).map(charm => charm.id) }));
+if (!trial.length || charms.length !== builtins.length + trial.length) throw new Error('The complete trial must appear in the gallery.');
 await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version,
   extensionDownload: './downloads/charmlet.vsix', distribution, charms, collections, artPreviews,
   sportsWishlist: collectionConfig.sportsWishlist }, null, 2)}\n`, 'utf8');
-console.log(`Built Charmlet gallery ${manifest.version}: ${builtins.length} included originals, ${charms.length - builtins.length} curated review downloads, ${review?.featured ?? 0} selected review designs.`);
+console.log(`Built Charmlet gallery ${manifest.version}: ${builtins.length} originals and ${trial.length} rendered designs included in the trial, ${review?.featured ?? 0} selected review designs.`);

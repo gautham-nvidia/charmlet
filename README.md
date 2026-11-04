@@ -2,9 +2,11 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-11-03:** Phase 4 and Phase 5 release preparation are merged. The **0.5.2 collection review** adds soft Stress Busters, optional festive defaults and an entirely motivational 80-message deck. It retains the 0.5.1 attachment and release bounce improvements. The app includes **Charms / Focus / Garden / Settings**, searchable charm selection, gentle reminders and saved garden progress.
+**Status, 2026-11-03:** The **0.6.0 complete-collection trial** is built and verified locally in the installed extension and Windows desktop beta. Its picker includes **144 offline charms**: 134 rendered designs plus the ten preserved originals. New collections cover lab instruments, all eight planets, Sun and Moon, galaxies, gemstones, zodiac, US holidays and sacred traditions. The app keeps **Charms / Focus / Garden / Settings**, release bounce, soft Stress Busters and the strictly motivational 80-message deck. [Verification and release gates](docs/phase-6-trial-catalogue.md) are recorded separately.
 
-The curated **Art review** shows **64 selected designs**, including the original Terminal and twelve earned-flower previews, with **51 individual downloads** and **16 review packs**. A nine-design **Refresh Sample** compares the revised components, protective charms and two Stress Busters. **Bay Area Days** and **Seasonal** offer themed selections. The ten bundled originals and previously shared pack files remain intact; new artwork has not replaced the defaults. Photo Studio's local/fake-provider foundation is verified but live paid access remains disabled. The [desktop beta](desktop/README.md) is separate from the VSIX and public release.
+Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **135 selected designs**, including the original Terminal and all twelve flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. Photo Studio's live paid access remains disabled; the [desktop beta](desktop/README.md) remains a separate application.
+
+Holiday defaults follow **21 US celebration dates** and rotate Christmas designs through December. They are on for new profiles. An update preserves existing opt-outs and pins; use **Settings > Appearance > Follow holiday defaults** to enable and unpin in one click. Picking a charm pins it. Automatic choices use the local date and never replace the saved usual charm. [Phase 6 scope and verification](docs/phase-6-trial-catalogue.md) tracks the candidate's remaining checks.
 
 The accepted Phase 4 head passed all six Windows/Linux/macOS VS Code 1.90/1.140 jobs and both Windows/macOS desktop archive jobs. The automatic post-merge run then exposed an intermittent Linux menu-opening failure; its event capture and subsequent results are tracked in the [Phase 5 release record](docs/phase-5-release.md). Source/art licences, publisher accounts, verified editor forks, public hosting and native desktop/merchant setup remain release gates. See the [Phase 4 verification record](docs/phase-4-validation.md) and [privacy notice](extension/PRIVACY.md).
 
@@ -101,7 +103,7 @@ Local Windows evidence covers the five frozen placement cases, one suspend/lock 
 
 ## Companion gallery
 
-The source under [website/](website/) builds a local collection playground with fourteen browsing worlds,
+The source under [website/](website/) builds a local collection playground with nineteen browsing worlds,
 four earlier style studies, a Garden growth demonstration and the curated artwork review downloads.
 Real pack/VSIX downloads and a bounded live swing/pull preview use the extension's
 shared Pendulum model. A `.vsix` installs the extension; a `.charmlet.json` adds artwork only after Charmlet

@@ -34,7 +34,7 @@
     <div id="tools-backdrop" hidden aria-hidden="true"></div>
     <section id="charm-picker" class="tool-popup" role="dialog" aria-labelledby="picker-title" aria-modal="false" hidden>
       <header class="popup-heading"><div><h2 id="picker-title">Browse charms</h2><p>Find a little something that's you.</p></div><button id="picker-close" type="button" class="popup-close" aria-label="Close charm picker"></button></header>
-      <div class="picker-body"><label class="charm-search-label"><span id="charm-search-icon" aria-hidden="true"></span><input id="charm-search" type="search" aria-label="Search charms" placeholder="Search your charms…" autocomplete="off"></label><div id="charm-groups" role="group" aria-label="Charm categories"></div><p id="charm-results" role="status" aria-live="polite"></p><div id="charm-grid" aria-label="Installed charm collection"></div><div id="charm-empty" hidden><p>No charms match that search.</p><button id="clear-charm-search" type="button">Clear filters</button></div><p class="companion-hint">Your installed and grown charms. Import additional packs from the Settings menu.</p></div>
+      <div class="picker-body"><label class="charm-search-label"><span id="charm-search-icon" aria-hidden="true"></span><input id="charm-search" type="search" aria-label="Search charms" placeholder="Search your charms…" autocomplete="off"></label><div id="charm-groups" role="group" aria-label="Charm categories"></div><p id="charm-results" role="status" aria-live="polite"></p><div id="charm-grid" aria-label="Installed charm collection"></div><div id="charm-empty" hidden><p>No charms match that search.</p><button id="clear-charm-search" type="button">Clear filters</button></div><p class="companion-hint">The complete trial collection is included. Flower previews are ready to try; your garden still records what you grow. Your imported packs are here too.</p></div>
     </section>
     <section id="settings-menu" class="settings-menu" role="menu" aria-label="Settings" hidden>
       <header class="popup-heading"><h2>Settings</h2><button id="menu-close" type="button" class="popup-close" aria-label="Close settings menu"></button></header>
@@ -58,6 +58,7 @@
         <label class="message-choice"><input id="festive-enabled" type="checkbox" aria-describedby="festive-hint"> Use festive defaults</label>
         <label class="message-choice"><input id="charm-pinned" type="checkbox" aria-describedby="festive-hint"> Pin this charm</label>
         <p id="festive-hint"></p>
+        <button id="follow-holidays" type="button">Follow holiday defaults</button>
         <label class="message-choice"><input id="show-messages" type="checkbox" checked> Show message card</label>
         <label class="message-choice"><input id="rotate-messages" type="checkbox" checked> Rotate messages automatically</label>
       </div>

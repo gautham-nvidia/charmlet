@@ -196,11 +196,11 @@ function updateFestiveControls() {
 	charmPinned.checked = state.charmPinned;
 	const day = festiveDay(Date.now());
 	festiveHint.textContent = !state.festiveEnabled
-		? 'Optional holiday picks use your local date. Thanksgiving follows the US calendar.'
+		? 'Holiday picks are off. Follow US celebration dates and a changing Christmas collection when you want.'
 		: state.charmPinned ? 'Your charm is pinned. Unpin it to allow festive defaults.'
 			: !day ? 'Your usual charm stays until a holiday. Selecting a charm pins it.'
-				: festiveCharm(day, charms) ? `${day.name}: using the installed festive charm for today.`
-					: `${day.name}: no matching festive charm is installed, so your usual charm stays.`;
+				: festiveCharm(day, charms) ? `${day.name}: today's charm follows your local date.`
+					: `${day.name}: your usual charm stays because this holiday's artwork is unavailable.`;
 }
 
 function refreshFestiveSelection() {
@@ -622,6 +622,15 @@ motion.addEventListener('click', () => {
 festiveEnabled.addEventListener('change', () => {
 	cancelDrag();
 	state.festiveEnabled = festiveEnabled.checked;
+	applyCharm();
+	resize();
+	showState();
+	save();
+});
+element<HTMLButtonElement>('follow-holidays').addEventListener('click', () => {
+	cancelDrag();
+	state.festiveEnabled = true;
+	state.charmPinned = false;
 	applyCharm();
 	resize();
 	showState();

@@ -105,11 +105,18 @@ const botanical = {
   sakura: 'a small original cherry-blossom branch with two pale-pink five-petalled blooms and one closed bud',
   'wild-rose': 'a simple pink five-petalled wild rose with visible golden stamens and a small serrated sage leaf',
 };
-function realisticPrompt(subject) {
+function realisticPrompt(subject, style = 'object') {
+  const styles = {
+    object: 'STYLE: believable anatomy or construction, natural material texture, restrained colours and carefully directed neutral studio lighting. Realistic rendered artwork with personality. Avoid fantasy machinery, jewel-like decoration, emoji styling, flat SVG symbols, cartoon exaggeration and repeated badge shapes.',
+    gemstone: 'STYLE: a believable gemstone or mineral specimen with accurate faceting or natural crystal structure, clear material depth and carefully directed neutral studio lighting. Rich photographic-style CGI, not a flat icon or photograph. Preserve the characteristic colour and optical detail without reflecting the green backdrop through the stone. No jewellery mount, repeated badge or cartoon face.',
+    symbol: 'STYLE: a precise conventional symbol rendered as a solid finely crafted metal or ceramic object with believable thickness and subtle studio highlights. Preserve the exact recognizable glyph rather than inventing decorative strokes. No flat printed icon, enclosing badge, lettering, emoji face or repeated plaque.',
+    cosmos: 'STYLE: detailed photographic-style astronomical CGI with clearly separated celestial forms and a readable compact silhouette. Follow the stated scientific appearance for real subjects; use imaginative forms only when the subject explicitly asks for them. No decorative metalwork, enclosing badge, emoji face, flat icon or full-bleed background.',
+  };
+  if (!Object.hasOwn(styles, style)) throw new Error('Unknown artwork rendering style.');
   return [
     'Create one original photographic-style CGI artwork of a recognizable physical object for a small app charm.',
     `SUBJECT: ${subject}`,
-    'STYLE: believable anatomy or construction, natural material texture, restrained colours and carefully directed neutral studio lighting. Realistic rendered artwork with personality. Avoid fantasy machinery, jewel-like decoration, emoji styling, flat SVG symbols, cartoon exaggeration and repeated badge shapes.',
+    styles[style],
     'COMPOSITION: one complete compact subject centred within the middle 700 by 700 pixels of a square 1024-pixel canvas. Leave generous clear margins on every side. Keep every part fully visible and make the silhouette easy to recognize at 72 by 84 pixels. No surrounding frame, card, plaque, chain, cord, loop or hook unless explicitly requested as part of the actual object.',
     'BACKGROUND: every background pixel and every gap between parts must be perfectly flat chroma green RGB(0,255,0), hex #00FF00. No floor, cast shadow, gradient, texture, haze, green light spill or cropped part. Use deep forest green, not neon green, for any foreground foliage or circuit board.',
     'Finish with clear separated components, subtle highlights and physically believable proportions. No watermark, sponsor mark, company logo, celebrity likeness or copied character.',
@@ -120,20 +127,27 @@ export async function artworkJobs(repo) {
   const builtins = JSON.parse(await readFile(join(repo, 'extension/src/builtin-charms.json'), 'utf8'));
   const extras = JSON.parse(await readFile(join(repo, 'website/extras.json'), 'utf8'));
   const refresh = JSON.parse(await readFile(join(repo, 'website/art-refresh-jobs.json'), 'utf8'));
+  const expansion = JSON.parse(await readFile(join(repo, 'website/art-expansion-jobs.json'), 'utf8'));
   if (!Array.isArray(refresh) || refresh.length > 25 || refresh.some(item =>
     !/^[a-z][a-z0-9-]{0,31}$/.test(item.id) || typeof item.name !== 'string' || item.name.length > 48
     || typeof item.group !== 'string' || item.group.length > 48 || !/^#[0-9a-f]{6}$/i.test(item.accent)
     || typeof item.subject !== 'string' || item.subject.length > 2500)) throw new Error('Invalid bounded art-refresh inventory.');
+  if (!Array.isArray(expansion) || expansion.length > 100 || expansion.some(item =>
+    !/^[a-z][a-z0-9-]{0,31}$/.test(item.id) || typeof item.name !== 'string' || item.name.length > 48
+    || typeof item.group !== 'string' || item.group.length > 48 || !/^#[0-9a-f]{6}$/i.test(item.accent)
+    || typeof item.subject !== 'string' || item.subject.length > 2500
+    || (item.style !== undefined && !['object', 'gemstone', 'symbol', 'cosmos'].includes(item.style)))) throw new Error('Invalid bounded art-expansion inventory.');
   const records = [
     ...builtins.map(item => ({ ...item, key: `starter-${item.id}`, family: 'starters', subject: motifs[item.id], original: `default/${item.file}` })),
     ...extras.map(item => ({ ...item, key: `extra-${item.id}`, family: 'classics', subject: motifs[item.id], original: `extras/${item.file}` })),
     ...FLOWERS.map(item => ({ ...item, key: `flower-${item.id}`, family: 'flowers', group: 'Grown by you', description: `${item.name}, grown by you.`, subject: `An original botanical illustration of ${botanical[item.id]}. Natural flower anatomy with rich painterly detail and softly sculpted depth, not a real flower photograph.`, original: `garden/${item.id}.svg` })),
     ...additions.map(item => ({ ...item, key: `new-${item.id}`, family: 'new-worlds', description: `An original ${item.name.toLowerCase()} art-review candidate.`, original: null })),
     ...refresh.map(item => ({ ...item, key: `new-${item.id}`, family: 'new-worlds', description: `An original ${item.name.toLowerCase()} art-review candidate.`, original: null, realistic: true })),
+    ...expansion.map(item => ({ ...item, key: `new-${item.id}`, family: 'new-worlds', description: `An original ${item.name.toLowerCase()} art-review candidate.`, original: null, realistic: true })),
   ];
-  if (records.length !== 95 + refresh.length || records.length > 120 || new Set(records.map(item => item.key)).size !== records.length || records.some(item => !item.subject)) throw new Error('The art-review inventory is inconsistent.');
+  if (records.length !== 95 + refresh.length + expansion.length || records.length > 220 || new Set(records.map(item => item.key)).size !== records.length || records.some(item => !item.subject)) throw new Error('The art-review inventory is inconsistent.');
   const revisions = await readFile(join(repo, 'website/art-review-revisions.json'), 'utf8').then(JSON.parse, error => { if (error.code === 'ENOENT') return {}; throw error; });
-  const jobs = records.map(item => ({ ...item, prompt: item.realistic ? realisticPrompt(item.subject) : [
+  const jobs = records.map(item => ({ ...item, prompt: item.realistic ? realisticPrompt(item.subject, item.style) : [
     'Create one premium original digital illustration for a small hanging charm. This is an art-review candidate, not a real photograph.',
     `SUBJECT: ${item.subject}`,
     'STYLE: richly detailed pictorial artwork with photographic-style light and material depth, mixed with playful illustrated personality. Some sculpted 3D form is welcome. It must visibly feel artist-designed, not a literal photo cutout, stock photograph, flat SVG glyph, emoji, generic app icon or repeated badge template.',
