@@ -635,6 +635,9 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 			const id = `pack:${pack.id}:${pack.charms[0].id}`;
 			imported.push(id);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', id);
+			// The catalogue changes before show() finishes restoring editor focus.
+			// Wait for command completion before opening the next command palette.
+			await expect(window.getByText(`Imported ${pack.name}.`, { exact: true })).toBeVisible();
 		}
 		const [pumpkin, ball] = imported;
 		// Only Charmlet reads the simulated date. Keep the IDE's clock, native

@@ -262,8 +262,8 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 					}, true);
 				}
 				document.addEventListener('keydown', event => {
-					if (event.key === 'Escape' || event.target === picker) {
-						record('keydown', { key: event.key });
+					if (event.key === 'Escape' || event.key === 'Enter' || event.target === picker) {
+						record('keydown', { key: event.key, target: (event.target as HTMLElement | null)?.id });
 					}
 				}, true);
 				view.addEventListener('message', event => {
@@ -298,9 +298,15 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				await expect(frame.locator('#motion')).toHaveAttribute('aria-checked', 'false');
 				await picker.press('Escape');
 				await expect(frame.locator('#settings')).toBeHidden();
-				await expect(frame.locator('#settings-toggle')).toBeFocused();
 				await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`phase-2-${entry.id}.png`) });
-				await openAppearance(frame);
+				// Continue from Escape's restored focus rather than depending on
+				// iframe mouse targeting immediately after screenshot capture.
+				await expect(frame.locator('#settings-toggle')).toBeFocused();
+				await window.keyboard.press('Enter');
+				await expect(frame.locator('#settings-toggle')).toHaveAttribute('aria-expanded', 'true');
+				await expect(frame.locator('#menu-appearance')).toBeFocused();
+				await window.keyboard.press('Enter');
+				await expect(frame.locator('#settings')).toBeVisible();
 			}
 			await picker.focus();
 			if (process.platform === 'darwin') {
