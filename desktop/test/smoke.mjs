@@ -137,7 +137,14 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
       await window.locator('#menu-close').click();
       await expect(window.locator('body')).toHaveAttribute('data-desktop-tools', 'false');
       await expect(window.locator('body')).toHaveAttribute('data-desktop-saved', 'true');
-      await window.evaluate(() => { globalThis.__charmletTestEvents = []; });
+      await window.evaluate(() => {
+        globalThis.__charmletTestEvents = [];
+        globalThis.__charmletNativeMoves = [];
+        document.addEventListener('mousemove', event => {
+          globalThis.__charmletNativeMoves.push({ x: event.clientX, y: event.clientY, target: event.target?.id, buttons: event.buttons });
+          if (globalThis.__charmletNativeMoves.length > 24) globalThis.__charmletNativeMoves.shift();
+        }, true);
+      });
       evidence.before = await diagnostic(application);
       const handles = await application.evaluate(async ({ BrowserWindow }) => {
         const main = BrowserWindow.getAllWindows().find(item => item.webContents.getURL().startsWith('charmlet:'));
@@ -218,6 +225,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     } finally {
       evidence.host = await diagnostic(application);
       evidence.events = await window.evaluate(() => globalThis.__charmletTestEvents);
+      evidence.moves = await window.evaluate(() => globalThis.__charmletNativeMoves);
       writeFileSync(join(output, 'desktop-native.json'), JSON.stringify(evidence, null, 2));
       await application.evaluate(() => {
         globalThis.__charmletNativeSurface?.destroy();

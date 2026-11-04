@@ -10,18 +10,45 @@ $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true') { throw 'Native pointer checks require the isolated CI desktop.' }
 Add-Type -TypeDefinition @'
 using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 public static class CharmletNativeInput {
     [StructLayout(LayoutKind.Sequential)] public struct Rect { public int Left, Top, Right, Bottom; }
     [StructLayout(LayoutKind.Sequential)] public struct Point { public int X, Y; }
-    [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
-    [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint x, uint y, uint data, UIntPtr extra);
+    [StructLayout(LayoutKind.Sequential)] public struct MouseInput {
+        public int X, Y;
+        public uint Data, Flags, Time;
+        public UIntPtr Extra;
+    }
+    [StructLayout(LayoutKind.Sequential)] public struct Input { public uint Type; public MouseInput Mouse; }
+    [DllImport("user32.dll", SetLastError = true)] private static extern uint SendInput(uint count, Input[] inputs, int size);
+    [DllImport("user32.dll")] private static extern int GetSystemMetrics(int index);
+    [DllImport("user32.dll")] public static extern bool GetCursorPos(out Point point);
+    [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(Point point);
+    [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr window, uint flags);
     [DllImport("user32.dll")] public static extern IntPtr SetThreadDpiAwarenessContext(IntPtr context);
     [DllImport("user32.dll")] public static extern bool GetClientRect(IntPtr window, out Rect rect);
     [DllImport("user32.dll")] public static extern bool ClientToScreen(IntPtr window, ref Point point);
     [DllImport("user32.dll")] public static extern bool IsIconic(IntPtr window);
     [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr window);
     [DllImport("user32.dll")] public static extern short GetAsyncKeyState(int key);
+    private static void Inject(MouseInput mouse) {
+        var inputs = new[] { new Input { Type = 0, Mouse = mouse } };
+        if (SendInput(1, inputs, Marshal.SizeOf(typeof(Input))) != 1) {
+            throw new Win32Exception(Marshal.GetLastWin32Error(), "Windows rejected native mouse input.");
+        }
+    }
+    public static void MoveCursor(int x, int y) {
+        // Inject driver-like movement so low-level mouse hooks also receive it.
+        // SetCursorPos alone only repositions the cursor.
+        Inject(new MouseInput {
+            X = (int)Math.Round((x - GetSystemMetrics(76) + 0.5) * 65536 / GetSystemMetrics(78)),
+            Y = (int)Math.Round((y - GetSystemMetrics(77) + 0.5) * 65536 / GetSystemMetrics(79)),
+            Flags = 0xC001
+        });
+    }
+    public static void Button(uint flags) { Inject(new MouseInput { Flags = flags }); }
 }
 '@
 $priorDpi = [CharmletNativeInput]::SetThreadDpiAwarenessContext([IntPtr]::new(-4))
@@ -54,25 +81,32 @@ try {
             throw "Native input ($($point.X), $($point.Y)) would leave the owned test surface."
         }
     }
-    if (-not [CharmletNativeInput]::SetCursorPos($StartX, $StartY)) { throw 'Could not place the test cursor.' }
+    [CharmletNativeInput]::MoveCursor($StartX, $StartY)
     Start-Sleep -Milliseconds 350
     if ($Action -ne 'hover') {
-        [CharmletNativeInput]::mouse_event(2, 0, 0, 0, [UIntPtr]::Zero)
+        [CharmletNativeInput]::Button(2)
         try {
             Start-Sleep -Milliseconds 250
             if ($Action -eq 'drag') {
                 for ($step = 1; $step -le 20; $step++) {
                     $x = [int]($StartX + ($EndX - $StartX) * $step / 20)
                     $y = [int]($StartY + ($EndY - $StartY) * $step / 20)
-                    if (-not [CharmletNativeInput]::SetCursorPos($x, $y)) { throw 'Test cursor movement failed.' }
+                    [CharmletNativeInput]::MoveCursor($x, $y)
                     Start-Sleep -Milliseconds 35
                 }
             }
         } finally {
-            [CharmletNativeInput]::mouse_event(4, 0, 0, 0, [UIntPtr]::Zero)
+            [CharmletNativeInput]::Button(4)
         }
     }
-    [pscustomobject]@{ action = $Action; startX = $StartX; startY = $StartY; endX = $EndX; endY = $EndY; scaleX = $scaleX; scaleY = $scaleY } | ConvertTo-Json -Compress
+    $actual = [CharmletNativeInput+Point]::new()
+    if (-not [CharmletNativeInput]::GetCursorPos([ref]$actual)) { throw 'Native cursor position is unavailable.' }
+    [pscustomobject]@{
+        action = $Action; startX = $StartX; startY = $StartY; endX = $EndX; endY = $EndY
+        scaleX = $scaleX; scaleY = $scaleY; actualX = $actual.X; actualY = $actual.Y
+        foreground = [CharmletNativeInput]::GetForegroundWindow().ToInt64().ToString()
+        target = [CharmletNativeInput]::GetAncestor([CharmletNativeInput]::WindowFromPoint($actual), 2).ToInt64().ToString()
+    } | ConvertTo-Json -Compress
 } finally {
     [void][CharmletNativeInput]::SetThreadDpiAwarenessContext($priorDpi)
 }
