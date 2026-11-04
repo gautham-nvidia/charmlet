@@ -6,7 +6,7 @@ import { randomBytes } from 'node:crypto';
 import { lstat, readFile, readdir } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { CHARMS, type CharmDefinition } from '../../extension/src/charm-catalog';
+import { CHARMS, buildCatalogue, type CharmDefinition } from '../../extension/src/charm-catalog';
 import { installPack, loadPacks, MAX_PACK_BYTES, packCharms, removePack, type CharmPack } from '../../extension/src/charm-packs';
 import { matchesSavedState, restoreState, type CharmState } from '../../extension/src/charm-state';
 import { CompanionController } from '../../extension/src/companion-controller';
@@ -182,7 +182,7 @@ async function registerResources() {
 }
 
 function fullCatalogue() {
-	return [...CHARMS, ...packCharms(packs), ...gardenCharms(companion!.snapshot().state.garden)];
+	return buildCatalogue([...packCharms(packs), ...gardenCharms(companion!.snapshot().state.garden)]);
 }
 async function saveCatalogue(selectedId?: string, generation = rendererGeneration) {
 	catalogue = fullCatalogue();
@@ -350,7 +350,7 @@ async function initialize() {
 	packs = loadedPacks.packs;
 	const preferenceStore = new StateStore<CharmState>(profile);
 	const loadedPreference = await preferenceStore.load(undefined);
-	const baseCatalogue = [...CHARMS, ...packCharms(packs)];
+	const baseCatalogue = buildCatalogue(packCharms(packs));
 	const legacyIndex = restoreState(loadedPreference.value, baseCatalogue).messageIndex;
 	const companionStore = new StateStore<CompanionState>(profile, 'companion.json');
 	const loadedCompanion = await companionStore.load(undefined);

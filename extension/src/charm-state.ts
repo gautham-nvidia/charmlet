@@ -30,7 +30,7 @@ export const DEFAULT_STATE: Readonly<CharmState> = Object.freeze({
 	size: 100,
 	hidden: false,
 	reducedMotion: false,
-	festiveEnabled: false,
+	festiveEnabled: true,
 	charmPinned: false,
 });
 
@@ -61,7 +61,7 @@ export function restoreState(value: unknown, charms: readonly CharmDefinition[] 
 		reducedMotion: typeof candidate.reducedMotion === 'boolean'
 			? candidate.reducedMotion
 			: DEFAULT_STATE.reducedMotion,
-		festiveEnabled: candidate.festiveEnabled === true,
+		festiveEnabled: typeof candidate.festiveEnabled === 'boolean' ? candidate.festiveEnabled : DEFAULT_STATE.festiveEnabled,
 		// Older profiles have no pin setting. Treat their saved choice as pinned.
 		charmPinned: typeof candidate.charmPinned === 'boolean' ? candidate.charmPinned
 			: typeof candidate.charmId === 'string' && charms.some(charm => charm.id === candidate.charmId),

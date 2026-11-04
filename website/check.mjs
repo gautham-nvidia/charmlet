@@ -13,9 +13,13 @@ const { parseCharmPack } = require('./out/charm-packs.js');
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
 const archived = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
 const review = JSON.parse(await readFile(join(root, 'art-review.json'), 'utf8'));
-const target = review.items.filter(item => item.featured && item.download);
+const target = review.items.filter(item => item.featured && item.decision !== 'original');
 const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
-const expectedWorldCounts = { ai: 1, coding: 0, silicon: 7, testing: 1, animals: 3, trees: 3, space: 3, parks: 6, cities: 6, culture: 7, sports: 5, luck: 2, stress: 2, seasonal: 5 };
+const expectedWorldCounts = {
+  ai: 1, coding: 0, silicon: 7, testing: 9, animals: 3, trees: 3, space: 5, parks: 6,
+  cities: 6, culture: 8, sports: 5, luck: 2, stress: 9, seasonal: 22,
+  'solar-system': 10, gemstones: 8, zodiac: 12, sacred: 14, flowers: 12,
+};
 const output = join(repo, 'extension', 'test-results', `website-check-${manifest.version}`);
 await mkdir(output, { recursive: true });
 const base = process.env.CHARMLET_GALLERY_URL || 'http://127.0.0.1:4173/';
@@ -86,7 +90,7 @@ try {
   assert.equal((await page.locator('#store-availability').textContent())?.trim(), 'After publication');
   const howToText = await page.locator('#how-to').textContent();
   assert.ok(howToText?.includes('.charmlet.json'));
-  assert.ok(howToText?.includes('not an extension installer'));
+  assert.ok(howToText?.includes('complete trial collection comes with the app'));
   const desktopImages = await decodeImages(page);
   assert.ok(desktopImages.every(image => image.complete && image.width > 0 && image.height > 0));
   const desktopOverflow = await checkOverflow(page);
@@ -147,7 +151,7 @@ try {
   await page.locator('#garden').screenshot({ path: join(output, 'visual-refresh-garden.png') });
   await page.reload({ waitUntil: 'networkidle' });
 
-  await page.getByRole('button', { name: /Included with Charmlet/ }).click();
+  await page.getByRole('button', { name: /^Originals/ }).click();
   assert.equal(await page.locator('.charm-card').count(), 10);
   assert.equal(await page.locator('.included-label').count(), 10);
   const includedImages = await decodeImages(page);
@@ -157,7 +161,7 @@ try {
   await page.locator('.hero-demo').scrollIntoViewIfNeeded();
   assert.equal(await page.locator('#demo-name').textContent(), 'Evil Eye');
   assert.match(await page.locator('#demo-image').getAttribute('src'), /evil-eye\.svg$/);
-  await page.getByRole('button', { name: /Extra downloads/ }).click();
+  await page.getByRole('button', { name: /^Trial collection/ }).click();
   const oldPack = await downloadPack(page, 'extra-probe-card');
   const newPack = await downloadPack(page, 'extra-gpu-tile');
   const legacy = await page.request.get(new URL('packs/review/review-starter-redraws-1.charmlet.json', base).href);

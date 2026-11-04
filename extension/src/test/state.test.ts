@@ -5,13 +5,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { DEFAULT_STATE, getLayout, matchesSavedState, resetState, restoreState, type CharmState, type LayoutMode } from '../charm-state';
-import { CHARMS } from '../charm-catalog';
+import { CHARMS, ORIGINAL_CHARMS, TRIAL_CHARMS } from '../charm-catalog';
 import { MESSAGES } from '../messages';
 import { MESSAGE_ROTATION_MS, MessageRotation } from '../message-rotation';
 import { Pendulum } from '../pendulum';
 import { StateStore } from '../state-store';
 import { StateWriter } from '../state-writer';
-import { displayedCharm, festiveDay } from '../festive-charms';
+import { displayedCharm, festiveCharm, festiveDay } from '../festive-charms';
 
 test('missing or invalid saved values restore a usable charm', () => {
 	assert.deepEqual(restoreState(undefined), DEFAULT_STATE);
@@ -27,7 +27,7 @@ test('hide and motion preferences survive a reload without trusting unknown fiel
 	assert.deepEqual(restoreState({ cordLength: 180, hidden: true, reducedMotion: true, extra: 'ignored' }), {
 		version: 1, charmId: 'terminal', layoutMode: 'hanging', showMessages: true, rotateMessages: true, messageIndex: 0,
 		cordLength: 180, size: 100, hidden: true, reducedMotion: true,
-		festiveEnabled: false, charmPinned: false,
+		festiveEnabled: true, charmPinned: false,
 	});
 });
 
@@ -47,9 +47,19 @@ test('legacy and unknown charm selections retain the other preferences', () => {
 });
 
 test('every bundled selection survives saved-state restoration', () => {
-	assert.equal(CHARMS.length, 10);
+	assert.equal(ORIGINAL_CHARMS.length, 10);
+	assert.equal(CHARMS.length, ORIGINAL_CHARMS.length + TRIAL_CHARMS.length);
 	assert.equal(new Set(CHARMS.map(charm => charm.id)).size, CHARMS.length);
-	assert.deepEqual(new Set(CHARMS.map(charm => charm.group)), new Set(['Silicon & Code', 'Good Luck']));
+	assert.ok(TRIAL_CHARMS.length > 100, 'The complete curated trial must be bundled, not require imports.');
+	for (const group of ['Solar System', 'Gemstones', 'Zodiac', 'Test Bench', 'Sacred Traditions', 'Seasonal']) {
+		assert.ok(TRIAL_CHARMS.some(charm => charm.group === group), `Missing trial collection: ${group}`);
+	}
+	for (const planet of ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune']) {
+		assert.ok(TRIAL_CHARMS.some(charm => charm.id === `trial:new-${planet}`));
+	}
+	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Zodiac').length, 12);
+	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Garden Flowers').length, 12);
+	assert.ok(TRIAL_CHARMS.every(charm => !charm.source && /^trial-[a-z0-9-]+\.png$/.test(charm.file)));
 	assert.equal(MESSAGES.length, 80);
 	assert.equal(new Set(MESSAGES).size, MESSAGES.length);
 	assert.ok(MESSAGES.every(message => message.trim().length > 0));
@@ -83,20 +93,20 @@ test('seasonal dates follow local days and Cyber Monday can cross into December'
 	assert.equal(festiveDay(local(2026, 11, 1, 0) - 1)?.name, 'Halloween');
 	assert.equal(festiveDay(local(2026, 11, 1, 0)), undefined);
 	assert.equal(festiveDay(local(2026, 12, 25))?.name, 'Christmas');
-	assert.equal(festiveDay(local(2026, 12, 26)), undefined);
+	assert.equal(festiveDay(local(2026, 12, 26))?.name, 'Christmas season');
 	assert.equal(festiveDay(Number.NaN), undefined);
 });
 
 test('festive display preserves manual state and falls back for pins or absent artwork', () => {
 	const pumpkin = { ...CHARMS[0], id: 'pack:seasonal:new-pumpkin-patch', name: 'Pumpkin Patch' };
-	const catalogue = [...CHARMS, pumpkin];
+	const catalogue = [...ORIGINAL_CHARMS, pumpkin];
 	const state = { ...DEFAULT_STATE, charmId: 'wafer', festiveEnabled: true };
 	const saved = JSON.stringify(state);
 	const halloween = new Date(2026, 9, 31, 12).getTime();
 	assert.equal(displayedCharm(state, catalogue, halloween).id, pumpkin.id);
 	assert.equal(JSON.stringify(state), saved, 'Automatic display must not overwrite the saved selection.');
 	assert.equal(displayedCharm(state, catalogue, new Date(2026, 10, 1, 0).getTime()).id, 'wafer');
-	assert.equal(displayedCharm(state, CHARMS, halloween).id, 'wafer');
+	assert.equal(displayedCharm(state, ORIGINAL_CHARMS, halloween).id, 'wafer');
 	assert.equal(displayedCharm({ ...state, festiveEnabled: false }, catalogue, halloween).id, 'wafer');
 	assert.equal(displayedCharm({ ...state, charmPinned: true }, catalogue, halloween).id, 'wafer');
 	assert.equal(displayedCharm({ ...state, charmPinned: true }, catalogue, new Date(2027, 9, 31, 12).getTime()).id, 'wafer');
@@ -105,8 +115,10 @@ test('festive display preserves manual state and falls back for pins or absent a
 test('older favourites are pinned and explicit festive preferences survive restoration and reset', () => {
 	const legacy = restoreState({ charmId: 'wafer', festiveEnabled: true });
 	assert.equal(legacy.charmPinned, true);
-	assert.equal(restoreState(undefined).festiveEnabled, false);
-	assert.equal(restoreState({ festiveEnabled: 'true' }).festiveEnabled, false);
+	assert.equal(restoreState(undefined).festiveEnabled, true);
+	assert.equal(restoreState({ festiveEnabled: 'true' }).festiveEnabled, true);
+	assert.equal(restoreState({ festiveEnabled: false }).festiveEnabled, false);
+	assert.equal(restoreState({ charmId: 'wafer', festiveEnabled: false }).charmPinned, true);
 	const state = { ...DEFAULT_STATE, charmId: 'wafer', festiveEnabled: true, charmPinned: false };
 	assert.deepEqual(restoreState(JSON.parse(JSON.stringify(state))), state);
 	const reset = resetState({ ...state, charmPinned: true, size: 140, cordLength: 250 });
@@ -114,6 +126,43 @@ test('older favourites are pinned and explicit festive preferences survive resto
 	assert.equal(reset.festiveEnabled, true);
 	assert.equal(reset.charmId, 'wafer');
 	assert.equal(reset.size, DEFAULT_STATE.size);
+});
+
+test('US celebration dates resolve to bundled artwork, including floating dates and Easter', () => {
+	const cases: Array<[number, number, number, string]> = [
+		[2026, 1, 1, "New Year's Day"], [2026, 1, 19, 'Martin Luther King Jr. Day'],
+		[2026, 2, 14, "Valentine's Day"], [2026, 2, 16, "Presidents' Day"],
+		[2026, 3, 17, "St. Patrick's Day"], [2024, 3, 31, 'Easter'],
+		[2025, 4, 20, 'Easter'], [2026, 4, 5, 'Easter'], [2027, 3, 28, 'Easter'],
+		[2026, 4, 22, 'Earth Day'], [2026, 5, 10, "Mother's Day"],
+		[2026, 5, 25, 'Memorial Day'], [2026, 6, 19, 'Juneteenth'],
+		[2026, 6, 21, "Father's Day"], [2026, 7, 4, 'Independence Day'],
+		[2026, 9, 7, 'Labor Day'], [2026, 10, 31, 'Halloween'],
+		[2026, 11, 11, 'Veterans Day'], [2026, 11, 26, 'Thanksgiving'],
+		[2026, 11, 27, 'Black Friday'], [2026, 11, 30, 'Cyber Monday'],
+		[2026, 12, 24, 'Christmas Eve'], [2026, 12, 25, 'Christmas'],
+		[2026, 12, 31, "New Year's Eve"],
+	];
+	for (const [year, month, date, name] of cases) {
+		const day = festiveDay(new Date(year, month - 1, date, 12).getTime());
+		assert.equal(day?.name, name, `${year}-${month}-${date}`);
+		assert.ok(day && festiveCharm(day, CHARMS), `${name} must work without an imported pack.`);
+	}
+});
+
+test('Christmas rotation is stable within a local day and specific holidays take precedence', () => {
+	const morning = festiveDay(new Date(2026, 11, 1, 0).getTime())!;
+	const evening = festiveDay(new Date(2026, 11, 1, 23, 59).getTime())!;
+	const nextDay = festiveDay(new Date(2026, 11, 2, 0).getTime())!;
+	assert.deepEqual(morning, evening);
+	assert.equal(morning.charmKey, 'santa-claus');
+	assert.equal(nextDay.charmKey, 'reindeer');
+	assert.equal(festiveDay(new Date(2025, 11, 1, 12).getTime())?.name, 'Cyber Monday');
+	assert.equal(festiveDay(new Date(2026, 11, 24, 12).getTime())?.charmKey, 'santa-claus');
+	assert.equal(festiveDay(new Date(2026, 11, 25, 12).getTime())?.charmKey, 'christmas-tree');
+	const saved = { ...DEFAULT_STATE, charmId: 'wafer' };
+	assert.equal(displayedCharm(saved, CHARMS, new Date(2027, 0, 2, 0).getTime()).id, 'wafer');
+	assert.equal(saved.charmId, 'wafer');
 });
 
 test('state writes are ordered and flush waits for the final confirmed value', async () => {

@@ -82,7 +82,7 @@ function renderWorlds() {
     const monogram = element('span', 'world-monogram', world.code);
     monogram.setAttribute('aria-hidden', 'true');
     button.append(monogram, element('strong', '', world.name), element('span', 'world-status', world.charmIds.length
-      ? `${world.charmIds.length} classic ${world.charmIds.length === 1 ? 'design' : 'designs'}` : world.preview ? 'New art preview' : 'On the drawing board'));
+      ? `${world.charmIds.length} included in the trial` : world.id === 'coding' ? 'Original Terminal included' : 'On the drawing board'));
     button.addEventListener('click', () => chooseWorld(world.id));
     worlds.append(button);
   }
@@ -159,14 +159,14 @@ function render() {
     const copy = element('div', 'card-copy');
     copy.append(element('span', 'card-group', presentationGroup(item)), element('h3', '', item.name), element('p', 'card-description', item.description));
     const foot = element('div', 'card-foot');
-    foot.append(element('span', item.kind === 'extra' ? 'price-label' : 'included-label', item.kind === 'extra' ? 'Free review pack' : 'Included with Charmlet'));
+    foot.append(element('span', item.kind === 'extra' ? 'price-label' : 'included-label', 'Included in the trial'));
     const preview = element('button', 'preview-link', 'Try it');
     preview.type = 'button';
     preview.setAttribute('aria-label', `Preview ${item.name} in the live swing demo`);
     preview.addEventListener('click', () => tryCharm(item));
     foot.append(preview);
-    if (item.kind === 'extra') {
-      const download = element('a', 'download-link', 'Download charm');
+    if (item.download) {
+      const download = element('a', 'download-link', 'Optional pack');
       download.href = item.download;
       download.download = item.download.split('/').pop();
       download.setAttribute('aria-label', `Download ${item.name} charm`);
@@ -225,7 +225,7 @@ try {
   renderWorlds();
   document.querySelector('#included-count').textContent = String(catalogue.filter(item => item.kind === 'included').length);
   document.querySelector('#extra-count').textContent = String(catalogue.filter(item => item.kind === 'extra').length);
-  document.querySelector('#release-label').textContent = `Development preview ${data.version}`;
+  document.querySelector('#release-label').textContent = `Trial ${data.version} · ${catalogue.length} offline charms`;
   document.querySelector('#surprise-charm').disabled = false;
   for (const link of document.querySelectorAll('.extension-download')) {
     link.href = data.extensionDownload;

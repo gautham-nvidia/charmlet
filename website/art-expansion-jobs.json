@@ -1,0 +1,318 @@
+[
+  {
+    "id": "ate-tester", "name": "ATE Tester", "group": "Test Bench", "accent": "#93a5ad",
+    "subject": "One generic semiconductor automatic test equipment station, shown as a compact complete professional machine in three-quarter view. Its recognizable centrepiece is a large square graphite-grey TEST HEAD with a flat horizontal top docking interface: a circular gold-contact DUT load-board interface and small central test socket clearly visible on top. A sturdy articulated metal manipulator supports the heavy test head beside a modest light-grey ventilated electronics cabinet. A thick neatly bundled dark cable conduit joins the cabinet to the test head. Prioritize the test head, circular docking interface and supporting arm, not a wall of cabinets. Physically plausible unbranded lab equipment with neutral painted sheet metal, black fixtures and restrained metallic contacts. No computer desktop, hospital scanner, robot face, fantasy machinery, logo, writing or confidential/proprietary tester layout."
+  },
+  {
+    "id": "murugan", "name": "Murugan", "group": "Sacred Traditions", "accent": "#c89c60",
+    "subject": "One original respectful full-length South Indian Hindu Murugan devotional figurine in warm antiqued bronze with restrained hand-painted dark teal and vermilion cloth accents. A youthful deity with ONE serene human face and TWO arms stands upright on a modest small integrated pedestal, wearing a traditional crown and draped dhoti. One hand holds an upright slender Vel spear with a clear broad leaf-shaped spearhead; the other hand gives a gentle blessing. A compact peacock stands close beside his feet with its neck and folded blue-green tail visibly recognizable. Show the complete head, torso, both arms, both legs, feet, entire Vel and entire peacock. Accurate traditional symbolic identity, dignified natural proportions and believable sculpted metal. No caricature, modern actor likeness, extra faces or limbs, comic superhero armour, lettering or recreation of a specific copyrighted temple statue."
+  },
+  {
+    "id": "oscilloscope", "name": "Oscilloscope", "group": "Test Bench", "accent": "#80a6bc",
+    "subject": "One recognizable modern benchtop digital oscilloscope in a light-grey rectangular case, viewed from the front at a slight angle. A LARGE dark screen fills the left two-thirds and clearly displays a bright cyan sine wave and a yellow square wave on a subtle graticule. On the right are realistic small rotary knobs and grouped buttons; along the lower front are four BNC input sockets with modest coloured channel rings. Include one short neatly coiled black probe lead beside the case. The waveform screen, control knobs and BNC sockets must remain obvious at a small size. No brand, writing, invented large dial, television antenna, computer keyboard or surrounding bench."
+  },
+  {
+    "id": "precision-tweezers", "name": "Precision Tweezers", "group": "Test Bench", "accent": "#a9afb8",
+    "subject": "One complete pair of fine stainless-steel ESD precision electronics tweezers, placed diagonally with the joined broad spring end at upper left and TWO distinct narrow pointed tips at lower right. The two long flat metal arms separate slightly toward the tips. Satin brushed steel, realistic slim thickness and soft highlights along the edges. A familiar laboratory tweezer silhouette, not scissors, pliers, chopsticks, a tuning fork or a knife. No logo, writing, additional tool, jewellery or oversized ornament."
+  },
+  {
+    "id": "digital-multimeter", "name": "Digital Multimeter", "group": "Test Bench", "accent": "#d5b24c",
+    "subject": "One unbranded handheld digital multimeter with a yellow rubber protective surround, dark graphite face, a large pale LCD at the top, a clearly visible central rotary selector dial, and red and black input sockets at the bottom. A compact pair of red and black insulated test leads curl closely beside it with their thin metal probe tips visible. The LCD shows only a simple neutral zero reading, no brand or dense illegible labels. Physically believable handheld instrument, complete from top to bottom, slightly tilted for depth. No clamp-meter jaws, phone features, calculator keypad or surrounding bench."
+  },
+  {
+    "id": "inspection-microscope", "name": "Inspection Microscope", "group": "Test Bench", "accent": "#b5b4aa",
+    "subject": "One compact professional stereo inspection microscope used for electronics work. TWO black angled eyepieces lead to a cream binocular optical head, a short objective assembly points downward, and a sturdy vertical metal post supports it above a small dark flat inspection stage. Show the focus knobs, complete base and recognizable binocular silhouette. Believable ivory painted metal, black rubber eyecups and restrained glass highlights. No person, slide photograph, laboratory scene, camera screen, brand, writing or extra instruments."
+  },
+  {
+    "id": "soldering-iron", "name": "Soldering Iron", "group": "Test Bench", "accent": "#6f9ba9",
+    "subject": "One recognizable electronics soldering iron resting diagonally in a compact open coiled-metal safety stand on a small black base. The iron has a dark teal insulated handle, a slim silver heated shaft and one fine conical metal tip, all fully visible. A short folded section of black power cable stays close to the handle. Realistic tool proportions, matte polymer and brushed steel. No flame, glowing orange blade, smoke cloud, soldered board, person, labels or brand. Make the handle, narrow tip and coil stand easy to distinguish at small size."
+  },
+  {
+    "id": "bench-power-supply", "name": "Bench Power Supply", "group": "Test Bench", "accent": "#9eabb6",
+    "subject": "One compact adjustable DC bench power supply with a light-grey rectangular metal case in three-quarter front view. Two small dark digital display windows, one above the other, indicate voltage and current with simple cyan and amber numeric segments. Two large black adjustment knobs sit to one side; a pair of red and black banana terminals is clearly visible along the lower front. A modest vented side panel gives believable depth. Clear professional instrument, no waveform screen, oscilloscope probes, computer features, brand, text labels or fantasy parts."
+  },
+  {
+    "id": "digital-caliper", "name": "Digital Caliper", "group": "Test Bench", "accent": "#a0adb3",
+    "subject": "One complete stainless-steel digital vernier caliper, angled diagonally. Show its recognizable opposing measuring jaws, the smaller upper inside-measurement jaws, a straight graduated metal beam and a sliding dark rectangular LCD module near the jaws. The jaws are slightly open. Realistic slim brushed-steel construction, fine engraved ticks and a simple zero reading, not dense text. Keep the whole beam and jaws inside the canvas. No scissors, wrench, knife, brand, extra tool or surrounding workbench."
+  },
+  {
+    "id": "mercury", "name": "Mercury", "group": "Solar System", "accent": "#a6a29c", "style": "cosmos",
+    "subject": "The complete spherical planet Mercury as a scientifically informed astronomical render. A small airless rocky world with neutral warm-grey and charcoal cratered terrain, overlapping impact craters and subtly brighter rays. A softly lit upper-left hemisphere and shaded right edge reveal round volume while keeping the full circular outline visible. No atmosphere, oceans, vegetation, moons, rings, face, artificial crater symmetry or surrounding starfield. This is Mercury, not Earth's Moon photographed on a flat disk."
+  },
+  {
+    "id": "venus", "name": "Venus", "group": "Solar System", "accent": "#d6bb85", "style": "cosmos",
+    "subject": "The complete spherical planet Venus viewed from space in a scientifically informed render. Its entire surface is hidden beneath thick creamy ivory, pale ochre and muted golden atmospheric clouds with broad subtle swirling bands. Soft directional sunlight gives a convincing sphere and delicate atmospheric rim. No visible continents, ocean, lava cracks, cratered ground, rings, moons, face or surrounding starfield. Warm dense cloud-covered Venus, distinct from Jupiter's striped appearance."
+  },
+  {
+    "id": "earth", "name": "Earth", "group": "Solar System", "accent": "#6799c5", "style": "cosmos",
+    "subject": "The complete spherical Earth seen from space, centred on the Indian Ocean with recognizable Africa to the left, India above the centre and Australia toward the lower right. Deep blue oceans, natural forest-green and tan continents, fine white cloud swirls and a slim pale-blue atmospheric edge. Believable continent shapes and a visible sunlit sphere, not a flat map or simplified emoji. No country borders, labels, buildings, rings, extra planets or surrounding starfield. Do not use chroma-key neon green for any land."
+  },
+  {
+    "id": "mars", "name": "Mars", "group": "Solar System", "accent": "#c47a56", "style": "cosmos",
+    "subject": "The complete spherical planet Mars in a scientifically informed render. Rust-red and ochre dusty terrain, darker basaltic regions, a small pale polar ice cap, subtle craters and the broad Valles Marineris canyon feature. Natural rocky texture and directional light, with the whole circular silhouette visible. No blue oceans, green vegetation, glowing lava, rings, moons, face or surrounding starfield. Make the characteristic subdued rusty-red colour immediately recognizable."
+  },
+  {
+    "id": "jupiter", "name": "Jupiter", "group": "Solar System", "accent": "#c69b7b", "style": "cosmos",
+    "subject": "The complete spherical gas giant Jupiter with characteristic horizontal cream, tan and muted terracotta cloud bands, turbulent pale ovals, and one clearly recognizable Great Red Spot in the southern hemisphere. Rich natural cloud texture and subtle spherical shading. No solid rocky surface, bright fantasy colours, prominent rings, moons, face or surrounding starfield. The bands and oval storm must be clear even at a small app size."
+  },
+  {
+    "id": "saturn", "name": "Saturn", "group": "Solar System", "accent": "#d1bb8e", "style": "cosmos",
+    "subject": "The complete planet Saturn and its iconic broad flat rings in a scientifically informed render. A pale golden-beige spherical globe with understated cloud bands, surrounded by thin concentric icy rings tilted diagonally in perspective. Show the dark Cassini division, the globe naturally occluding the rear rings, and a subtle ring shadow on the globe. The entire ring ellipse must fit comfortably in frame. No purple fantasy planet, metal jewellery, extra moons, face or surrounding starfield."
+  },
+  {
+    "id": "uranus", "name": "Uranus", "group": "Solar System", "accent": "#8fc7ce", "style": "cosmos",
+    "subject": "The complete spherical planet Uranus in a scientifically informed visible-light render. A serene pale cyan and blue-green ice giant with very subtle atmospheric banding, gentle spherical shading and a bright softly lit edge. The clean pale turquoise globe is the main subject. Omit its very faint rings at this small scale rather than adding Saturn-like rings. No continents, stormy deep-blue Neptune texture, moons, face, decorative hardware or surrounding starfield."
+  },
+  {
+    "id": "neptune", "name": "Neptune", "group": "Solar System", "accent": "#6495c5", "style": "cosmos",
+    "subject": "The complete spherical planet Neptune in a scientifically informed artistic render. A medium ocean-blue and cyan atmospheric globe, distinctly richer blue than pale Uranus without unrealistically saturated neon colour. Show subtle horizontal cloud structure, a few delicate wispy white high-altitude clouds and one restrained darker storm feature. Natural spherical lighting. No Earth-like continents, oceans with coastlines, large rings, moons, face or surrounding starfield."
+  },
+  {
+    "id": "sun", "name": "Sun", "group": "Solar System", "accent": "#e7aa4a", "style": "cosmos",
+    "subject": "Our Sun as a complete small spherical astronomical render with warm golden-yellow and amber photospheric granulation, a few modest darker sunspots and short restrained orange prominences hugging the edge. The bright sphere has rich visible texture, not an overexposed white circle. Keep all flame-like prominences short and within the compact subject. No smiling face, pointed cartoon rays, planets, giant flare reaching the frame edge or surrounding black space. The background remains the required chroma green."
+  },
+  {
+    "id": "moon", "name": "Moon", "group": "Solar System", "accent": "#b8b8b2", "style": "cosmos",
+    "subject": "Earth's Moon as a complete spherical near-side astronomical render. Recognizable dark lunar maria on pale silver-grey terrain, visible craters and a bright Tycho ray system. Gentle upper-left sunlight gives depth while retaining the full round outline. Neutral grey lunar geology, no orange planet colours, atmosphere, vegetation, rings, astronaut, flag, face or surrounding starfield. An original render, not a pasted telescope photograph."
+  },
+  {
+    "id": "milky-way", "name": "Milky Way", "group": "Stars & Galaxies", "accent": "#c9abc9", "style": "cosmos",
+    "subject": "A compact artist's impression of our Milky Way galaxy seen from an elevated oblique angle: a luminous warm-white elongated central bar and bulge, with several graceful blue-white spiral arms containing dusty pink and lavender star-forming regions. Make a complete delicate tilted galactic disk with irregular natural arm edges and a clearly brighter core. It is an astronomical illustration of a barred spiral galaxy, not a literal external photograph. No surrounding black rectangular starfield, frame, rings, labels, planets or isolated stars scattered outside the compact galaxy."
+  },
+  {
+    "id": "parallel-universes", "name": "Parallel Universes", "group": "Stars & Galaxies", "accent": "#af93d5", "style": "cosmos",
+    "subject": "An explicitly imaginative science-fiction illustration of TWO distinct miniature cosmic worlds seen through two softly overlapping luminous oval portals. One portal encloses a small warm amber spiral galaxy, the other a cool blue-violet galaxy; a short flowing ribbon of starlight connects their edges. Give the portals convincing glass-like depth but no industrial metal frame. Two clear separate worlds form one compact readable silhouette. This is playful speculative artwork, not a claim of a photographed parallel universe. No human, text, enclosing rectangular starfield, countless tiny planets, neon clutter or long rays."
+  },
+  {
+    "id": "diamond", "name": "Diamond", "group": "Gemstones", "accent": "#c9d8e0", "style": "gemstone",
+    "subject": "One loose colourless round brilliant-cut diamond, seen at a three-quarter angle that clearly reveals its broad faceted crown, narrow girdle and tapering pavilion. Accurate crisp triangular and kite-shaped facets, cool white studio reflections and a few subtle spectral highlights. The gemstone is not in a ring or metal setting. Treat its body as a luminous solid cut jewel without showing the chroma-green background through it. No extra gems, giant starbursts, text or jewellery hardware."
+  },
+  {
+    "id": "ruby", "name": "Ruby", "group": "Gemstones", "accent": "#bd5263", "style": "gemstone",
+    "subject": "One loose deep pigeon-blood-red ruby with an oval faceted cut, slightly tilted to show its crown and thickness. Rich crimson material, crisp facets, deep burgundy internal shading and small white studio reflections. A compact substantial physical gemstone, not a red plastic bead, heart, ring or flat icon. No metal setting, extra stones, chroma-green reflections, text or exaggerated sparkles."
+  },
+  {
+    "id": "emerald", "name": "Emerald", "group": "Gemstones", "accent": "#528b75", "style": "gemstone",
+    "subject": "One loose natural deep forest-green emerald in the classic rectangular emerald cut with clipped corners and clear concentric step facets. Show the broad top table, a little side thickness, subtle natural internal inclusions and restrained white highlights. Keep the stone dark richly green, never the neon chroma-green background colour. No metal setting, jewellery, extra stones, logo or oversized sparkle. A recognizable rectangular faceted emerald."
+  },
+  {
+    "id": "sapphire", "name": "Sapphire", "group": "Gemstones", "accent": "#526da8", "style": "gemstone",
+    "subject": "One loose natural royal-blue sapphire in a softly squared cushion cut, angled to reveal crisp facets and believable thickness. Deep blue internal colour, cobalt and pale-blue reflections, subtle dark facet boundaries and modest white studio highlights. No ring, metal mount, extra gems, printed icon, writing or exaggerated sparkles. Clearly a polished solid blue gemstone with a different outline from an oval ruby or rectangular emerald."
+  },
+  {
+    "id": "amethyst", "name": "Amethyst", "group": "Gemstones", "accent": "#a18ac0", "style": "gemstone",
+    "subject": "One small natural amethyst crystal cluster with several distinct purple hexagonal prismatic points growing from a compact rough pale mineral base. Three larger points at different heights give a clear asymmetric silhouette, with smaller crystals close to the base. Subtle translucent violet depth, natural facet edges and realistic mineral texture. No neon glow, jewellery mount, floating fragments, text or chroma-green tint inside the crystal."
+  },
+  {
+    "id": "opal", "name": "Opal", "group": "Gemstones", "accent": "#c3b7c1", "style": "gemstone",
+    "subject": "One polished oval Australian-style white opal cabochon with a rounded domed top, creamy translucent body and beautiful small natural patches of blue, peach, gold and violet play-of-colour. A subtle side edge and a soft white studio highlight establish depth. No ring or metal setting, giant rainbow flare, text, extra stone, cartoon face or green background visible through the body. Refined believable opal material rather than glitter resin."
+  },
+  {
+    "id": "citrine", "name": "Citrine", "group": "Gemstones", "accent": "#d9b566", "style": "gemstone",
+    "subject": "One complete natural golden citrine quartz crystal point, an elongated hexagonal prism ending in a clear pyramidal tip, with a slightly rough pale base. Honey-yellow and warm amber material, crisp natural facets, fine internal mineral details and restrained studio highlights. Tilt it gently so its thickness is clear. No jewellery setting, extra shards, glowing magical effect, writing or chroma-green contamination."
+  },
+  {
+    "id": "rose-quartz", "name": "Rose Quartz", "group": "Gemstones", "accent": "#d7aaa9", "style": "gemstone",
+    "subject": "One small naturally rounded rough rose-quartz specimen, asymmetric and softly faceted rather than cut into a heart. Milky blush-pink quartz with fine cloudy internal texture, a few natural fracture planes and subtle polished high points. A comforting believable mineral with a distinct irregular silhouette. No jewellery, crystal tower, extra stones, glitter, face, writing or chroma-green reflection."
+  },
+  {
+    "id": "zodiac-aries", "name": "Aries", "group": "Zodiac", "accent": "#c58c69", "style": "symbol",
+    "subject": "The exact conventional Aries zodiac glyph ♈ as one solid brushed-copper sculptural object. One straight lower stem divides at the top into TWO symmetrical ram-horn curves that curl outward and down. Preserve the familiar simple Aries outline with open green space between the horns. Front view with a little believable metal thickness. No ram head, enclosing disk, letters, extra strokes, constellation dots or ornament."
+  },
+  {
+    "id": "zodiac-taurus", "name": "Taurus", "group": "Zodiac", "accent": "#a5ad8b", "style": "symbol",
+    "subject": "The exact conventional Taurus zodiac glyph ♉ as one solid softly polished bronze-green metal object. A complete circular ring below, with TWO symmetrical upward-curving horns attached to its upper sides. The circle is genuinely open in the middle, not a disk. Clear traditional Taurus silhouette, front view with modest thickness. No bull face, letters, extra strokes, frame or decoration."
+  },
+  {
+    "id": "zodiac-gemini", "name": "Gemini", "group": "Zodiac", "accent": "#c9b67f", "style": "symbol",
+    "subject": "The exact conventional Gemini zodiac glyph ♊ as one solid warm-gold sculptural object: TWO parallel vertical stems joined by a gently curved horizontal bar across the top and another across the bottom, like the traditional Gemini Roman-II symbol. Keep the middle space open. Precise symmetrical recognizable glyph, front view with subtle physical thickness. No human twins, extra stars, letters, enclosing disk or decorative loops."
+  },
+  {
+    "id": "zodiac-cancer", "name": "Cancer", "group": "Zodiac", "accent": "#b2bec8", "style": "symbol",
+    "subject": "The exact conventional Cancer zodiac glyph ♋ made as two matched satin-silver sculptural curls. It resembles a sideways opposed 69: a round open loop at upper left with its tail curving to the right, and a round open loop at lower right with its tail curving to the left. Preserve the familiar horizontal Cancer arrangement and clear open loops. No crab, extra strokes, letters, enclosing disk or stars."
+  },
+  {
+    "id": "zodiac-leo", "name": "Leo", "group": "Zodiac", "accent": "#d5aa66", "style": "symbol",
+    "subject": "The exact conventional Leo zodiac glyph ♌ as one warm-gold sculptural metal object. A small open circular loop at lower left connects to a line rising into a tall curved arch, which descends at the right and curls outward as a short tail. Preserve the familiar single flowing Leo zodiac silhouette. No lion face, extra strokes, printed letters, enclosing plaque or decorative stars."
+  },
+  {
+    "id": "zodiac-virgo", "name": "Virgo", "group": "Zodiac", "accent": "#b49d8d", "style": "symbol",
+    "subject": "The exact conventional Virgo zodiac glyph ♍ as one solid rose-bronze sculptural object. The traditional lowercase-m-like form has three upright stems/arches, with the final right stroke looping inward and crossing back beside the last stem. It has an inward closed curl and NO outward arrow. Preserve Virgo's canonical silhouette, front view with subtle thickness. No woman figure, lettering, extra ornament or enclosing disk."
+  },
+  {
+    "id": "zodiac-libra", "name": "Libra", "group": "Zodiac", "accent": "#b5c5ca", "style": "symbol",
+    "subject": "The exact conventional Libra zodiac glyph ♎ as a precise satin-silver sculpture: a straight horizontal lower baseline, and above it a second horizontal stroke interrupted at the centre by an upward semicircular arch. The two elements stay clearly separated by open space. Canonical symmetrical Libra glyph with physical thickness. No weighing scales, omega letter substituted alone, extra strokes, enclosing disk or decorative stars."
+  },
+  {
+    "id": "zodiac-scorpio", "name": "Scorpio", "group": "Zodiac", "accent": "#aa7d83", "style": "symbol",
+    "subject": "The exact conventional Scorpio zodiac glyph ♏ as one dark rose-copper sculptural object. A traditional lowercase-m-like form with three upright stems/arches ends at the right in a short outward-curving tail with a clear pointed ARROWHEAD directed up and right. This outward arrow distinguishes Scorpio from Virgo's inward loop. No scorpion animal, enclosing disk, text, extra strokes or stars."
+  },
+  {
+    "id": "zodiac-sagittarius", "name": "Sagittarius", "group": "Zodiac", "accent": "#b69dca", "style": "symbol",
+    "subject": "The exact conventional Sagittarius zodiac glyph ♐ as one solid satin-violet metallic sculpture. A single straight diagonal arrow points from lower left to upper right, with one short perpendicular crossbar across the shaft near its lower half. A clear triangular arrow point and clean canonical proportions. No bow, human archer, extra arrows, enclosing badge, lettering or decorative stars."
+  },
+  {
+    "id": "zodiac-capricorn", "name": "Capricorn", "group": "Zodiac", "accent": "#91a79f", "style": "symbol",
+    "subject": "The exact conventional Capricorn zodiac glyph ♑ as one sage-bronze metal sculpture. Reproduce the traditional n-like rising left strokes connected to a rounded closed loop on the right with a descending curved tail. Preserve the precise recognizable Capricorn symbol rather than inventing a decorative monogram. Front view with slight physical thickness and clear open spaces. No goat, fish, letters, enclosing disk or added ornament."
+  },
+  {
+    "id": "zodiac-aquarius", "name": "Aquarius", "group": "Zodiac", "accent": "#87b2c5", "style": "symbol",
+    "subject": "The exact conventional Aquarius zodiac glyph ♒ as TWO parallel horizontal zigzag wave strokes made of solid satin-blue metal. Each stroke has the same regular angular peaks and troughs; the upper and lower rows stay separate with a clear even gap. Precise familiar Aquarius outline, front view with believable thickness. No water jug, sine waves, extra third row, enclosing disk, letters or stars."
+  },
+  {
+    "id": "zodiac-pisces", "name": "Pisces", "group": "Zodiac", "accent": "#a59dbf", "style": "symbol",
+    "subject": "The exact conventional Pisces zodiac glyph ♓ as one solid softly polished lavender-silver metal sculpture. TWO opposing vertical curved arcs bow away from one another and are joined by one short straight horizontal crossbar at the middle. Balanced symmetrical canonical Pisces outline with open interior. No fish illustration, extra strokes, enclosing disk, letters or decorative stars."
+  },
+  {
+    "id": "new-year-popper", "name": "New Year Party Popper", "group": "Seasonal", "accent": "#c9a15b",
+    "subject": "One festive gold-and-deep-violet party popper cone angled upward, with three short curling metallic ribbons and a few large crisp confetti pieces emerging from its open end. Keep everything in one compact composition with no tiny scattered particles. Believable foil, paper and satin textures, warm celebratory studio lighting. No year numerals, text, logo, flame, long firework trails or surrounding scene."
+  },
+  {
+    "id": "valentine-chocolates", "name": "Valentine Chocolates", "group": "Seasonal", "accent": "#c47784",
+    "subject": "One small open heart-shaped deep-red chocolate gift box with a subtle gold rim and a handful of clearly separated realistic dark and milk chocolates in paper cups. The matching heart lid leans closely behind it with a simple satin bow. A compact romantic physical gift with believable velvet-paper, ribbon and chocolate textures. No words, printed hearts everywhere, person, brand or extra objects."
+  },
+  {
+    "id": "shamrock", "name": "Shamrock", "group": "Seasonal", "accent": "#6f9f78",
+    "subject": "One natural three-leaf shamrock sprig for Saint Patrick's Day. Exactly THREE clearly separated softly heart-shaped leaflets join a short curved stem. Rich deep forest-green leaves with fine veins, restrained natural highlights and a modest green satin ribbon tied near the stem. A recognizable botanical shamrock, not a four-leaf clover, neon-green icon, cartoon face, leprechaun or printed badge. All foreground greens are darker than the chroma-key background."
+  },
+  {
+    "id": "easter-basket", "name": "Easter Basket", "group": "Seasonal", "accent": "#c7adc0",
+    "subject": "One small woven wicker Easter basket with a complete curved handle, holding THREE large pastel eggs in soft lavender, pale blue and warm peach. Each egg has one simple painted stripe or dotted pattern. A little straw and a restrained cream ribbon give realistic tactile detail. Compact clearly recognizable basket-and-eggs silhouette. No rabbit face, chocolate brand, writing, long grass, excessive tiny decoration or surrounding scene."
+  },
+  {
+    "id": "peace-dove", "name": "Peace Dove", "group": "Seasonal", "accent": "#c7d0c4",
+    "subject": "One graceful ivory-white dove with a compact raised-wing pose, holding one short olive sprig in its beak. Show the complete bird, two naturally formed wings, small tail and clear head profile with realistic soft feather detail. Dark sage olive leaves stay close to its beak. A calm symbol of peace with dignified natural proportions. No halo, words, flag, badge, glowing outline or scattered loose feathers."
+  },
+  {
+    "id": "white-house", "name": "White House", "group": "Seasonal", "accent": "#c7c4b5",
+    "subject": "An original compact architectural render of the recognizable White House south facade in Washington DC: a white neoclassical building with a curved central columned portico, rows of tall windows and restrained roof detail. Show the complete building as a freestanding small architectural cutout with minimal integrated foundation. Believable pale stone and soft neutral shadows within the architecture. No people, president likeness, political campaign material, writing, flagpole, broad grounds or enclosing frame."
+  },
+  {
+    "id": "freedom-bell", "name": "Freedom Bell", "group": "Seasonal", "accent": "#ab8f67",
+    "subject": "One original historic American liberty-style bronze bell beneath a compact weathered wooden yoke. A broad flared bell mouth, visible clapper and one characteristic narrow vertical crack evoke the familiar freedom bell. Warm aged bronze patina, natural wood grain and believable metal hardware. A respectful symbol of freedom, no legible inscription, political logo, surrounding building, frame, chain or extra object."
+  },
+  {
+    "id": "independence-rockets", "name": "Independence Rockets", "group": "Seasonal", "accent": "#b66c75",
+    "subject": "A compact decorative bundle of THREE unlit miniature celebration rockets for US Independence Day, with paper bodies in red, ivory and navy-blue, a few simple white stars and stripes, pointed conical caps and short wooden sticks. A small red ribbon ties the bundle together. Clearly festive toy-like display objects with realistic paper texture, no burning fuse, explosion, smoke, instructions, text, brand or long trailing sticks."
+  },
+  {
+    "id": "labor-day-gear", "name": "Labor Day Gear", "group": "Seasonal", "accent": "#d2b05a",
+    "subject": "One yellow construction hard hat resting closely beside a compact pair of well-used tan leather work gloves. The hat has a recognizable ridged safety-helmet shape and short front brim; the gloves show believable folded fingers and stitched seams. A respectful tactile tribute to everyday work, with clear simple silhouettes. No person, slogan, company logo, tool clutter, bench, floor shadow or extra objects."
+  },
+  {
+    "id": "remembrance-flag", "name": "Remembrance Flag", "group": "Seasonal", "accent": "#7c8eaa",
+    "subject": "One respectfully folded triangular United States ceremonial flag, showing a deep navy-blue fabric field with carefully spaced small white five-pointed stars and a neat thick folded cloth edge. It rests upright as a complete compact triangle without a display box. Realistic woven fabric and soft folds. A quiet remembrance symbol, not a military medal or claim of service. No dog tags, badge, lettering, political slogan, pole, person or extra object."
+  },
+  {
+    "id": "santa-claus", "name": "Santa Claus", "group": "Seasonal", "accent": "#c67062",
+    "subject": "One original full-body Santa Claus holiday figurine with a warm kindly expression, natural white beard, red wool coat and trousers with cream fur trim, a red soft hat, black belt and black boots. He stands holding a small simple brown toy sack closely at his side and gives a modest friendly wave. Believable handcrafted painted-resin and fabric textures, not a real person's photo, chibi mascot or copied film character. Both arms, both boots and complete hat must be visible. No brand, text, extra characters, sleigh, frame or tiny toy clutter."
+  },
+  {
+    "id": "reindeer", "name": "Reindeer", "group": "Seasonal", "accent": "#aa9277",
+    "subject": "One complete natural-proportioned brown reindeer standing in a gentle three-quarter pose, with FOUR clearly formed legs, a soft ivory neck ruff, two modest branching antlers and a natural dark nose. It wears a simple muted-red wool scarf as a Christmas accent. Fine realistic rendered fur and calm expressive eyes, not a cartoon, famous red-nosed character or wildlife photo cutout. Show the entire animal and antlers with generous margins. No sleigh, harness, bells, glitter or extra animal."
+  },
+  {
+    "id": "snow-globe", "name": "Snow Globe", "group": "Seasonal", "accent": "#a8bbc6",
+    "subject": "One small winter snow globe: a clear rounded glass dome on a simple warm wooden base, enclosing two miniature dark evergreens on white snow with a few crisp falling snowflakes. Believable curved glass highlights, an opaque pale winter interior and a readable round silhouette. Keep the interior neutral, with no green backdrop transmitted through the globe. No words, year, brand, Santa figure, giant sparkles, surrounding scene or extra objects."
+  },
+  {
+    "id": "gingerbread-house", "name": "Gingerbread House", "group": "Seasonal", "accent": "#c49a79",
+    "subject": "One small complete gingerbread house with warm baked-biscuit walls, a steep roof edged in thick white icing, a red candy door, two small windows and a few restrained colourful candy details. Realistic biscuit pores and glossy icing, charming but physically believable. A compact freestanding edible house with no large baseplate. No text, brand, snow landscape, extra houses, people or repeated decorative frame."
+  },
+  {
+    "id": "holiday-wreath", "name": "Holiday Wreath", "group": "Seasonal", "accent": "#78937a",
+    "subject": "One complete circular Christmas wreath of deep forest-green evergreen sprigs, a few red berries and one generous red velvet bow at the bottom. A clearly open central hole, natural needle texture and restrained warm highlights. Make the greenery dark sage and forest-green, never bright chroma green. No door, wall, candle, lettering, glittering frame, loose sprigs or surrounding scene."
+  },
+  {
+    "id": "christmas-stocking", "name": "Christmas Stocking", "group": "Seasonal", "accent": "#c07a77",
+    "subject": "One complete red knitted Christmas stocking with a fluffy ivory cuff, a rounded toe pointing gently to the right and believable wool cable-knit texture. A tiny wrapped cream gift and one short dark-pine sprig peek from the opening. Show the stocking's entire heel, toe and cuff. No written name, lettering, brand, fireplace, hanging string, surrounding scene or excessive tiny gifts."
+  },
+  {
+    "id": "candy-cane", "name": "Candy Cane", "group": "Seasonal", "accent": "#c87977",
+    "subject": "One complete classic red-and-ivory striped candy cane, a straight solid candy stick with a smoothly curved hook at the top, tilted slightly diagonally. Clean continuous spiralling stripes, subtle glossy sugar texture and restrained white highlights. A compact recognizable physical sweet with no face, bow, wrapper, words, logo, second cane or surrounding scene."
+  },
+  {
+    "id": "ganesha", "name": "Ganesha", "group": "Sacred Traditions", "accent": "#bf9c73",
+    "subject": "One original respectful full-body Ganesha devotional figurine in warm antiqued bronze with a muted saffron dhoti. Recognizable elephant head with broad ears, one gently curved trunk, one broken tusk, a rounded belly and FOUR carefully formed arms. Seated naturally on a modest integrated lotus pedestal; one front hand gives blessing, the other holds a small bowl of modak sweets, and the upper hands hold restrained traditional implements. Dignified traditional sculptural anatomy and believable cast-metal texture. No human actor likeness, extra heads or arms, chibi caricature, text, copied modern temple statue or oversized surrounding decoration."
+  },
+  {
+    "id": "nataraja", "name": "Nataraja", "group": "Sacred Traditions", "accent": "#b29468",
+    "subject": "One original respectful bronze Nataraja figure: Shiva dancing within a complete compact circular ring of short stylized flames, with FOUR arms, one raised leg crossing the body and the supporting foot on a small traditional pedestal figure. A small drum in the upper right hand, flame in the upper left, one lower hand in blessing and the other gesturing toward the raised foot. A serene face, flowing sculpted hair and believable antiqued bronze. Preserve the recognizable Chola-style dancing silhouette without copying a specific modern statue. Entire ring and figure visible. No text, actor likeness, extra limbs or oversized separate background."
+  },
+  {
+    "id": "meenakshi", "name": "Meenakshi Amman", "group": "Sacred Traditions", "accent": "#b39768",
+    "subject": "One original respectful full-length Meenakshi Amman devotional figurine. A serene standing goddess with TWO arms, a traditional tall crown and beautifully draped muted emerald-and-red sari; one raised hand carries a small flower with a green parrot perched close beside it, the other rests gracefully at her side. Use warm antiqued-bronze sculptural material with restrained traditional green and red hand-painted accents, dignified natural proportions and a modest integrated pedestal. Show the complete figure, both feet and parrot clearly. No actor likeness, caricature, extra limbs, lettering or copied modern temple sculpture."
+  },
+  {
+    "id": "perumal", "name": "Perumal", "group": "Sacred Traditions", "accent": "#a69d7c",
+    "subject": "One original respectful full-length Perumal/Vishnu devotional figurine with a serene standing pose, tall traditional crown and draped muted-gold and dark-blue garments. FOUR arms: the upper hands carry a clear discus and conch, a lower hand gives blessing and the other rests close to the hip. A restrained pale vertical Vaishnavite forehead mark identifies the traditional form. Warm antiqued bronze with modest painted accents, believable sculpture and natural proportions on a small integrated pedestal. No actor likeness, extra heads or limbs, text or copied modern temple statue."
+  },
+  {
+    "id": "andal", "name": "Andal", "group": "Sacred Traditions", "accent": "#bd9b89",
+    "subject": "One original respectful full-length Andal devotional figurine in warm antiqued bronze with a restrained rose-and-green draped sari. A serene standing female saint with TWO arms, a distinctive traditional high side hair bun, a long flower garland and a small parrot held close to one raised flower-bearing hand. The other arm rests gracefully beside her body. Dignified natural proportions and believable fine sculpted cloth on a modest integrated pedestal. Show the complete head, torso, arms and feet. No actor likeness, extra limbs, exaggerated glamour, lettering or copy of a specific modern temple statue."
+  },
+  {
+    "id": "lakshmi", "name": "Lakshmi", "group": "Sacred Traditions", "accent": "#bf9972",
+    "subject": "One original respectful Lakshmi devotional figurine seated on a compact full pink-bronze lotus pedestal. A serene crowned goddess with FOUR arms: the upper two hold clearly formed lotus flowers, a lower hand gives blessing and the other holds a small gold vessel. Muted red draped garments, warm antiqued-bronze sculptural material and restrained gold accents. Traditional dignified natural proportions, complete visible figure and lotus. No raining loose coins, actor likeness, extra limbs, text, cartoon treatment or copied modern sculpture."
+  },
+  {
+    "id": "saraswati", "name": "Saraswati", "group": "Sacred Traditions", "accent": "#c3b998",
+    "subject": "One original respectful Saraswati devotional figurine seated gracefully on a compact pale lotus pedestal, wearing ivory draped garments with restrained golden edging. A serene goddess with FOUR arms: two front hands hold and play a clearly recognizable veena diagonally across her lap; the other hands hold a small book and simple prayer beads. Warm pale-bronze and ivory sculptural materials, dignified natural anatomy and fine instrument detail. Keep the whole veena and figure within the compact silhouette. No extra limbs, modern guitar, actor likeness, text or copied modern statue."
+  },
+  {
+    "id": "om", "name": "Om", "group": "Sacred Traditions", "accent": "#c3a46b", "style": "symbol",
+    "subject": "The precise traditional Devanagari Om sacred symbol ॐ as one carefully crafted warm-brass sculptural form, including its characteristic main curves, upper crescent and dot. Preserve the exact familiar Om outline with clear open spaces, no invented additional strokes. Front view with modest physical metal thickness and restrained highlights. No enclosing disk, deity face, lettering beyond the Om symbol itself, sparkles or modern brand design."
+  },
+  {
+    "id": "buddha", "name": "Buddha", "group": "Sacred Traditions", "accent": "#b59b78",
+    "subject": "One original respectful small Buddha meditation statue in warm aged bronze. A serene human figure seated cross-legged with both hands resting together in the lap in a meditation gesture, gently downcast eyes, traditional curled hair and ushnisha, elongated earlobes and a simple draped robe. Dignified natural proportions on a modest integrated lotus base. A contemplative traditional sculpture, not a laughing Budai, caricature, modern person's likeness or copied contemporary statue. No text, halo disk, extra limbs or decorative scene."
+  },
+  {
+    "id": "christian-cross", "name": "Christian Cross", "group": "Sacred Traditions", "accent": "#b49a79", "style": "symbol",
+    "subject": "One simple traditional Latin Christian cross crafted from warm natural olive wood. One long vertical beam and one shorter horizontal beam cross above the vertical midpoint; clean straight ends, believable wood grain and slightly bevelled edges. Show a little solid thickness from an almost frontal angle. A respectful understated sacred object with no figure, necklace, inscription, ornate mounting, extra symbols or enclosing frame."
+  },
+  {
+    "id": "khanda", "name": "Khanda", "group": "Sacred Traditions", "accent": "#aab7c0", "style": "symbol",
+    "subject": "The precise traditional Sikh Khanda emblem as a respectful satin-steel sculpture: one upright double-edged central khanda sword, a complete circular chakkar around its middle, and TWO symmetrically curved kirpans flanking the circle with their handles below. Accurate balanced conventional iconography and clear open spaces, with modest physical metal thickness. No letters, invented extra blades, people, flag, surrounding plaque or brand."
+  },
+  {
+    "id": "crescent-star", "name": "Crescent & Star", "group": "Sacred Traditions", "accent": "#c3b17c", "style": "symbol",
+    "subject": "A respectful simple crescent-and-star symbol rendered as finely crafted warm brass. A graceful open crescent moon curves around one clearly formed FIVE-pointed star near its open side. Preserve the familiar clean silhouette and balanced spacing, with believable thickness and restrained studio highlights. No faces, Arabic writing, flag, mosque skyline, jewellery chain, extra stars, enclosing disk or decorative lettering."
+  },
+  {
+    "id": "star-of-david", "name": "Star of David", "group": "Sacred Traditions", "accent": "#a9b8c7", "style": "symbol",
+    "subject": "The precise traditional Star of David as a respectful satin-silver sculptural object: TWO equal equilateral triangular outlines, one upright and one inverted, interlaced to form exactly SIX outer points and a clearly open central hexagon. Simple balanced geometry, believable thin metal thickness and understated highlights. No flag, letters, extra points, political imagery, necklace, surrounding plaque or invented decoration."
+  },
+  {
+    "id": "smiley-happy", "name": "Happy Smiley Ball", "group": "Stress Busters", "accent": "#e9bd42", "style": "soft",
+    "subject": "One complete round sunshine-yellow foam stress ball with a joyful original smiley face. Two bold dark oval eyes and one broad simple curved black smile are printed directly onto the rounded foam surface, with a tiny warm blush on each cheek. The facial marks follow the curvature of the sphere. Believable fine foam texture, softly rounded volume and a subtle shallow squeeze dimple at one side, while retaining a circular silhouette. Face almost directly forward so the happiness is immediately readable at 72 pixels. No arms, legs, teeth, tongue, accessories or small distracting details."
+  },
+  {
+    "id": "smiley-determined", "name": "Determined Smiley Ball", "group": "Stress Busters", "accent": "#e4a347", "style": "soft",
+    "subject": "One complete golden-yellow soft foam stress ball with a determined, optimistic original smiley expression. Two dark oval eyes look straight ahead beneath confident gently angled black eyebrows, with a broad closed upward-curving smile. Convey ready-to-work energy and cheerful resolve, not anger, aggression or sadness. Bold uncomplicated facial marks printed directly onto the curved sphere, readable at tiny size. Believable matte foam texture, soft volume, gentle neutral highlights and one very shallow side dimple. No sweat, tears, arms, fists, legs, accessories, words or small details."
+  },
+  {
+    "id": "smiley-calm", "name": "Calm Smiley Ball", "group": "Stress Busters", "accent": "#e8bf79", "style": "soft",
+    "subject": "One complete soft warm apricot-yellow foam stress ball with an original serene contented smiley face. Both eyes are closed as two bold curved dark lines; below them sits a small clear upward-curved relaxed smile, with restrained peach cheek blush. Show quiet contentment rather than sleep or sadness. All marks lie directly on the softly rounded ball surface and remain clear at tiny size. Realistic fine foam texture, gentle rounded shading and a slight shallow squeeze dimple. No sleep symbols, tears, droplets, arms, legs, accessories or text."
+  },
+  {
+    "id": "smiley-wink", "name": "Winking Smiley Ball", "group": "Stress Busters", "accent": "#edbb4f", "style": "soft",
+    "subject": "One complete bright butter-yellow soft foam stress ball with a playful original winking face. One bold dark oval eye stays open, the other is a clearly closed angled wink, and a friendly asymmetric curved black smile tilts gently upward. The wink should be obvious at 72 pixels. Facial marks are printed onto the curved foam sphere, not floating parts. Fine matte foam texture and softly lit rounded volume with a gentle side indentation. No tongue, tears, teeth, arms, legs, hats, accessories or text."
+  },
+  {
+    "id": "emoji-heart", "name": "Heart Emoji", "group": "Stress Busters", "accent": "#d95f75", "style": "soft",
+    "subject": "One original puffy coral-red heart-shaped slow-rising foam toy, clearly recognizable as the universal heart emoji silhouette. TWO equal rounded upper lobes with a clean central notch, a softly tapered lower point and believable inflated thickness visible along the side. A mostly frontal view, fine matte velvety foam texture and soft neutral highlights. It must look yielding and tactile rather than glass, metal, candy or a flat icon. No eyes, mouth, additional hearts, ribbon, wings, jewellery, backing disk, hand or text."
+  },
+  {
+    "id": "emoji-thumbs-up", "name": "Thumbs-Up Emoji", "group": "Stress Busters", "accent": "#e8b751", "style": "soft",
+    "subject": "One original small golden-yellow soft-silicone THUMBS-UP hand toy. Show one upright thumb and exactly FOUR fingers curled naturally into a compact fist, with a short rounded integrated wrist base and no arm. Clear familiar thumbs-up silhouette in a modest three-quarter view, the raised thumb and folded fingers immediately readable at tiny size. Believable simple hand anatomy formed from matte yielding yellow rubber, softly rounded surfaces and subtle creases. No second hand, extra fingers, fingernail polish, face, sleeve, pedestal, symbols, brand or text."
+  },
+  {
+    "id": "emoji-rocket", "name": "Rocket Emoji", "group": "Stress Busters", "accent": "#da8c6b", "style": "soft",
+    "subject": "One original chubby rocket-shaped soft foam toy, a tactile interpretation of the familiar rocket emoji. A short pearl-ivory rounded fuselage, coral-red pointed nose, one clearly circular blue porthole, two small rounded red side fins, and one short integrated orange-yellow foam exhaust plume. Tilt the complete rocket slightly upward to the right. Make every part thick, rounded, connected and visibly squeezable, with fine matte foam texture and restrained dimensional lighting. No realistic fire, smoke, stars, launchpad, detached parts, face, words, brand or copied character."
+  },
+  {
+    "id": "drishti-guardian", "name": "Drishti Guardian", "group": "Local Culture", "accent": "#c45b43",
+    "subject": "One original COMPLETE FULL-BODY traditional South Indian Drishti Bommai guardian doll, rendered as a hand-painted terracotta folk-art object. A vivid RED protective face with very large wide white eyes, round black pupils, yellow eye outlines, thick curled BLACK moustache, two modest white fangs and a small red tongue. Black sculpted hair supports exactly TWO tall tapered ivory-white horns that curve slightly inward. Three short white painted forehead stripes with a small central red dot, broad red ears edged in warm yellow and simple round golden ear ornaments. Beneath the prominent horned head, show a stocky charcoal-black clay torso with a round belly, TWO complete arms with hands at the hips, a short painted red dhoti, and TWO short legs with fully visible bare feet. The head and horns occupy about half the full height, leaving enough room to clearly see the whole body and limbs. Handmade matte clay grain and small natural brushstroke irregularities, confident traditional guardian character, fearsome yet approachable. One complete free-standing figure only, never just a mask, severed head, bust or face hanging. No tree, street, background scene, other dolls, pedestal, jewellery chain, hanging cord, lettering, logo or copied contemporary artwork."
+  }
+]

@@ -1,6 +1,7 @@
 import * as fs from 'node:fs/promises';
 import { join } from 'node:path';
 import { inflateSync } from 'node:zlib';
+import { createHash } from 'node:crypto';
 import type { CharmDefinition } from './charm-catalog';
 import { attachmentFromPixels, type CharmAttachment } from './charm-attachment';
 
@@ -31,6 +32,7 @@ const DEVICE_ID = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/;
 const FORBIDDEN_TEXT = /[\u0000-\u001f\u007f\u200e\u200f\u202a-\u202e\u2066-\u2069]/;
 // Derived geometry is not part of the pack format or its canonical stored bytes.
 const attachments = new WeakMap<PackCharm, CharmAttachment>();
+const artworkHashes = new WeakMap<PackCharm, string>();
 
 function crc32(bytes: Uint8Array): number {
 	let crc = 0xffffffff;
@@ -192,6 +194,7 @@ export function parseCharmPack(input: string | Uint8Array): CharmPack {
 			png: value.png,
 		};
 		attachments.set(charm, attachment);
+		artworkHashes.set(charm, createHash('sha256').update(png).digest('hex'));
 		return charm;
 	});
 	return {
@@ -214,6 +217,8 @@ export function packCharms(packs: readonly CharmPack[]): CharmDefinition[] {
 		group: charm.group,
 		source: `data:image/png;base64,${charm.png}`,
 		attachment: attachments.get(charm) ?? validatePng(Buffer.from(charm.png, 'base64')),
+		artworkKey: charm.id,
+		artworkHash: artworkHashes.get(charm) ?? createHash('sha256').update(Buffer.from(charm.png, 'base64')).digest('hex'),
 	})));
 }
 

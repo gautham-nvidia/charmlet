@@ -1,6 +1,6 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
 import { copyFileSync, cpSync, existsSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
-import { CHARMS } from '../charm-catalog';
+import { CHARMS, ORIGINAL_CHARMS } from '../charm-catalog';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { command, commandInput, endOfDocument, primaryModifier, readyFrame, reloadCharm } from './editor-helpers';
@@ -227,15 +227,15 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 
 		await test.step('the free collection loads, keeps preferences and remembers its selection', async () => {
 			const lastCharm = CHARMS[CHARMS.length - 1];
-			expect(lastCharm.name).toBe('Lemon & Chilies');
+			expect(lastCharm.name).toBe('Original Lemon & Chilies');
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
 			frame = await readyFrame(window);
 			await openAppearance(frame);
 			let picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
-			await expect(picker.locator('option')).toHaveCount(10);
-			await expect(picker.locator('optgroup')).toHaveCount(2);
-			await expect(picker.locator('optgroup').nth(0)).toHaveAttribute('label', 'Silicon & Code');
-			await expect(picker.locator('optgroup').nth(1)).toHaveAttribute('label', 'Good Luck');
+			await expect(picker.locator('option')).toHaveCount(CHARMS.length);
+			await expect(picker.locator('optgroup')).toHaveCount(new Set(CHARMS.map(charm => charm.group)).size);
+			await expect(picker.locator('optgroup[label="Solar System"]')).toHaveCount(1);
+			await expect(picker.locator('optgroup[label="Originals"]')).toHaveCount(1);
 			await frame.evaluate(() => {
 				const view = globalThis as unknown as Window & { __charmletRecordPreference: (value: unknown) => Promise<void> };
 				const capture = view.__charmletRecordPreference;
@@ -274,7 +274,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 				});
 				record('trace-start');
 			});
-			for (const entry of CHARMS) {
+			for (const entry of CHARMS.filter(charm => ORIGINAL_CHARMS.some(original => original.id === charm.id))) {
 				await picker.selectOption(entry.id);
 				await expect(frame.locator('#stage')).toHaveAttribute('data-charm', entry.id);
 				await expect(frame.locator('#charm-name')).toHaveText(entry.name);
@@ -312,7 +312,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			if (process.platform === 'darwin') {
 				await picker.press('Tab');
 				await picker.focus();
-				await picker.pressSequentially('Lemon', { delay: 20 });
+				await picker.pressSequentially(lastCharm.name, { delay: 20 });
 			} else {
 				await picker.press('End');
 			}
@@ -786,7 +786,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await openAppearance(frame);
 			const importedPicker = frame.getByRole('combobox', { name: 'Charm', exact: true });
 			await expect(importedPicker).toHaveValue('pack:probe-card:probe-card');
-			await expect(importedPicker.locator('option')).toHaveCount(11);
+			await expect(importedPicker.locator('option')).toHaveCount(CHARMS.length + 1);
 			await importedPicker.press('Escape');
 			await expect(frame.locator('#settings')).toBeHidden();
 			await expect(frame.locator('#charm-name')).toHaveText('Probe Card');
@@ -814,7 +814,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await window.screenshot({ path: testInfo.outputPath('imported-probe-card.png') });
 			await command(window, 'Charmlet: Remove Charm Pack');
 			await window.locator('.quick-input-list').getByText('Probe Card', { exact: true }).click();
-			await expect(frame.locator('#charm-select option')).toHaveCount(10);
+			await expect(frame.locator('#charm-select option')).toHaveCount(CHARMS.length);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
 			await expect(frame.locator('#charm-name')).toHaveText('Terminal');
 		});

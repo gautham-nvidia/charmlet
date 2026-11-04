@@ -1,13 +1,13 @@
 # Charmlet: Coding Charms
 
-Ten original hanging charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus/Learn tools, a gentle garden and optional reminders.
+152 offline trial charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus/Learn tools, a gentle garden and optional reminders.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Collection review candidate, version 0.5.2.** Charmlet lives in a dockable VS Code view, not over your code
+**Complete-collection trial candidate, version 0.6.1.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 It also works in Restricted Mode without asking you to trust workspace code.
 
-<img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/navigation.png" width="240" alt="Charmlet main view, facts and direct navigation"> <img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/picker.png" width="240" alt="Search the ten original bundled charms">
+<img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/navigation.png" width="240" alt="Charmlet main view, motivation and direct navigation"> <img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/picker.png" width="240" alt="Search the included trial collection">
 
 ## Try it
 
@@ -26,7 +26,15 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 8. Click **Garden**, then **Plant a seed**, or run **Charmlet: Open Garden**. Water once per local day and earn an original flower after eleven valid waterings. Optional water/move schedules live under **Settings → Reminders**.
 9. Run **Charmlet: Import Charm Pack** for a free downloaded `.charmlet.json`; remove imported packs with **Charmlet: Remove Charm Pack**.
 
-| Group | Bundled charms |
+The trial includes 142 rendered designs: recognizable components and lab instruments, animals, trees, cities and parks, local culture and sports, Stress Busters, all eight planets plus Sun and Moon, galaxies, eight gemstones, twelve zodiac signs, 22 seasonal designs, fourteen sacred-tradition designs and twelve flower illustrations. Open **Charms** to search and filter them; no separate imports are needed.
+
+Stress Busters include happy, determined, calm and winking smiley balls, plus a soft heart, thumbs-up and rocket. Hold the charm or hold Space/Enter while it is focused to squeeze, then release. The cord follows the visible outline and stays attached while the shape compresses. The full-body Drishti Doll is joined by a red-faced, horned Drishti Guardian; both remain available.
+
+Flower illustrations do not unlock garden achievements or change watering progress. Existing imported packs keep their stored files and selected IDs. Exact copies of trial artwork share one picker entry; different older imports remain labelled **Imported**.
+
+The ten original SVGs are preserved, including the original Terminal:
+
+| Group | Preserved originals |
 |---|---|
 | Silicon & Code | Terminal, Chip, Wafer, Circuit, Transistor, Memory Stack |
 | Good Luck | Evil Eye, Drishti Doll, Hamsa, Lemon & Chilies |
@@ -74,21 +82,20 @@ The footer shows **Website — coming soon**, **Made in Silicon Valley** and the
 
 The Stress Ball and Squishy Star review charms squeeze when held with the pointer or Space/Enter. Their cord attachment stays fixed as the artwork compresses. Reduced Motion removes the transition and the release bounce.
 
-**Settings → Appearance → Use festive defaults** is optional and off initially. Import the Seasonal review pack and unpin your charm to allow local-date choices for Halloween, Christmas, US Thanksgiving, Black Friday and Cyber Monday. **Pin this charm**, a manual charm selection, or an import protects that choice across dates and reloads. Existing saved selections are treated as pinned. On other days, or when the relevant seasonal artwork is missing, the usual saved charm remains. Automatic holiday choices never overwrite it.
+**Settings → Appearance → Use festive defaults** is on for new profiles. It follows 21 US celebration dates and rotates Christmas designs through December. Existing opt-outs and pinned choices survive updates. **Follow holiday defaults** enables the feature and unpins in one click; **Pin this charm**, a manual selection or an import protects a favourite across dates and reloads. Dates use the local calendar, with specific occasions taking precedence over the Christmas rotation. The usual saved charm returns on other days. Automatic choices never overwrite it.
 
 ## Free and local
 
-All ten bundled charms and every functional control are permanently free. They work offline without
-login, runtime AI, network APIs, telemetry, payments or audio. Free extra packs contain validated static
-PNG data and work offline after import; they do not add executable code. [Artwork provenance](https://github.com/gautham-nvidia/charmlet/blob/main/extension/ARTWORK.md)
+The complete trial collection and every functional control are free in this build. The final artwork
+lineup and any optional paid downloads remain undecided; the app's core tools remain free. They work
+offline without login, runtime AI, network APIs, telemetry, payments or audio. Optional imported packs
+contain validated static PNG data and do not add executable code. [Artwork provenance](https://github.com/gautham-nvidia/charmlet/blob/main/extension/ARTWORK.md)
 records asset origins, while the project source/art license remains pending and separate from price.
 
 ## Current limits
 
-- Website artwork previews, Photo Studio and the standalone desktop beta are separate from this VSIX; the ten bundled defaults remain unchanged.
-- The 0.4.3 candidate passes type/lint/build, 59 units and all six editor scenarios locally on Windows VS Code **1.90.0 and 1.140.0**, including navigation, reminders and saved preferences. A further current-host check imports the ten-image Starter Redraws review pack and restores it after reload. New hosted Linux/macOS results are still required; historical 0.4.1 run 37865298216 is not proof for this newer candidate.
-- The earlier Phase 4A Mac assertions compared fitted cord length while controls were open. The corrected tests distinguish saved preference from rendering and passed in the 0.4.1 matrix.
-- Hosted 0.3.2 run 37697185841 passed the canonical-file restoration path on macOS 15 Apple Silicon with VS Code 1.90.0 and 1.140.0: the acknowledged Lemon & Chilies file readback restored as Lemon after reload on both hosts. Earlier intermittent failures remain historical evidence, and their exact internal VS Code cause is not asserted.
+- The entire curated collection is included for trial; artwork approval and the final release lineup remain open. Photo Studio and the standalone desktop beta are separate from this VSIX.
+- Current candidate validation and remaining release gates are recorded in the [Phase 6 verification log](https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-6-trial-catalogue.md). The matrix covers VS Code **1.90.0 and 1.140.0** on Windows, Linux and macOS, including an installed VSIX in Restricted Mode. Earlier results do not establish this candidate's status.
 - The animation loop stops when settled or hidden. [Recorded measurements](https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-1-validation.md) include whole-editor overhead and do not promise zero CPU use.
 - Intel Mac, Windows ARM, authenticated Cursor/Devin Desktop, browser hosts and Remote-SSH/WSL remain unverified.
 - These checks cover the VS Code extension. The standalone developer beta has its own verification and manual desktop-interaction gates; see the repository's desktop guide.

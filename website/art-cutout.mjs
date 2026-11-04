@@ -45,6 +45,6 @@ export function extractGreenScreen({ width, height, data }) {
     top = Math.min(top, y); bottom = Math.max(bottom, y); opaque++;
   }
   if (right < left || opaque < width * height * .01 || removed < width * height * .1) throw new Error('Artwork did not produce a useful transparent silhouette.');
-  if (left === 0 || top === 0 || right === width - 1 || bottom === height - 1) throw new Error('The generated subject touches the canvas edge; review it before export.');
+  if (left === 0 || top === 0 || right === width - 1 || bottom === height - 1) throw new Error('Foreground pixels reach the canvas edge; check for cropped artwork or leftover background before export.');
   return { width, height, data: output, bounds: { x: left, y: top, width: right - left + 1, height: bottom - top + 1 }, transparentPixels: removed };
 }

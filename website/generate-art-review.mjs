@@ -62,7 +62,16 @@ if (command === 'plan') {
       throw new Error(`${job.key}: HTTP ${response.status}: ${error}`);
     }
     const encoded = body?.data?.[0]?.b64_json;
-    if (typeof encoded !== 'string' || encoded.length > 24 * 1024 * 1024) throw new Error(`No bounded image returned for ${job.key}.`);
+    if (typeof encoded !== 'string' || encoded.length > 24 * 1024 * 1024) {
+      const summary = {
+        fields: Object.keys(body ?? {}).slice(0, 12),
+        results: Array.isArray(body?.data) ? body.data.length : null,
+        resultFields: Object.keys(body?.data?.[0] ?? {}).slice(0, 12),
+        finishReason: body?.finish_reason ?? body?.data?.[0]?.finish_reason ?? null,
+        errorCode: body?.error?.code ?? null,
+      };
+      throw new Error(`No bounded image returned for ${job.key}: ${JSON.stringify(summary)}`);
+    }
     const bytes = Buffer.from(encoded, 'base64');
     if (!bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) throw new Error(`Expected PNG for ${job.key}.`);
     const width = bytes.readUInt32BE(16), height = bytes.readUInt32BE(20);

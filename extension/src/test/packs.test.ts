@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import { readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { CHARMS } from '../charm-catalog';
+import { CHARMS, TRIAL_CHARMS, buildCatalogue } from '../charm-catalog';
 import {
 	installPack, loadPacks, MAX_PACK_BYTES, MAX_PNG_BYTES, packCharms, parseCharmPack, removePack,
 } from '../charm-packs';
@@ -57,6 +57,32 @@ test('attachment decoding handles all PNG filters without changing pack bytes or
 		assert.deepEqual(packCharms([parsed])[0].attachment, { x: 0.5, y: 13 / 84 });
 		assert.deepEqual(packCharms([JSON.parse(encoded(parsed))])[0].attachment, { x: 0.5, y: 13 / 84 });
 	}
+});
+
+test('identical imported trial art keeps its saved ID and pack bytes without a duplicate bundled tile', async () => {
+	const trial = TRIAL_CHARMS.find(charm => charm.artworkKey === 'starter-chip')!;
+	assert.ok(trial, 'The refreshed Chip must be included in the trial.');
+	const png = (await readFile(join(__dirname, '../../media', trial.file))).toString('base64');
+	const original = (pack().charms as Record<string, unknown>[])[0];
+	const importedPack = parseCharmPack(encoded(pack({
+		charms: [{ ...original, id: trial.artworkKey, png }],
+	})));
+	const before = encoded(importedPack);
+	const imported = packCharms([importedPack])[0];
+	const catalogue = buildCatalogue([imported]);
+	assert.equal(catalogue.length, CHARMS.length);
+	assert.equal(catalogue.some(charm => charm.id === trial.id), false);
+	assert.equal(restoreState({ charmId: imported.id }, catalogue).charmId, imported.id);
+	assert.equal(imported.artworkHash, trial.artworkHash);
+	assert.equal(encoded(importedPack), before);
+	assert.equal(Object.hasOwn(importedPack.charms[0], 'artworkHash'), false);
+	const different = packCharms([parseCharmPack(encoded(pack({
+		charms: [{ ...original, id: trial.artworkKey }],
+	})))])[0];
+	assert.equal(buildCatalogue([different]).length, CHARMS.length + 1,
+		'A different imported picture with the same local key must remain available.');
+	assert.ok(buildCatalogue([]).some(charm => charm.id === trial.id),
+		'Removing an imported duplicate must reveal the bundled version again.');
 });
 
 test('attachment follows a central head or offset hook rather than ears and falls back for empty artwork', () => {

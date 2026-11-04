@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { CHARMS, type CharmDefinition } from './charm-catalog';
+import { buildCatalogue, type CharmDefinition } from './charm-catalog';
 import { installPack, loadPacks, MAX_PACK_BYTES, packCharms, removePack, type CharmPack } from './charm-packs';
 import { matchesSavedState, resetState, restoreState, type CharmState } from './charm-state';
 import { CompanionController } from './companion-controller';
@@ -36,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (loadedState.error) {
 		void vscode.window.showWarningMessage('Charmlet could not read its saved preferences. Review your charm settings.');
 	}
-	const baseCatalogue = [...CHARMS, ...packCharms(packs)];
+	const baseCatalogue = buildCatalogue(packCharms(packs));
 	const legacyMessageIndex = restoreState(loadedState.value, baseCatalogue).messageIndex;
 	const companionStore = new StateStore<CompanionState>(context.globalStorageUri.fsPath, 'companion.json');
 	const loadedCompanion = await companionStore.load(undefined);
@@ -79,9 +79,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		updateStatus();
 	}, catalogue, stateStore, loadedState, companion);
 	const refreshCatalogue = async (selectedId?: string) => {
-		await provider.setCatalogue([
-			...CHARMS, ...packCharms(packs), ...gardenCharms(companion.snapshot().state.garden),
-		], selectedId);
+		await provider.setCatalogue(buildCatalogue([
+			...packCharms(packs), ...gardenCharms(companion.snapshot().state.garden),
+		]), selectedId);
 	};
 	let gardenKey = gardenCharms(latestCompanion.state.garden).map(charm => charm.id).join('|');
 	let failedGardenKey: string | undefined;

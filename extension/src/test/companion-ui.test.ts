@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { applyCompanionAction, defaultCompanionState } from '../companion-core';
 import { DEFAULT_STATE } from '../charm-state';
+import { CHARMS, TRIAL_CHARMS } from '../charm-catalog';
 import { learningCard } from '../learning-cards';
 import { MESSAGES } from '../messages';
 import { localDayKey, type GardenState } from '../garden-core';
@@ -21,8 +22,19 @@ interface OwnedEditor {
 }
 
 async function alphaAtCordTip(frame: Frame): Promise<number> {
-	return frame.evaluate(() => {
+	const id = await frame.locator('#stage').getAttribute('data-charm');
+	const bundled = TRIAL_CHARMS.find(charm => charm.id === id);
+	// VS Code serves bundled images from a different origin. Read the same
+	// packaged pixels locally while measuring the real rendered geometry.
+	const png = bundled ? readFileSync(resolve('media', bundled.file)).toString('base64') : undefined;
+	return frame.evaluate(async png => {
 		const image = document.getElementById('charm-image') as HTMLImageElement;
+		let pixels = image;
+		if (png) {
+			pixels = new Image();
+			pixels.src = `data:image/png;base64,${png}`;
+			await pixels.decode();
+		}
 		const path = document.getElementById('thread') as unknown as SVGPathElement;
 		const point = path.getPointAtLength(path.getTotalLength());
 		const matrix = path.getScreenCTM()!;
@@ -31,11 +43,11 @@ async function alphaAtCordTip(frame: Frame): Promise<number> {
 		const canvas = document.createElement('canvas');
 		canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
 		const context = canvas.getContext('2d')!;
-		context.drawImage(image, 0, 0);
+		context.drawImage(pixels, 0, 0);
 		const x = Math.floor((tip.x - bounds.left) * canvas.width / bounds.width);
 		const y = Math.floor((tip.y - bounds.top) * canvas.height / bounds.height);
 		return context.getImageData(x, y, 1, 1).data[3];
-	});
+	}, png);
 }
 
 async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor, 'app' | 'window'>) => void, installed = false): Promise<OwnedEditor> {
@@ -459,19 +471,19 @@ test('navigation A searches installed charms and exposes quiet reminders and bui
 		await expect(frame.locator('#care-cue')).toBeHidden();
 		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
 		await expect(frame.locator('#charm-search')).toBeFocused();
-		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(10);
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(CHARMS.length);
 		await frame.locator('#app').screenshot({ path: testInfo.outputPath('navigation-picker.png') });
-		await frame.locator('#charm-groups').getByRole('button', { name: 'Good Luck', exact: true }).click();
-		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(4);
-		await frame.locator('#charm-search').fill('evil');
+		await frame.locator('#charm-groups').getByRole('button', { name: 'Gemstones', exact: true }).click();
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(8);
+		await frame.locator('#charm-search').fill('ruby');
 		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(1);
-		await frame.getByRole('button', { name: 'Select Evil Eye', exact: true }).click();
+		await frame.getByRole('button', { name: 'Select Ruby', exact: true }).click();
 		await expect(frame.locator('#charm-picker')).toBeHidden();
 		await expect(frame.locator('#charms-toggle')).toBeFocused();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
-		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'evil-eye');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'trial:new-ruby');
 		frame = await reloadCharm(editor.window);
-		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'evil-eye');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'trial:new-ruby');
 		await frame.locator('#settings-toggle').click();
 		await expect(frame.locator('#menu-appearance')).toBeFocused();
 		await frame.locator('#menu-appearance').press('ArrowDown');
@@ -494,7 +506,7 @@ test('navigation A searches installed charms and exposes quiet reminders and bui
 		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
 		await expect.poll(() => frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(216);
 		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
-		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(20);
+		await expect(frame.locator('#charm-select option[value^="pack:review-starter-redraws-1:"]')).toHaveCount(10);
 		await editor.window.screenshot({ path: testInfo.outputPath('navigation-redraw-review.png') });
 		await frame.locator('#picker-close').click();
 		frame = await reloadCharm(editor.window);
@@ -637,7 +649,10 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 		await expect(frame.locator('#charm-pinned')).toBeChecked();
 		await frame.locator('#festive-enabled').check();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
-		await frame.locator('#charm-pinned').uncheck();
+		await frame.locator('#festive-enabled').uncheck();
+		await frame.getByRole('button', { name: 'Follow holiday defaults', exact: true }).click();
+		await expect(frame.locator('#festive-enabled')).toBeChecked();
+		await expect(frame.locator('#charm-pinned')).not.toBeChecked();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', pumpkin);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
 		expect(JSON.parse(readFileSync(preferencesPath, 'utf8'))).toMatchObject({
@@ -742,6 +757,29 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 		expect(JSON.parse(readFileSync(preferencesPath, 'utf8'))).toMatchObject({
 			charmId: ball, charmPinned: true, festiveEnabled: true, reducedMotion: true,
 		});
+		await frame.locator('#settings-toggle').click();
+		await frame.locator('#menu-appearance').click();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		for (const key of ['new-smiley-happy', 'new-emoji-heart']) {
+			const entry = TRIAL_CHARMS.find(charm => charm.artworkKey === key)!;
+			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+			await frame.locator('#charm-search').fill(entry.name);
+			await frame.locator(`.charm-tile[data-charm-id="${entry.id}"]`).click();
+			await expect(frame.locator('#charm')).toHaveAttribute('data-soft', 'true');
+			await frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).decode());
+			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
+			await frame.locator('#charm').focus();
+			try {
+				await window.keyboard.down('Space');
+				await expect.poll(squeezed).toBe(true);
+				expect(await frame.locator('#charm-image').evaluate(image => parseFloat(getComputedStyle(image).transitionDuration))).toBeGreaterThan(0);
+				expect(await alphaAtCordTip(frame), `${entry.name} must stay attached while squeezed`).toBeGreaterThanOrEqual(128);
+			} finally {
+				await window.keyboard.up('Space');
+			}
+			await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(1);
+		}
 	} finally {
 		await closeOwnedEditor(editor, testInfo);
 	}
@@ -765,8 +803,33 @@ if (process.env.CHARMLET_TEST_PACKAGED === '1') {
 			const version = JSON.parse(readFileSync(resolve('package.json'), 'utf8')).version;
 			await expect(frame.locator('#app-version')).toHaveText(`v${version}`);
 			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
-			await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(10);
+			await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(CHARMS.length);
 			await frame.locator('#picker-close').click();
+			await expect(frame.locator('#festive-enabled')).toBeChecked();
+			await expect(frame.locator('#charm-pinned')).not.toBeChecked();
+			const readGarden = () => existsSync(editor.companionPath)
+				? JSON.parse(readFileSync(editor.companionPath, 'utf8')).garden : defaultCompanionState().garden;
+			const gardenBeforeTrial = readGarden();
+			for (const key of [
+				'starter-drishti', 'new-ate-tester', 'new-earth', 'new-milky-way',
+				'new-emerald', 'new-zodiac-libra', 'new-santa-claus', 'new-murugan', 'flower-sunflower',
+				'new-smiley-happy', 'new-emoji-heart', 'new-drishti-guardian',
+			]) {
+				const entry = TRIAL_CHARMS.find(charm => charm.artworkKey === key)!;
+				expect(entry, `${key} must be present without importing a pack`).toBeTruthy();
+				await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+				await frame.locator('#charm-search').fill(entry.name);
+				await frame.getByRole('button', { name: `Select ${entry.name}`, exact: true }).click();
+				await expect(frame.locator('#stage')).toHaveAttribute('data-charm', entry.id);
+				await expect.poll(() => frame.locator('#charm-image').evaluate(image => {
+					const png = image as HTMLImageElement;
+					return png.complete && png.naturalWidth === 216 && png.naturalHeight === 252;
+				})).toBe(true);
+				await expect(frame.locator('#charm-image')).toHaveAttribute('src', new RegExp(`${entry.file.replace('.', '\\.')}$`));
+				await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+			}
+			expect(readGarden()).toEqual(gardenBeforeTrial);
+			await frame.locator('#app').screenshot({ path: testInfo.outputPath('installed-trial-flower.png') });
 			await command(editor.window, 'Charmlet: Open Garden');
 			await frame.getByRole('button', { name: 'Plant a seed', exact: true }).click();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');

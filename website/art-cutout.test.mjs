@@ -56,7 +56,7 @@ test('missing key, empty art, unsafe dimensions and clipped silhouettes fail rat
   const noKey = fixture(); noKey.data.set([255, 255, 255, 255], 0);
   assert.throws(() => extractGreenScreen(noKey), /background/);
   const clipped = fixture(); clipped.data.set([180, 80, 40, 255], 10 * 4);
-  assert.throws(() => extractGreenScreen(clipped), /touches/);
+  assert.throws(() => extractGreenScreen(clipped), /canvas edge/);
   assert.throws(() => extractGreenScreen({ width: 99999, height: 99999, data: [] }), /bounded/);
   const empty = fixture();
   for (let index = 0; index < empty.data.length; index += 4) empty.data.set([0, 255, 0, 255], index);
