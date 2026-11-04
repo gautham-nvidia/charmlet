@@ -149,18 +149,18 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
       const handles = await application.evaluate(async ({ BrowserWindow }) => {
         const main = BrowserWindow.getAllWindows().find(item => item.webContents.getURL().startsWith('charmlet:'));
         const surface = new BrowserWindow({
-          ...main.getBounds(), title: 'Charmlet native input test', frame: false, alwaysOnTop: true,
+          ...main.getBounds(), title: 'Charmlet native input test', frame: false,
           webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false },
         });
         globalThis.__charmletNativeSurface = surface;
         await surface.loadURL(`data:text/html,${encodeURIComponent('<title>Charmlet native input test</title><style>body{background:#293c55;color:white;font:16px system-ui}p{position:absolute;bottom:20px}</style><p>Owned native test surface</p><script>window.clicks=0;document.addEventListener("click",()=>window.clicks++);</script>')}`);
         surface.show();
         surface.focus();
-        main.setAlwaysOnTop(false);
-        main.setAlwaysOnTop(true);
         main.showInactive();
+        main.moveTop();
         return { main: main.getNativeWindowHandle().readBigUInt64LE().toString(), surface: surface.getNativeWindowHandle().readBigUInt64LE().toString() };
       });
+      evidence.handles = handles;
       const canvas = await window.evaluate(() => ({ width: innerWidth, height: innerHeight }));
       evidence.canvas = canvas;
       const center = id => window.locator(`#${id}`).evaluate(node => {
@@ -183,6 +183,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
       console.log('Native Windows input: Move and saved placement.');
       await mouse('hover', await center('charm'));
       await expect(window.locator('body')).toHaveAttribute('data-desktop-reveal', 'true');
+      assert.equal(evidence.actions.at(-1).target, handles.main, 'The native charm target must be above the background test window.');
       const grip = await center('desktop-move');
       const expected = { x: evidence.before.anchor.x + 120, y: evidence.before.anchor.y + 70 };
       await mouse('drag', grip, { x: grip.x + 120, y: grip.y + 70 });
