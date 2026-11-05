@@ -437,7 +437,7 @@ function cancelDrag() {
 	scheduleMessages();
 }
 
-function resize() {
+export function resize() {
 	cancelDrag();
 	updateOverlays();
 	const { width, height } = stage.getBoundingClientRect();

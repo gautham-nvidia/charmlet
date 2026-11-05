@@ -2,7 +2,15 @@
 
 Charmlet Desktop is an unpublished Windows/macOS developer beta. It reuses the extension's charm renderer, physics, Focus/Learn/Garden controller, validated pack parser and confirmed JSON stores in one floating tray-managed window.
 
-The **0.2.1 trial** shares the extension's 152 offline charms, including 142 rendered designs and ten preserved originals. The full collection is available in **Charms**, including four smiley stress balls, three soft emoji designs and both full-body Drishti variations. It keeps existing imports and garden progress, and offers the same holiday defaults, pin controls and motivational deck. The final release artwork and download pricing remain undecided.
+The **0.3.0 trial** starts with just the charm and cord. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
+
+Drag **Move** to place the charm, or focus that button and use the arrow keys (Shift moves farther). Pulling the charm itself stretches the cord within the current display's available space, then releases into the shared bounce. The peg starts near the screen's top edge; compact controls no longer restrict the play area.
+
+Under **Tools > Settings**, **Background**, **Keep toolbar visible** and **Keep messages visible** are separate saved preferences, all off by default. The tray's **Open Controls** and **Reset Window Position** remain available.
+
+The trial shares the extension's 152 offline charms, including 142 rendered designs and ten preserved originals. The full collection is available in **Charms**, including four smiley stress balls, three soft emoji designs and both full-body Drishti variations. Existing imports, garden progress, holiday defaults, pin controls and the motivational deck are preserved. The final release artwork and download pricing remain undecided.
+
+<img src="../docs/store-assets/desktop-minimal.png" width="960" alt="Actual Charmlet desktop views: charm only, optional background and toolbar, and the selected Focus panel">
 
 ## Local commands
 
@@ -14,7 +22,7 @@ npm.cmd --prefix desktop run test
 npm.cmd --prefix desktop run package
 ```
 
-The Windows 0.2.1 packaging target is an unsigned folder under `desktop/release/0.2.1/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. Current-version extracted Windows and macOS checks are recorded in the Phase 6 verification log when complete. There is no installer, signing, notarization, update service, store listing or public distribution in this slice.
+The Windows 0.3.0 packaging target is an unsigned folder under `desktop/release/0.3.0/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. Current-version extracted Windows and macOS checks are recorded in the [Phase 7 verification log](../docs/phase-7-desktop-minimal.md) when complete. There is no installer, signing, notarization, update service, store listing or public distribution in this slice.
 
 For a portable download, archive and test the extracted application.
 
@@ -26,7 +34,11 @@ node desktop/archive.mjs
 
 This writes a Windows ZIP under `desktop/distribution/`. The hosted Mac job writes a `.tar.gz` so the `.app` keeps its executable permissions and framework links. Both archive types are extracted and launched in disposable profiles before upload. GitHub's outer artifact ZIP contains that tested archive; extract it, then extract the inner archive and keep the app folder together.
 
-## Current local evidence - 2026-11-03
+## Current local evidence - 2026-11-04
+
+Version 0.3.0 changes the desktop presentation and placement. Type/build, twelve model checks and the development-host smoke pass, including long downward/sideways pulls, saved display preferences, migrated position, restart, focus and garden state. The production VS Code renderer remains byte-identical. Package/hosted results and open native interaction gates are recorded in [Phase 7](../docs/phase-7-desktop-minimal.md).
+
+## Historical local evidence - 0.2.1
 
 Version 0.2.1 adds smiley and emoji Stress Busters and a second Drishti variation to the complete catalogue and holiday defaults introduced in 0.2.0. Current-version package and archive checks are recorded in [Phase 6](../docs/phase-6-trial-catalogue.md); the earlier evidence below does not establish the new candidate's result.
 
@@ -46,7 +58,7 @@ Windows 0.1.1 includes the same Charms/Focus/Garden/Settings navigation, motivat
 
 ## Data and security boundaries
 
-- Desktop data stays under the app's own Electron profile: `preferences.json`, `companion.json`, `packs/`, and `window/preferences.json`.
+- Desktop data stays under the app's own Electron profile: `preferences.json`, `companion.json`, `packs/`, `anchor/preferences.json` and `desktop-view/preferences.json`. Earlier `window/preferences.json` placement is migrated without deleting that file.
 - Desktop and IDE profiles do not automatically synchronize focus or garden progress.
 - The renderer uses `contextIsolation: true`, `sandbox: true`, `nodeIntegration: false` and a narrow preload bridge.
 - `charmlet:` serves only the copied template, bundles, styles and known media.
@@ -55,12 +67,14 @@ Windows 0.1.1 includes the same Charms/Focus/Garden/Settings navigation, motivat
 
 ## What automated evidence proves
 
-The owned Electron smoke test verifies profile isolation, renderer security flags, shared state/restart behavior, earned artwork, explicit-control focus, bounded placement and the restricted hit-test IPC configuration. CDP input and the diagnostic ignored-state do **not** prove that native clicks pass through to another application.
+The owned Electron smoke test verifies profile isolation, renderer security flags, shared state/restart behavior, earned artwork, explicit-control focus, saved placement, long pulls and the restricted hit-test IPC configuration. The transparent canvas spans one monitor's work area while visible controls occupy a compact frame. CDP input and the diagnostic ignored-state do **not** prove that native clicks pass through to another application.
+
+The Windows archive job also checks real OS input on its isolated desktop. It has passed native Move and saved placement, clicks reaching an owned window underneath, and a long pull/bounce/settle while that background window keeps focus. That evidence covers one Windows display at 100% scaling. Local test commands leave the system cursor alone.
 
 ## Manual gates before any wider beta
 
-- Real native click-through over empty transparent regions on Windows and macOS.
-- Ordinary charm play does not steal focus from the active editor; explicit controls do.
+- Native behavior over the owner's active editor on Windows and macOS; Windows CI covers an owned background window.
+- Ordinary charm play does not steal focus from the active editor; explicit controls do. Windows CI verifies this distinction between its owned windows.
 - Tray/menu-bar Show/Hide, Focus/Learn/Garden, pack dialogs and Quit.
 - Monitor disconnect/reconnect, negative-coordinate displays and mixed-DPI movement.
 - OS suspend/lock and macOS Spaces behavior; running focus pauses and never auto-resumes.

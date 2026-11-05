@@ -50,6 +50,47 @@ async function alphaAtCordTip(frame: Frame): Promise<number> {
 	}, png);
 }
 
+async function tracePointerInput(window: Page): Promise<Frame[]> {
+	const frames = window.frames();
+	for (const target of frames) {
+		await target.evaluate(() => {
+			const events: Record<string, unknown>[] = [];
+			for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel',
+				'gotpointercapture', 'lostpointercapture', 'mousedown', 'mouseup', 'focus', 'blur']) {
+				globalThis.window.addEventListener(type, event => {
+					const pointer = event as PointerEvent;
+					const target = event.target instanceof Element ? event.target : undefined;
+					events.push({ type, id: pointer.pointerId, buttons: pointer.buttons, trusted: event.isTrusted,
+						x: pointer.clientX, y: pointer.clientY, target: target?.id || target?.tagName,
+						classes: target?.getAttribute('class'),
+						captured: document.getElementById('charm')?.hasPointerCapture(pointer.pointerId),
+						focused: document.hasFocus(), time: performance.now() });
+					document.documentElement.dataset.pointerTrace = JSON.stringify(events.slice(-40));
+				}, true);
+			}
+		});
+	}
+	return frames;
+}
+
+async function savePointerTrace(editor: OwnedEditor, frames: Frame[], path: string): Promise<void> {
+	try {
+		writeFileSync(path, JSON.stringify({
+			host: await editor.app.evaluate(({ app }) => ({ version: app.getVersion(), engines: process.versions })),
+			frames: await Promise.all(frames.map(target => target.evaluate(() => ({
+				name: globalThis.window.name, agent: navigator.userAgent,
+				visible: document.visibilityState, focused: document.hasFocus(),
+				viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
+				captured: document.getElementById('charm')?.hasPointerCapture(1),
+				classes: document.getElementById('charm')?.className,
+				soft: document.getElementById('charm')?.dataset.soft,
+				phase: document.getElementById('phase')?.textContent,
+				events: JSON.parse(document.documentElement.dataset.pointerTrace ?? '[]'),
+			})).catch(error => ({ error: String(error) })))),
+		}, null, 2));
+	} catch { /* Keep the original test result if diagnostics cannot be saved. */ }
+}
+
 async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor, 'app' | 'window'>) => void, installed = false): Promise<OwnedEditor> {
 	const profile = mkdtempSync(join(tmpdir(), prefix));
 	const scratchFile = join(profile, 'companion-trial.ts');
@@ -525,6 +566,7 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 		writeFileSync(companionPath, `${JSON.stringify(state)}\n`);
 	});
 	const { window } = editor;
+	const pointerFrames: Frame[] = [];
 	try {
 		await window.emulateMedia({ reducedMotion: 'no-preference' });
 		await command(window, 'Charmlet: Show Charm');
@@ -535,19 +577,23 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 			dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [path] });
 		}, reviewPack);
 		await command(window, 'Charmlet: Import Charm Pack');
+		// Import updates the catalogue before show() finishes restoring focus.
+		await expect(window.getByText(`Imported ${pack.name}.`, { exact: true })).toBeVisible();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', `pack:${pack.id}:${pack.charms[0].id}`);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
 		await expect.poll(() => frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+		pointerFrames.push(...await tracePointerInput(window));
 		const alphaAtConnection = await alphaAtCordTip(frame);
 		expect(alphaAtConnection, 'The cord tip must touch the visible panda, not transparent padding').toBeGreaterThanOrEqual(128);
+		await frame.locator('#charm').hover();
 		const restingY = Number(await frame.locator('#charm').getAttribute('data-position-y'));
 		const focusBefore = await frame.locator('#focus-readout').innerText();
 		const bounds = await frame.locator('#charm').boundingBox();
 		if (!bounds) { throw new Error('The imported charm must be visible before dragging.'); }
 		const x = bounds.x + bounds.width / 2;
 		const y = bounds.y + bounds.height / 2;
-		await window.mouse.move(x, y);
 		await window.mouse.down();
+		await expect(frame.locator('#phase')).toHaveText('Held');
 		await window.mouse.move(x, y + 90, { steps: 12 });
 		await expect.poll(async () => Number(await frame.locator('#charm').getAttribute('data-position-y'))).toBeGreaterThan(restingY + 70);
 		type Recording = { values: number[]; elapsed: number; done: boolean; timedOut: boolean };
@@ -593,13 +639,14 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 		await frame.locator('#motion').click();
 		await frame.locator('#settings-close').click();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		await frame.locator('#charm').hover();
 		const framesBefore = await frame.locator('#stage').getAttribute('data-frames');
 		const reducedBounds = await frame.locator('#charm').boundingBox();
 		if (!reducedBounds) { throw new Error('Reduced-motion charm must remain visible.'); }
 		const reducedX = reducedBounds.x + reducedBounds.width / 2;
 		const reducedY = reducedBounds.y + reducedBounds.height / 2;
-		await window.mouse.move(reducedX, reducedY);
 		await window.mouse.down();
+		await expect(frame.locator('#phase')).toHaveText('Held');
 		await window.mouse.move(reducedX, reducedY + 55, { steps: 6 });
 		await expect(frame.locator('#phase')).toHaveText('Held');
 		await window.mouse.up();
@@ -607,6 +654,7 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 		await expect(frame.locator('#stage')).toHaveAttribute('data-frames', framesBefore!);
 		expect(Number(await frame.locator('#charm').getAttribute('data-position-y'))).toBeCloseTo(restingY, 1);
 	} finally {
+		await savePointerTrace(editor, pointerFrames, testInfo.outputPath('bounce-pointer-events.json'));
 		await closeOwnedEditor(editor, testInfo);
 	}
 });
@@ -674,25 +722,7 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', ball);
 		expect(JSON.parse(readFileSync(preferencesPath, 'utf8')).charmPinned).toBe(true);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false', { timeout: 20000 });
-		const pointerFrames = window.frames();
-		for (const target of pointerFrames) {
-			await target.evaluate(() => {
-				const events: Record<string, unknown>[] = [];
-				for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel',
-					'gotpointercapture', 'lostpointercapture', 'mousedown', 'mouseup']) {
-					globalThis.window.addEventListener(type, event => {
-						const pointer = event as PointerEvent;
-						const target = event.target instanceof Element ? event.target : undefined;
-						events.push({ type, id: pointer.pointerId, buttons: pointer.buttons, trusted: event.isTrusted,
-							x: pointer.clientX, y: pointer.clientY, target: target?.id || target?.tagName,
-							classes: target?.getAttribute('class'),
-							captured: document.getElementById('charm')?.hasPointerCapture(pointer.pointerId),
-							time: performance.now() });
-						document.documentElement.dataset.pointerTrace = JSON.stringify(events.slice(-40));
-					}, true);
-				}
-			});
-		}
+		const pointerFrames = await tracePointerInput(window);
 		const squeezed = () => frame.locator('#charm-image').evaluate(image => {
 			const matrix = new DOMMatrix(getComputedStyle(image).transform);
 			return matrix.a > 1.05 && matrix.d < .9;
@@ -720,19 +750,7 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 			})), null, 2));
 			await expect.poll(() => frame.locator('#charm-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d)).toBe(1);
 		} finally {
-			writeFileSync(testInfo.outputPath('squeeze-pointer-events.json'), JSON.stringify({
-				host: await editor.app.evaluate(({ app }) => ({ version: app.getVersion(), engines: process.versions })),
-				frames: await Promise.all(pointerFrames.map(target => target.evaluate(() => ({
-					name: globalThis.window.name, agent: navigator.userAgent,
-					visible: document.visibilityState, focused: document.hasFocus(),
-					viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
-					captured: document.getElementById('charm')?.hasPointerCapture(1),
-					classes: document.getElementById('charm')?.className,
-					soft: document.getElementById('charm')?.dataset.soft,
-					phase: document.getElementById('phase')?.textContent,
-					events: JSON.parse(document.documentElement.dataset.pointerTrace ?? '[]'),
-				})).catch(error => ({ error: String(error) })))),
-			}, null, 2));
+			await savePointerTrace(editor, pointerFrames, testInfo.outputPath('squeeze-pointer-events.json'));
 		}
 		await frame.locator('#app').screenshot({ path: testInfo.outputPath('stress-ball-released.png') });
 		await frame.locator('#settings-toggle').click();

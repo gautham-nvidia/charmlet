@@ -60,6 +60,8 @@ jobs:
       - name: Package an unsigned developer beta
         run: npm run package --prefix desktop
       - name: Archive and test the extracted desktop application
+        env:
+          CHARMLET_DESKTOP_NATIVE_INPUT: ${{ runner.os == 'Windows' && '1' || '0' }}
         run: node desktop/archive.mjs
       - name: Retain desktop test evidence
         if: always()
