@@ -40,7 +40,7 @@ This writes a Windows ZIP under `desktop/distribution/`. The hosted Mac job writ
 
 ## Current candidate evidence
 
-The [Phase 8 record](../docs/phase-8-personalization.md) tracks the new cord, win, photo and live-renderer checks. The following historical results do not establish this candidate's release status. Development geometry checks use a separate CDP touch pointer to avoid interference from a real desktop mouse; the isolated Windows workflow retains the unfiltered native mouse, movement and click-through checks.
+The [Phase 9 record](../docs/phase-9-live-fidgets-hosting.md) tracks the current mascot, pet, live-companion and fidget checks, with the cord, win, photo and garden coverage carried forward. The following historical results do not establish this candidate's release status. Development geometry checks use a separate CDP touch pointer to avoid interference from a real desktop mouse; the isolated Windows workflow retains the unfiltered native mouse, movement and click-through checks.
 
 ## Historical local evidence - 2026-11-04
 
