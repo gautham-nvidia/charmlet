@@ -616,15 +616,24 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   await openTools(third.window);
   await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
   await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
-  await third.window.locator('#motion').click();
+  // Start a greeting and change motion in the same task. This reproduces the
+  // unfinished hover reaction that otherwise depends on native cursor timing.
+  const priorExpression = await third.window.evaluate(() => {
+    document.querySelector('#charm').dispatchEvent(new Event('pointerenter'));
+    const expression = document.querySelector('#live-smiley').dataset.expression;
+    document.querySelector('#motion').click();
+    return expression;
+  });
+  assert.equal(priorExpression, 'hello');
   await expect(face).toHaveAttribute('data-motion', 'still');
+  await expect(face).toHaveAttribute('data-expression', 'smile');
   await third.window.locator('#settings-close').click();
   await third.window.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
   const stillFrames = await face.getAttribute('data-frames');
   // Closing desktop controls returns focus to the underlying window. That blur
   // must not repaint an already centred, still face.
   await third.window.evaluate(() => window.dispatchEvent(new Event('blur')));
-  await delay(250);
+  await delay(600);
   assert.equal(await face.getAttribute('data-frames'), stillFrames, 'Reduced Motion must stay idle when focus leaves the app.');
   await third.window.locator('#charm').screenshot({ path: join(output, 'sunny-live.png') });
   if (await face.getAttribute('data-renderer') === 'webgl') {

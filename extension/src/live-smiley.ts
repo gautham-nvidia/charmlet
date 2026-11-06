@@ -135,10 +135,13 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement) {
 		const nextCharacter = liveCharacter(id);
 		const nextActive = Boolean(nextCharacter && visible && !document.hidden);
 		const changed = active !== nextActive || character !== nextCharacter || reduced !== reducedMotion;
+		const settleReaction = !nextActive || character !== nextCharacter || reducedMotion && !reduced;
 		selected = id; character = nextCharacter; lastVisible = visible; active = nextActive; reduced = reducedMotion;
 		if (character) { initialize(); }
 		if (!active || reduced) { targetX = 0; targetY = 0; gazeX = 0; gazeY = 0; }
-		if (!active) {
+		// A greeting or wink that began before Reduced Motion was enabled must
+		// not leave a delayed redraw behind. Later explicit win reactions still work.
+		if (settleReaction) {
 			reaction = undefined; reactionUntil = 0;
 		}
 		syncSurface();
