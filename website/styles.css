@@ -66,10 +66,13 @@ h2 { font-size: clamp(2.5rem, 4.6vw, 4.5rem); }
 #demo-charm { position: absolute; left: calc(var(--demo-charm-width, 72px) / -2); top: calc(var(--demo-charm-height, 84px) / -2); width: var(--demo-charm-width, 72px); height: var(--demo-charm-height, 84px); padding: 0; border: 0; border-radius: 8px; background: transparent; transform-origin: center; touch-action: none; cursor: grab; user-select: none; }
 #demo-charm.dragging { cursor: grabbing; }
 #demo-image { width: 100%; height: 100%; pointer-events: none; filter: drop-shadow(0 10px 8px #28203930); }
-#demo-charm #live-smiley { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; filter: drop-shadow(0 10px 8px #28203930); }
-#demo-charm[data-soft="true"] :is(#demo-image, #live-smiley) { transition: transform 260ms cubic-bezier(.2,.8,.3,1); }
+#demo-charm :is(#live-smiley, #live-fidget) { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; filter: drop-shadow(0 10px 8px #28203930); }
+#demo-charm:is([data-live-rendered="true"], [data-fidget-rendered="true"]) > img { opacity: 0; }
+#demo-charm[data-soft="true"] :is(#demo-image, #live-smiley) { transition: transform 140ms cubic-bezier(.2,.8,.3,1); }
 #demo-charm[data-soft="true"].dragging :is(#demo-image, #live-smiley), #demo-charm[data-soft="true"][data-keyboard-held="true"] :is(#demo-image, #live-smiley) { transform: scale(1.08,.86); }
-@media (prefers-reduced-motion: reduce) { #demo-charm[data-soft="true"] :is(#demo-image, #live-smiley) { transition: none; } }
+#demo-charm[data-soft="true"].dragging :is(#demo-image, #live-smiley), #demo-charm[data-soft="true"][data-keyboard-held="true"] :is(#demo-image, #live-smiley) { transition-duration: 55ms; }
+.fidget-status { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { #demo-stage #demo-charm[data-soft="true"] :is(#demo-image, #live-smiley) { transition: none; } }
 .demo-copy { padding: 1rem 1rem 1.2rem; text-align: center; }
 .demo-copy .eyebrow { justify-content: center; margin-bottom: .2rem; font-size: .6rem; color: var(--violet); }
 .demo-copy h2 { font-size: 1.55rem; }

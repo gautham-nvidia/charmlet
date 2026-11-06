@@ -13,6 +13,8 @@ import { createCordView } from './cord-view';
 import { createWinCelebration } from './win-celebration';
 import { createPhotoView, type PhotoView } from './photo-view';
 import { createLiveSmiley } from './live-smiley';
+import { createFidgetView } from './fidget-view';
+import { fidgetAction, liveCharacter } from './interactive-motion';
 
 declare function acquireVsCodeApi(): {
 	getState(): unknown;
@@ -94,6 +96,7 @@ const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, state.cordLength, state.size, state.layoutMode);
 const winCelebration = createWinCelebration(charm, reducedMotion);
 const liveSmiley = createLiveSmiley(charm, charmImage);
+const fidgetUI = createFidgetView(charm, charmImage);
 const companionUI = createCompanionView({
 	send: (action, requestId) => api.postMessage({ type: 'companion-action', action, requestId }),
 	openSource: cardId => api.postMessage({ type: 'learning-source', cardId }),
@@ -210,7 +213,8 @@ function applyCharm() {
 	charm.dataset.soft = String(soft);
 	const attachment = selected.attachment ?? DEFAULT_ATTACHMENT;
 	charmImage.style.transformOrigin = `${attachment.x * 100}% ${attachment.y * 100}%`;
-	charm.setAttribute('aria-label', `${soft ? 'Squeeze' : 'Nudge'} ${selected.name.toLowerCase()} charm`);
+	charm.setAttribute('aria-label', `${fidgetAction(selected.id) ?? (soft ? 'Squeeze' : 'Nudge')} ${selected.name.toLowerCase()} charm`);
+	charm.title = selected.description;
 	stage.dataset.charm = selected.id;
 	stage.dataset.preferredCharm = state.charmId;
 	navigationUI?.setCatalogue(charms, selected.id);
@@ -221,7 +225,8 @@ function applyCharm() {
 }
 
 function updateLiveSmiley() {
-	liveSmiley.update(activeCharm.id === 'live:smiley', visible && !state.hidden, reducedMotion());
+	liveSmiley.update(activeCharm.id, visible && !state.hidden, reducedMotion());
+	fidgetUI.update(activeCharm.id, visible && !state.hidden, reducedMotion());
 }
 
 function updateCordChoice() {
@@ -606,7 +611,7 @@ charm.addEventListener('keyup', event => {
 	}
 });
 charm.addEventListener('keydown', event => {
-	if ((event.key === ' ' || event.key === 'Enter') && isSoftCharm(activeCharm.id)) {
+	if ((event.key === ' ' || event.key === 'Enter') && (isSoftCharm(activeCharm.id) || liveCharacter(activeCharm.id))) {
 		event.preventDefault();
 		setKeyboardHeld(true);
 	} else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {

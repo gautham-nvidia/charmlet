@@ -21,6 +21,35 @@ import { gardenArtwork, gardenCharms } from '../garden-catalog';
 import { buildCatalogue } from '../charm-catalog';
 import { restoreState } from '../charm-state';
 import { cordForCharm } from '../cord-design';
+import { followGaze, nearestBubble, stepSpinner } from '../interactive-motion';
+
+test('live gaze responds within 84ms independently of refresh rate', () => {
+	for (const hz of [30, 60, 120]) {
+		let gaze = 0;
+		for (let elapsed = 0; elapsed < 84; elapsed += 1000 / hz) {
+			gaze = followGaze(gaze, 1, 1000 / hz);
+		}
+		assert.ok(gaze >= .95 && gaze <= 1, `${hz}Hz must respond promptly without overshoot: ${gaze}`);
+		assert.ok(followGaze(gaze, -1, 84) < -.9, 'A direction change must not retain a slow trailing gaze.');
+	}
+});
+
+test('spinner conserves direction, slows smoothly and rests at different refresh rates', () => {
+	const results = [];
+	for (const hz of [30, 60, 120]) {
+		let spin = { angle: 0, velocity: -24 };
+		for (let frame = 0; frame < hz * 4; frame++) {
+			const before = spin.velocity;
+			spin = stepSpinner(spin.angle, spin.velocity, 1000 / hz);
+			assert.ok(spin.velocity <= 0 && spin.velocity >= before, 'Friction must slow rather than reverse the rotor.');
+		}
+		assert.equal(spin.velocity, 0);
+		results.push(spin.angle);
+	}
+	assert.ok(Math.max(...results) - Math.min(...results) < .003, 'Refresh rate must not change the final rotation perceptibly.');
+	assert.equal(nearestBubble(22, 33), 0);
+	assert.equal(nearestBubble(50, 67), 5);
+});
 
 const START = 1800000000000;
 const startAction: CompanionAction = { type: 'focus-start', phase: 'focus', focusMinutes: 1, breakMinutes: 1, intent: 'Finish one small test' };

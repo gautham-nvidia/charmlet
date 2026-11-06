@@ -809,6 +809,101 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 });
 
 const installedPersonalization = process.env.CHARMLET_TEST_PACKAGED === '1';
+test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has responsive companions and working fidget tools`, async ({}, testInfo) => {
+	test.setTimeout(180000);
+	const editor = await launchOwnedEditor('charmlet-live-tools-', ({ preferencesPath }) => {
+		writeFileSync(preferencesPath, JSON.stringify({
+			...DEFAULT_STATE, charmId: 'live:smiley', charmPinned: true, reducedMotion: true, rotateMessages: false,
+		}));
+	}, installedPersonalization);
+	try {
+		await editor.window.emulateMedia({ reducedMotion: 'no-preference' });
+		await command(editor.window, 'Charmlet: Show Charm');
+		let frame = await readyFrame(editor.window);
+		const choose = async (name: string, group: string) => {
+			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+			expect(await frame.locator('#charm-groups button').allTextContents()).toEqual(
+				expect.arrayContaining(['All', 'Live 3D', 'Stress Busters']));
+			expect((await frame.locator('#charm-groups button').allTextContents()).slice(0, 3)).toEqual(['All', 'Live 3D', 'Stress Busters']);
+			await frame.locator('#charm-groups').getByRole('button', { name: group, exact: true }).click();
+			await frame.getByRole('button', { name: `Select ${name}`, exact: true }).click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		};
+		for (const [name, character] of [['Sunny - Live Smiley', 'sunny'], ['Nimbus - Live Cloud', 'cloud'], ['Byte - Live Robot', 'robot']]) {
+			await choose(name, 'Live 3D');
+			const face = frame.locator('#live-smiley');
+			await expect(face).toHaveAttribute('data-character', character);
+			await expect(face).toBeVisible();
+			await frame.locator('#charm').focus();
+			await editor.window.keyboard.down('Space');
+			try { await expect(face).toHaveAttribute('data-expression', 'squish'); }
+			finally { await editor.window.keyboard.up('Space'); }
+			await expect(face).toHaveAttribute('data-expression', 'smile');
+			await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`live-${character}.png`) });
+		}
+		await choose('Stress Ball', 'Stress Busters');
+		await expect(frame.locator('#charm')).toHaveAttribute('data-soft', 'true');
+		await choose('Bubble Pop', 'Stress Busters');
+		const toy = frame.locator('#live-fidget');
+		await frame.locator('#charm').focus();
+		await editor.window.keyboard.press('Space');
+		await expect(toy).toHaveAttribute('data-bubbles', '100000');
+		for (let index = 0; index < 6; index++) { await editor.window.keyboard.press('Space'); }
+		await expect(toy).toHaveAttribute('data-bubbles', '011111');
+		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('bubble-pop.png') });
+		await choose('Worry Stone', 'Stress Busters');
+		await frame.locator('#charm').focus();
+		await editor.window.keyboard.down('Space');
+		try { await expect(toy).toHaveAttribute('data-held', 'true'); }
+		finally { await editor.window.keyboard.up('Space'); }
+		await expect(toy).toHaveAttribute('data-held', 'false');
+		await choose('Fidget Spinner', 'Stress Busters');
+		await frame.locator('#charm').focus();
+		await editor.window.keyboard.press('Space');
+		await expect(toy).toHaveAttribute('data-running', 'false');
+		expect(Number(await toy.getAttribute('data-angle'))).toBeGreaterThan(.5);
+		const stillFrames = await toy.getAttribute('data-frames');
+		await editor.window.waitForTimeout(150);
+		expect(await toy.getAttribute('data-frames')).toBe(stillFrames);
+		await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+		await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		await frame.locator('#charm').focus();
+		await editor.window.keyboard.press('Space');
+		await expect(toy).toHaveAttribute('data-running', 'true');
+		const spinningAngle = await toy.getAttribute('data-angle');
+		await expect.poll(() => toy.getAttribute('data-angle')).not.toBe(spinningAngle);
+		await expect(toy).toHaveAttribute('data-running', 'false', { timeout: 8000 });
+		await expect(toy).toHaveAttribute('data-velocity', '0.000');
+		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('fidget-spinner.png') });
+		frame = await reloadCharm(editor.window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'fidget:spinner');
+		await expect(frame.locator('#live-fidget')).toHaveAttribute('data-running', 'false');
+		await choose('Sunny - Live Smiley', 'Live 3D');
+		await frame.evaluate(() => {
+			const face = document.getElementById('live-smiley')!;
+			window.addEventListener('pointermove', () => {
+				const start = performance.now();
+				requestAnimationFrame(() => {
+					face.dataset.inputResponseMs = String(performance.now() - start);
+					face.dataset.firstFrameGaze = face.dataset.gazeX;
+				});
+			}, { once: true });
+		});
+		const bounds = await frame.locator('#charm').boundingBox();
+		if (!bounds) { throw new Error('Live charm must be visible.'); }
+		await editor.window.mouse.move(bounds.x + bounds.width + 30, bounds.y + bounds.height / 2);
+		await expect(frame.locator('#live-smiley')).toHaveAttribute('data-input-response-ms', /.+/);
+		expect(Number(await frame.locator('#live-smiley').getAttribute('data-first-frame-gaze'))).toBeGreaterThan(.1);
+		await testInfo.attach('first-frame-response', { body: JSON.stringify(await frame.locator('#live-smiley').evaluate(node => ({ ...((node as HTMLElement).dataset) }))), contentType: 'application/json' });
+		await expect.poll(async () => Math.abs(Number(await frame.locator('#live-smiley').getAttribute('data-gaze-x')))).toBeLessThan(.002);
+		const rested = await frame.locator('#live-smiley').getAttribute('data-frames');
+		await editor.window.waitForTimeout(150);
+		expect(await frame.locator('#live-smiley').getAttribute('data-frames')).toBe(rested);
+	} finally { await closeOwnedEditor(editor, testInfo); }
+});
+
 test(`${installedPersonalization ? 'installed VSIX' : 'personalization'} keeps local photos, wins and a quiet live smiley`, async ({}, testInfo) => {
 	test.setTimeout(180000);
 	const editor = await launchOwnedEditor('charmlet-personalization-', ({ preferencesPath }) => {

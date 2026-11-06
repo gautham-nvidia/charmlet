@@ -628,5 +628,62 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     await expect(face).toBeVisible();
     await third.window.locator('#charm').screenshot({ path: join(output, 'sunny-fallback.png') });
   }
+  console.log('Desktop live collection: cloud, robot, bubble presses, spinner friction and quiet motion.');
+  const selectInteractive = async id => {
+    await openTools(third.window);
+    await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+    await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+    await third.window.locator('#charm-select').selectOption(id);
+    await third.window.locator('#settings-close').click();
+    await expect(third.window.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+  };
+  for (const [id, character] of [['live:cloud', 'cloud'], ['live:robot', 'robot']]) {
+    await selectInteractive(id);
+    await expect(face).toHaveAttribute('data-character', character);
+    await expect(face).toBeVisible();
+    await third.window.locator('#charm').focus();
+    await third.window.keyboard.down('Space');
+    try {
+      await expect(face).toHaveAttribute('data-expression', 'squish');
+      await expect(third.window.locator('#charm-image')).toHaveCSS('transition-duration', '0s');
+    }
+    finally { await third.window.keyboard.up('Space'); }
+    await expect(face).toHaveAttribute('data-expression', 'smile');
+    await third.window.locator('#charm').screenshot({ path: join(output, `live-${character}.png`) });
+  }
+  await selectInteractive('fidget:bubbles');
+  const toy = third.window.locator('#live-fidget');
+  await third.window.locator('#charm').click({ position: { x: 22, y: 33 } });
+  await expect(toy).toHaveAttribute('data-bubbles', '100000');
+  await third.window.locator('#charm').click({ position: { x: 22, y: 33 } });
+  await expect(toy).toHaveAttribute('data-bubbles', '000000');
+  await third.window.locator('#charm').focus();
+  await third.window.keyboard.press('Space');
+  await expect(toy).toHaveAttribute('data-bubbles', '010000');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'bubble-pop.png') });
+  await selectInteractive('fidget:stone');
+  await third.window.locator('#charm').focus();
+  await third.window.keyboard.down('Space');
+  try { await expect(toy).toHaveAttribute('data-held', 'true'); }
+  finally { await third.window.keyboard.up('Space'); }
+  await expect(toy).toHaveAttribute('data-held', 'false');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'worry-stone.png') });
+  await selectInteractive('fidget:spinner');
+  await third.window.locator('#charm').focus();
+  await third.window.keyboard.press('Space');
+  await expect(toy).toHaveAttribute('data-running', 'false');
+  assert.ok(Number(await toy.getAttribute('data-angle')) > .5);
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+  await third.window.locator('#motion').click();
+  await third.window.locator('#settings-close').click();
+  await third.window.locator('#charm').click();
+  await expect(toy).toHaveAttribute('data-running', 'true');
+  const spinningAngle = await toy.getAttribute('data-angle');
+  await expect.poll(() => toy.getAttribute('data-angle')).not.toBe(spinningAngle);
+  await expect(toy).toHaveAttribute('data-running', 'false', { timeout: 8000 });
+  await expect(toy).toHaveAttribute('data-velocity', '0.000');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'fidget-spinner.png') });
   await quit(third.application);
 });

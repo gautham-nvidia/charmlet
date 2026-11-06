@@ -15,12 +15,12 @@ const archived = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
 const review = JSON.parse(await readFile(join(root, 'art-review.json'), 'utf8'));
 const target = review.items.filter(item => item.featured && item.decision !== 'original');
 const originalIds = ['terminal'];
-const liveIds = ['live:smiley'];
+const liveIds = ['live:smiley', 'live:cloud', 'live:robot', 'fidget:spinner', 'fidget:bubbles', 'fidget:stone'];
 const trialCount = target.length + liveIds.length;
 const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
 const expectedWorldCounts = {
-  ai: 1, coding: 0, silicon: 7, testing: 9, animals: 3, trees: 3, space: 5, parks: 6,
-  cities: 6, culture: 8, sports: 5, luck: 2, stress: 9, seasonal: 22,
+  live: 3, ai: 1, coding: 0, silicon: 7, testing: 9, animals: 3, trees: 3, space: 5, parks: 6,
+  cities: 6, culture: 8, sports: 5, luck: 2, stress: 12, seasonal: 22,
   'solar-system': 10, gemstones: 8, zodiac: 12, sacred: 15, flowers: 18,
 };
 const output = join(repo, 'extension', 'test-results', `website-check-${manifest.version}`);
@@ -30,7 +30,7 @@ const marketplace = `https://marketplace.visualstudio.com/items?itemName=${manif
 const openVsx = `https://open-vsx.org/extension/${manifest.publisher}/${manifest.name}`;
 const expectedCollections = { 'Compute & Silicon': 18, 'Test Bench': 12, 'AI & Code': 14, 'Places & Nature': 16 };
 assert.equal(archived.length, 60);
-assert.equal(target.length, Object.values(expectedWorldCounts).reduce((sum, count) => sum + count, 0));
+assert.equal(trialCount, Object.values(expectedWorldCounts).reduce((sum, count) => sum + count, 0));
 assert.deepEqual(validateDistribution({ marketplace: null, openVsx: null }, manifest), { marketplace: null, openVsx: null });
 assert.deepEqual(validateDistribution({ marketplace, openVsx }, manifest), { marketplace, openVsx });
 assert.throws(() => validateDistribution({ marketplace: 'https://marketplace.visualstudio.com/items?itemName=wrong.charmlet', openVsx: null }, manifest));
@@ -107,7 +107,11 @@ try {
     await filter.focus();
     await page.keyboard.press('Enter');
     assert.equal(await page.evaluate(() => document.activeElement?.dataset.group), world.id);
-    assert.equal(await page.locator('.charm-card').count(), expectedWorldCounts[world.id] + (world.id === 'stress' ? liveIds.length : 0));
+    assert.equal(await page.locator('.charm-card').count(), expectedWorldCounts[world.id]);
+    if (expectedWorldCounts[world.id]) {
+      await expect(page.locator(`.world-card[data-world="${world.id}"] .world-status`))
+        .toHaveText(`${expectedWorldCounts[world.id]} included in the trial`);
+    }
     assert.notEqual(await filter.evaluate(element => getComputedStyle(element).outlineStyle), 'none');
     await expect(page.locator('#collection-story')).toBeVisible();
   }
@@ -305,6 +309,7 @@ try {
   await demoButton.focus();
   await page.keyboard.down('Space');
   assert.ok(await page.locator('#demo-image').evaluate(image => new DOMMatrix(getComputedStyle(image).transform).d < 0.9));
+  await expect(page.locator('#demo-image')).toHaveCSS('transition-duration', '0s');
   await page.keyboard.up('Space');
   await expect(page.locator('#demo-image')).toHaveCSS('transform', 'none');
   await page.keyboard.down('Space');

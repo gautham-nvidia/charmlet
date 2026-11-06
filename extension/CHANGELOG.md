@@ -3,6 +3,14 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.8.0 - 2026-11-05 (Live companions and fidgets trial)
+
+- Sunny responds promptly to nearby pointer movement, greets you and winks after release. Live faces sleep between reactions and blinks.
+- Added Nimbus, a live cloud, and Byte, a live robot, with distinct lit shapes and the same quiet interaction/accessibility support.
+- Added a working Fidget Spinner, six reusable Bubble Pop bubbles and a Worry Stone. Mouse, touch and keyboard interactions stay silent; Reduced Motion gives immediate still feedback.
+- Put Live 3D and Stress Busters first in the collection filters. All 156 trial charms remain included without imports.
+- Faster squeeze feedback, preserved per-charm cords, local photos, small wins and garden progress.
+
 ## 0.7.0 - 2026-11-05 (Personalisation trial)
 
 ### Added

@@ -35,6 +35,8 @@ export function cordForCharm(charm: CharmDefinition, choices: CordChoices = {}):
 	if (Object.hasOwn(choices, charm.id) && isCordStyle(choices[charm.id])) { return choices[charm.id]; }
 	if (isSoftCharm(charm.id) || charm.group === 'Stress Busters') { return 'soft'; }
 	switch (charm.group) {
+		case 'Live 3D':
+			return 'silver-chain';
 		case 'Gemstones':
 		case 'Personal Keepsakes':
 		case 'My Photos':

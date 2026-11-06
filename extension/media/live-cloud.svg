@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="84" viewBox="0 0 72 84">
+  <defs><radialGradient id="cloud" cx=".32" cy=".22" r=".85"><stop stop-color="#fff"/><stop offset=".4" stop-color="#d5edf7"/><stop offset="1" stop-color="#8cbbd1"/></radialGradient></defs>
+  <g fill="none" stroke="#aab9c4" stroke-width="1.8"><ellipse cx="36" cy="9" rx="5" ry="6"/><path d="M36 15v11"/></g>
+  <path d="M17 69C-2 69 1 42 13 39C9 18 34 14 43 24C59 17 67 31 62 41C78 49 67 74 53 69C42 77 24 76 17 69Z" fill="url(#cloud)"/>
+  <g fill="#fffdf1"><ellipse cx="27" cy="40" rx="5.8" ry="7.8"/><ellipse cx="45" cy="40" rx="5.8" ry="7.8"/></g>
+  <g fill="#263a50"><circle cx="27" cy="40" r="2.8"/><circle cx="45" cy="40" r="2.8"/></g>
+  <g fill="white"><circle cx="26.2" cy="39" r=".8"/><circle cx="44.2" cy="39" r=".8"/></g>
+  <path d="M23 54q13 12 26 0" fill="none" stroke="#263a50" stroke-width="2.1" stroke-linecap="round"/>
+  <g fill="#edb0b8" opacity=".5"><ellipse cx="20" cy="50" rx="4" ry="2.3"/><ellipse cx="52" cy="50" rx="4" ry="2.3"/></g>
+</svg>
