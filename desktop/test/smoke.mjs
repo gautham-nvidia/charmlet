@@ -619,8 +619,11 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   await third.window.locator('#settings-close').click();
   await third.window.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
   const stillFrames = await face.getAttribute('data-frames');
+  // Closing desktop controls returns focus to the underlying window. That blur
+  // must not repaint an already centred, still face.
+  await third.window.evaluate(() => window.dispatchEvent(new Event('blur')));
   await delay(250);
-  assert.equal(await face.getAttribute('data-frames'), stillFrames, 'Reduced Motion must stop the live animation loop.');
+  assert.equal(await face.getAttribute('data-frames'), stillFrames, 'Reduced Motion must stay idle when focus leaves the app.');
   await third.window.locator('#charm').screenshot({ path: join(output, 'sunny-live.png') });
   if (await face.getAttribute('data-renderer') === 'webgl') {
     await face.evaluate(canvas => canvas.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());

@@ -35,14 +35,16 @@ The local Windows packager completed its output but failed the final directory r
 
 Local desktop automation checks renderer behavior and host configuration. Isolated native Windows input, native macOS behavior and mixed-display validation have separate scopes; the current hosted matrix is still required before merging.
 
-## Candidate artifacts
+## Initial candidate artifacts at `49b6e1d`
 
-These are trial artifacts, not published releases. Rebuild from the final checkout after merging; Windows line-ending conversion can change packaged bytes even when Git trees match.
+These hashes identify the initial locally tested candidate, not a published release. Later builds and final hosted results are recorded in [PR #29](https://github.com/gautham-nvidia/charmlet/pull/29). Rebuild from the final checkout after merging; Windows line-ending conversion can change packaged bytes even when Git trees match.
 
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
 | `extension/charmlet-0.8.0.vsix` | 9,536,962 | `ef36721df8963816aed6fb3a09ac22cb1f2aaaa23e2784fb29e7e25ae2fc2562` |
 | `desktop/distribution/Charmlet-desktop-0.5.0-win32-x64.zip` | 167,734,133 | `bc3714d7adbb6a7effa14eed76e28d18586a4905f1f91018c2d1f12eb2e1408a` |
+
+The first hosted Mac archive passed, and Windows passed native movement, click-through and long-pull checks. Windows then caught a redundant live-face redraw after closing controls returned focus to the underlying window. Dispatching blur while Reduced Motion was enabled reproduced the extra frame locally. Gaze reset now skips repainting when both the target and current gaze are already centred; the desktop check includes that blur and retains the unchanged-frame assertion.
 
 ## Public release decisions
 

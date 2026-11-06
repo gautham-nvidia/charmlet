@@ -115,7 +115,10 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement) {
 		targetX = nextX; targetY = nextY;
 		refresh();
 	};
-	const resetGaze = () => { targetX = 0; targetY = 0; refresh(); };
+	const resetGaze = () => {
+		if (targetX === 0 && targetY === 0 && gazeX === 0 && gazeY === 0) { return; }
+		targetX = 0; targetY = 0; refresh();
+	};
 	const greet = () => { if (!reduced && !lastPressed) { react('hello', 450); } };
 	charm.addEventListener('pointerenter', greet);
 	window.addEventListener('pointermove', pointer, { passive: true });
