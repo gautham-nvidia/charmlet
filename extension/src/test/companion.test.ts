@@ -7,7 +7,7 @@ import { test } from 'node:test';
 import { execFileSync } from 'node:child_process';
 import {
 	applyCompanionAction, companionSnapshot, currentLearningCard, defaultCompanionState, formatFocusTime,
-	matchesCompanionState, MINUTE_MS, parseCompanionAction, reconcileCompanion, remainingFocusMs,
+	matchesCompanionState, MINUTE_MS, COMPANION_STATE_VERSION, parseCompanionAction, reconcileCompanion, remainingFocusMs,
 	restoreCompanionState, type CompanionAction, type CompanionState,
 } from '../companion-core';
 import { CompanionController, type CompanionClock, type CompanionStorage } from '../companion-controller';
@@ -16,9 +16,134 @@ import { MESSAGES } from '../messages';
 import { StateStore } from '../state-store';
 import * as garden from '../garden-core';
 import * as care from '../care-core';
+import { winsToday } from '../small-wins';
+import { gardenArtwork, gardenCharms } from '../garden-catalog';
+import { buildCatalogue } from '../charm-catalog';
+import { restoreState } from '../charm-state';
+import { cordForCharm } from '../cord-design';
 
 const START = 1800000000000;
 const startAction: CompanionAction = { type: 'focus-start', phase: 'focus', focusMinutes: 1, breakMinutes: 1, intent: 'Finish one small test' };
+
+test('refreshed flower artwork keeps earned IDs, counts, dates and saved choices', () => {
+	const state: garden.GardenState = {
+		...garden.emptyGarden(),
+		collection: garden.FLOWERS.map(flower => ({ id: flower.id, blooms: 2, firstBloomAt: START, lastBloomAt: START + 1 })),
+	};
+	const before = JSON.stringify(state);
+	const earned = gardenCharms(state);
+	const catalogue = buildCatalogue(earned);
+	for (const flower of garden.FLOWERS) {
+		const id = `garden:${flower.id}`;
+		const art = earned.find(charm => charm.id === id)!;
+		assert.equal(art.file, gardenArtwork(flower.id).file);
+		assert.equal(cordForCharm(art), cordForCharm(gardenArtwork(flower.id)));
+		assert.match(art.file, /\.png$/);
+		assert.ok(art.attachment);
+		assert.equal(restoreState({ charmId: id }, catalogue).charmId, id);
+		const previewId = `trial:flower-${flower.id}`;
+		const restored = restoreState({ charmId: previewId, cordChoices: { [previewId]: 'silver-chain' } }, catalogue);
+		assert.equal(restored.charmId, id);
+		assert.equal(restored.charmPinned, true);
+		assert.equal(restored.cordChoices[id], 'silver-chain');
+		assert.equal(catalogue.filter(charm => charm.artworkKey === `flower-${flower.id}`).length, 1);
+	}
+	assert.equal(JSON.stringify(state), before);
+});
+
+test('small wins survive reload, undo once, and do not replay an earned milestone', () => {
+	let state = applyCompanionAction(defaultCompanionState(), { type: 'win-add', label: '  Finished\none test  ' }, START).state;
+	assert.equal(state.wins.recent[0].label, 'Finished one test');
+	assert.equal(state.wins.total, 1);
+	assert.equal(state.wins.milestone, 1);
+	assert.equal(state.wins.celebrate, false);
+	state = restoreCompanionState(JSON.parse(JSON.stringify(state)), START + 1);
+	const id = state.wins.recent[0].id;
+	state = applyCompanionAction(state, { type: 'win-remove', id }, START + 2).state;
+	assert.equal(state.wins.total, 0);
+	assert.equal(state.wins.today, 0);
+	assert.equal(state.wins.milestone, 1);
+	assert.deepEqual(applyCompanionAction(state, { type: 'win-remove', id }, START + 3).state, state);
+	state = applyCompanionAction(state, { type: 'win-add', label: 'Took the next step' }, START + 4).state;
+	assert.ok(state.wins.recent[0].id > id);
+	assert.equal(state.wins.milestone, 1);
+	assert.equal(state.wins.total, 1);
+});
+
+test('new flower varieties join an existing garden without rerolling its growing seed', () => {
+	const additions = ['red-rose', 'pink-rose', 'white-rose', 'yellow-rose', 'jasmine', 'lily'];
+	const saved: garden.GardenState = {
+		plant: { id: 'existing-seed', flowerId: 'wild-rose', waterings: 8, plantedAt: START - 8 * 86400000 },
+		collection: garden.FLOWERS.slice(0, 12).map(flower => ({
+			id: flower.id, blooms: 1, firstBloomAt: START - 86400000, lastBloomAt: START - 86400000,
+		})),
+		lastWateredDay: garden.localDayKey(START), lastWateredAt: START,
+	};
+	let state = garden.restoreGarden(JSON.parse(JSON.stringify(saved)), START);
+	assert.deepEqual(state, saved);
+	assert.deepEqual(garden.gardenCandidates(state), additions);
+	assert.equal(garden.plantGarden(state, START, 'unwanted-reroll', () => 0), state);
+	for (let day = 1; day <= 3; day++) { state = garden.waterGarden(state, START + day * 86400000).state; }
+	assert.equal(state.collection.find(flower => flower.id === 'wild-rose')!.blooms, 2);
+	const next = garden.plantGarden(state, START + 3 * 86400000, 'new-flower-seed', size => {
+		assert.equal(size, additions.length);
+		return 0;
+	});
+	assert.equal(next.plant!.flowerId, 'red-rose');
+	assert.equal(next.plant!.waterings, 0);
+	assert.deepEqual(next.collection, state.collection);
+	assert.equal(garden.waterGarden(next, START + 3 * 86400000).reason, 'watered-today');
+});
+
+test('only a live completed focus earns one automatic win', () => {
+	const running = applyCompanionAction(defaultCompanionState(), startAction, START).state;
+	const completed = reconcileCompanion(running, START + MINUTE_MS);
+	assert.equal(completed.wins.total, 1);
+	assert.equal(completed.wins.recent[0].kind, 'focus');
+	assert.equal(completed.wins.recent[0].label, startAction.intent);
+	assert.equal(reconcileCompanion(completed, START + 10 * MINUTE_MS).wins.total, 1);
+	assert.equal(restoreCompanionState(JSON.parse(JSON.stringify(completed)), START + MINUTE_MS).wins.total, 1);
+	assert.equal(reconcileCompanion(running, START + MINUTE_MS, START, true).wins.total, 0);
+	const breaking = applyCompanionAction(defaultCompanionState(), { ...startAction, phase: 'break' }, START).state;
+	assert.equal(reconcileCompanion(breaking, START + MINUTE_MS).wins.total, 0);
+	for (const type of ['focus-pause', 'focus-stop'] as const) {
+		const interrupted = applyCompanionAction(running, { type }, START + 500).state;
+		assert.equal(reconcileCompanion(interrupted, START + MINUTE_MS).wins.total, 0);
+	}
+	assert.equal(reconcileCompanion(running, START - 1, START).wins.total, 0);
+});
+
+test('today resets with the local calendar while lifetime wins and history remain', () => {
+	const before = new Date(2026, 10, 5, 23, 59, 50).getTime();
+	const after = new Date(2026, 10, 6, 0, 0, 10).getTime();
+	let state = applyCompanionAction(defaultCompanionState(), { type: 'win-add', label: 'Yesterday' }, before).state;
+	assert.equal(winsToday(state.wins, before), 1);
+	assert.equal(winsToday(state.wins, after), 0);
+	state = applyCompanionAction(state, { type: 'win-add', label: 'Today' }, after).state;
+	assert.equal(state.wins.total, 2);
+	assert.equal(winsToday(state.wins, after), 1);
+	state = applyCompanionAction(state, { type: 'win-remove', id: state.wins.recent[1].id }, after + 1).state;
+	assert.equal(state.wins.total, 1);
+	assert.equal(winsToday(state.wins, after), 1);
+});
+
+test('win notes stay bounded and clear preserves the explicit celebration preference', () => {
+	let state = defaultCompanionState();
+	for (let index = 0; index < 25; index++) {
+		state = applyCompanionAction(state, { type: 'win-add', label: `Step ${index}` }, START).state;
+	}
+	assert.equal(state.wins.total, 25);
+	assert.equal(state.wins.recent.length, 20);
+	assert.equal(new Set(state.wins.recent.map(win => win.id)).size, 20);
+	assert.equal(state.wins.milestone, 25);
+	state = applyCompanionAction(state, { type: 'wins-celebrate', enabled: true }, START).state;
+	state = applyCompanionAction(state, { type: 'wins-clear' }, START).state;
+	assert.equal(state.wins.celebrate, true);
+	assert.equal(state.wins.total, 0);
+	assert.deepEqual(state.wins.recent, []);
+	assert.equal(parseCompanionAction({ type: 'win-add', label: ' \n ' }), undefined);
+	assert.equal(parseCompanionAction({ type: 'win-remove', id: NaN }), undefined);
+});
 
 class FakeClock implements CompanionClock {
 	time = START;
@@ -225,10 +350,33 @@ test('controller ticks update the view without writing each second, then persist
 	await controller.flush();
 	assert.equal(controller.snapshot().state.focus.status, 'finished');
 	assert.equal(storage.writes, 3);
-	assert.equal(clock.pending.size, 0);
+	assert.deepEqual([...clock.pending.values()].map(job => job.due), [garden.nextLocalMidnight(clock.now())]);
 	clock.advance(24 * 3600000);
 	await controller.flush();
 	assert.equal(storage.writes, 3);
+	assert.equal(clock.pending.size, 0);
+});
+
+test('today wins refresh at midnight while focus, garden and reminders are idle', async context => {
+	const clock = new FakeClock();
+	clock.time = new Date(2026, 10, 5, 23, 59, 59, 500).getTime();
+	const storage = new MemoryStorage();
+	const controller = new CompanionController(undefined, storage, 0, clock);
+	context.after(() => controller.dispose());
+	const observed: number[] = [];
+	controller.subscribe(snapshot => observed.push(winsToday(snapshot.state.wins, snapshot.now)));
+	await controller.initialize();
+	await controller.dispatch({ type: 'win-add', label: 'Finished before midnight' });
+	assert.equal(observed.at(-1), 1);
+	assert.equal(clock.pending.size, 1);
+	const writes = storage.writes;
+	clock.advance(500);
+	await controller.flush();
+	assert.equal(observed.at(-1), 0);
+	assert.equal(controller.snapshot().state.wins.total, 1);
+	assert.equal(controller.snapshot().state.wins.recent[0].label, 'Finished before midnight');
+	assert.equal(storage.writes, writes, 'The calendar refresh needs no file rewrite.');
+	assert.equal(clock.pending.size, 0, 'No daily polling remains when today is empty.');
 });
 
 test('failed or stale file confirmation does not advance a user action and a later save recovers', async context => {
@@ -306,7 +454,7 @@ test('version one migrates to an empty free garden and disabled care without los
 	before = applyCompanionAction(before, { type: 'focus-pause' }, START + 12345).state;
 	const old = { version: 1, revision: before.revision, settings: before.settings, focus: before.focus, learning: before.learning };
 	const migrated = restoreCompanionState(old, START + 100000);
-	assert.equal(migrated.version, 2);
+	assert.equal(migrated.version, COMPANION_STATE_VERSION);
 	assert.deepEqual(migrated.focus, before.focus);
 	assert.deepEqual(migrated.learning, before.learning);
 	assert.deepEqual(migrated.settings, before.settings);
@@ -317,7 +465,7 @@ test('version one migrates to an empty free garden and disabled care without los
 test('the garden daily allowance survives reload, blooming and planting another seed', () => {
 	const first = Date.parse('2026-10-08T12:00:00Z');
 	const day = (number: number) => `2026-10-${String(number).padStart(2, '0')}`;
-	let state = garden.plantGarden(garden.emptyGarden(), first, 'plant-one', size => { assert.equal(size, 12); return 2; });
+	let state = garden.plantGarden(garden.emptyGarden(), first, 'plant-one', size => { assert.equal(size, garden.FLOWERS.length); return 2; });
 	assert.equal(state.plant!.flowerId, 'hibiscus');
 	assert.equal(garden.plantGarden(state, first, 'ignored', () => { throw Error('Must not reroll'); }), state);
 	state = garden.waterGarden(state, first, day(8)).state;
@@ -336,7 +484,7 @@ test('the garden daily allowance survives reload, blooming and planting another 
 	assert.equal(state.collection[0].blooms, 1);
 	assert.equal(garden.waterGarden(state, first, day(19)).reason, 'complete');
 	state = garden.restoreGarden(JSON.parse(JSON.stringify(state)), first + 10 * 86400000, day(18));
-	state = garden.plantGarden(state, first + 10 * 86400000, 'plant-two', size => { assert.equal(size, 11); return 0; });
+	state = garden.plantGarden(state, first + 10 * 86400000, 'plant-two', size => { assert.equal(size, garden.FLOWERS.length - 1); return 0; });
 	assert.equal(state.collection.length, 1);
 	assert.equal(state.plant!.waterings, 0);
 	assert.equal(garden.waterGarden(state, first + 10 * 86400000, day(18)).reason, 'watered-today');
@@ -344,7 +492,7 @@ test('the garden daily allowance survives reload, blooming and planting another 
 	assert.equal(state.plant!.waterings, 1);
 });
 
-test('missing garden days keep progress and all twelve species precede repeated keepsakes', () => {
+test('missing garden days keep progress and all flower varieties precede repeated keepsakes', () => {
 	let state = garden.plantGarden(garden.emptyGarden(), START, 'first', () => 0);
 	state = garden.waterGarden(state, START, '2027-01-01').state;
 	state = garden.restoreGarden(JSON.parse(JSON.stringify(state)), START + 15 * 86400000, '2027-01-16');
@@ -352,9 +500,10 @@ test('missing garden days keep progress and all twelve species precede repeated 
 	assert.equal(garden.waterGarden(state, START + 15 * 86400000, '2027-01-16').state.plant!.waterings, 2);
 	state = garden.emptyGarden();
 	let ordinal = 1;
-	for (let planting = 0; planting < 13; planting++) {
+	const varieties = garden.FLOWERS.length;
+	for (let planting = 0; planting <= varieties; planting++) {
 		state = garden.plantGarden(state, START + planting, `plant-${planting}`, size => {
-			assert.equal(size, planting < 12 ? 12 - planting : 12);
+			assert.equal(size, planting < varieties ? varieties - planting : varieties);
 			return 0;
 		});
 		for (let watering = 0; watering < 11; watering++) {
@@ -362,14 +511,14 @@ test('missing garden days keep progress and all twelve species precede repeated 
 			state = garden.waterGarden(state, now, new Date(now).toISOString().slice(0, 10)).state;
 		}
 	}
-	assert.equal(state.collection.length, 12);
-	assert.equal(new Set(state.collection.map(item => item.id)).size, 12);
+	assert.equal(state.collection.length, varieties);
+	assert.equal(new Set(state.collection.map(item => item.id)).size, varieties);
 	assert.equal(state.collection.find(item => item.id === 'sunflower')!.blooms, 2);
-	assert.equal(state.collection.reduce((sum, item) => sum + item.blooms, 0), 13);
+	assert.equal(state.collection.reduce((sum, item) => sum + item.blooms, 0), varieties + 1);
 });
 
 test('garden validation rejects bad random choices and conservatively restores damaged progress', () => {
-	for (const value of [-1, 12, 0.5, Number.NaN]) {
+	for (const value of [-1, garden.FLOWERS.length, 0.5, Number.NaN]) {
 		assert.throws(() => garden.plantGarden(garden.emptyGarden(), START, 'seed', () => value), /seed choice/);
 	}
 	const broken = garden.restoreGarden({

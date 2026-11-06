@@ -2,8 +2,11 @@ import { Pendulum, type Point } from '../extension/src/pendulum';
 import { getLayout } from '../extension/src/charm-state';
 import { DEFAULT_ATTACHMENT, type CharmAttachment } from '../extension/src/charm-attachment';
 import { isSoftCharm } from '../extension/src/charm-catalog';
+import { createLiveSmiley } from '../extension/src/live-smiley';
+import { createCordView } from '../extension/src/cord-view';
+import { cordForCharm, type CordStyle } from '../extension/src/cord-design';
 
-interface DemoCharm { id: string; name: string; preview: string; attachment?: CharmAttachment; }
+interface DemoCharm { id: string; name: string; preview: string; group?: string; attachment?: CharmAttachment; }
 
 function required<Kind extends Element>(id: string): Kind {
 	const value = document.getElementById(id);
@@ -23,6 +26,10 @@ const nudgeButton = required<HTMLButtonElement>('demo-nudge');
 const resetButton = required<HTMLButtonElement>('demo-reset');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, 126, 100, 'hanging');
+const liveSmiley = createLiveSmiley(charm, image);
+const cordView = createCordView(thread.ownerSVGElement!, thread);
+let liveSelected = false;
+let cordStyle: CordStyle = 'thread';
 let scale = 1;
 let frameId: number | undefined;
 let previousTime = 0;
@@ -47,7 +54,8 @@ function render() {
 	charm.style.transform = `translate(${x}px, ${y}px) rotate(${angle}rad)`;
 	anchor.style.left = `${anchorX}px`;
 	anchor.style.top = `${anchorY}px`;
-	thread.setAttribute('d', `M ${anchorX} ${anchorY} Q ${anchorX + (hookX - anchorX) * 0.45} ${(anchorY + hookY) / 2} ${hookX} ${hookY}`);
+	cordView.render(cordStyle, { x: anchorX, y: anchorY }, { x: hookX, y: hookY });
+	liveSmiley.update(liveSelected, visible && intersecting, reducedMotion.matches);
 	stage.dataset.frames = String(frames);
 	stage.dataset.cord = String(Math.round(cordLength));
 	stage.dataset.dragging = String(drag !== undefined);
@@ -185,12 +193,14 @@ resetButton.addEventListener('click', () => resetPose('Demo reset.'));
 document.addEventListener('visibilitychange', () => {
 	visible = !document.hidden;
 	if (!visible) { resetPose(); }
+	else { render(); }
 });
 reducedMotion.addEventListener('change', () => resetPose(reducedMotion.matches
 	? 'Reduced motion is active. Dragging still follows your pointer.' : 'Drag the charm, then let it settle.'));
 new IntersectionObserver(entries => {
 	intersecting = entries[0]?.isIntersecting === true;
 	if (!intersecting) { resetPose(); }
+	else { render(); }
 }).observe(stage);
 new ResizeObserver(resize).observe(stage);
 
@@ -200,6 +210,8 @@ export function setCharm(selected: DemoCharm) {
 	const assets = new URL('./assets/', document.baseURI);
 	if (preview.origin !== location.origin || !preview.pathname.startsWith(assets.pathname)) { return; }
 	image.src = preview.href;
+	liveSelected = selected.id === 'live:smiley';
+	cordStyle = cordForCharm({ id: selected.id, name: selected.name, group: selected.group ?? '', file: '', description: '', accent: '' });
 	attachment = selected.attachment ?? DEFAULT_ATTACHMENT;
 	image.style.transformOrigin = `${attachment.x * 100}% ${attachment.y * 100}%`;
 	charm.dataset.soft = String(isSoftCharm(selected.id));

@@ -1,0 +1,36 @@
+[
+  {
+    "key": "garden-seed",
+    "variant": "garden-seed-r1",
+    "revision": 1,
+    "family": "garden-stages",
+    "name": "Garden - resting seed",
+    "prompt": "Use case: product-mockup. Asset: a realistic botanical growth illustration for a small desktop garden card. Make one small, handsome, unbranded terracotta flowerpot containing dark, finely textured moist potting soil. A single natural almond-brown oval seed rests in a shallow depression at the centre of the soil, large enough to see at small UI size. No plant or sprout yet. This is stage one of a matching set: use a plain tapered terracotta pot with a gently rolled circular rim, warm burnt-orange clay, subtle mineral texture, no glaze, no markings, no saucer. Pot height about 0.65 of its rim width. Front-facing symmetrical view, camera slightly elevated so the oval soil surface is visible. Believable photographic-style botanical illustration with soft studio light from upper left and restrained three-dimensional depth, detailed natural materials; not a flat icon, cartoon, toy face, low-poly shape or diagram. Entire object centred in a square 1024px canvas, empty margin at least 12 percent around it. The pot is the widest part of the silhouette. Isolate against perfectly uniform pure chroma BLUE #0000FF for background removal. Background has no gradient, floor, cast shadow or scenery. No blue on the object and no blue reflection. No text, labels, watermark, hanging eyelet, cord, hands, gardening tools or extra objects."
+  },
+  {
+    "key": "garden-sprout",
+    "variant": "garden-sprout-r1",
+    "revision": 1,
+    "family": "garden-stages",
+    "name": "Garden - first sprout",
+    "prompt": "Use case: product-mockup. Asset: a realistic botanical growth illustration for a small desktop garden card. Make one small, handsome, unbranded terracotta flowerpot containing dark, finely textured moist potting soil. From the centre emerges one short, delicate green seedling with exactly two healthy rounded cotyledon leaves, gently opening left and right. Small sprout height about one third of the pot height, no flowers or buds. This is stage two of a matching set: use a plain tapered terracotta pot with a gently rolled circular rim, warm burnt-orange clay, subtle mineral texture, no glaze, no markings, no saucer. Pot height about 0.65 of its rim width. Front-facing symmetrical view, camera slightly elevated so the oval soil surface is visible. Believable photographic-style botanical illustration with soft studio light from upper left and restrained three-dimensional depth. Natural green leaves with faint veins, organic stems, detailed clay and soil; not a flat icon, cartoon, toy face, low-poly shape or diagram. Entire object centred in a square 1024px canvas, empty margin at least 12 percent around it. The pot remains the widest part of the silhouette. Isolate against perfectly uniform pure chroma BLUE #0000FF for background removal. Background has no gradient, floor, cast shadow or scenery. No blue on the object and no blue reflection. No text, labels, watermark, hanging eyelet, cord, hands, tools or extra objects."
+  },
+  {
+    "key": "garden-leaves",
+    "variant": "garden-leaves-r2",
+    "revision": 2,
+    "family": "garden-stages",
+    "name": "Garden - growing leaves",
+    "prompt": "Use case: product-mockup. Asset: one realistic botanical growth illustration for a small desktop garden card. CRITICAL BACKGROUND: the entire backdrop is pure flat electric BLUE #0000FF, which directly touches the contour of the pot, every leaf and the stem and fills every gap. NO white panel, white rectangle, inset photograph, paper sheet, frame, floor, shadow or thumbnail. Put the actual object directly against the blue. Make one small, handsome, unbranded terracotta flowerpot containing dark, finely textured moist potting soil. A compact healthy young plant rises from the centre, one main natural green stem and four distinct gently curved oval leaves on short alternating stalks, showing fine leaf veins and believable thickness. Plant height above soil about equal to the pot height. No bud or flower: the eventual flower species must remain a surprise. This is stage three of a matching set: plain tapered terracotta pot with a gently rolled circular rim, warm burnt-orange clay, subtle mineral texture, no glaze, no markings, no saucer. Pot height about 0.65 of its rim width. Front-facing symmetrical view, camera slightly elevated so the oval soil surface is visible. Believable photographic-style botanical illustration with soft studio light from upper left and restrained three-dimensional depth. Natural forest-green and olive foliage, detailed clay and soil; not a flat icon, cartoon, toy face, low-poly shape or diagram. Entire object centred in a square 1024px canvas, empty blue margin at least 12 percent around it. Keep every leaf within the pot's rim width; total silhouette height no more than 1.5 times that width. No blue on the object and no blue reflection. No text, labels, watermark, hanging eyelet, cord, hands, tools or extra objects. Exactly one plant in one pot directly surrounded by solid blue, never a picture of a plant printed on a white rectangle."
+  },
+  {
+    "key": "garden-bud",
+    "variant": "garden-bud-r2",
+    "sourceVariant": "garden-bud-r1",
+    "blueSpillCleanup": true,
+    "revision": 2,
+    "family": "garden-stages",
+    "name": "Garden - waiting bud",
+    "prompt": "Use case: product-mockup. Asset: a realistic botanical growth illustration for a small desktop garden card. Make one small, handsome, unbranded terracotta flowerpot containing dark, finely textured moist potting soil. A compact healthy plant rises from the centre, one main natural green stem, four distinct curved oval leaves and one upright tightly closed green flower bud at the top. The bud is fully wrapped in green sepals with no coloured petals and no revealed flower species. Plant height above soil about equal to the pot height. This is stage four of a matching set: use a plain tapered terracotta pot with a gently rolled circular rim, warm burnt-orange clay, subtle mineral texture, no glaze, no markings, no saucer. Pot height about 0.65 of its rim width. Front-facing symmetrical view, camera slightly elevated so the oval soil surface is visible. Believable photographic-style botanical illustration with soft studio light from upper left and restrained three-dimensional depth. Natural forest-green and olive foliage with fine veins, detailed clay and soil; not a flat icon, cartoon, toy face, low-poly shape or diagram. Entire object centred in a square 1024px canvas, empty margin at least 12 percent around it. Keep every leaf within the pot's rim width; total silhouette height no more than 1.5 times that width. Isolate against perfectly uniform pure chroma BLUE #0000FF for background removal. Background has no gradient, floor, cast shadow or scenery. No blue on the object and no blue reflection. No text, labels, watermark, hanging eyelet, cord, hands, tools or extra objects."
+  }
+]

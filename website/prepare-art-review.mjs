@@ -35,13 +35,15 @@ try {
     const renderId = `${job.variant}-p2`;
     let raw, receipt;
     try {
-      raw = await readFile(join(rawRoot, `${job.variant}.png`));
-      receipt = JSON.parse(await readFile(join(rawRoot, `${job.variant}.json`), 'utf8'));
+      const sourceVariant = job.sourceVariant ?? job.variant;
+      raw = await readFile(join(rawRoot, `${sourceVariant}.png`));
+      receipt = JSON.parse(await readFile(join(rawRoot, `${sourceVariant}.json`), 'utf8'));
     } catch (error) {
       if (error.code === 'ENOENT' && !requested.length) continue;
       throw error;
     }
     if (receipt.sha256 !== digest(raw)) throw new Error(`Raw artwork hash mismatch: ${job.key}`);
+    if (job.sourceVariant && receipt.promptHash !== digest(job.prompt)) throw new Error(`Approved prompt mismatch: ${job.key}`);
     const previous = items.get(job.key);
     if (previous?.profile === 2 && previous.revision === job.revision) {
       if (previous.rawSha256 !== receipt.sha256) throw new Error(`Use a new revision instead of replacing ${job.key}.`);
@@ -52,6 +54,16 @@ try {
     }
     try {
       const decoded = PNG.sync.read(raw);
+      // Opt in only for subjects explicitly authored without any green materials.
+      // This repeats the cleanup used in the three colour examples the owner approved.
+      if (job.greenSpillCleanup) {
+        for (let offset = 0; offset < decoded.data.length; offset += 4) {
+          const [red, green, blue] = decoded.data.subarray(offset, offset + 3);
+          if (green > 55 && green - Math.max(red, blue) > 35) {
+            decoded.data[offset] = 0; decoded.data[offset + 1] = 255; decoded.data[offset + 2] = 0;
+          }
+        }
+      }
       const cutout = extractGreenScreen(decoded);
       const clean = PNG.sync.write({ width: cutout.width, height: cutout.height, data: Buffer.from(cutout.data) }, { colorType: 6 });
       const rendered = await page.evaluate(async ({ encoded, bounds }) => {
@@ -84,6 +96,8 @@ try {
         key: job.key, id: job.id, name: job.name, group: job.group, family: job.family, accent: job.accent,
         original: job.original, preview: `./assets/review/${renderId}.webp`, image: `./assets/review/${renderId}.png`,
         revision: job.revision, profile: 2,
+        ...(job.sourceVariant ? { sourceVariant: job.sourceVariant } : {}),
+        ...(job.greenSpillCleanup ? { greenSpillCleanup: true } : {}),
         download: job.family === 'flowers' ? null : `./packs/review/${packId}.charmlet.json`,
         pngBytes: png.length, pngSha256: digest(png), rawSha256: receipt.sha256, promptHash: receipt.promptHash,
         model: 'Gemini 3 Pro Image', status: 'review-candidate', width: 216, height: 252,

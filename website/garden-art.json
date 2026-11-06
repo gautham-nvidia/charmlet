@@ -1,0 +1,55 @@
+{
+  "profile": 1,
+  "items": [
+    {
+      "key": "garden-seed",
+      "file": "garden-seed-r1.png",
+      "model": "gcp/google/gemini-3-pro-image",
+      "rawSha256": "0bc96726328f90702f9506e552bb6bf17a350a58fc9065f4507170fffba7be68",
+      "promptHash": "77b8cbb347ef18c1113ff08e90ca84149a1e1e20f9655ed5c81ed690297c2e88",
+      "pngSha256": "910a7aeefdd210c5d27842c016664991596afd7cedef6732cad06181e1648c92",
+      "width": 216,
+      "height": 252,
+      "bytes": 49000,
+      "generatedAt": "2026-11-05T22:18:33.126Z"
+    },
+    {
+      "key": "garden-sprout",
+      "file": "garden-sprout-r1.png",
+      "model": "gcp/google/gemini-3-pro-image",
+      "rawSha256": "7eb3dc024132171cdd47bc67ff1e05b55677b00f680cec7c9ac8c90565c65ebf",
+      "promptHash": "207f3d0f6639329ef71a0b1a70125c9f5d4b9918a5fe25b7e487de6ce384315d",
+      "pngSha256": "767887e0483c779da67ef369eaa05ef61d29570cadd29c2e5b75c2972b1b9c03",
+      "width": 216,
+      "height": 252,
+      "bytes": 51197,
+      "generatedAt": "2026-11-05T22:18:33.363Z"
+    },
+    {
+      "key": "garden-leaves",
+      "file": "garden-leaves-r2.png",
+      "model": "gcp/google/gemini-3-pro-image",
+      "rawSha256": "bfe2cb6c0cbcb2d3fb6c14fdf2413d64fb31443d3fc804a374ea5364550ebf34",
+      "promptHash": "1a0066f1ecf518aa540e80457d23d5f3bc21b2bc373ab32783e13518581fc445",
+      "pngSha256": "1ce2f85d5b8f816c175e95d0c1918740583209cbd311c42e232b513e10acfe68",
+      "width": 216,
+      "height": 252,
+      "bytes": 49506,
+      "generatedAt": "2026-11-05T22:45:55.584Z"
+    },
+    {
+      "key": "garden-bud",
+      "file": "garden-bud-r2.png",
+      "model": "gcp/google/gemini-3-pro-image",
+      "rawSha256": "2b910c7a8dc81afa8eb945ead8bd7a54ebfaaf85fc1e8bf33cb2c6d57c000bc6",
+      "promptHash": "291721181a2a26c45a99e45f62932b6623351dbe9b614011851ce570c7b5cfd2",
+      "pngSha256": "86177195ccaa96a7a3a45c5250f098242b463d4ec16168325fb8401aba800181",
+      "width": 216,
+      "height": 252,
+      "bytes": 50183,
+      "generatedAt": "2026-11-05T22:18:52.692Z",
+      "sourceVariant": "garden-bud-r1",
+      "blueSpillCleanup": true
+    }
+  ]
+}

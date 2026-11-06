@@ -2,13 +2,15 @@
 
 Charmlet Desktop is an unpublished Windows/macOS developer beta. It reuses the extension's charm renderer, physics, Focus/Learn/Garden controller, validated pack parser and confirmed JSON stores in one floating tray-managed window.
 
-The **0.3.0 trial** starts with just the charm and cord. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
+The **0.4.0 candidate** starts with just the charm and cord. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
 
 Drag **Move** to place the charm, or focus that button and use the arrow keys (Shift moves farther). Pulling the charm itself stretches the cord within the current display's available space, then releases into the shared bounce. The peg starts near the screen's top edge; compact controls no longer restrict the play area.
 
 Under **Tools > Settings**, **Background**, **Keep toolbar visible** and **Keep messages visible** are separate saved preferences, all off by default. The tray's **Open Controls** and **Reset Window Position** remain available.
 
-The trial shares the extension's 152 offline charms, including 142 rendered designs and ten preserved originals. The full collection is available in **Charms**, including four smiley stress balls, three soft emoji designs and both full-body Drishti variations. Existing imports, garden progress, holiday defaults, pin controls and the motivational deck are preserved. The final release artwork and download pricing remain undecided.
+The trial shares the extension's 151 offline charms: 149 rendered designs, a sharper Terminal and Sunny, an original live smiley. Colour figures replace bronze and the open-eyed smileys face forward. Early designs move to their newer equivalents with their saved cord choices. The garden has new soil, terracotta and foliage artwork, with eighteen growable flowers including red, pink, white and yellow roses, jasmine and lily. Existing imports, garden progress, holiday defaults, pin controls and the motivational deck are preserved. The final release artwork and download pricing remain undecided.
+
+**Appearance > Cord material** matches the charm or remembers your chosen cord. **Focus > Small wins** records achievements and completed live focus sessions, with undo and optional celebrations. **Photo charms** opens a local crop and frame editor: only the finished keepsake is stored, with no uploads. Sunny blinks, glances toward a nearby pointer and reacts to squeezing and wins; Reduced Motion stops idle animation. All these controls stay tucked away until selected.
 
 <img src="../docs/store-assets/desktop-minimal.png" width="960" alt="Actual Charmlet desktop views: charm only, optional background and toolbar, and the selected Focus panel">
 
@@ -22,7 +24,7 @@ npm.cmd --prefix desktop run test
 npm.cmd --prefix desktop run package
 ```
 
-The Windows 0.3.0 packaging target is an unsigned folder under `desktop/release/0.3.0/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. Current-version extracted Windows and macOS checks are recorded in the [Phase 7 verification log](../docs/phase-7-desktop-minimal.md) when complete. There is no installer, signing, notarization, update service, store listing or public distribution in this slice.
+The Windows 0.4.0 packaging target is an unsigned folder under `desktop/release/0.4.0/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. Current-version extracted Windows and macOS checks are recorded in the [Phase 8 verification log](../docs/phase-8-personalization.md) when complete. There is no installer, signing, notarization, update service, store listing or public distribution in this slice.
 
 For a portable download, archive and test the extracted application.
 
@@ -34,7 +36,11 @@ node desktop/archive.mjs
 
 This writes a Windows ZIP under `desktop/distribution/`. The hosted Mac job writes a `.tar.gz` so the `.app` keeps its executable permissions and framework links. Both archive types are extracted and launched in disposable profiles before upload. GitHub's outer artifact ZIP contains that tested archive; extract it, then extract the inner archive and keep the app folder together.
 
-## Current local evidence - 2026-11-04
+## Current candidate evidence
+
+The [Phase 8 record](../docs/phase-8-personalization.md) tracks the new cord, win, photo and live-renderer checks. The following historical results do not establish this candidate's release status. Development geometry checks use a separate CDP touch pointer to avoid interference from a real desktop mouse; the isolated Windows workflow retains the unfiltered native mouse, movement and click-through checks.
+
+## Historical local evidence - 2026-11-04
 
 Version 0.3.0 changes the desktop presentation and placement. Type/build, twelve model checks and the development-host smoke pass, including long downward/sideways pulls, saved display preferences, migrated position, restart, focus and garden state. The production VS Code renderer remains byte-identical. Package/hosted results and open native interaction gates are recorded in [Phase 7](../docs/phase-7-desktop-minimal.md).
 

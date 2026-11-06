@@ -4,7 +4,9 @@ import {
 } from './companion-core';
 import { REMINDER_MINUTES_MAX, REMINDER_MINUTES_MIN, validReminderMinutes, type ReminderKind } from './care-core';
 import { FLOWERS, WATERINGS_TO_BLOOM, type FlowerId, type GardenStage } from './garden-core';
+import { gardenArtwork, GARDEN_STAGE_FILES } from './garden-catalog';
 import { learningCard, type FeedMode, type LearningCard } from './learning-cards';
+import { createSmallWinsView } from './small-wins-view';
 
 export interface CompanionViewOptions {
 	send(action: CompanionAction, requestId: number): void;
@@ -14,6 +16,8 @@ export interface CompanionViewOptions {
 	onOpen(): void;
 	onLayout(): void;
 	onActivity(): void;
+	onMilestone?(count: number): void;
+	onWin?(): void;
 }
 
 export interface CompanionView {
@@ -112,11 +116,13 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 	let ready = false;
 	let requestSequence = 0;
 	let pendingRequest: number | undefined;
+	let pendingAction: CompanionAction['type'] | undefined;
 	let activeTab: 'focus' | 'learn' | 'garden' | 'reminders' = 'focus';
 	let opener: HTMLElement | undefined;
 	let layoutKey = '';
 	let feedbackText = '';
 	let gardenCollectionKey = '';
+	const winsUI = createSmallWinsView(focusPanel, send, options.onLayout);
 
 	const requestControls: Array<HTMLInputElement | HTMLSelectElement | HTMLButtonElement> = [
 		focusMinutes, breakMinutes, focusIntent, preset25, preset50, focusStart, breakStart,
@@ -163,7 +169,7 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 	}
 
 	function send(action: CompanionAction) {
-		beginRequest(requestId => options.send(action, requestId));
+		beginRequest(requestId => { pendingAction = action.type; options.send(action, requestId); });
 	}
 
 	function configure() {
@@ -254,7 +260,7 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 			button.dataset.flowerId = flower.id;
 			button.setAttribute('aria-label', `Hang ${flower.name}, grown ${owned.blooms} ${owned.blooms === 1 ? 'time' : 'times'}`);
 			const image = document.createElement('img');
-			image.src = options.image(`garden-${flower.id}.svg`);
+			image.src = options.image(gardenArtwork(flower.id).file);
 			image.alt = '';
 			image.width = 36;
 			image.height = 42;
@@ -273,11 +279,11 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 		const complete = !!plant && plant.waterings >= WATERINGS_TO_BLOOM;
 		const flower = complete ? FLOWERS.find(candidate => candidate.id === plant.flowerId) : undefined;
 		const stageFile: Record<GardenStage, string> = {
-			seed: 'garden-seed.svg', sprout: 'garden-sprout.svg', leaves: 'garden-leaves.svg', bud: 'garden-bud.svg',
-			bloom: `garden-${plant?.flowerId ?? 'sunflower'}.svg`,
+			...GARDEN_STAGE_FILES,
+			bloom: gardenArtwork(plant?.flowerId ?? 'sunflower').file,
 		};
 		if (flower) {
-			setImage(gardenArt, options.image(`garden-${flower.id}.svg`), `${flower.name} flower`);
+			setImage(gardenArt, options.image(gardenArtwork(flower.id).file), `${flower.name} flower`);
 		} else {
 			setImage(gardenArt, options.image(stageFile[snapshot.gardenStage]), `${snapshot.gardenStage} garden stage`);
 		}
@@ -341,6 +347,7 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 
 		cardText(card);
 		renderCare();
+		winsUI.render(state.wins, snapshot.now, !ready || busy);
 		renderGarden(busy);
 		const showRing = focus.status !== 'idle';
 		focusRing.toggleAttribute('hidden', !showRing);
@@ -416,6 +423,10 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 	function receive(value: unknown) {
 		const restored = snapshotValue(value);
 		if (!restored) { return; }
+		const milestone = ready && !restored.error && restored.state.wins.celebrate
+			&& restored.state.wins.milestone > state.wins.milestone ? restored.state.wins.milestone : undefined;
+		const earnedWin = ready && !restored.error && restored.state.wins.total > state.wins.total
+			&& restored.state.wins.lastId > state.wins.lastId;
 		snapshot = restored;
 		state = restored.state;
 		if (!ready) {
@@ -425,10 +436,14 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 		if (pendingRequest === undefined) { stage.dataset.companionPersisted = restored.error ? 'error' : 'true'; }
 		showFeedback(restored.error);
 		render();
+		if (milestone !== undefined) { options.onMilestone?.(milestone); }
+		if (earnedWin) { options.onWin?.(); }
 	}
 
 	function result(requestId: number, error?: string, message?: string) {
 		if (requestId !== pendingRequest) { return; }
+		if (!error) { winsUI.saved(pendingAction); }
+		pendingAction = undefined;
 		pendingRequest = undefined;
 		stage.dataset.companionPersisted = error ? 'error' : 'true';
 		showFeedback(error ?? message);

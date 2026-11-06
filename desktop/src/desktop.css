@@ -41,7 +41,7 @@ body.desktop #primary-nav > button { min-height: 29px; gap: 3px; padding: 3px 1p
 body.desktop #companion-toggle > svg, body.desktop .nav-chevron { display: none; }
 body.desktop #tools-backdrop { display: none !important; }
 body.desktop #settings.tool-popup, body.desktop #companion-tools.tool-popup,
-body.desktop #charm-picker.tool-popup, body.desktop #settings-menu {
+body.desktop #charm-picker.tool-popup, body.desktop #photo-editor.tool-popup, body.desktop #settings-menu {
   top: 98px; bottom: 10px; left: 10px; right: 10px; width: auto; max-height: none;
   border-radius: 16px; border: 1px solid #b6d3c53b; background: #202b28fa;
   box-shadow: 0 10px 26px #00000035;

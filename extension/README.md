@@ -1,9 +1,9 @@
 # Charmlet: Coding Charms
 
-152 offline trial charms with compact pull/return behavior, an optional fixed-peg Orbit layout, free Focus/Learn tools, a gentle garden and optional reminders.
+151 offline trial charms with matched cord materials, an original live smiley, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Complete-collection trial candidate, version 0.6.1.** Charmlet lives in a dockable VS Code view, not over your code
+**Personalisation trial candidate, version 0.7.0.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 It also works in Restricted Mode without asking you to trust workspace code.
 
@@ -26,7 +26,19 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 8. Click **Garden**, then **Plant a seed**, or run **Charmlet: Open Garden**. Water once per local day and earn an original flower after eleven valid waterings. Optional water/move schedules live under **Settings → Reminders**.
 9. Run **Charmlet: Import Charm Pack** for a free downloaded `.charmlet.json`; remove imported packs with **Charmlet: Remove Charm Pack**.
 
-The trial includes 142 rendered designs: recognizable components and lab instruments, animals, trees, cities and parks, local culture and sports, Stress Busters, all eight planets plus Sun and Moon, galaxies, eight gemstones, twelve zodiac signs, 22 seasonal designs, fourteen sacred-tradition designs and twelve flower illustrations. Open **Charms** to search and filter them; no separate imports are needed.
+The trial includes 149 rendered designs: recognizable components and lab instruments, animals, trees, cities and parks, local culture and sports, Stress Busters, all eight planets plus Sun and Moon, galaxies, eight gemstones, twelve zodiac signs, 22 seasonal designs, fifteen sacred-tradition designs and eighteen flower illustrations. The sharper Terminal and Sunny bring the total to 151. Open **Charms** to search and filter them; no separate imports are needed.
+
+Grow red, pink, white and yellow roses, jasmine and lily alongside the original twelve garden flowers. Each seed still blooms after eleven daily waterings. Existing plants and collected flowers are preserved, and seeds choose flowers you have not collected before returning to familiar varieties.
+
+The nine early designs have retired from the picker. Saved choices, pins and cord materials move to the matching newer artwork. The garden now shows natural soil, terracotta and foliage; earned flowers use the current rendered artwork while keeping their saved IDs, dates and bloom counts.
+
+**Sunny - Live Smiley** is an original yellow face that blinks, glances toward a nearby pointer, squishes and reacts to new wins. It returns its gaze to the centre after a short pause. Reduced Motion stops idle animation; unavailable graphics support falls back to a canvas rendering. Painted colour figures replace the bronze deity artwork, with seated Shiva available separately from Nataraja.
+
+**Settings > Appearance > Cord material** matches the selected charm or remembers your manual choice. Eight materials are available, including gold/silver chains, braid, soft cord and the original thread.
+
+**Focus > Small wins** stores short achievements, with undo and clear-history controls. A focus session that finishes while the app is running earns one win; stopped, break and recovered overdue sessions do not. Daily counts follow the local date. Milestone celebrations are off by default and respect Reduced Motion.
+
+Choose **Make a photo charm** in Charms or **Photo charms** in Settings. Crop a PNG, JPEG or WebP, preview its frame on light/dark backgrounds and at actual size, then save and hang it. Images are processed locally; only the finished small PNG and your chosen name are saved. Original files and metadata are not retained or uploaded. Remove keepsakes in the same panel.
 
 Stress Busters include happy, determined, calm and winking smiley balls, plus a soft heart, thumbs-up and rocket. Hold the charm or hold Space/Enter while it is focused to squeeze, then release. The cord follows the visible outline and stays attached while the shape compresses. The full-body Drishti Doll is joined by a red-faced, horned Drishti Guardian; both remain available.
 

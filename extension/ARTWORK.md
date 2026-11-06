@@ -59,4 +59,18 @@ The owner requested four emotional smiley stress balls and other emoji designs, 
 
 The owner supplied [The Accha Studio's Drishti reference, slide 7](https://www.instagram.com/p/C9e_MaFSVlW/?img_index=7). It was inspected through the public page: the photograph shows traditional red guardian masks with wide eyes, tall white horns, curled black moustaches, white teeth and bold painted forehead/ear details. Those general features informed the text prompt for an original full-body clay variation. The photograph itself is not bundled or used as a cutout. The accepted earlier full-body doll is preserved.
 
-These eight additional Gemini 3 Pro Image designs bring the current inventory to 184 authored subjects, 143 selected review entries and 142 included PNG designs, plus ten original SVGs. Earlier exports and generation receipts remain archived. The four smiley faces use original foam-toy compositions rather than platform emoji assets.
+For 0.6.1, these eight additional Gemini 3 Pro Image designs brought the inventory to 184 authored subjects, 143 selected review entries and 142 included PNG designs, plus ten original SVGs. Earlier exports and generation receipts remain archived. The four smiley faces use original foam-toy compositions rather than platform emoji assets.
+
+## 2026-11-05 - Personalisation and garden refresh
+
+The 0.7.0 candidate contains 149 rendered PNG designs, the refined original Terminal keycap and Sunny: 151 selectable trial charms. The owner requested retiring the other nine early designs; their stored IDs migrate to the newer versions. Terminal retains its existing shape and prompt glyph with revised SVG shading, bevels and eyelet detail.
+
+The owner approved painted colour figures over bronze and a forward gaze for open-eyed smileys. The approved Ganesha, Murugan and seated Shiva examples are reused; corresponding revisions extend the colour direction to the other figures. Nataraja remains a distinct dancing form. The artwork manifest records 191 authored charm subjects and their current exports.
+
+Sunny's sphere, eyes, eyelids and mouth are code-authored WebGL and canvas shapes. Its static SVG is used for thumbnails and as a final fallback. It is an original character.
+
+Four botanical garden stages replace the earlier flat SVGs. They were generated through the same Gemini 3 Pro Image route using `website/garden-art-jobs.json`, with raw masters and receipts retained locally. `website/garden-art.json` records source and PNG hashes. A blue matte protects natural green foliage during cutout; the bud revision removes residual blue spill from the same raw master. The owner approved the four current stages on 2026-11-05. The images are generated illustrations, not documentary photographs.
+
+The owner then requested rose colours, jasmine and lily to grow from seeds. Six new photographic-style botanical renders add red, pink, white and yellow roses, Arabian jasmine and an oriental lily. Their prompts are in `website/art-review-jobs.mjs`; targeted background corrections for red rose and jasmine are in `website/art-review-revisions.json`. All eighteen earned flowers reuse the trial flower PNGs and their attachments. Original flower IDs, collected counts/dates and the active plant are preserved; new seeds prefer uncollected varieties. The new flower images remain available for visual review.
+
+This is provenance for the trial. The final artwork lineup, source/art licence and bundled/free/paid split remain owner decisions.

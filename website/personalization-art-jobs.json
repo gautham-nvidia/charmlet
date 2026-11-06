@@ -1,0 +1,26 @@
+[
+  {
+    "key": "colour-ganesha",
+    "variant": "colour-ganesha-r1",
+    "revision": 1,
+    "family": "phase-8-review",
+    "name": "Ganesha - painted temple figurine",
+    "prompt": "Create one exquisite, respectful South Indian Ganesha miniature figurine pendant for a small desktop charm, a believable hand-painted temple keepsake with fine material detail and warm natural studio light. Ganesha is seated, recognizable elephant head with a single gently curved trunk, calm kind eyes, full body including feet and four clearly separated arms. Warm natural terracotta skin, rich crimson and saffron silk dhoti with gold edging, tasteful gold crown and jewelry; one hand blessing, one with a small modak bowl. IMPORTANT: show three distinct horizontal white sacred-ash vibhuti stripes (pattai / tripundra) across the broad forehead, with a small central red kumkum dot. The stripes must be crisp and recognizable, not one vertical tilak. Use realistic painted resin/bronze craftsmanship rather than a cartoon, chibi, toy emoji, anime or shiny plastic. A small closed gold hanging eyelet sits centered above the crown, fully inside the canvas; NO chain or cord. The entire figure is visible and centered, including the base and eyelet. Keep the silhouette bold and readable at 72 by 84 pixels, with a sufficiently prominent face for the forehead detail. Portrait subject within a square 1024px image; leave a clean 10 percent empty margin on every side. Isolate on perfectly flat bright chroma green #00FF00; no ground, shadows on the background, scenery, lettering, watermarks, borders or extra objects. The green is only a removable background: no green clothing or green reflection on the subject. Beautiful, dignified, recognizable South Indian religious artistry."
+  },
+  {
+    "key": "colour-murugan",
+    "variant": "colour-murugan-r1",
+    "revision": 1,
+    "family": "phase-8-review",
+    "name": "Murugan - painted temple figurine",
+    "prompt": "Create one exquisite, respectful South Indian Lord Murugan miniature temple figurine pendant, a believable hand-painted sculptural keepsake with warm natural studio lighting. Show the complete standing deity with feet and a small plain gold pedestal, youthful serene face, warm natural skin, rich royal-blue and saffron silk dhoti with gold borders, gold crown and ornaments. A slender recognizable gold vel spear stands beside him, fully inside the image. A small deep-blue peacock at his feet is subordinate and does not obscure the figure. IMPORTANT: three crisp horizontal white vibhuti sacred-ash stripes (pattai / tripundra) across his forehead, with a small central red kumkum dot, visibly painted and not a vertical tilak. Render traditional South Indian iconography with believable hand-painted resin/bronze material; not cartoon, chibi, anime, emoji or glossy plastic. Keep the face and spear readable at miniature charm size; do not add a crowd or intricate backdrop. One small closed gold hanging eyelet above the crown, no dangling chain or cord. Whole subject centered, leave a clean 10 percent empty margin around every part including the spear and eyelet. Square 1024px image with a tall compact silhouette. Isolate on perfectly uniform bright chroma green #00FF00, no ground plane or cast background shadows, no text, letters, border, watermark or detached objects. No green clothing or green reflections on the subject. Dignified devotional craftsmanship with clear color and a strong physical silhouette."
+  },
+  {
+    "key": "colour-shiva",
+    "variant": "colour-shiva-r1",
+    "revision": 1,
+    "family": "phase-8-review",
+    "name": "Shiva - painted temple figurine",
+    "prompt": "Create one exquisite, respectful Lord Shiva miniature temple figurine pendant in a South Indian devotional style, like a beautifully hand-painted sculptural keepsake photographed in warm soft studio light. Show the complete seated meditating figure, calm dignified face and blue-grey painted skin, dark piled hair with a small crescent moon, simple rudraksha beads, saffron/tiger-pattern cloth and a compact plain dark-gold base. A modest trident rests beside him, clearly recognizable and completely inside the canvas. IMPORTANT: three separate crisp horizontal white vibhuti sacred-ash stripes (pattai / tripundra) across the forehead with a small red central mark. These should be visible on the broad forehead, not replaced by a vertical tilak. Believable hand-painted resin and metal craftsmanship, fine restrained details, not a cartoon, chibi, anime, emoji or shiny plastic. Use a strong compact silhouette that is readable at 72 by 84 pixels, with the face prominent enough to see its forehead stripes. Small closed silver hanging eyelet above the hair, no chain or cord. Full figure, base, trident and eyelet visible with a clean 10 percent empty margin on every side. Centered portrait subject in a 1024px square. Perfectly flat bright chroma green #00FF00 background for removal, no scenery, background shadow, floor, halo, lettering, border, watermark or detached extra objects. No green material or green reflection on the subject. Respectful, authentic devotional presentation."
+  }
+]

@@ -1,4 +1,4 @@
-import { cropRectangle, FRAMES, inspectPhotoHeader, makePhotoPack, MAX_PHOTO_BYTES, MAX_PHOTO_PIXELS, PHOTO_HEIGHT, PHOTO_WIDTH } from './photo-core.mjs';
+import { cropRectangle, drawPhotoCharm, FRAMES, inspectPhotoHeader, makePhotoPack, MAX_PHOTO_BYTES, MAX_PHOTO_PIXELS, PHOTO_HEIGHT, PHOTO_WIDTH } from './photo-core.mjs';
 
 const studio = document.querySelector('#studio');
 const panel = document.querySelector('#studio-panel');
@@ -91,49 +91,12 @@ function locked(message = 'Unlock Photo Studio when you have an eligible licence
   state.id = 'studio-status'; state.setAttribute('role', 'status');
   panel.append(copy, state);
 }
-function roundedRect(context, x, y, width, height, radius) {
-  context.beginPath();
-  context.roundRect(x, y, width, height, radius);
-}
 function draw() {
   if (!canvas) return;
   captureDraft();
-  const context = canvas.getContext('2d');
   const frameKey = document.querySelector('#studio-frame')?.value || 'mint';
-  const frame = FRAMES[frameKey];
-  context.setTransform(1, 0, 0, 1, 0, 0);
-  context.clearRect(0, 0, PHOTO_WIDTH, PHOTO_HEIGHT);
-  context.scale(3, 3);
-  context.save();
-  context.shadowColor = 'rgba(24,60,53,.28)'; context.shadowBlur = 3; context.shadowOffsetY = 2;
-  context.fillStyle = frameKey === 'paper' ? '#fff9e9' : frame.accent;
-  if (frame.shape === 'circle') {
-    context.beginPath(); context.ellipse(frame.x + frame.width / 2, frame.y + frame.height / 2, frame.width / 2 + 2, frame.height / 2 + 2, 0, 0, Math.PI * 2);
-  } else roundedRect(context, frame.x - 2, frame.y - 2, frame.width + 4, frame.height + 4, frameKey === 'paper' ? 2 : 7);
-  context.fill(); context.restore();
-  if (bitmap) {
-    const zoom = Number(document.querySelector('#studio-zoom').value) / 100;
-    const horizontal = Number(document.querySelector('#studio-x').value) / 100;
-    const vertical = Number(document.querySelector('#studio-y').value) / 100;
-    const crop = cropRectangle(bitmap.width, bitmap.height, frame.width, frame.height, zoom, horizontal, vertical);
-    context.save();
-    if (frame.shape === 'circle') {
-      context.beginPath(); context.ellipse(frame.x + frame.width / 2, frame.y + frame.height / 2, frame.width / 2, frame.height / 2, 0, 0, Math.PI * 2);
-    } else roundedRect(context, frame.x, frame.y, frame.width, frame.height, frameKey === 'paper' ? 1 : 5);
-    context.clip();
-    context.drawImage(bitmap, crop.x, crop.y, crop.width, crop.height, frame.x, frame.y, frame.width, frame.height);
-    context.restore();
-  } else {
-    context.fillStyle = '#dce8dc';
-    if (frame.shape === 'circle') { context.beginPath(); context.ellipse(frame.x + frame.width / 2, frame.y + frame.height / 2, frame.width / 2, frame.height / 2, 0, 0, Math.PI * 2); context.fill(); }
-    else context.fillRect(frame.x, frame.y, frame.width, frame.height);
-  }
-  context.strokeStyle = frameKey === 'paper' ? '#b89760' : frame.accent; context.lineWidth = 1.6;
-  if (frame.shape === 'circle') { context.beginPath(); context.ellipse(frame.x + frame.width / 2, frame.y + frame.height / 2, frame.width / 2, frame.height / 2, 0, 0, Math.PI * 2); }
-  else roundedRect(context, frame.x, frame.y, frame.width, frame.height, frameKey === 'paper' ? 1 : 5);
-  context.stroke();
-  const hook = new Path2D('M31 15V8a5 5 0 0 1 10 0v7');
-  context.strokeStyle = '#aab3ba'; context.lineWidth = 3; context.lineCap = 'round'; context.stroke(hook);
+  drawPhotoCharm(canvas, bitmap, frameKey, Number(document.querySelector('#studio-zoom').value) / 100,
+    Number(document.querySelector('#studio-x').value) / 100, Number(document.querySelector('#studio-y').value) / 100);
 }
 function validSignature(bytes, type) {
   return type === 'image/png' && bytes.length >= 8 && [137,80,78,71,13,10,26,10].every((value, index) => bytes[index] === value)

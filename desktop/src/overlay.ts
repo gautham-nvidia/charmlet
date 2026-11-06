@@ -23,7 +23,7 @@ for (const child of [...element('app').children]) {
 	if (child !== stage) { frame.append(child); }
 }
 element('app').append(frame);
-const interactive = '#desktop-header, #charm, #anchor, #restore, #message-card, #care-cue, #primary-nav, #settings, #companion-tools, #charm-picker, #settings-menu';
+const interactive = '#desktop-header, #charm, #anchor, #restore, #message-card, #care-cue, #primary-nav, #settings, #companion-tools, #charm-picker, #settings-menu, #photo-editor';
 let view = restoreDesktopView(undefined);
 let ignored: boolean | undefined;
 let charmHeld = false;
@@ -122,7 +122,7 @@ function saveView(key: keyof DesktopView) {
 	api.postMessage({ type: 'desktop-view-save', value: view, revision: ++revision });
 }
 function syncPanels() {
-	const open = ['charm-picker', 'settings-menu', 'settings', 'companion-tools'].some(id => !element(id).hidden);
+	const open = ['charm-picker', 'settings-menu', 'settings', 'companion-tools', 'photo-editor'].some(id => !element(id).hidden);
 	const messagePanel = !element('companion-tools').hidden && !element('learn-panel').hidden;
 	body.dataset.desktopPanel = String(open);
 	body.dataset.desktopMessagePanel = String(messagePanel);
@@ -244,7 +244,7 @@ window.addEventListener('message', event => {
 	}
 });
 const panels = new MutationObserver(syncPanels);
-for (const id of ['charm-picker', 'settings-menu', 'settings', 'companion-tools', 'learn-panel']) {
+for (const id of ['charm-picker', 'settings-menu', 'settings', 'companion-tools', 'learn-panel', 'photo-editor']) {
 	panels.observe(element(id), { attributes: true, attributeFilter: ['hidden'] });
 }
 setIgnored(true);

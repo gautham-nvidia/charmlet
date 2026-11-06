@@ -8,6 +8,8 @@ on:
       - 'extension/src/**'
       - 'extension/media/**'
       - 'extension/package-lock.json'
+      - 'website/studio/photo-core.mjs'
+      - 'website/studio/photo-core.d.mts'
       - '.github/workflows/desktop.yml'
   push:
     branches: [main]
@@ -16,6 +18,8 @@ on:
       - 'extension/src/**'
       - 'extension/media/**'
       - 'extension/package-lock.json'
+      - 'website/studio/photo-core.mjs'
+      - 'website/studio/photo-core.d.mts'
       - '.github/workflows/desktop.yml'
   workflow_dispatch:
 

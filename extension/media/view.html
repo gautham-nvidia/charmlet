@@ -33,7 +33,7 @@
     <footer class="app-footer" aria-label="About Charmlet"><span id="website-placeholder">Website — coming soon</span><span>Made in Silicon Valley <span id="app-version">v__APP_VERSION__</span></span></footer>
     <div id="tools-backdrop" hidden aria-hidden="true"></div>
     <section id="charm-picker" class="tool-popup" role="dialog" aria-labelledby="picker-title" aria-modal="false" hidden>
-      <header class="popup-heading"><div><h2 id="picker-title">Browse charms</h2><p>Find a little something that's you.</p></div><button id="picker-close" type="button" class="popup-close" aria-label="Close charm picker"></button></header>
+      <header class="popup-heading"><div><h2 id="picker-title">Browse charms</h2><p>Find a little something that's you.</p></div><button id="picker-photo" type="button">Add photo</button><button id="picker-close" type="button" class="popup-close" aria-label="Close charm picker"></button></header>
       <div class="picker-body"><label class="charm-search-label"><span id="charm-search-icon" aria-hidden="true"></span><input id="charm-search" type="search" aria-label="Search charms" placeholder="Search your charms…" autocomplete="off"></label><div id="charm-groups" role="group" aria-label="Charm categories"></div><p id="charm-results" role="status" aria-live="polite"></p><div id="charm-grid" aria-label="Installed charm collection"></div><div id="charm-empty" hidden><p>No charms match that search.</p><button id="clear-charm-search" type="button">Clear filters</button></div><p class="companion-hint">The complete trial collection is included. Flower previews are ready to try; your garden still records what you grow. Your imported packs are here too.</p></div>
     </section>
     <section id="settings-menu" class="settings-menu" role="menu" aria-label="Settings" hidden>
@@ -41,6 +41,7 @@
       <button id="menu-appearance" type="button" role="menuitem" data-action="appearance">Appearance</button>
       <button id="menu-messages" type="button" role="menuitem" data-action="messages">Messages</button>
       <button id="menu-reminders" type="button" role="menuitem" data-action="reminders">Gentle reminders</button>
+      <button id="menu-photos" type="button" role="menuitem" data-action="photos">Photo charms</button>
       <div class="menu-divider" role="separator"></div>
       <button id="import-pack" type="button" role="menuitem" data-action="close">Import charm pack</button>
       <button id="remove-pack" type="button" role="menuitem" data-action="close">Remove charm pack</button>
@@ -54,6 +55,8 @@
         <label for="charm-select">Charm</label><select id="charm-select" aria-describedby="charm-description"></select><p id="charm-description"></p>
         <label for="size">Size</label><input id="size" type="range" min="60" max="140" step="10" value="100"><output id="size-value" for="size">100%</output>
         <label for="cord-length">Cord</label><input id="cord-length" type="range" min="48" step="2" value="126"><output id="cord-value" for="cord-length">126 px</output>
+        <label for="cord-style">Cord design</label><select id="cord-style" aria-describedby="cord-style-hint"></select>
+        <p id="cord-style-hint" class="companion-hint"></p>
         <div class="appearance-actions"><button id="layout-mode" type="button" aria-label="Orbit layout" title="Orbit layout" aria-pressed="false">Orbit layout</button><button id="motion" type="button" role="switch" aria-checked="true" aria-label="Motion" title="Motion">Motion</button></div>
         <label class="message-choice"><input id="festive-enabled" type="checkbox" aria-describedby="festive-hint"> Use festive defaults</label>
         <label class="message-choice"><input id="charm-pinned" type="checkbox" aria-describedby="festive-hint"> Pin this charm</label>
@@ -74,6 +77,7 @@
         <p id="companion-feedback" role="status" aria-live="polite" hidden></p>
       </div>
     </section>
+    <section id="photo-editor" class="tool-popup" role="dialog" aria-modal="false" aria-labelledby="photo-title" hidden></section>
   </main>
   <script nonce="__NONCE__" src="__SCRIPT__"></script>
 </body>

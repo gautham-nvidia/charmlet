@@ -1,0 +1,20 @@
+.concept-main { max-width: 1260px; margin: 0 auto; padding: 56px 28px; }
+.concept-main h1 { margin: 12px 0 24px; font-size: clamp(36px, 5vw, 64px); line-height: 1.08; letter-spacing: -.04em; }
+.concept-intro { max-width: 640px; font-size: 18px; line-height: 1.6; color: #555c55; }
+.concept-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 40px; }
+.concept-card { padding: 28px 24px; border: 1px solid #d8dacb; border-radius: 18px; background: #fffdf7; }
+.concept-number { font-size: 12px; text-transform: uppercase; letter-spacing: .09em; color: #65735e; }
+.concept-card h2 { margin: 14px 0 12px; font-size: 26px; }
+.concept-card p { line-height: 1.6; color: #5c635b; }
+.concept-card svg { display: block; width: 100%; margin: 20px 0 8px; }
+.band-shadow { fill: none; stroke: #a88035; stroke-width: 7; stroke-linecap: round; }
+.band-gold { fill: none; stroke: #e0c47b; stroke-width: 4; }
+.band-links { fill: none; stroke: #fff1bf; stroke-width: 2; stroke-dasharray: 2 5; }
+.concept-gold { fill: none; stroke: #bd944b; stroke-width: 1.7; }
+.concept-peg { fill: #7c8276; stroke: #5b6258; stroke-width: .7; }
+.concept-steel { fill: none; stroke: #8a989b; stroke-width: 2; stroke-dasharray: 2 4; stroke-linecap: round; }
+.concept-soft { fill: none; stroke: #76aaa3; stroke-width: 3; stroke-linecap: round; }
+.concept-label { fill: #62685d; text-anchor: middle; font: 13px system-ui, sans-serif; }
+.concept-note { margin-bottom: 0; padding-top: 16px; border-top: 1px solid #ecebdd; font-size: 14px; }
+.concept-footnote { margin: 28px 0 0; max-width: 760px; color: #687260; line-height: 1.6; font-size: 14px; }
+@media (max-width: 760px) { .concept-grid { grid-template-columns: 1fr; } .concept-main { padding: 32px 18px; } }

@@ -349,9 +349,9 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await menuAction(frame, 'toggle');
 			await openAppearance(frame);
 			picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
-			await picker.selectOption('chip');
+			await picker.selectOption('trial:starter-chip');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-hidden', 'true');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'chip');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'trial:starter-chip');
 			await picker.selectOption('terminal');
 			await picker.press('Escape');
 			await frame.locator('#restore').click();

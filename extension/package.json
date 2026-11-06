@@ -2,7 +2,7 @@
   "name": "charmlet",
   "displayName": "Charmlet: Coding Charms",
   "description": "Free focus sessions, a daily garden, motivation and interactive charms for your coding day.",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "pricing": "Free",
   "icon": "media/marketplace-icon.png",
   "galleryBanner": {
@@ -141,6 +141,7 @@
     "@types/matter-js": "^0.20.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
+    "@types/pngjs": "6.0.5",
     "@types/vscode": "1.90.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.0.0",

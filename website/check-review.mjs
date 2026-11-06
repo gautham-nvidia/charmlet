@@ -68,12 +68,22 @@ try {
   await page.goto('http://127.0.0.1:4173/review.html', { waitUntil: 'networkidle' });
   await expect(page.locator('.review-captures summary').first()).toContainText(version);
   const captureUrls = await page.locator('.review-captures a').evaluateAll(links => links.map(link => link.href));
-  assert.ok(captureUrls.length > 0, 'Actual-app comparisons must be linked from the review page.');
+  const pngCaptures = captureUrls.filter(url => new URL(url).pathname.endsWith('.png'));
+  assert.ok(pngCaptures.length > 0, 'Actual-app comparisons must be linked from the review page.');
   for (const url of captureUrls) {
     const response = await page.request.get(url);
     assert.equal(response.status(), 200, `App comparison is unavailable: ${url}`);
-    const png = PNG.sync.read(await response.body());
-    assert.ok(png.width > 0 && png.height > 0);
+    if (pngCaptures.includes(url)) {
+      const png = PNG.sync.read(await response.body());
+      assert.ok(png.width > 0 && png.height > 0);
+    }
+  }
+  const originals = [...new Set(review.items.map(item => item.original).filter(Boolean))];
+  for (const original of originals) {
+    assert.match(original, /^(?:default|extras|garden)\/[a-z0-9-]+\.svg$/);
+    const response = await page.request.get(`http://127.0.0.1:4173/assets/${original}`);
+    assert.equal(response.status(), 200, `Original comparison is unavailable: ${original}`);
+    assert.match(response.headers()['content-type'], /^image\/svg\+xml/);
   }
   await expect(page.locator('.review-card')).toHaveCount(featured.length);
   await expect(page.locator('#view-size')).toHaveAttribute('aria-pressed', 'true');
@@ -124,7 +134,8 @@ try {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await page.screenshot({ path: join(output, 'review-mobile.png'), fullPage: true });
   assert.deepEqual(errors, []);
-  const result = { archivedAndCurrent: review.items.length, featured: featured.length, counts, appComparisons: captureUrls.length,
+  const result = { archivedAndCurrent: review.items.length, featured: featured.length, counts, appComparisons: pngCaptures.length,
+    originalComparisons: originals.length,
     downloadableDesigns: downloadable.length, bundles: review.bundles.length, pngsValidated: review.items.length,
     transparentCorners: true, parsedBrowserDownload: pack.id, mobileOverflow: false, errors };
   await writeFile(join(output, 'results.json'), `${JSON.stringify(result, null, 2)}\n`);

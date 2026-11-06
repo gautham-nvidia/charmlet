@@ -1,11 +1,12 @@
 import { ENCOURAGEMENT_CARDS, feedDeck, isFeedMode, learningCard, type FeedMode, type LearningCard } from './learning-cards';
 import { configureReminder, defaultCare, dismissReminder, restoreCare, settleCare, validReminderMinutes, visibleReminder, type CareState, type ReminderKind } from './care-core';
 import { canWaterGarden, emptyGarden, FLOWERS, gardenStage, localDayKey, plantGarden, restoreGarden, waterGarden, type GardenStage, type GardenState } from './garden-core';
+import { emptyWins, recordWin, removeWin, restoreWins, winLabel, type SmallWins } from './small-wins';
 
 export const MINUTE_MS = 60000;
 export const FOCUS_MINUTES_LIMIT = 120;
 export const BREAK_MINUTES_LIMIT = 30;
-export const COMPANION_STATE_VERSION = 2;
+export const COMPANION_STATE_VERSION = 3;
 export type FocusPhase = 'focus' | 'break';
 export type FocusStatus = 'idle' | 'running' | 'paused' | 'finished';
 export type FocusNotice = 'elapsed-away' | 'clock-changed' | null;
@@ -21,13 +22,14 @@ export interface FocusState {
 }
 
 export interface CompanionState {
-	version: 2;
+	version: 3;
 	revision: number;
 	settings: { focusMinutes: number; breakMinutes: number; intent: string };
 	focus: FocusState;
 	learning: { mode: FeedMode; cardId: string; encouragementId: string; revealed: boolean };
 	garden: GardenState;
 	care: CareState;
+	wins: SmallWins;
 }
 
 export type CompanionAction =
@@ -43,7 +45,11 @@ export type CompanionAction =
 	| { type: 'garden-water' }
 	| { type: 'care-configure'; kind: ReminderKind; enabled: boolean; intervalMinutes: number }
 	| { type: 'care-dismiss'; kind: ReminderKind; action: 'done' | 'skip' | 'snooze' }
-	| { type: 'care-defer'; enabled: boolean };
+	| { type: 'care-defer'; enabled: boolean }
+	| { type: 'win-add'; label: string }
+	| { type: 'win-remove'; id: number }
+	| { type: 'wins-celebrate'; enabled: boolean }
+	| { type: 'wins-clear' };
 
 export interface GardenEntropy { plantId(): string; index(size: number): number; }
 
@@ -95,11 +101,11 @@ function idleFocus(minutes: number): FocusState {
 export function defaultCompanionState(legacyMessageIndex = 0): CompanionState {
 	const quote = ENCOURAGEMENT_CARDS[integer(legacyMessageIndex, 0, ENCOURAGEMENT_CARDS.length - 1, 0)];
 	return {
-		version: 2, revision: 0,
+		version: 3, revision: 0,
 		settings: { focusMinutes: 25, breakMinutes: 5, intent: '' },
 		focus: idleFocus(25),
 		learning: { mode: 'encouragement', cardId: quote.id, encouragementId: quote.id, revealed: false },
-		garden: emptyGarden(), care: defaultCare(),
+		garden: emptyGarden(), care: defaultCare(), wins: emptyWins(),
 	};
 }
 
@@ -113,7 +119,7 @@ export function restoreCompanionState(value: unknown, now: number, legacyMessage
 	clockValue(now);
 	const defaults = defaultCompanionState(legacyMessageIndex);
 	const raw = object(value);
-	if (raw.version !== 1 && raw.version !== 2) { return defaults; }
+	if (raw.version !== 1 && raw.version !== 2 && raw.version !== 3) { return defaults; }
 	const settings = object(raw.settings);
 	const focusMinutes = integer(settings.focusMinutes, 1, FOCUS_MINUTES_LIMIT, 25);
 	const breakMinutes = integer(settings.breakMinutes, 1, BREAK_MINUTES_LIMIT, 5);
@@ -137,16 +143,17 @@ export function restoreCompanionState(value: unknown, now: number, legacyMessage
 	const card = feedDeck(mode).find(entry => entry.id === learning.cardId) ?? feedDeck(mode)[0];
 	const quote = ENCOURAGEMENT_CARDS.find(entry => entry.id === learning.encouragementId) ?? learningCard(defaults.learning.encouragementId)!;
 	return {
-		version: 2, revision: integer(raw.revision, 0, 2147483646, 0),
+		version: 3, revision: integer(raw.revision, 0, 2147483646, 0),
 		settings: { focusMinutes, breakMinutes, intent: intent(settings.intent) },
 		focus: restoredFocus,
 		learning: { mode, cardId: card.id, encouragementId: quote.id, revealed: card.id === learning.cardId && card.kind === 'trivia' && learning.revealed === true },
-		garden: restoreGarden(raw.version === 2 ? raw.garden : undefined, now),
-		care: restoreCare(raw.version === 2 ? raw.care : undefined, now),
+		garden: restoreGarden(raw.version !== 1 ? raw.garden : undefined, now),
+		care: restoreCare(raw.version !== 1 ? raw.care : undefined, now),
+		wins: restoreWins(raw.version === 3 ? raw.wins : undefined),
 	};
 }
 
-function revised(state: CompanionState, changes: Partial<Pick<CompanionState, 'settings' | 'focus' | 'learning' | 'garden' | 'care'>>): CompanionState {
+function revised(state: CompanionState, changes: Partial<Pick<CompanionState, 'settings' | 'focus' | 'learning' | 'garden' | 'care' | 'wins'>>): CompanionState {
 	return { ...state, ...changes, revision: (state.revision + 1) % 2147483647 };
 }
 
@@ -160,7 +167,8 @@ export function remainingFocusMs(state: CompanionState, now: number): number {
 
 /**
  * Finish at most one timer. A backwards observed wall clock pauses at the last
- * known remainder. An expired timer never auto-starts another session or records work.
+ * known remainder. Only a live focus completion earns a win; recovery does not
+ * infer work while the application was away, or start another timer.
  */
 function reconcileFocus(state: CompanionState, now: number, lastObservedAt?: number, recovered = false): CompanionState {
 	clockValue(now);
@@ -174,7 +182,10 @@ function reconcileFocus(state: CompanionState, now: number, lastObservedAt?: num
 		} });
 	}
 	if (now >= state.focus.deadlineAt!) {
-		return revised(state, { focus: {
+		const wins = state.focus.phase === 'focus' && !recovered
+			? recordWin(state.wins, state.settings.intent || 'Completed a focus session', 'focus', state.focus.deadlineAt!)
+			: state.wins;
+		return revised(state, { wins, focus: {
 			...state.focus, status: 'finished', remainingMs: 0, startedAt: null, deadlineAt: null,
 			notice: recovered ? 'elapsed-away' : null,
 		} });
@@ -210,7 +221,16 @@ export function parseCompanionAction(value: unknown): CompanionAction | undefine
 		case 'feed-next':
 		case 'garden-plant':
 		case 'garden-water':
+		case 'wins-clear':
 			return { type: action.type };
+		case 'win-add':
+			return typeof action.label === 'string' && action.label.length <= 500 && winLabel(action.label)
+				? { type: action.type, label: winLabel(action.label) } : undefined;
+		case 'win-remove':
+			return typeof action.id === 'number' && Number.isSafeInteger(action.id) && action.id > 0
+				? { type: action.type, id: action.id } : undefined;
+		case 'wins-celebrate':
+			return typeof action.enabled === 'boolean' ? { type: action.type, enabled: action.enabled } : undefined;
 		case 'feed-mode':
 			return isFeedMode(action.mode) ? { type: action.type, mode: action.mode } : undefined;
 		case 'feed-reveal':
@@ -323,6 +343,20 @@ export function applyCompanionAction(state: CompanionState, action: CompanionAct
 		case 'care-defer':
 			next = revised(next, { care: { ...next.care, deferWhileFocusing: action.enabled } });
 			break;
+		case 'win-add':
+			next = revised(next, { wins: recordWin(next.wins, action.label, 'manual', now) });
+			return { state: next, message: 'One more step forward. Your win is saved.' };
+		case 'win-remove': {
+			const wins = removeWin(next.wins, action.id);
+			if (wins !== next.wins) { next = revised(next, { wins }); }
+			break;
+		}
+		case 'wins-celebrate':
+			next = revised(next, { wins: { ...next.wins, celebrate: action.enabled } });
+			break;
+		case 'wins-clear':
+			next = revised(next, { wins: { ...emptyWins(), lastId: next.wins.lastId, celebrate: next.wins.celebrate } });
+			return { state: next, message: 'Your small-win history is cleared. Keep moving forward.' };
 	}
 	return { state: next };
 }

@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { setTimeout as delay } from 'node:timers/promises';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -14,6 +14,11 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const repo = join(root, '..');
 const require = createRequire(import.meta.url);
 const { _electron: electron, expect } = require(join(repo, 'extension', 'node_modules', '@playwright', 'test'));
+const winsToday = (wins, now) => {
+  const date = new Date(now);
+  const day = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  return wins.day === day ? wins.today : 0;
+};
 const packaged = process.argv.includes('--packaged');
 const nativeInput = process.env.CHARMLET_DESKTOP_NATIVE_INPUT === '1';
 if (nativeInput && (process.platform !== 'win32' || process.env.GITHUB_ACTIONS !== 'true')) {
@@ -85,11 +90,14 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
         globalThis.__charmletTestEvents = [];
         const record = value => {
           globalThis.__charmletTestEvents.push(value);
-          if (globalThis.__charmletTestEvents.length > 60) globalThis.__charmletTestEvents.shift();
+          if (globalThis.__charmletTestEvents.length > 90) globalThis.__charmletTestEvents.shift();
         };
-        for (const type of ['pointerdown', 'pointerup', 'pointercancel', 'lostpointercapture', 'click']) {
+        for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'lostpointercapture', 'click']) {
           document.addEventListener(type, event => record({
             type, target: event.target?.id, x: event.clientX, y: event.clientY,
+            buttons: event.buttons, time: event.timeStamp,
+            pointerType: event.pointerType,
+            phase: document.getElementById('phase')?.textContent,
           }), true);
         }
         for (const type of ['focus', 'blur']) window.addEventListener(type, () => record({ type }));
@@ -241,6 +249,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
         await window.screenshot({ path: join(output, 'desktop-last-state.png') });
         writeFileSync(join(output, 'desktop-last-state.json'), JSON.stringify({
           host: await diagnostic(application),
+          nativeCursor: await application.evaluate(({ screen }) => screen.getCursorScreenPoint()),
           renderer: await window.evaluate(() => ({
             events: globalThis.__charmletTestEvents,
             companionPersisted: document.getElementById('stage')?.dataset.companionPersisted,
@@ -293,7 +302,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
 
   assert.equal(await window.locator('#stage').getAttribute('data-charm'), 'garden:hibiscus');
   await window.locator('#charm-image').evaluate(image => image.decode());
-  assert.equal(await window.locator('#charm-image').evaluate(image => image.naturalWidth), 72);
+  assert.equal(await window.locator('#charm-image').evaluate(image => image.naturalWidth), 216);
   await window.locator('#charm').hover();
   await expect.poll(async () => (await diagnostic(application)).ignored, { timeout: 5000 }).toBe(false);
   await window.mouse.move(1, start.bounds.height - 1);
@@ -302,25 +311,44 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   const restingCharm = await window.locator('#charm').boundingBox();
   const grab = { x: restingCharm.x + restingCharm.width / 2, y: restingCharm.y + restingCharm.height / 2 };
   const targetY = Math.min(start.bounds.height - 90, grab.y + 500);
-  await window.mouse.move(grab.x, grab.y);
-  await window.mouse.down();
+  // A real, unheld mouse move can cancel Chromium's simulated mouse capture on
+  // a developer's desktop. Use a separate touch pointer for these geometry
+  // checks; verifyNativeWindowsInput still tests real mouse input, unfiltered.
+  const touchSession = await window.context().newCDPSession(window);
+  await touchSession.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
+  const touch = (type, point) => touchSession.send('Input.dispatchTouchEvent', {
+    type, touchPoints: point ? [{ x: point.x, y: point.y, id: 1, radiusX: 1, radiusY: 1, force: 1 }] : [],
+  });
+  const moveTouch = async target => {
+    for (let step = 1; step <= 15; step++) {
+      await touch('touchMove', { x: grab.x + (target.x - grab.x) * step / 15, y: grab.y + (target.y - grab.y) * step / 15 });
+    }
+  };
+  await window.locator('#charm').hover();
+  await expect.poll(async () => (await diagnostic(application)).ignored).toBe(false);
+  await touch('touchStart', grab);
   try {
-    await window.mouse.move(grab.x, targetY, { steps: 15 });
+    await moveTouch({ x: grab.x, y: targetY });
     await expect(window.locator('#phase')).toHaveText('Held');
     await expect.poll(async () => Number(await window.locator('#charm').getAttribute('data-position-y')))
       .toBeGreaterThan(Math.min(grab.y + 300, targetY - 20));
     assert.equal(Number(await window.locator('#stage').getAttribute('data-anchor-y')), start.geometry.anchor.y);
-  } finally { await window.mouse.up(); }
+  } finally { await touch('touchEnd'); }
   await expect(window.locator('#charm')).not.toHaveClass(/dragging/);
   await expect.poll(async () => Math.abs(Number(await window.locator('#charm').getAttribute('data-position-y')) - grab.y)).toBeLessThan(2);
   const targetX = Math.min(start.bounds.width - 90, grab.x + 500);
-  await window.mouse.move(grab.x, grab.y);
-  await window.mouse.down();
+  await window.locator('#charm').hover();
+  await expect.poll(async () => (await diagnostic(application)).ignored).toBe(false);
+  await touch('touchStart', grab);
   try {
-    await window.mouse.move(targetX, grab.y + 60, { steps: 15 });
+    await moveTouch({ x: targetX, y: grab.y + 60 });
     await expect.poll(async () => Number(await window.locator('#charm').getAttribute('data-position-x')))
       .toBeGreaterThan(Math.min(grab.x + 300, targetX - 20));
-  } finally { await window.mouse.up(); }
+  } finally {
+    await touch('touchEnd');
+    await touchSession.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+    await touchSession.detach();
+  }
   await expect(window.locator('#charm')).not.toHaveClass(/dragging/);
 
   await openTools(window);
@@ -418,7 +446,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   assert.equal(restarted.companion.state.focus.remainingMs, paused);
   assert.deepEqual(restarted.desktopView, savedDisplay);
   assert.deepEqual(restarted.anchor, moved, 'Open panels must not change the saved peg position.');
-  await second.window.evaluate(() => globalThis.acquireVsCodeApi().postMessage({ type: 'desktop-hit-test', ignore: false }));
+  await second.window.getByRole('button', { name: 'Focus', exact: true }).hover();
   await expect.poll(async () => (await diagnostic(second.application)).ignored, { timeout: 5000 }).toBe(false);
   await second.window.getByRole('button', { name: 'Focus', exact: true }).click();
   await second.window.getByRole('button', { name: 'Stop', exact: true }).click();
@@ -429,6 +457,90 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).learning.revealed, { timeout: 5000 }).toBe(true);
   assert.ok((await second.window.locator('#message-answer').textContent())?.includes('commit'));
   if (nativeInput) await verifyNativeInput(second.application, second.window);
+
+  console.log('Desktop personalization: saved cord choices, a quiet win, and a local cropped photo.');
+  const personal = second.window;
+  await openTools(personal);
+  await personal.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await personal.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+  await personal.locator('#charm-select').selectOption('trial:new-ruby');
+  await expect(personal.locator('#cord')).toHaveAttribute('data-style', 'gold-chain');
+  await personal.locator('#cord-style').selectOption('silver-chain');
+  await expect(personal.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+  await personal.locator('#charm-select').selectOption('trial:new-smiley-happy');
+  await expect(personal.locator('#cord')).toHaveAttribute('data-style', 'soft');
+  await personal.locator('#charm-select').selectOption('trial:new-ruby');
+  await expect(personal.locator('#cord')).toHaveAttribute('data-style', 'silver-chain');
+  // Also exercise Reduced Motion in the opt-in celebration.
+  if (await personal.locator('#motion').getAttribute('aria-checked') === 'true') await personal.locator('#motion').click();
+  await personal.locator('#settings-close').click();
+  await openTools(personal);
+  await personal.getByRole('button', { name: 'Focus', exact: true }).click();
+  await personal.locator('#small-wins summary').click();
+  await personal.locator('#wins-celebrate').check();
+  await expect(personal.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
+  await personal.locator('#win-label').fill('Finished a small test');
+  await personal.locator('#win-add').click();
+  await expect(personal.locator('.win-sparkles')).toHaveAttribute('data-still', 'true');
+  await expect.poll(async () => {
+    const wins = JSON.parse(readFileSync(companionPath, 'utf8')).wins;
+    return wins.total === 1 && await personal.locator('#win-count').innerText() === `${winsToday(wins, Date.now())} today`;
+  }).toBe(true);
+  await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).wins.total).toBe(1);
+  await personal.locator('#companion-close').click();
+  await openTools(personal);
+  await personal.getByRole('button', { name: 'Browse charms', exact: true }).click();
+  await personal.locator('#picker-photo').click();
+  await expect(personal.locator('#photo-editor')).toBeVisible();
+  const photoRequests = [];
+  const observePhoto = request => { if (/^https?:/.test(request.url())) photoRequests.push(request.url()); };
+  personal.on('request', observePhoto);
+  await personal.locator('#photo-file').setInputFiles({ name: 'invalid.png', mimeType: 'image/png', buffer: Buffer.from('This is not an image.') });
+  await expect(personal.locator('#photo-feedback')).toContainText('header');
+  await expect(personal.locator('#photo-save')).toBeDisabled();
+  const { PNG: PhotoPNG } = require(join(repo, 'extension/node_modules/pngjs'));
+  const fixture = new PhotoPNG({ width: 400, height: 200 });
+  for (let y = 0; y < fixture.height; y++) for (let x = 0; x < fixture.width; x++) {
+    const offset = (y * fixture.width + x) * 4;
+    fixture.data[offset] = x < 200 ? 255 : 0;
+    fixture.data[offset + 1] = 0;
+    fixture.data[offset + 2] = x < 200 ? 0 : 255;
+    fixture.data[offset + 3] = 255;
+  }
+  await personal.locator('#photo-file').setInputFiles({
+    name: 'private-fixture.png', mimeType: 'image/png', buffer: PhotoPNG.sync.write(fixture),
+  });
+  await expect(personal.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'true');
+  await personal.locator('#photo-editor').press('Escape');
+  await expect(personal.locator('#photo-editor')).toBeHidden();
+  await expect(personal.locator('#stage')).toHaveAttribute('data-charm', 'trial:new-ruby');
+  assert.equal(existsSync(join(profile, 'packs')) ? readdirSync(join(profile, 'packs')).filter(file => file.startsWith('photo-')).length : 0, 0,
+    'Cancelling a preview must not write a photo.');
+  await openTools(personal);
+  await personal.getByRole('button', { name: 'Browse charms', exact: true }).click();
+  await personal.locator('#picker-photo').click();
+  await expect(personal.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'false');
+  await personal.locator('#photo-file').setInputFiles({
+    name: 'private-fixture.png', mimeType: 'image/png', buffer: PhotoPNG.sync.write(fixture),
+  });
+  await expect(personal.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'true');
+  await personal.locator('#photo-x').press('End');
+  assert.deepEqual(await personal.locator('#photo-canvas').evaluate(canvas =>
+    [...canvas.getContext('2d').getImageData(108, 147, 1, 1).data]), [0, 0, 255, 255], 'The crop must show the chosen side of the source.');
+  await personal.locator('#photo-name').fill('Local photo test');
+  await personal.locator('#photo-save').click();
+  await expect(personal.locator('#photo-editor')).toBeHidden();
+  const savedPhoto = await personal.locator('#stage').getAttribute('data-charm');
+  assert.match(savedPhoto, /^pack:photo-[a-z0-9-]+:portrait$/);
+  await personal.locator('#charm-image').evaluate(image => image.decode());
+  assert.equal(await personal.locator('#charm-image').evaluate(image => image.naturalWidth), 216);
+  assert.deepEqual(photoRequests, [], 'Native photo creation must make no HTTP requests.');
+  personal.off('request', observePhoto);
+  const storedPhoto = JSON.parse(readFileSync(join(profile, 'packs', `${savedPhoto.split(':')[1]}.charmlet.json`), 'utf8'));
+  assert.equal(storedPhoto.charms[0].name, 'Local photo test');
+  assert.ok(Buffer.from(storedPhoto.charms[0].png, 'base64').length < 256 * 1024);
+  assert.equal(JSON.stringify(storedPhoto).includes('private-fixture'), false, 'Do not persist the original filename.');
+  await personal.screenshot({ path: join(output, 'desktop-photo-charm.png') });
   console.log(JSON.stringify({
     mode, profile: realpathSync(profile), startupFocusable: start.focusable, security: start.webPreferences,
     activeCharm: restarted.state.charmId, pausedRemainder: paused, placement: restarted.bounds,
@@ -436,4 +548,70 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
       : 'validated restricted IPC and BrowserWindow ignored-state configuration; native OS click-through remains manual',
   }));
   await quit(second.application);
+  const third = await launch();
+  await expect(third.window.locator('#stage')).toHaveAttribute('data-charm', savedPhoto);
+  assert.equal((await diagnostic(third.application)).companion.state.wins.total, 1);
+  await expect(third.window.locator('.win-sparkles')).toHaveCount(0);
+  assert.equal(JSON.parse(readFileSync(preferencesPath, 'utf8')).cordChoices['trial:new-ruby'], 'silver-chain');
+  assert.deepEqual(JSON.parse(readFileSync(companionPath, 'utf8')).garden, gardenBeforeTrial);
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await third.window.getByRole('menuitem', { name: 'Photo charms', exact: true }).click();
+  await third.window.getByRole('button', { name: 'Remove Local photo test', exact: true }).click();
+  await third.window.locator('#photo-remove-yes').click();
+  await expect(third.window.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
+  await expect(third.window.locator('#photo-list')).toContainText('Your saved photo charms will appear here');
+  assert.equal(existsSync(join(profile, 'packs', `${savedPhoto.split(':')[1]}.charmlet.json`)), false);
+  await third.window.locator('#photo-close').click();
+  await openTools(third.window);
+  await third.window.emulateMedia({ reducedMotion: 'no-preference' });
+  await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+  await third.window.locator('#charm-select').selectOption('live:smiley');
+  if (await third.window.locator('#motion').getAttribute('aria-checked') === 'false') await third.window.locator('#motion').click();
+  await third.window.locator('#settings-close').click();
+  const face = third.window.locator('#live-smiley');
+  await expect(face).toBeVisible();
+  await expect(face).toHaveAttribute('data-renderer', /^(webgl|canvas)$/);
+  await expect(face).toHaveAttribute('data-motion', 'live');
+  const liveFrames = Number(await face.getAttribute('data-frames'));
+  await expect.poll(async () => Number(await face.getAttribute('data-frames'))).toBeGreaterThan(liveFrames);
+  await third.window.locator('#charm').focus();
+  await third.window.keyboard.down('Space');
+  try { await expect(face).toHaveAttribute('data-expression', 'squish'); }
+  finally { await third.window.keyboard.up('Space'); }
+  await expect(face).not.toHaveAttribute('data-expression', 'squish');
+  const orbBounds = await third.window.locator('#charm').boundingBox();
+  await third.window.mouse.move(orbBounds.x - 65, orbBounds.y + orbBounds.height / 2);
+  await expect.poll(async () => Number(await face.getAttribute('data-gaze-x'))).toBeLessThan(-.1);
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Focus', exact: true }).click();
+  await third.window.locator('#small-wins summary').click();
+  await third.window.locator('#win-label').fill('A second small step');
+  await third.window.locator('#win-add').click();
+  await expect(face).toHaveAttribute('data-expression', 'happy');
+  await expect.poll(async () => {
+    const wins = JSON.parse(readFileSync(companionPath, 'utf8')).wins;
+    return wins.total === 2 && await third.window.locator('#win-count').innerText() === `${winsToday(wins, Date.now())} today`;
+  }).toBe(true);
+  await third.window.locator('#companion-close').click();
+  await expect(face).toHaveAttribute('data-expression', 'smile');
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+  await third.window.locator('#motion').click();
+  await expect(face).toHaveAttribute('data-motion', 'still');
+  await third.window.locator('#settings-close').click();
+  await third.window.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
+  const stillFrames = await face.getAttribute('data-frames');
+  await delay(250);
+  assert.equal(await face.getAttribute('data-frames'), stillFrames, 'Reduced Motion must stop the live animation loop.');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'sunny-live.png') });
+  if (await face.getAttribute('data-renderer') === 'webgl') {
+    await face.evaluate(canvas => canvas.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
+    await expect(face).toHaveAttribute('data-renderer', 'canvas');
+    await expect(face).toBeVisible();
+    await third.window.locator('#charm').screenshot({ path: join(output, 'sunny-fallback.png') });
+  }
+  await quit(third.application);
 });
