@@ -59,6 +59,44 @@ export function cropRectangle(imageWidth, imageHeight, targetWidth, targetHeight
   return { x: (imageWidth - width) * x, y: (imageHeight - height) * y, width, height };
 }
 
+/** Shared local renderer. Canvas export contains pixels, not the source file's metadata. */
+export function drawPhotoCharm(canvas, bitmap, frameKey, zoom = 1, x = 0.5, y = 0.5) {
+  if (!Object.hasOwn(FRAMES, frameKey)) throw new Error('Choose a keepsake frame.');
+  const frame = FRAMES[frameKey];
+  const crop = bitmap ? cropRectangle(bitmap.width, bitmap.height, frame.width, frame.height, zoom, x, y) : undefined;
+  canvas.width = PHOTO_WIDTH; canvas.height = PHOTO_HEIGHT;
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('The photo preview is unavailable.');
+  context.scale(3, 3);
+  const shape = (padding = 0) => {
+    context.beginPath();
+    if (frame.shape === 'circle') {
+      context.ellipse(frame.x + frame.width / 2, frame.y + frame.height / 2,
+        frame.width / 2 + padding, frame.height / 2 + padding, 0, 0, Math.PI * 2);
+    } else {
+      context.roundRect(frame.x - padding, frame.y - padding, frame.width + padding * 2,
+        frame.height + padding * 2, frameKey === 'paper' ? 2 : 7);
+    }
+  };
+  // A closed loop and a short bail physically meet the frame behind the photograph.
+  context.strokeStyle = '#aab3ba'; context.lineWidth = 3; context.lineCap = 'round';
+  context.beginPath(); context.ellipse(36, 9, 5, 6, 0, 0, Math.PI * 2); context.stroke();
+  context.beginPath(); context.moveTo(36, 15); context.lineTo(36, frame.y + 2); context.stroke();
+  context.save();
+  context.shadowColor = 'rgba(24,60,53,.28)'; context.shadowBlur = 3; context.shadowOffsetY = 2;
+  context.fillStyle = frameKey === 'paper' ? '#fff9e9' : frame.accent;
+  shape(2); context.fill(); context.restore();
+  context.save(); shape(); context.clip();
+  if (bitmap && crop) {
+    context.drawImage(bitmap, crop.x, crop.y, crop.width, crop.height, frame.x, frame.y, frame.width, frame.height);
+  } else {
+    context.fillStyle = '#dce8dc'; context.fillRect(frame.x, frame.y, frame.width, frame.height);
+  }
+  context.restore();
+  context.strokeStyle = frameKey === 'paper' ? '#b89760' : frame.accent; context.lineWidth = 1.6;
+  shape(); context.stroke();
+}
+
 export function makePhotoPack({ id, name, frame, png }) {
   const selected = typeof frame === 'string' && Object.hasOwn(FRAMES, frame) ? FRAMES[frame] : undefined;
   const padding = typeof png === 'string' ? png.endsWith('==') ? 2 : png.endsWith('=') ? 1 : 0 : 0;

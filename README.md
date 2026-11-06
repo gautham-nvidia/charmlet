@@ -2,11 +2,11 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Status, 2026-11-03:** The **0.6.1 complete-collection trial** includes **152 offline charms**: 142 rendered designs plus the ten preserved originals. Collections cover lab instruments, all eight planets, Sun and Moon, galaxies, gemstones, zodiac, US holidays and sacred traditions. The latest additions are four smiley stress balls, three soft emoji designs and a second full-body Drishti variation. The app keeps **Charms / Focus / Garden / Settings**, release bounce and the strictly motivational 80-message deck. [Verification and release gates](docs/phase-6-trial-catalogue.md) are recorded separately.
+**Phase 8 candidate, 2026-11-05:** **0.7.0** includes **151 offline charms**: 149 rendered designs, a sharper Terminal and Sunny, an original live smiley. Cord materials match the charm and remember manual choices. Small wins and local photo keepsakes are available on demand. The approved colour figures replace bronze, the open-eyed smileys face forward, and the garden has new botanical artwork. Eighteen flowers can grow from seeds, including red, pink, white and yellow roses, jasmine and lily. Saved early designs move to their newer equivalents. [Verification and release gates](docs/phase-8-personalization.md) track this candidate.
 
-Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **143 selected designs**, including the original Terminal and all twelve flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. Photo Studio's live paid access remains disabled; the [desktop beta](desktop/README.md) remains a separate application.
+Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **150 selected designs**, including the original Terminal and all eighteen flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. The separate website Photo Studio's paid access remains disabled; creating local photo charms inside the app is free.
 
-**Desktop 0.3.0:** the separate Windows/macOS trial now starts with only the charm and cord. Hover for Move and Tools; open one control panel at a time, with optional background, toolbar and messages. Pulls use the available screen space rather than a small invisible box. The VS Code presentation is unchanged. See the [desktop guide](desktop/README.md) and [Phase 7 verification](docs/phase-7-desktop-minimal.md).
+**Desktop 0.4.0 candidate:** starts with only the charm and cord. Hover for Move and Tools; open one control panel at a time, with optional background, toolbar and messages. The new personalisation controls stay in those panels. Pulls use the available screen space. See the [desktop guide](desktop/README.md); [Phase 7](docs/phase-7-desktop-minimal.md) records the preceding 0.3.0 release.
 
 Holiday defaults follow **21 US celebration dates** and rotate Christmas designs through December. They are on for new profiles. An update preserves existing opt-outs and pins; use **Settings > Appearance > Follow holiday defaults** to enable and unpin in one click. Picking a charm pins it. Automatic choices use the local date and never replace the saved usual charm. [Phase 6 scope and verification](docs/phase-6-trial-catalogue.md) tracks the candidate's remaining checks.
 
@@ -27,6 +27,14 @@ preference, while the visible cord may temporarily shorten to fit the current pa
 
 Hold a Stress Buster to squeeze, or hold Space/Enter with the charm focused. Choose happy, determined, calm or winking smiley balls, a soft heart, thumbs-up or rocket, or the original Stress Ball and Squishy Star. Release to let it recover. The cord stays attached; Reduced Motion removes the transition and bounce.
 
+**Sunny - Live Smiley** adds a lit yellow sphere with forward gaze, occasional blinks, a gentle pointer glance and squeeze/win reactions. Reduced Motion stops its animation loop, and a canvas fallback retains the interactions when WebGL is unavailable.
+
+Under **Settings > Appearance > Cord material**, choose a matching default or save a separate choice for each charm: thread, soft cord, braid, leather, ribbon, silver chain, gold chain or ball chain.
+
+**Focus > Small wins** records bounded notes and completed live focus sessions. Undo an entry or clear history at any time. Daily counts follow the local calendar; brief milestone celebrations are opt-in and become a still star with Reduced Motion. Restoring an expired timer does not invent a win.
+
+**Charms > Make a photo charm** opens a local crop and frame editor. PNG, JPEG and WebP images up to 8 MiB and 16 million pixels are supported. Only the finished 216-by-252-pixel keepsake is saved; originals and metadata are not retained or uploaded. Use **Photo charms** to select or remove saved keepsakes.
+
 In **Settings → Appearance**, optional **Use festive defaults** selects an installed festive charm for the device's local Halloween, Christmas, US Thanksgiving, Black Friday or Cyber Monday. **Pin this charm** protects the current choice. Selecting or importing a charm pins it automatically; older saved selections are also protected. Unpin to allow automatic choices. Missing seasonal artwork and ordinary dates keep the saved usual charm.
 
 The card below the charm offers 80 motivational messages by default, with optional 60 sourced facts and 30 sourced trivia questions under **Settings → Messages**. Existing saved feed choices stay unchanged. Use **Next coding message**, choose the saved feed mode, reveal trivia
@@ -35,7 +43,7 @@ settings/tools are open, a card is active or a drag is in progress.
 
 Click **Focus** or run **Charmlet: Focus Session** for a deadline-based focus/break timer with
 25/5, 50/10 or custom durations, pause/resume/stop and an optional one-line intention. It restores a real
-running or paused session after reload without auto-starting another session or counting completed work.
+running or paused session after reload without auto-starting another session. A live completed focus session records one small win.
 
 Click **Garden**, then **Plant a seed**, or run **Charmlet: Open Garden**. The free garden hides one original species until its eleventh valid watering day, keeps progress through
 missed days, and adds the bloom to **Grown by you** before it can be explicitly hung. Optional water and

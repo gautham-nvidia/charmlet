@@ -3,6 +3,25 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.7.0 - 2026-11-05 (Personalisation trial)
+
+### Added
+
+- Eight cord materials with charm-matched defaults and independent saved overrides.
+- Small wins with local notes, undo, history clearing, completed-focus wins and optional milestone celebrations.
+- A free local photo editor with crop sliders, frames, light/dark and actual-size previews, saved keepsakes and removal. Original images and metadata are not retained or uploaded.
+- Sunny, an original live yellow smiley with gentle gaze, blinking, squeeze and win reactions. Reduced Motion stops idle animation; a canvas fallback supports environments without WebGL.
+- Red, pink, white and yellow roses, jasmine and lily join the seed-grown garden: eighteen flower varieties, with existing plants and collections preserved.
+- The complete trial now contains 151 charms, including seated Shiva alongside Nataraja.
+
+### Changed
+
+- Replaced bronze deity artwork with the approved painted colour style and appropriate traditional markings.
+- Centred the open-eyed smileys toward the viewer.
+- Kept the desktop's charm-only default, with all new controls available on demand.
+- Retired nine early designs with saved-choice, pin and cord migration to their newer equivalents; refined the original Terminal keycap.
+- Replaced the garden's flat stage pictures with botanical artwork and reused the rendered flower images for earned rewards, preserving progress.
+
 ## 0.6.1 - 2026-11-03 (Smiley trial)
 
 ### Added

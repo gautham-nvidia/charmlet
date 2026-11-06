@@ -11,6 +11,7 @@ import { isFlowerId } from './garden-core';
 import { learningCard } from './learning-cards';
 import { StateStore, type LoadedState } from './state-store';
 import { StateWriter } from './state-writer';
+import { isPhotoPack, photoPackInput } from './photo-packs';
 
 let deactivateExtension: (() => Promise<void>) | undefined;
 
@@ -74,10 +75,22 @@ export async function activate(context: vscode.ExtensionContext) {
 			status.tooltip = latestCharm.hidden ? 'Charmlet: Show charm' : 'Charmlet: Hide or restore charm';
 		}
 	};
-	const provider = new CharmletView(context, state => {
+	const provider: CharmletView = new CharmletView(context, state => {
 		latestCharm = state;
 		updateStatus();
-	}, catalogue, stateStore, loadedState, companion);
+	}, catalogue, stateStore, loadedState, companion, async (action, value) => {
+		if (action === 'save') {
+			const installed = await installPack(packDirectory, photoPackInput(value));
+			if (!packs.some(pack => pack.id === installed.pack.id)) { packs = [...packs, installed.pack]; }
+			await refreshCatalogue(`pack:${installed.pack.id}:portrait`);
+		} else {
+			if (typeof value !== 'string' || !/^photo-[a-z0-9-]{1,41}$/.test(value)) { throw new Error('Invalid keepsake.'); }
+			const selected = packs.find(pack => pack.id === value);
+			if (selected && !isPhotoPack(selected)) { throw new Error('This is not a photo keepsake.'); }
+			if (selected) { await removePack(packDirectory, value); packs = packs.filter(pack => pack.id !== value); }
+			await refreshCatalogue();
+		}
+	});
 	const refreshCatalogue = async (selectedId?: string) => {
 		await provider.setCatalogue(buildCatalogue([
 			...packCharms(packs), ...gardenCharms(companion.snapshot().state.garden),
@@ -219,6 +232,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 		private readonly stateStore: StateStore,
 		loadedState: LoadedState,
 		private readonly companion: CompanionController,
+		private readonly photoAction: (action: 'save' | 'remove', value: unknown) => Promise<void>,
 	) {
 		this.stateWriter = new StateWriter(
 			async value => {
@@ -308,6 +322,18 @@ class CharmletView implements vscode.WebviewViewProvider {
 					this.trace('save-error', { generation, revision });
 					if (revision !== undefined) { await view.webview.postMessage({ type: 'save-error', revision }); }
 					void vscode.window.showErrorMessage('Charmlet could not save its settings.');
+				}
+			} else if ((message.type === 'photo-save' || message.type === 'photo-remove') && 'requestId' in message
+				&& Number.isSafeInteger(message.requestId) && Number(message.requestId) >= 0) {
+				const requestId = Number(message.requestId);
+				try {
+					await this.photoAction(message.type === 'photo-save' ? 'save' : 'remove',
+						message.type === 'photo-save' ? 'pack' in message ? message.pack : undefined
+							: 'packId' in message ? message.packId : undefined);
+					await view.webview.postMessage({ type: 'photo-result', requestId });
+				} catch {
+					await view.webview.postMessage({ type: 'photo-result', requestId,
+						error: 'Charmlet could not finish saving or removing the keepsake. Try again. Your original photo is unchanged.' });
 				}
 			} else if (message.type === 'companion-action' && 'requestId' in message && 'action' in message
 				&& Number.isSafeInteger(message.requestId) && Number(message.requestId) >= 0) {

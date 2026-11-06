@@ -10,6 +10,8 @@ import { curateArtwork, validateCuration } from './art-curation.mjs';
 const require = createRequire(import.meta.url);
 const { parseCharmPack } = require('../extension/out/charm-packs.js');
 const { FLOWERS } = require('../extension/out/garden-core.js');
+const { LIVE_CHARMS, ORIGINAL_CHARMS } = require('../extension/out/charm-catalog.js');
+const { gardenArtwork, GARDEN_STAGE_FILES } = require('../extension/out/garden-catalog.js');
 const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
 const dist = join(root, 'dist');
@@ -76,9 +78,12 @@ await rm(dist, { recursive: true, force: true });
 for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'assets/garden', 'assets/app-review', 'packs', 'downloads', 'studio']) {
   await mkdir(join(dist, path), { recursive: true });
 }
-for (const name of ['index.html', 'styles.css', 'app.js']) await copyFile(join(root, name), join(dist, name));
+for (const name of ['index.html', 'styles.css', 'app.js', 'concepts.html', 'concepts.css']) await copyFile(join(root, name), join(dist, name));
 for (const builtin of builtins) {
   await copyFile(join(repo, 'extension', 'media', builtin.file), join(dist, 'assets', 'default', builtin.file));
+}
+for (const live of LIVE_CHARMS) {
+  await copyFile(join(repo, 'extension', 'media', live.file), join(dist, 'assets', 'default', live.file));
 }
 for (const { extra, packPath } of validated) {
   await copyFile(join(root, 'assets', extra.file), join(dist, 'assets', 'extras', extra.file));
@@ -92,8 +97,18 @@ for (const file of await readdir(join(root, 'assets/app-review'), { withFileType
     await copyFile(join(root, 'assets/app-review', file.name), join(dist, 'assets/app-review', file.name));
   }
 }
-for (const stage of ['seed', 'sprout', 'leaves', 'bud', ...FLOWERS.map(flower => flower.id)]) {
-  await copyFile(join(repo, 'extension', 'media', `garden-${stage}.svg`), join(dist, 'assets', 'garden', `${stage}.svg`));
+const gardenArt = JSON.parse(await readFile(join(root, 'garden-art.json'), 'utf8'));
+if (gardenArt.items.length !== 4) throw new Error('The garden needs all four growth stages.');
+for (const [stage, file] of Object.entries(GARDEN_STAGE_FILES)) {
+  const item = gardenArt.items.find(item => item.file === file && item.key === `garden-${stage}`);
+  const bytes = await readFile(join(repo, 'extension/media', file));
+  if (!item || createHash('sha256').update(bytes).digest('hex') !== item.pngSha256) throw new Error(`Garden artwork changed: ${stage}`);
+  parseCharmPack(JSON.stringify({ format: 'charmlet-pack', version: 1, id: `garden-${stage}`, name: stage, author: 'Charmlet',
+    charms: [{ id: stage, name: stage, description: 'Garden growth artwork.', group: 'Garden', accent: '#a96b47', png: bytes.toString('base64') }] }));
+  await copyFile(join(repo, 'extension/media', file), join(dist, 'assets/garden', `${stage}.png`));
+}
+for (const flower of FLOWERS) {
+  await copyFile(join(repo, 'extension/media', gardenArtwork(flower.id).file), join(dist, 'assets/garden', `${flower.id}.png`));
 }
 await build({
   entryPoints: [join(root, 'demo.ts')], bundle: true, platform: 'browser',
@@ -111,7 +126,9 @@ await build({
 const vsix = `charmlet-${manifest.version}.vsix`;
 await copyFile(join(repo, 'extension', vsix), join(dist, 'downloads', 'charmlet.vsix'));
 const charms = [
-  ...builtins.map(item => ({ ...item, kind: 'included', preview: `./assets/default/${item.file}` })),
+  ...ORIGINAL_CHARMS.map(item => ({ ...item, kind: 'included', preview: `./assets/default/${item.file}` })),
+  ...LIVE_CHARMS.map(item => ({ ...item, kind: 'extra', live: true, includedInTrial: true,
+    collectionId: 'stress', collectionLabel: 'Stress Busters', preview: `./assets/default/${item.file}`, download: null })),
 ];
 const artPreviews = previews.map(item => ({ ...item, preview: `./assets/previews/${item.file}` }));
 const review = await readFile(join(root, 'art-review.json'), 'utf8').then(JSON.parse, error => {
@@ -132,6 +149,12 @@ if (review) {
       || !/^\.\/assets\/review\/[a-z0-9-]+\.webp$/.test(item.preview)) throw new Error('Invalid review image path.');
     await copyFile(join(root, item.image), join(dist, item.image));
     await copyFile(join(root, item.preview), join(dist, item.preview));
+    if (item.family === 'flowers' && item.original) {
+      if (!/^[a-z0-9-]+$/.test(item.id) || item.original !== `garden/${item.id}.svg`) {
+        throw new Error('Invalid original flower comparison.');
+      }
+      await copyFile(join(repo, 'extension/media', `garden-${item.id}.svg`), join(dist, 'assets', item.original));
+    }
     if (item.download) {
       if (!item.featured || item.decision === 'original' || item.family === 'flowers'
         || !/^\.\/packs\/review\/[a-z0-9-]+\.charmlet\.json$/.test(item.download)) throw new Error('Invalid review download.');
@@ -176,8 +199,8 @@ if (review) {
 }
 const collections = worlds.map(world => ({ ...world, charmIds: charms
   .filter(charm => charm.kind === 'extra' && charm.collectionId === world.id).map(charm => charm.id) }));
-if (!trial.length || charms.length !== builtins.length + trial.length) throw new Error('The complete trial must appear in the gallery.');
+if (!trial.length || charms.length !== ORIGINAL_CHARMS.length + trial.length + LIVE_CHARMS.length) throw new Error('The complete trial must appear in the gallery.');
 await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version,
   extensionDownload: './downloads/charmlet.vsix', distribution, charms, collections, artPreviews,
   sportsWishlist: collectionConfig.sportsWishlist }, null, 2)}\n`, 'utf8');
-console.log(`Built Charmlet gallery ${manifest.version}: ${builtins.length} originals and ${trial.length} rendered designs included in the trial, ${review?.featured ?? 0} selected review designs.`);
+console.log(`Built Charmlet gallery ${manifest.version}: ${ORIGINAL_CHARMS.length} original, ${trial.length} rendered designs and ${LIVE_CHARMS.length} live charm included, ${review?.featured ?? 0} selected review designs.`);

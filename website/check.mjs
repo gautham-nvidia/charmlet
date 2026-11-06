@@ -14,11 +14,14 @@ const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json
 const archived = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
 const review = JSON.parse(await readFile(join(root, 'art-review.json'), 'utf8'));
 const target = review.items.filter(item => item.featured && item.decision !== 'original');
+const originalIds = ['terminal'];
+const liveIds = ['live:smiley'];
+const trialCount = target.length + liveIds.length;
 const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
 const expectedWorldCounts = {
   ai: 1, coding: 0, silicon: 7, testing: 9, animals: 3, trees: 3, space: 5, parks: 6,
   cities: 6, culture: 8, sports: 5, luck: 2, stress: 9, seasonal: 22,
-  'solar-system': 10, gemstones: 8, zodiac: 12, sacred: 14, flowers: 12,
+  'solar-system': 10, gemstones: 8, zodiac: 12, sacred: 15, flowers: 18,
 };
 const output = join(repo, 'extension', 'test-results', `website-check-${manifest.version}`);
 await mkdir(output, { recursive: true });
@@ -68,9 +71,9 @@ try {
   const response = await page.goto(base, { waitUntil: 'networkidle' });
   assert.equal(response?.status(), 200);
   await page.locator('.charm-card').first().waitFor();
-  assert.equal(await page.locator('.charm-card').count(), target.length);
-  assert.equal(await page.locator('#extra-count').textContent(), String(target.length));
-  assert.equal(await page.locator('#included-count').textContent(), '10');
+  assert.equal(await page.locator('.charm-card').count(), trialCount);
+  assert.equal(await page.locator('#extra-count').textContent(), String(trialCount));
+  assert.equal(await page.locator('#included-count').textContent(), String(originalIds.length));
   assert.equal(await page.locator('.site-header a[href="#install"]').last().getAttribute('href'), '#install');
   assert.equal(await page.getByRole('link', { name: 'Photo Studio', exact: true }).getAttribute('href'), './studio/');
   await page.goto(new URL('studio/', base).href, { waitUntil: 'networkidle' });
@@ -104,7 +107,7 @@ try {
     await filter.focus();
     await page.keyboard.press('Enter');
     assert.equal(await page.evaluate(() => document.activeElement?.dataset.group), world.id);
-    assert.equal(await page.locator('.charm-card').count(), expectedWorldCounts[world.id]);
+    assert.equal(await page.locator('.charm-card').count(), expectedWorldCounts[world.id] + (world.id === 'stress' ? liveIds.length : 0));
     assert.notEqual(await filter.evaluate(element => getComputedStyle(element).outlineStyle), 'none');
     await expect(page.locator('#collection-story')).toBeVisible();
   }
@@ -132,18 +135,18 @@ try {
   await expect(page.locator('#garden-help')).toContainText('Charmlet: Open Garden');
   await expect(page.locator('#garden-help')).toContainText('Plant a seed');
   await page.locator('[data-garden-stage="0"]').click();
-  assert.equal(await page.locator('.charm-card').count(), target.length);
+  assert.equal(await page.locator('.charm-card').count(), trialCount);
 
   await page.locator('#search').fill('golden die');
   assert.equal(await page.locator('.charm-card').count(), 0, 'Retired designs must not appear in the gallery.');
   await page.locator('#search').fill('');
-  assert.equal(await page.locator('.charm-card').count(), target.length);
+  assert.equal(await page.locator('.charm-card').count(), trialCount);
   await page.locator('#search').fill('GPU');
   assert.ok(await page.locator('.charm-card[data-charm-id="extra-gpu-tile"]').isVisible());
   await page.locator('#search').fill('no-such-charm');
   assert.equal(await page.locator('.charm-card').count(), 0);
   await page.getByRole('button', { name: 'Reset filters', exact: true }).click();
-  assert.equal(await page.locator('.charm-card').count(), target.length);
+  assert.equal(await page.locator('.charm-card').count(), trialCount);
   assert.equal(await page.evaluate(() => document.activeElement?.id), 'search');
 
   await page.locator('.hero').screenshot({ path: join(output, 'visual-refresh-hero.png') });
@@ -152,15 +155,15 @@ try {
   await page.reload({ waitUntil: 'networkidle' });
 
   await page.getByRole('button', { name: /^Originals/ }).click();
-  assert.equal(await page.locator('.charm-card').count(), 10);
-  assert.equal(await page.locator('.included-label').count(), 10);
+  assert.equal(await page.locator('.charm-card').count(), originalIds.length);
+  assert.equal(await page.locator('.included-label').count(), originalIds.length);
   const includedImages = await decodeImages(page);
   assert.ok(includedImages.every(image => image.complete && image.width > 0 && image.height > 0));
   await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; });
-  await page.locator('.charm-card[data-charm-id="evil-eye"]').getByRole('button', { name: /Preview Evil Eye/ }).click();
+  await page.locator('.charm-card[data-charm-id="terminal"]').getByRole('button', { name: /Preview Terminal/ }).click();
   await page.locator('.hero-demo').scrollIntoViewIfNeeded();
-  assert.equal(await page.locator('#demo-name').textContent(), 'Evil Eye');
-  assert.match(await page.locator('#demo-image').getAttribute('src'), /evil-eye\.svg$/);
+  assert.equal(await page.locator('#demo-name').textContent(), 'Terminal');
+  assert.match(await page.locator('#demo-image').getAttribute('src'), /keycap\.svg$/);
   await page.getByRole('button', { name: /^Trial collection/ }).click();
   const oldPack = await downloadPack(page, 'extra-probe-card');
   const newPack = await downloadPack(page, 'extra-gpu-tile');
@@ -320,7 +323,8 @@ try {
   assert.ok(downloadedVsix.equals(sourceVsix));
 
   const actualCatalogue = JSON.parse(await readFile(join(root, 'dist', 'catalogue.json'), 'utf8'));
-  assert.equal(new Set(actualCatalogue.charms.map(item => item.id)).size, target.length + 10);
+  assert.deepEqual(new Set(actualCatalogue.charms.map(item => item.id)),
+    new Set([...target.map(item => item.key), ...originalIds, ...liveIds]));
   await page.route('**/catalogue.json', route => route.fulfill({ json: { ...actualCatalogue, distribution: { marketplace, openVsx } } }));
   await page.reload({ waitUntil: 'networkidle' });
   const storeLinks = page.locator('#store-links a');
@@ -338,7 +342,7 @@ try {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(base, { waitUntil: 'networkidle' });
   await page.locator('.charm-card').first().waitFor();
-  assert.equal(await page.locator('.charm-card').count(), target.length);
+  assert.equal(await page.locator('.charm-card').count(), trialCount);
   const mobileImages = await decodeImages(page);
   assert.ok(mobileImages.every(image => image.complete && image.width > 0 && image.height > 0));
   const mobileOverflow = await checkOverflow(page);
@@ -347,9 +351,9 @@ try {
   assert.deepEqual(errors, []);
   const result = {
     url: base,
-    extras: target.length,
-    included: 10,
-    uniqueIds: target.length + 10,
+    extras: trialCount,
+    included: originalIds.length,
+    uniqueIds: trialCount + originalIds.length,
     collections: expectedWorldCounts,
     artPreviews: 4,
     gardenEntry: 'growth preview and direct Open Garden installation guidance',

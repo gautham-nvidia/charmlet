@@ -6,12 +6,23 @@ import { artworkJobs } from './art-review-jobs.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const output = join(repo, 'output/imagegen/phase-4-redraw');
-const jobs = await artworkJobs(repo);
 const command = process.argv[2] ?? 'plan';
-const requested = process.argv.slice(3);
+const argumentsAfterCommand = process.argv.slice(3);
+const manifest = argumentsAfterCommand.find(value => value.startsWith('--jobs='));
+const requested = argumentsAfterCommand.filter(value => value !== manifest);
+const jobs = manifest ? JSON.parse(await readFile(resolve(repo, manifest.slice(7)), 'utf8')) : await artworkJobs(repo);
+if (!Array.isArray(jobs) || !jobs.length || jobs.some(job => !job
+  || !/^[a-z0-9-]{1,100}$/.test(job.key) || !/^[a-z0-9-]{1,100}$/.test(job.variant)
+  || (job.sourceVariant !== undefined && !/^[a-z0-9-]{1,100}$/.test(job.sourceVariant))
+  || !Number.isInteger(job.revision) || job.revision < 1
+  || typeof job.prompt !== 'string' || !job.prompt.trim() || job.prompt.length > 16000)
+  || new Set(jobs.map(job => job.key)).size !== jobs.length
+  || new Set(jobs.map(job => job.variant)).size !== jobs.length) {
+  throw new Error('Artwork jobs need unique safe names, revisions and bounded prompts.');
+}
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 await mkdir(join(output, 'raw'), { recursive: true });
-await writeFile(join(output, 'jobs.json'), `${JSON.stringify(jobs, null, 2)}\n`);
+await writeFile(join(output, manifest ? 'custom-jobs.json' : 'jobs.json'), `${JSON.stringify(jobs, null, 2)}\n`);
 if (command === 'plan') {
   console.log(JSON.stringify({ jobs: jobs.length,
     families: Object.fromEntries([...new Set(jobs.map(job => job.family))].map(family => [family, jobs.filter(job => job.family === family).length])),
@@ -27,12 +38,13 @@ if (command === 'plan') {
   let completed = 0;
   let stopped = false;
   async function generate(job) {
-    const imagePath = join(output, 'raw', `${job.variant}.png`);
-    const receiptPath = join(output, 'raw', `${job.variant}.json`);
+    const sourceVariant = job.sourceVariant ?? job.variant;
+    const imagePath = join(output, 'raw', `${sourceVariant}.png`);
+    const receiptPath = join(output, 'raw', `${sourceVariant}.json`);
     const promptHash = hash(job.prompt);
     const exists = path => access(path).then(() => true, error => { if (error.code === 'ENOENT') return false; throw error; });
     const preservePrompt = async () => {
-      const path = join(output, 'raw', `${job.variant}.prompt.txt`);
+      const path = join(output, 'raw', `${sourceVariant}.prompt.txt`);
       if (await exists(path)) {
         if (await readFile(path, 'utf8') !== job.prompt) throw new Error(`Use a new revision instead of replacing the prompt for ${job.key}.`);
       } else {
@@ -42,6 +54,7 @@ if (command === 'plan') {
     const hasImage = await exists(imagePath);
     const hasReceipt = await exists(receiptPath);
     if (hasImage !== hasReceipt) throw new Error(`Partial saved result needs review before retrying: ${job.key}`);
+    if (job.sourceVariant && !hasImage) throw new Error(`The approved source is missing; do not regenerate it: ${job.key}`);
     if (hasImage) {
       const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
       if (receipt.promptHash !== promptHash || receipt.model !== model || receipt.sha256 !== hash(await readFile(imagePath))) throw new Error(`Existing artwork differs from the requested job: ${job.key}`);

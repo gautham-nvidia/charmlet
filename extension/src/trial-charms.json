@@ -560,6 +560,90 @@
     }
   },
   {
+    "id": "trial:flower-red-rose",
+    "name": "Red Rose",
+    "file": "trial-flower-red-rose-r2-p2.png",
+    "description": "Red Rose artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#c95160",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-red-rose",
+    "artworkHash": "734d14c74cb7bf80b99dc8c6b22b5f15989f8b484450d5cbaf7d22c9f277b1d7",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:flower-pink-rose",
+    "name": "Pink Rose",
+    "file": "trial-flower-pink-rose-r1-p2.png",
+    "description": "Pink Rose artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#e5a0ba",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-pink-rose",
+    "artworkHash": "223b8adc0dea4c669512486e7c1b3117f676769d7e7ae8095dbd9eadfa2d962d",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.08333333333333333
+    }
+  },
+  {
+    "id": "trial:flower-white-rose",
+    "name": "White Rose",
+    "file": "trial-flower-white-rose-r1-p2.png",
+    "description": "White Rose artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#dedbc5",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-white-rose",
+    "artworkHash": "9b30b40ecfe50958fcd91a4adf243a531d2ecf077b4e7c5422ca91a7c7ff43d2",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.09126984126984126
+    }
+  },
+  {
+    "id": "trial:flower-yellow-rose",
+    "name": "Yellow Rose",
+    "file": "trial-flower-yellow-rose-r1-p2.png",
+    "description": "Yellow Rose artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#e9c35e",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-yellow-rose",
+    "artworkHash": "8954ad19213d487db9a8a0cabb0caed5cedf51677eafdcd6c5e08c48fec5a738",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07936507936507936
+    }
+  },
+  {
+    "id": "trial:flower-jasmine",
+    "name": "Jasmine",
+    "file": "trial-flower-jasmine-r2-p2.png",
+    "description": "Jasmine artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#c5d4bb",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-jasmine",
+    "artworkHash": "50492f205fbb9442177be1e97885722cb65875987ea8eba0638cc9964c31a664",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.13095238095238096
+    }
+  },
+  {
+    "id": "trial:flower-lily",
+    "name": "Lily",
+    "file": "trial-flower-lily-r1-p2.png",
+    "description": "Lily artwork. Try it here; your garden still records the flowers you grow.",
+    "accent": "#e8bccb",
+    "group": "Garden Flowers",
+    "artworkKey": "flower-lily",
+    "artworkHash": "8d6eb45209654c16f1cd700546115e60ff3c35765c31238ccf1201ef9076507e",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
     "id": "trial:new-red-panda",
     "name": "Red Panda",
     "file": "trial-new-red-panda-r1-p2.png",
@@ -898,15 +982,15 @@
   {
     "id": "trial:new-murugan",
     "name": "Murugan",
-    "file": "trial-new-murugan-r1-p2.png",
+    "file": "trial-new-murugan-r2-p2.png",
     "description": "Murugan, included in the complete trial collection.",
     "accent": "#c89c60",
     "group": "Sacred Traditions",
     "artworkKey": "new-murugan",
-    "artworkHash": "673e04222b44795ea3151218876bea63f3bfd0d8344039ebb5e27d018bde4ce4",
+    "artworkHash": "a9086b7d252df4303dda5f2e2d25c6b64287d97e80f15bc28cd1707b5307d91b",
     "attachment": {
-      "x": 0.4976851851851852,
-      "y": 0.0992063492063492
+      "x": 0.5,
+      "y": 0.05952380952380952
     }
   },
   {
@@ -1696,82 +1780,82 @@
   {
     "id": "trial:new-ganesha",
     "name": "Ganesha",
-    "file": "trial-new-ganesha-r1-p2.png",
+    "file": "trial-new-ganesha-r2-p2.png",
     "description": "Ganesha, included in the complete trial collection.",
     "accent": "#bf9c73",
     "group": "Sacred Traditions",
     "artworkKey": "new-ganesha",
-    "artworkHash": "e447bf2141912c3a09ea8d10152af6641097cb241bd8290a677af98d0375fe9c",
+    "artworkHash": "2866514129a82a298dd90b1d43b7bdb34e109f799f9c32ee1048c8176443e4ec",
     "attachment": {
       "x": 0.5,
-      "y": 0.06349206349206349
+      "y": 0.05952380952380952
     }
   },
   {
     "id": "trial:new-nataraja",
     "name": "Nataraja",
-    "file": "trial-new-nataraja-r1-p2.png",
+    "file": "trial-new-nataraja-r2-p2.png",
     "description": "Nataraja, included in the complete trial collection.",
     "accent": "#b29468",
     "group": "Sacred Traditions",
     "artworkKey": "new-nataraja",
-    "artworkHash": "7204ccf294884f94af202b4bc2f4b48e722bb129d292221dbbb288f8eeb5e9bf",
+    "artworkHash": "521cfaeb5e0f97eb28dd70710c0d8a9085db06a9c50742bc6cae47e29e5e69d5",
     "attachment": {
-      "x": 0.5023148148148148,
+      "x": 0.5,
       "y": 0.05952380952380952
     }
   },
   {
     "id": "trial:new-meenakshi",
     "name": "Meenakshi Amman",
-    "file": "trial-new-meenakshi-r2-p2.png",
+    "file": "trial-new-meenakshi-r3-p2.png",
     "description": "Meenakshi Amman, included in the complete trial collection.",
     "accent": "#b39768",
     "group": "Sacred Traditions",
     "artworkKey": "new-meenakshi",
-    "artworkHash": "b59de511c5d102941bb7ee9d690099ad6d1b5a936cc163eb85e0ba1020714ce3",
+    "artworkHash": "34b5ef619d5ece369fcb027255902209a75ac3adb72adb40518bb6eca98c8542",
     "attachment": {
-      "x": 0.5023148148148148,
-      "y": 0.05952380952380952
+      "x": 0.5115740740740741,
+      "y": 0.06349206349206349
     }
   },
   {
     "id": "trial:new-perumal",
     "name": "Perumal",
-    "file": "trial-new-perumal-r2-p2.png",
+    "file": "trial-new-perumal-r3-p2.png",
     "description": "Perumal, included in the complete trial collection.",
     "accent": "#a69d7c",
     "group": "Sacred Traditions",
     "artworkKey": "new-perumal",
-    "artworkHash": "30ed376847721da951072e3fe00c7bb7b39a9efee6d214fed5d938c88c0f8cd2",
-    "attachment": {
-      "x": 0.4976851851851852,
-      "y": 0.05952380952380952
-    }
-  },
-  {
-    "id": "trial:new-andal",
-    "name": "Andal",
-    "file": "trial-new-andal-r2-p2.png",
-    "description": "Andal, included in the complete trial collection.",
-    "accent": "#bd9b89",
-    "group": "Sacred Traditions",
-    "artworkKey": "new-andal",
-    "artworkHash": "36e19b14353d53c4be679764aa2bbb5008e9ecd7de110d5de5a39c1a9023b5ff",
+    "artworkHash": "13ede550f4aa7ac94c78ca773b5232d4f6a4d84fbf199ac9e4fb5440932f05ae",
     "attachment": {
       "x": 0.5,
       "y": 0.05952380952380952
     }
   },
   {
+    "id": "trial:new-andal",
+    "name": "Andal",
+    "file": "trial-new-andal-r3-p2.png",
+    "description": "Andal, included in the complete trial collection.",
+    "accent": "#bd9b89",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-andal",
+    "artworkHash": "e7d711dedf40ea1b6bf11da4bc847abddf8435f7db99d5a0efa3d591348973d5",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.08333333333333333
+    }
+  },
+  {
     "id": "trial:new-lakshmi",
     "name": "Lakshmi",
-    "file": "trial-new-lakshmi-r1-p2.png",
+    "file": "trial-new-lakshmi-r2-p2.png",
     "description": "Lakshmi, included in the complete trial collection.",
     "accent": "#bf9972",
     "group": "Sacred Traditions",
     "artworkKey": "new-lakshmi",
-    "artworkHash": "00a4bebc50fb1be9d5c25aac4ab773d800ce593fe479274a48be70317ead3f48",
+    "artworkHash": "f3bd8a3cc7491aebc5cc4b4ebaff014c95655889860a96333109324864fd4035",
     "attachment": {
       "x": 0.5,
       "y": 0.05952380952380952
@@ -1780,15 +1864,15 @@
   {
     "id": "trial:new-saraswati",
     "name": "Saraswati",
-    "file": "trial-new-saraswati-r2-p2.png",
+    "file": "trial-new-saraswati-r3-p2.png",
     "description": "Saraswati, included in the complete trial collection.",
     "accent": "#c3b998",
     "group": "Sacred Traditions",
     "artworkKey": "new-saraswati",
-    "artworkHash": "67647504c0e992cb782e835a2dcd7f12a6891767d3f2d6feabedaad45c41530e",
+    "artworkHash": "ca510da95c0584da056e29dc1359c07d6098a1f7fba1bd08e9fa98b3f131aa5a",
     "attachment": {
-      "x": 0.4976851851851852,
-      "y": 0.06746031746031746
+      "x": 0.4837962962962963,
+      "y": 0.0873015873015873
     }
   },
   {
@@ -1808,15 +1892,15 @@
   {
     "id": "trial:new-buddha",
     "name": "Buddha",
-    "file": "trial-new-buddha-r1-p2.png",
+    "file": "trial-new-buddha-r2-p2.png",
     "description": "Buddha, included in the complete trial collection.",
     "accent": "#b59b78",
     "group": "Sacred Traditions",
     "artworkKey": "new-buddha",
-    "artworkHash": "e6d22c0f6f6c42cd5f750e4bfa66f61748c6886b62e1c87b83805a45857a82d3",
+    "artworkHash": "5d6154e9825163ceb4ef8fba5d7ec350e5f2730bc1f38394f940eb1ab6341903",
     "attachment": {
-      "x": 0.4976851851851852,
-      "y": 0.0873015873015873
+      "x": 0.5,
+      "y": 0.05952380952380952
     }
   },
   {
@@ -1878,12 +1962,12 @@
   {
     "id": "trial:new-smiley-happy",
     "name": "Happy Smiley Ball",
-    "file": "trial-new-smiley-happy-r1-p2.png",
+    "file": "trial-new-smiley-happy-r2-p2.png",
     "description": "Happy Smiley Ball, included in the complete trial collection.",
     "accent": "#e9bd42",
     "group": "Stress Busters",
     "artworkKey": "new-smiley-happy",
-    "artworkHash": "ba0f0cdac0e58a557ddb0e220e46adae6bd23791441a84250e2e9fa8fd92dfc9",
+    "artworkHash": "16c75d1be6dd96e643cc057a50a81adfb2e8a86787a169f28d072d4e065219b5",
     "attachment": {
       "x": 0.5,
       "y": 0.05952380952380952
@@ -1892,12 +1976,12 @@
   {
     "id": "trial:new-smiley-determined",
     "name": "Determined Smiley Ball",
-    "file": "trial-new-smiley-determined-r1-p2.png",
+    "file": "trial-new-smiley-determined-r2-p2.png",
     "description": "Determined Smiley Ball, included in the complete trial collection.",
     "accent": "#e4a347",
     "group": "Stress Busters",
     "artworkKey": "new-smiley-determined",
-    "artworkHash": "7800fa3c27f20bd9741e2adb9496dc23aa0a7ca828b0942542ea6ef8b874e240",
+    "artworkHash": "465feef2cbae9bea0b6c26e2a5297ae704b946aac52e18af51a8f70b7a0e1cdb",
     "attachment": {
       "x": 0.5,
       "y": 0.05952380952380952
@@ -1920,12 +2004,12 @@
   {
     "id": "trial:new-smiley-wink",
     "name": "Winking Smiley Ball",
-    "file": "trial-new-smiley-wink-r2-p2.png",
+    "file": "trial-new-smiley-wink-r3-p2.png",
     "description": "Winking Smiley Ball, included in the complete trial collection.",
     "accent": "#edbb4f",
     "group": "Stress Busters",
     "artworkKey": "new-smiley-wink",
-    "artworkHash": "d4172d2f0cffaab8a0174e1ab8c9bbea163a642f18f0dd946f562f9cda4ff943",
+    "artworkHash": "26044c1914246e48d9f768e619309e51d124bdd3b69ee213886dca34be0fa9b0",
     "attachment": {
       "x": 0.5,
       "y": 0.05952380952380952
@@ -1985,6 +2069,20 @@
     "attachment": {
       "x": 0.5,
       "y": 0.15079365079365079
+    }
+  },
+  {
+    "id": "trial:new-shiva",
+    "name": "Shiva",
+    "file": "trial-new-shiva-r2-p2.png",
+    "description": "Shiva, included in the complete trial collection.",
+    "accent": "#7e9ea9",
+    "group": "Sacred Traditions",
+    "artworkKey": "new-shiva",
+    "artworkHash": "fef7cd35c9b057a2ad1954858536ee8a17301f76d4c69c139fba2b0f25f88fc3",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.06746031746031746
     }
   }
 ]

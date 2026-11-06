@@ -206,7 +206,7 @@ for (const button of document.querySelectorAll('[data-garden-stage]')) {
   button.addEventListener('click', () => {
     const stage = gardenStages[Number(button.dataset.gardenStage)];
     const image = document.querySelector('#garden-demo-image');
-    image.src = `./assets/garden/${stage[0]}.svg`;
+    image.src = `./assets/garden/${stage[0]}.png`;
     image.alt = `${stage[0]} growth preview`;
     document.querySelector('#garden-demo-title').textContent = stage[1];
     document.querySelector('#garden-demo-copy').textContent = stage[2];

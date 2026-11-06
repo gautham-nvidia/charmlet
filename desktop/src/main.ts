@@ -16,6 +16,7 @@ import { isFlowerId } from '../../extension/src/garden-core';
 import { learningCard } from '../../extension/src/learning-cards';
 import { StateStore } from '../../extension/src/state-store';
 import { StateWriter } from '../../extension/src/state-writer';
+import { isPhotoPack, photoPackInput } from '../../extension/src/photo-packs';
 import { pauseForAway } from './power-behavior';
 import {
 	DEFAULT_DESKTOP_SIZE, desktopGeometry, fitDesktopAnchor, legacyDesktopAnchor, matchesDesktopAnchor,
@@ -314,6 +315,29 @@ async function handleAction(event: IpcMainEvent, message: unknown) {
 			if (revision !== undefined) { sendForGeneration(generation, { type: 'saved', revision }); }
 		} catch {
 			if (revision !== undefined) { sendForGeneration(generation, { type: 'save-error', revision }); }
+		}
+	} else if ((value.type === 'photo-save' || value.type === 'photo-remove')
+		&& Number.isSafeInteger(value.requestId) && Number(value.requestId) >= 0) {
+		const requestId = Number(value.requestId);
+		try {
+			if (value.type === 'photo-save') {
+				const installed = await installPack(join(profile, 'packs'), photoPackInput(value.pack));
+				if (!packs.some(pack => pack.id === installed.pack.id)) { packs = [...packs, installed.pack]; }
+				await saveCatalogue(`pack:${installed.pack.id}:portrait`, generation);
+			} else {
+				if (typeof value.packId !== 'string' || !/^photo-[a-z0-9-]{1,41}$/.test(value.packId)) { throw new Error('Invalid keepsake.'); }
+				const selected = packs.find(pack => pack.id === value.packId);
+				if (selected && !isPhotoPack(selected)) { throw new Error('This is not a photo keepsake.'); }
+				if (selected) {
+					await removePack(join(profile, 'packs'), selected.id);
+					packs = packs.filter(pack => pack.id !== selected.id);
+				}
+				await saveCatalogue(undefined, generation);
+			}
+			sendForGeneration(generation, { type: 'photo-result', requestId });
+		} catch {
+			sendForGeneration(generation, { type: 'photo-result', requestId,
+				error: 'Charmlet could not finish saving or removing the keepsake. Try again. Your original photo is unchanged.' });
 		}
 	} else if (value.type === 'companion-action' && Number.isSafeInteger(value.requestId) && Number(value.requestId) >= 0) {
 		const requestId = Number(value.requestId);

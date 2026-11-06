@@ -1,7 +1,7 @@
 import { ChevronDown, createElement, Search, X } from 'lucide';
 import type { CharmDefinition } from './charm-catalog';
 
-export type NavigationAction = 'appearance' | 'messages' | 'reminders' | 'close';
+export type NavigationAction = 'appearance' | 'messages' | 'reminders' | 'photos' | 'close';
 interface NavigationOptions {
 	image(charm: CharmDefinition): string;
 	select(id: string): void;

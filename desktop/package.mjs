@@ -17,7 +17,7 @@ const paths = await packager({
   platform: process.platform,
   arch: process.arch,
   out: release,
-  overwrite: false,
+  overwrite: process.argv.includes('--overwrite'),
   prune: true,
   asar: false,
   ignore: [
@@ -25,4 +25,7 @@ const paths = await packager({
     /^\/node_modules($|\/)/, /^\/build\.mjs$/, /^\/package\.mjs$/, /^\/archive\.mjs$/, /^\/tsconfig\.json$/, /^\/package-lock\.json$/, /^\/README\.md$/,
   ],
 });
+if (paths.length !== 1) {
+  throw new Error('No fresh desktop package was created. Use --overwrite to replace this generated version.');
+}
 console.log(`Packaged unsigned desktop beta: ${paths.join(', ')}`);

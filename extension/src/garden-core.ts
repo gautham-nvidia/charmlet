@@ -11,6 +11,12 @@ export const FLOWERS = [
 	{ id: 'cosmos', name: 'Cosmos', accent: '#d997b8' },
 	{ id: 'sakura', name: 'Sakura', accent: '#dfafbe' },
 	{ id: 'wild-rose', name: 'Wild Rose', accent: '#d98d9d' },
+	{ id: 'red-rose', name: 'Red Rose', accent: '#c95160' },
+	{ id: 'pink-rose', name: 'Pink Rose', accent: '#e5a0ba' },
+	{ id: 'white-rose', name: 'White Rose', accent: '#dedbc5' },
+	{ id: 'yellow-rose', name: 'Yellow Rose', accent: '#e9c35e' },
+	{ id: 'jasmine', name: 'Jasmine', accent: '#c5d4bb' },
+	{ id: 'lily', name: 'Lily', accent: '#e8bccb' },
 ] as const;
 export type FlowerId = typeof FLOWERS[number]['id'];
 export const WATERINGS_TO_BLOOM = 11;

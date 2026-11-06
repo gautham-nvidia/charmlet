@@ -5,13 +5,14 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { DEFAULT_STATE, getLayout, matchesSavedState, resetState, restoreState, type CharmState, type LayoutMode } from '../charm-state';
-import { CHARMS, ORIGINAL_CHARMS, TRIAL_CHARMS } from '../charm-catalog';
+import { buildCatalogue, CHARMS, LIVE_CHARMS, ORIGINAL_CHARMS, RETIRED_CHARMS, TRIAL_CHARMS } from '../charm-catalog';
 import { MESSAGES } from '../messages';
 import { MESSAGE_ROTATION_MS, MessageRotation } from '../message-rotation';
 import { Pendulum } from '../pendulum';
 import { StateStore } from '../state-store';
 import { StateWriter } from '../state-writer';
 import { displayedCharm, festiveCharm, festiveDay } from '../festive-charms';
+import { chainLinks, cordForCharm, cordPath } from '../cord-design';
 
 test('missing or invalid saved values restore a usable charm', () => {
 	assert.deepEqual(restoreState(undefined), DEFAULT_STATE);
@@ -27,8 +28,39 @@ test('hide and motion preferences survive a reload without trusting unknown fiel
 	assert.deepEqual(restoreState({ cordLength: 180, hidden: true, reducedMotion: true, extra: 'ignored' }), {
 		version: 1, charmId: 'terminal', layoutMode: 'hanging', showMessages: true, rotateMessages: true, messageIndex: 0,
 		cordLength: 180, size: 100, hidden: true, reducedMotion: true,
-		festiveEnabled: true, charmPinned: false,
+		festiveEnabled: true, charmPinned: false, cordChoices: {},
 	});
+});
+
+test('cords follow the visible charm and preserve independent manual choices', () => {
+	const ruby = CHARMS.find(charm => charm.id === 'trial:new-ruby')!;
+	const soft = CHARMS.find(charm => charm.id === 'trial:new-smiley-happy')!;
+	const murugan = CHARMS.find(charm => charm.id === 'trial:new-murugan')!;
+	assert.equal(cordForCharm(ruby), 'gold-chain');
+	assert.equal(cordForCharm(soft), 'soft');
+	assert.equal(cordForCharm(murugan), 'braid');
+	const saved = restoreState({ ...DEFAULT_STATE, cordChoices: {
+		[ruby.id]: 'silver-chain', [soft.id]: 'ribbon', missing: 'braid', terminal: 'script',
+	} });
+	assert.equal(cordForCharm(ruby, saved.cordChoices), 'silver-chain');
+	assert.equal(cordForCharm(soft, saved.cordChoices), 'ribbon');
+	assert.equal(cordForCharm(murugan, saved.cordChoices), 'braid');
+	assert.deepEqual(Object.keys(saved.cordChoices).sort(), [ruby.id, soft.id].sort());
+	assert.ok(matchesSavedState(saved, JSON.parse(JSON.stringify(saved))));
+	assert.equal(matchesSavedState(saved, { ...saved, cordChoices: {} }), false);
+	assert.deepEqual(resetState(saved).cordChoices, saved.cordChoices);
+});
+
+test('chain geometry remains finite and bounded during long pulls in every direction', () => {
+	for (const point of [{ x: 220, y: 900 }, { x: -200, y: -300 }, { x: 2200, y: 900 }, { x: 0, y: 0 }]) {
+		const start = { x: 0, y: 0 };
+		assert.ok(cordPath(start, point).endsWith(`${point.x} ${point.y}`));
+		for (const balls of [true, false]) {
+			const links = chainLinks(start, point, balls);
+			assert.doesNotMatch(links, /NaN|Infinity/);
+			assert.ok((links.match(/M /g) ?? []).length < 180);
+		}
+	}
 });
 
 test('legacy and unknown charm selections retain the other preferences', () => {
@@ -47,8 +79,8 @@ test('legacy and unknown charm selections retain the other preferences', () => {
 });
 
 test('every bundled selection survives saved-state restoration', () => {
-	assert.equal(ORIGINAL_CHARMS.length, 10);
-	assert.equal(CHARMS.length, ORIGINAL_CHARMS.length + TRIAL_CHARMS.length);
+	assert.deepEqual(ORIGINAL_CHARMS.map(charm => charm.id), ['terminal']);
+	assert.equal(CHARMS.length, ORIGINAL_CHARMS.length + TRIAL_CHARMS.length + LIVE_CHARMS.length);
 	assert.equal(new Set(CHARMS.map(charm => charm.id)).size, CHARMS.length);
 	assert.ok(TRIAL_CHARMS.length > 100, 'The complete curated trial must be bundled, not require imports.');
 	for (const group of ['Solar System', 'Gemstones', 'Zodiac', 'Test Bench', 'Sacred Traditions', 'Seasonal']) {
@@ -58,7 +90,7 @@ test('every bundled selection survives saved-state restoration', () => {
 		assert.ok(TRIAL_CHARMS.some(charm => charm.id === `trial:new-${planet}`));
 	}
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Zodiac').length, 12);
-	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Garden Flowers').length, 12);
+	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Garden Flowers').length, 18);
 	assert.ok(TRIAL_CHARMS.every(charm => !charm.source && /^trial-[a-z0-9-]+\.png$/.test(charm.file)));
 	assert.equal(MESSAGES.length, 80);
 	assert.equal(new Set(MESSAGES).size, MESSAGES.length);
@@ -69,10 +101,39 @@ test('every bundled selection survives saved-state restoration', () => {
 	}
 });
 
+test('retiring the early designs preserves the matching choice, pin and cord', () => {
+	for (const [oldId, replacement] of Object.entries(RETIRED_CHARMS)) {
+		assert.equal(CHARMS.some(charm => charm.id === oldId), false);
+		const restored = restoreState({ charmId: oldId, size: 80, cordLength: 210, reducedMotion: true,
+			cordChoices: { [oldId]: 'ribbon' } });
+		assert.equal(restored.charmId, replacement);
+		assert.equal(restored.charmPinned, true);
+		assert.equal(restored.size, 80);
+		assert.equal(restored.cordLength, 210);
+		assert.equal(restored.reducedMotion, true);
+		assert.equal(restored.cordChoices[replacement], 'ribbon');
+		assert.deepEqual(restoreState(JSON.parse(JSON.stringify(restored))), restored);
+	}
+	const preferred = restoreState({ charmId: 'chip', charmPinned: false,
+		cordChoices: { chip: 'ribbon', 'trial:starter-chip': 'silver-chain' } });
+	assert.equal(preferred.charmPinned, false);
+	assert.equal(preferred.cordChoices['trial:starter-chip'], 'silver-chain');
+});
+
+test('an identical imported replacement also keeps the retired choice and its cord', () => {
+	const art = TRIAL_CHARMS.find(charm => charm.id === 'trial:starter-chip')!;
+	const imported = { ...art, id: 'pack:my-chip:chip', source: 'data:image/png;base64,fixture' };
+	const catalogue = buildCatalogue([imported]);
+	const state = restoreState({ charmId: 'chip', cordChoices: { chip: 'braid' } }, catalogue);
+	assert.equal(state.charmId, imported.id);
+	assert.equal(state.charmPinned, true);
+	assert.equal(state.cordChoices[imported.id], 'braid');
+});
+
 test('reset retains the selected charm and motion preference', () => {
 	const state = restoreState({ charmId: 'wafer', layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: 5, cordLength: 700, size: 140, hidden: true, reducedMotion: true });
 	assert.deepEqual(resetState(state), {
-		...DEFAULT_STATE, charmId: 'wafer', reducedMotion: true, layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: 5,
+		...DEFAULT_STATE, charmId: 'trial:starter-wafer', reducedMotion: true, layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: 5,
 		charmPinned: true,
 	});
 });
@@ -99,17 +160,19 @@ test('seasonal dates follow local days and Cyber Monday can cross into December'
 
 test('festive display preserves manual state and falls back for pins or absent artwork', () => {
 	const pumpkin = { ...CHARMS[0], id: 'pack:seasonal:new-pumpkin-patch', name: 'Pumpkin Patch' };
-	const catalogue = [...ORIGINAL_CHARMS, pumpkin];
-	const state = { ...DEFAULT_STATE, charmId: 'wafer', festiveEnabled: true };
+	const usual = TRIAL_CHARMS.find(charm => charm.id === 'trial:starter-wafer')!;
+	const withoutHoliday = [...ORIGINAL_CHARMS, usual];
+	const catalogue = [...withoutHoliday, pumpkin];
+	const state = { ...DEFAULT_STATE, charmId: usual.id, festiveEnabled: true };
 	const saved = JSON.stringify(state);
 	const halloween = new Date(2026, 9, 31, 12).getTime();
 	assert.equal(displayedCharm(state, catalogue, halloween).id, pumpkin.id);
 	assert.equal(JSON.stringify(state), saved, 'Automatic display must not overwrite the saved selection.');
-	assert.equal(displayedCharm(state, catalogue, new Date(2026, 10, 1, 0).getTime()).id, 'wafer');
-	assert.equal(displayedCharm(state, ORIGINAL_CHARMS, halloween).id, 'wafer');
-	assert.equal(displayedCharm({ ...state, festiveEnabled: false }, catalogue, halloween).id, 'wafer');
-	assert.equal(displayedCharm({ ...state, charmPinned: true }, catalogue, halloween).id, 'wafer');
-	assert.equal(displayedCharm({ ...state, charmPinned: true }, catalogue, new Date(2027, 9, 31, 12).getTime()).id, 'wafer');
+	assert.equal(displayedCharm(state, catalogue, new Date(2026, 10, 1, 0).getTime()).id, usual.id);
+	assert.equal(displayedCharm(state, withoutHoliday, halloween).id, usual.id);
+	assert.equal(displayedCharm({ ...state, festiveEnabled: false }, catalogue, halloween).id, usual.id);
+	assert.equal(displayedCharm({ ...state, charmPinned: true }, catalogue, halloween).id, usual.id);
+	assert.equal(displayedCharm({ ...state, charmPinned: true }, catalogue, new Date(2027, 9, 31, 12).getTime()).id, usual.id);
 });
 
 test('older favourites are pinned and explicit festive preferences survive restoration and reset', () => {
@@ -119,12 +182,12 @@ test('older favourites are pinned and explicit festive preferences survive resto
 	assert.equal(restoreState({ festiveEnabled: 'true' }).festiveEnabled, true);
 	assert.equal(restoreState({ festiveEnabled: false }).festiveEnabled, false);
 	assert.equal(restoreState({ charmId: 'wafer', festiveEnabled: false }).charmPinned, true);
-	const state = { ...DEFAULT_STATE, charmId: 'wafer', festiveEnabled: true, charmPinned: false };
+	const state = { ...DEFAULT_STATE, charmId: 'trial:starter-wafer', festiveEnabled: true, charmPinned: false };
 	assert.deepEqual(restoreState(JSON.parse(JSON.stringify(state))), state);
 	const reset = resetState({ ...state, charmPinned: true, size: 140, cordLength: 250 });
 	assert.equal(reset.charmPinned, true);
 	assert.equal(reset.festiveEnabled, true);
-	assert.equal(reset.charmId, 'wafer');
+	assert.equal(reset.charmId, 'trial:starter-wafer');
 	assert.equal(reset.size, DEFAULT_STATE.size);
 });
 
@@ -160,9 +223,9 @@ test('Christmas rotation is stable within a local day and specific holidays take
 	assert.equal(festiveDay(new Date(2025, 11, 1, 12).getTime())?.name, 'Cyber Monday');
 	assert.equal(festiveDay(new Date(2026, 11, 24, 12).getTime())?.charmKey, 'santa-claus');
 	assert.equal(festiveDay(new Date(2026, 11, 25, 12).getTime())?.charmKey, 'christmas-tree');
-	const saved = { ...DEFAULT_STATE, charmId: 'wafer' };
-	assert.equal(displayedCharm(saved, CHARMS, new Date(2027, 0, 2, 0).getTime()).id, 'wafer');
-	assert.equal(saved.charmId, 'wafer');
+	const saved = { ...DEFAULT_STATE, charmId: 'trial:starter-wafer' };
+	assert.equal(displayedCharm(saved, CHARMS, new Date(2027, 0, 2, 0).getTime()).id, 'trial:starter-wafer');
+	assert.equal(saved.charmId, 'trial:starter-wafer');
 });
 
 test('state writes are ordered and flush waits for the final confirmed value', async () => {
@@ -219,7 +282,7 @@ test('missing preference file migrates legacy state and later file state wins', 
 	const directory = mkdtempSync(join(tmpdir(), 'charmlet-state-'));
 	context.after(() => rm(directory, { recursive: true, force: true }));
 	const store = new StateStore(directory);
-	const legacy = { ...DEFAULT_STATE, charmId: 'chip', cordLength: 180 };
+	const legacy = { ...DEFAULT_STATE, charmId: 'trial:starter-chip', cordLength: 180 };
 	assert.deepEqual(await store.load(legacy), { value: legacy, source: 'legacy' });
 	const selected = { ...legacy, charmId: 'lemon-chilies', messageIndex: 79 };
 	await store.write(selected);
@@ -246,7 +309,7 @@ test('unreadable preference JSON reports the problem and leaves the legacy fallb
 	context.after(() => rm(directory, { recursive: true, force: true }));
 	const store = new StateStore(directory);
 	await writeFile(store.path, '{broken', 'utf8');
-	const legacy = { ...DEFAULT_STATE, charmId: 'wafer' };
+	const legacy = { ...DEFAULT_STATE, charmId: 'trial:starter-wafer' };
 	const loaded = await store.load(legacy);
 	assert.equal(loaded.source, 'legacy');
 	assert.deepEqual(loaded.value, legacy);

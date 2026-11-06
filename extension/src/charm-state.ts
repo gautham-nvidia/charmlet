@@ -1,6 +1,7 @@
-import { CHARMS, getCharm, type CharmDefinition, type CharmId } from './charm-catalog';
+import { CHARMS, getCharm, RETIRED_CHARMS, type CharmDefinition, type CharmId } from './charm-catalog';
 import { MESSAGES } from './messages';
 import { DEFAULT_ATTACHMENT, type CharmAttachment } from './charm-attachment';
+import { restoreCordChoices, type CordChoices } from './cord-design';
 
 export type LayoutMode = 'hanging' | 'orbit';
 
@@ -12,6 +13,7 @@ export interface CharmState {
 	rotateMessages: boolean;
 	messageIndex: number;
 	cordLength: number;
+	cordChoices: CordChoices;
 	size: number;
 	hidden: boolean;
 	reducedMotion: boolean;
@@ -27,6 +29,7 @@ export const DEFAULT_STATE: Readonly<CharmState> = Object.freeze({
 	rotateMessages: true,
 	messageIndex: 0,
 	cordLength: 126,
+	cordChoices: Object.freeze({}),
 	size: 100,
 	hidden: false,
 	reducedMotion: false,
@@ -43,9 +46,10 @@ export function restoreState(value: unknown, charms: readonly CharmDefinition[] 
 		return { ...DEFAULT_STATE };
 	}
 	const candidate = value as Record<string, unknown>;
+	const selected = getCharm(candidate.charmId, charms);
 	return {
 		version: 1,
-		charmId: getCharm(candidate.charmId, charms).id,
+		charmId: selected.id,
 		layoutMode: candidate.layoutMode === 'orbit' ? 'orbit' : 'hanging',
 		showMessages: typeof candidate.showMessages === 'boolean' ? candidate.showMessages : DEFAULT_STATE.showMessages,
 		rotateMessages: typeof candidate.rotateMessages === 'boolean' ? candidate.rotateMessages : DEFAULT_STATE.rotateMessages,
@@ -54,6 +58,7 @@ export function restoreState(value: unknown, charms: readonly CharmDefinition[] 
 		cordLength: typeof candidate.cordLength === 'number' && Number.isFinite(candidate.cordLength)
 			? Math.max(48, candidate.cordLength)
 			: DEFAULT_STATE.cordLength,
+		cordChoices: restoreCordChoices(candidate.cordChoices, charms),
 		size: typeof candidate.size === 'number' && Number.isFinite(candidate.size)
 			? clamp(candidate.size, 60, 140)
 			: DEFAULT_STATE.size,
@@ -64,14 +69,21 @@ export function restoreState(value: unknown, charms: readonly CharmDefinition[] 
 		festiveEnabled: typeof candidate.festiveEnabled === 'boolean' ? candidate.festiveEnabled : DEFAULT_STATE.festiveEnabled,
 		// Older profiles have no pin setting. Treat their saved choice as pinned.
 		charmPinned: typeof candidate.charmPinned === 'boolean' ? candidate.charmPinned
-			: typeof candidate.charmId === 'string' && charms.some(charm => charm.id === candidate.charmId),
+			: typeof candidate.charmId === 'string' && (selected.id === candidate.charmId
+				|| Object.hasOwn(RETIRED_CHARMS, candidate.charmId)
+				|| (candidate.charmId.startsWith('trial:') && selected.artworkKey === candidate.charmId.slice(6))),
 	};
 }
 
 export function matchesSavedState(expected: CharmState, actual: unknown): boolean {
 	if (!actual || typeof actual !== 'object' || Array.isArray(actual)) { return false; }
 	const stored = actual as Record<string, unknown>;
-	return Object.entries(expected).every(([key, value]) => Object.is(stored[key], value));
+	const choices = stored.cordChoices;
+	if (!choices || typeof choices !== 'object' || Array.isArray(choices)
+		|| Object.keys(choices).length !== Object.keys(expected.cordChoices).length
+		|| !Object.entries(expected.cordChoices).every(([id, style]) => Object.hasOwn(choices, id)
+			&& (choices as Record<string, unknown>)[id] === style)) { return false; }
+	return Object.entries(expected).every(([key, value]) => key === 'cordChoices' || Object.is(stored[key], value));
 }
 
 export function resetState(state: CharmState): CharmState {
@@ -85,6 +97,7 @@ export function resetState(state: CharmState): CharmState {
 		messageIndex: state.messageIndex,
 		festiveEnabled: state.festiveEnabled,
 		charmPinned: state.charmPinned,
+		cordChoices: state.cordChoices,
 	};
 }
 

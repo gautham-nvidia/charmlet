@@ -10,6 +10,7 @@ import {
 } from '../charm-packs';
 import { restoreState } from '../charm-state';
 import { attachmentFromPixels, DEFAULT_ATTACHMENT } from '../charm-attachment';
+import { isPhotoPack, photoPackInput } from '../photo-packs';
 
 const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAEgAAABUCAYAAAAh+XGnAAAAp0lEQVR4Ae3BAQGAQACEMLxqdrKGkf0EkoDtut/nI79G1IgaUSNqRI2oETWiRtSIGlEjakSNqBE1okbUiBpRI2pEjagRNaJG1IgaUSNqRI2oETWiRtSIGlEjakSNqBE1okbUiBpRI2pEjagRNaJG1IgaUSNqRI2oETWiRtSIGlEjakSNqBE1okbUiBpRI2pEjagRNaJG1IgaUSNqRI2oETWiRtSIGlEHeOoC77RBk0cAAAAASUVORK5CYII=';
 
@@ -27,6 +28,31 @@ function pack(overrides: Record<string, unknown> = {}): Record<string, unknown> 
 function encoded(value: unknown): string {
 	return JSON.stringify(value);
 }
+
+test('native photo actions accept only bounded photo packs and use the existing private store', async () => {
+	const input = encoded(pack({ id: 'photo-local-example', name: 'Local keepsake', author: 'Personal Photo Studio',
+		charms: [{ id: 'portrait', name: 'Local keepsake', group: 'Personal Keepsakes',
+			description: 'A private test keepsake.', accent: '#d3927b', png: PNG }] }));
+	assert.equal(photoPackInput(input), input);
+	assert.equal(isPhotoPack(parseCharmPack(input)), true);
+	assert.throws(() => photoPackInput(encoded(pack())), /keepsake/);
+	assert.throws(() => photoPackInput('x'.repeat(MAX_PACK_BYTES + 1)), /too large/);
+	assert.throws(() => photoPackInput({ path: '../private-photo.jpg' }), /too large/);
+	const directory = mkdtempSync(join(tmpdir(), 'charmlet-photos-'));
+	try {
+		assert.equal((await installPack(directory, photoPackInput(input))).added, true);
+		assert.equal((await installPack(directory, photoPackInput(input))).added, false, 'A retry must not duplicate the photo.');
+		const restored = await loadPacks(directory);
+		assert.equal(restored.packs.length, 1);
+		assert.ok(isPhotoPack(restored.packs[0]));
+		const catalogue = buildCatalogue(packCharms(restored.packs));
+		const state = restoreState({ charmId: 'pack:photo-local-example:portrait' }, catalogue);
+		assert.equal(state.charmId, 'pack:photo-local-example:portrait');
+		await removePack(directory, 'photo-local-example');
+		assert.equal((await loadPacks(directory)).packs.length, 0);
+		assert.equal(restoreState(state, buildCatalogue([])).charmId, 'terminal');
+	} finally { await rm(directory, { recursive: true, force: true }); }
+});
 
 test('valid packs project only approved fields with namespaced PNG sources', () => {
 	const parsed = parseCharmPack(encoded(pack()));

@@ -10,6 +10,8 @@ import { curateArtwork, validateCuration } from './art-curation.mjs';
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(join(repo, 'extension/package.json'));
 const { parseCharmPack, packCharms } = require('./out/charm-packs.js');
+const { LIVE_CHARMS, ORIGINAL_CHARMS } = require('./out/charm-catalog.js');
+const { FLOWERS } = require('./out/garden-core.js');
 const check = process.argv.includes('--check');
 const site = join(repo, 'website');
 const media = join(repo, 'extension/media');
@@ -57,7 +59,8 @@ for (const item of selected) {
   bytesIncluded += bytes.length;
 }
 assert.equal(new Set(catalogue.map(charm => charm.id)).size, catalogue.length);
-assert.equal(catalogue.filter(charm => charm.group === 'Garden Flowers').length, 12,
+assert.deepEqual(new Set(catalogue.filter(charm => charm.group === 'Garden Flowers').map(charm => charm.artworkKey)),
+  new Set(FLOWERS.map(flower => `flower-${flower.id}`)),
   'All flower artwork must be available without changing earned garden progress.');
 const output = `${JSON.stringify(catalogue, null, 2)}\n`;
 if (check) {
@@ -78,7 +81,7 @@ if (check) {
 assert.deepEqual(new Set((await readdir(media)).filter(file => /^trial-.*\.png$/.test(file))),
   new Set(catalogue.map(charm => charm.file)), 'Unreferenced trial copies must not enter the package.');
 console.log(JSON.stringify({
-  checked: check, trialCharms: catalogue.length, originalCharms: 10,
-  totalAvailable: catalogue.length + 10, bytesIncluded,
+  checked: check, trialCharms: catalogue.length, originalCharms: ORIGINAL_CHARMS.length,
+  totalAvailable: catalogue.length + ORIGINAL_CHARMS.length + LIVE_CHARMS.length, liveCharms: LIVE_CHARMS.length, bytesIncluded,
   groups: [...new Set(catalogue.map(charm => charm.group))],
 }));

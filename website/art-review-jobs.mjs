@@ -105,6 +105,14 @@ const botanical = {
   sakura: 'a small original cherry-blossom branch with two pale-pink five-petalled blooms and one closed bud',
   'wild-rose': 'a simple pink five-petalled wild rose with visible golden stamens and a small serrated sage leaf',
 };
+const realisticBotanical = {
+  'red-rose': 'Use case: product-mockup. One fresh cultivated red rose in full bloom, with many naturally layered crimson petals curling around a tight spiral centre. Fine velvety petal texture, soft translucent petal edges and natural folds. A short gently curved dark-green stem and two small dark forest-green serrated rose leaves. The large open flower faces the viewer with a slight natural tilt and dominates the compact silhouette. Show a living botanical flower with believable soft petals; no toy, enamel, metal ornament, vase, pot or backing.',
+  'pink-rose': 'Use case: product-mockup. One fresh cultivated pink rose in full bloom, with many naturally layered blush-pink petals curling around a deep rosy spiral centre. Soft pink gradients, subtle fine petal veins, delicate translucent edges and realistic natural folds. A short gently curved dark-green stem and two small dark forest-green serrated rose leaves. The large open flower faces the viewer with a slight natural tilt and dominates the compact silhouette. Show a living botanical flower with believable soft petals; no toy, enamel, metal ornament, vase, pot or backing.',
+  'white-rose': 'Use case: product-mockup. One fresh cultivated white rose in full bloom, with many naturally layered ivory-white petals curling around a pale cream spiral centre. Clear soft grey shadows between overlapping petals preserve the recognisable rose structure. Delicate translucent edges and fine natural petal texture. A short gently curved dark-green stem and two small dark forest-green serrated rose leaves. The large open flower faces the viewer with a slight natural tilt and dominates the compact silhouette. Show a living botanical flower; no toy, enamel, metal ornament, vase, pot or backing.',
+  'yellow-rose': 'Use case: product-mockup. One fresh cultivated yellow rose in full bloom, with many naturally layered clear golden-yellow petals curling around a rich warm-yellow spiral centre. The classic rose petal arrangement, delicate translucent edges and fine natural petal texture must be clear. A short gently curved dark-green stem and two small dark forest-green serrated rose leaves. The large open flower faces the viewer with a slight natural tilt and dominates the compact silhouette. Show a living botanical flower; no sunflower seed disc, toy, enamel, metal ornament, vase, pot or backing.',
+  jasmine: 'Use case: product-mockup. One compact sprig of fresh white Arabian jasmine, Jasminum sambac, familiar as mallipoo. Five small full blossoms with naturally layered rounded white petals, three closed pearly white buds and two small glossy dark forest-green oval leaves, joined on one short natural stem. Fine petal texture and delicate soft shadows distinguish each blossom. Arrange the flowers close together in a graceful compact cluster that is easy to recognise at small size. Show genuine botanical jasmine flowers; no garland cord, toy, enamel, metal ornament, vase, pot or backing.',
+  lily: 'Use case: product-mockup. One fresh white oriental lily with six broad gently recurved pointed petals, subtle pale-pink blush along the central petal veins, six slender stamens with distinct warm copper-orange anthers and one delicate central pistil. Two narrow dark forest-green lance-shaped leaves on a short natural stem. The open bloom faces the viewer with a slight natural tilt and forms a clear star-like botanical silhouette. Delicate realistic petal texture and translucent edges, believable flower anatomy. No toy, enamel, metal ornament, vase, pot or backing.',
+};
 function realisticPrompt(subject, style = 'object') {
   const styles = {
     object: 'STYLE: believable anatomy or construction, natural material texture, restrained colours and carefully directed neutral studio lighting. Realistic rendered artwork with personality. Avoid fantasy machinery, jewel-like decoration, emoji styling, flat SVG symbols, cartoon exaggeration and repeated badge shapes.',
@@ -141,13 +149,19 @@ export async function artworkJobs(repo) {
   const records = [
     ...builtins.map(item => ({ ...item, key: `starter-${item.id}`, family: 'starters', subject: motifs[item.id], original: `default/${item.file}` })),
     ...extras.map(item => ({ ...item, key: `extra-${item.id}`, family: 'classics', subject: motifs[item.id], original: `extras/${item.file}` })),
-    ...FLOWERS.map(item => ({ ...item, key: `flower-${item.id}`, family: 'flowers', group: 'Grown by you', description: `${item.name}, grown by you.`, subject: `An original botanical illustration of ${botanical[item.id]}. Natural flower anatomy with rich painterly detail and softly sculpted depth, not a real flower photograph.`, original: `garden/${item.id}.svg` })),
+    ...FLOWERS.map(item => ({
+      ...item, key: `flower-${item.id}`, family: 'flowers', group: 'Grown by you',
+      description: `${item.name}, grown by you.`, realistic: Object.hasOwn(realisticBotanical, item.id),
+      subject: realisticBotanical[item.id] ?? `An original botanical illustration of ${botanical[item.id]}. Natural flower anatomy with rich painterly detail and softly sculpted depth, not a real flower photograph.`,
+      original: Object.hasOwn(realisticBotanical, item.id) ? null : `garden/${item.id}.svg`,
+    })),
     ...additions.map(item => ({ ...item, key: `new-${item.id}`, family: 'new-worlds', description: `An original ${item.name.toLowerCase()} art-review candidate.`, original: null })),
     ...refresh.map(item => ({ ...item, key: `new-${item.id}`, family: 'new-worlds', description: `An original ${item.name.toLowerCase()} art-review candidate.`, original: null, realistic: true })),
     ...expansion.map(item => ({ ...item, key: `new-${item.id}`, family: 'new-worlds', description: `An original ${item.name.toLowerCase()} art-review candidate.`, original: null, realistic: true })),
   ];
-  if (records.length !== 95 + refresh.length + expansion.length || records.length > 220 || new Set(records.map(item => item.key)).size !== records.length || records.some(item => !item.subject)) throw new Error('The art-review inventory is inconsistent.');
+  if (records.length !== 83 + FLOWERS.length + refresh.length + expansion.length || records.length > 220 || new Set(records.map(item => item.key)).size !== records.length || records.some(item => !item.subject)) throw new Error('The art-review inventory is inconsistent.');
   const revisions = await readFile(join(repo, 'website/art-review-revisions.json'), 'utf8').then(JSON.parse, error => { if (error.code === 'ENOENT') return {}; throw error; });
+  const reviewedExamples = JSON.parse(await readFile(join(repo, 'website/personalization-art-jobs.json'), 'utf8'));
   const jobs = records.map(item => ({ ...item, prompt: item.realistic ? realisticPrompt(item.subject, item.style) : [
     'Create one premium original digital illustration for a small hanging charm. This is an art-review candidate, not a real photograph.',
     `SUBJECT: ${item.subject}`,
@@ -163,7 +177,12 @@ export async function artworkJobs(repo) {
     if (!Number.isInteger(update.revision) || update.revision < 2 || update.revision > 20 || typeof update.correction !== 'string' || update.correction.length > 2000) throw new Error('Invalid bounded artwork revision.');
     if (update.replacementPrompt !== undefined && (typeof update.replacementPrompt !== 'string' || update.replacementPrompt.length > 5000)) throw new Error('Invalid replacement art prompt.');
     if (update.realisticSubject !== undefined && (typeof update.realisticSubject !== 'string' || update.realisticSubject.length > 2500)) throw new Error('Invalid realistic art subject.');
+    const example = update.sourceVariant === undefined ? undefined : reviewedExamples.find(item => item.variant === update.sourceVariant);
+    if (update.sourceVariant !== undefined && !example) throw new Error('An approved source variant must identify an existing review example.');
+    if (update.greenSpillCleanup !== undefined && typeof update.greenSpillCleanup !== 'boolean') throw new Error('Invalid green-spill cleanup choice.');
     return { ...job, revision: update.revision, variant: `${job.key}-r${update.revision}`,
-      prompt: update.replacementPrompt ?? (update.realisticSubject ? realisticPrompt(update.realisticSubject) : `${job.prompt}\nIMPORTANT ART-DIRECTION CORRECTION: ${update.correction}`) };
+      ...(example ? { sourceVariant: example.variant } : {}),
+      ...(update.greenSpillCleanup ? { greenSpillCleanup: true } : {}),
+      prompt: example?.prompt ?? update.replacementPrompt ?? (update.realisticSubject ? realisticPrompt(update.realisticSubject, job.style) : `${job.prompt}\nIMPORTANT ART-DIRECTION CORRECTION: ${update.correction}`) };
   });
 }

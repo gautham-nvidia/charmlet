@@ -4,7 +4,8 @@ import {
 } from './companion-core';
 import { randomInt, randomUUID } from 'node:crypto';
 import { nextReminderDue } from './care-core';
-import { gardenNextChange } from './garden-core';
+import { gardenNextChange, nextLocalMidnight } from './garden-core';
+import { winsToday } from './small-wins';
 import { StateWriter } from './state-writer';
 
 export interface CompanionStorage {
@@ -136,6 +137,7 @@ export class CompanionController {
 		const candidates = [
 			this.state.focus.status === 'running' ? Math.min(now + 1000, this.state.focus.deadlineAt!) : undefined,
 			nextReminderDue(this.state.care), gardenNextChange(this.state.garden, now),
+			winsToday(this.state.wins, now) > 0 ? nextLocalMidnight(now) : undefined,
 		].filter((value): value is number => value !== undefined);
 		if (!candidates.length) { return; }
 		const delay = Math.max(1, Math.min(2147483647, Math.min(...candidates) - now));

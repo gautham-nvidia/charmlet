@@ -8,6 +8,11 @@ import { createCompanionView } from './companion-view';
 import { createNavigationView, type NavigationView } from './navigation-view';
 import { MessageRotation } from './message-rotation';
 import { Pendulum, type Point } from './pendulum';
+import { CORD_STYLES, cordForCharm, isCordStyle } from './cord-design';
+import { createCordView } from './cord-view';
+import { createWinCelebration } from './win-celebration';
+import { createPhotoView, type PhotoView } from './photo-view';
+import { createLiveSmiley } from './live-smiley';
 
 declare function acquireVsCodeApi(): {
 	getState(): unknown;
@@ -28,6 +33,7 @@ const appElement = element<HTMLDivElement>('app');
 const primaryNav = element<HTMLElement>('primary-nav');
 const backdrop = element<HTMLDivElement>('tools-backdrop');
 let navigationUI: NavigationView | undefined;
+let photoUI: PhotoView | undefined;
 const stage = element<HTMLDivElement>('stage');
 const rig = element<HTMLDivElement>('rig');
 const hanging = element<HTMLDivElement>('hanging');
@@ -47,7 +53,12 @@ const sizeValue = element<HTMLOutputElement>('size-value');
 const cordValue = element<HTMLOutputElement>('cord-value');
 const phase = element<HTMLSpanElement>('phase');
 const lengthOutput = element<HTMLOutputElement>('length');
-const thread = document.getElementById('thread')!;
+const cordView = createCordView(element<SVGElement>('cord'), element<SVGPathElement>('thread'));
+const cordStyle = element<HTMLSelectElement>('cord-style');
+const cordStyleHint = element<HTMLParagraphElement>('cord-style-hint');
+for (const [value, label] of [['auto', 'Match this charm'], ...Object.entries(CORD_STYLES)]) {
+	cordStyle.add(new Option(label, value));
+}
 const focusRing = element<SVGElement>('focus-ring');
 const charmImage = element<HTMLImageElement>('charm-image');
 const charmName = element<HTMLSpanElement>('charm-name');
@@ -81,6 +92,8 @@ let frames = 0;
 let drag: { id: number; start: Point; screenStart: Point; moved: boolean; lastAngle: number; angularTravel: number; maxSideways: number; orbitalGesture: boolean; hideDistance: number; orbitSideDistance: number } | undefined;
 const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, state.cordLength, state.size, state.layoutMode);
+const winCelebration = createWinCelebration(charm, reducedMotion);
+const liveSmiley = createLiveSmiley(charm, charmImage);
 const companionUI = createCompanionView({
 	send: (action, requestId) => api.postMessage({ type: 'companion-action', action, requestId }),
 	openSource: cardId => api.postMessage({ type: 'learning-source', cardId }),
@@ -89,12 +102,15 @@ const companionUI = createCompanionView({
 	onOpen: () => {
 		settings.hidden = true;
 		navigationUI?.close(false);
+		photoUI?.close(false);
 	},
 	onLayout: () => {
 		resize();
 		scheduleMessages();
 	},
 	onActivity: scheduleMessages,
+	onMilestone: () => { if (visible && !state.hidden) { winCelebration.show(); } },
+	onWin: () => liveSmiley.celebrate(),
 });
 navigationUI = createNavigationView({
 	image: selected => selected.source ?? new URL(selected.file, mediaRoot).toString(),
@@ -103,12 +119,20 @@ navigationUI = createNavigationView({
 		if (action === 'appearance') { openAppearance(); }
 		else if (action === 'messages') { companionUI.open('learn'); }
 		else if (action === 'reminders') { companionUI.openReminders(); }
+		else if (action === 'photos') { photoUI?.open(); }
 	},
-	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); },
+	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); photoUI?.close(false); },
 	onChange: () => { updateOverlays(); scheduleMessages(); },
 });
+photoUI = createPhotoView({
+	send: message => api.postMessage(message),
+	select: selectCharm,
+	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); navigationUI?.close(false); },
+	onChange: () => { updateOverlays(); scheduleMessages(); },
+});
+element<HTMLButtonElement>('picker-photo').addEventListener('click', () => photoUI?.open());
 
-function popupOpen() { return !settings.hidden || companionUI.isOpen() || navigationUI?.isOpen() === true; }
+function popupOpen() { return !settings.hidden || companionUI.isOpen() || navigationUI?.isOpen() === true || photoUI?.isOpen() === true; }
 
 function updateOverlays() {
 	const appBounds = appElement.getBoundingClientRect();
@@ -134,6 +158,7 @@ function openAppearance() {
 	cancelDrag();
 	navigationUI?.close(false);
 	companionUI.close(false);
+	photoUI?.close(false);
 	settings.hidden = false;
 	updateOverlays();
 	charmSelect.focus({ preventScroll: true });
@@ -151,7 +176,8 @@ function selectCharm(id: string) {
 }
 
 backdrop.addEventListener('click', () => {
-	if (navigationUI?.isOpen()) { navigationUI.close(); }
+	if (photoUI?.isOpen()) { photoUI.close(); }
+	else if (navigationUI?.isOpen()) { navigationUI.close(); }
 	else if (!settings.hidden) { closeAppearance(); }
 	else { companionUI.close(); }
 });
@@ -188,7 +214,24 @@ function applyCharm() {
 	stage.dataset.charm = selected.id;
 	stage.dataset.preferredCharm = state.charmId;
 	navigationUI?.setCatalogue(charms, selected.id);
+	photoUI?.setCatalogue(charms);
+	updateCordChoice();
 	updateFestiveControls();
+	updateLiveSmiley();
+}
+
+function updateLiveSmiley() {
+	liveSmiley.update(activeCharm.id === 'live:smiley', visible && !state.hidden, reducedMotion());
+}
+
+function updateCordChoice() {
+	const resolved = cordForCharm(activeCharm, state.cordChoices);
+	cordStyle.value = state.cordChoices[activeCharm.id] ?? 'auto';
+	cordStyle.options[0].text = `Match this charm - ${CORD_STYLES[cordForCharm(activeCharm)]}`;
+	cordStyleHint.textContent = cordStyle.value === 'auto'
+		? 'Chosen to suit this charm. Pick a material to keep your own choice.'
+		: `Saved for ${activeCharm.name}. Other charms keep their own cords.`;
+	stage.dataset.cordStyle = resolved;
 }
 
 function updateFestiveControls() {
@@ -281,6 +324,7 @@ function controls() {
 	}
 	hanging.inert = state.hidden || popupOpen();
 	updateFestiveControls();
+	updateLiveSmiley();
 }
 
 function render() {
@@ -297,7 +341,7 @@ function render() {
 	focusRing.style.top = `${anchorY}px`;
 	restore.style.left = `${anchorX * scale - 15}px`;
 	restore.style.top = `${Math.max(4, anchorY * scale - 14)}px`;
-	thread.setAttribute('d', `M ${anchorX} ${anchorY} Q ${anchorX + (hookX - anchorX) * 0.45} ${(anchorY + hookY) / 2} ${hookX} ${hookY}`);
+	cordView.render(cordForCharm(activeCharm, state.cordChoices), { x: anchorX, y: anchorY }, { x: hookX, y: hookY });
 	lengthOutput.value = `${Math.round(cordLength)} px`;
 	sizeInput.value = String(state.size);
 	sizeValue.value = `${state.size}%`;
@@ -679,19 +723,31 @@ cordInput.addEventListener('input', () => {
 	resize();
 	save();
 });
+cordStyle.addEventListener('change', () => {
+	const choices = { ...state.cordChoices };
+	if (isCordStyle(cordStyle.value)) { choices[activeCharm.id] = cordStyle.value; }
+	else { delete choices[activeCharm.id]; }
+	state.cordChoices = choices;
+	updateCordChoice();
+	render();
+	save();
+});
 
 function synchronizeVisibility() {
+	winCelebration.clear();
 	cancelDrag();
 	transition?.cancel();
 	pendulum.settle();
 	stop();
 	refreshFestiveSelection();
 	hanging.hidden = state.hidden;
+	updateLiveSmiley();
 	render();
 	scheduleMessages();
 }
 
 function updateMotionPreference() {
+	winCelebration.clear();
 	cancelDrag();
 	showState();
 }
@@ -720,6 +776,7 @@ window.addEventListener('message', event => {
 		}
 		ready = true;
 		navigationUI?.setReady(true);
+		photoUI?.setReady(true);
 		stage.dataset.ready = 'true';
 		resize();
 		showState('drop' in message && message.drop === true);
@@ -733,6 +790,8 @@ window.addEventListener('message', event => {
 		updateMessage();
 		resize();
 		showState();
+	} else if (message.type === 'photo-result' && 'requestId' in message && Number.isSafeInteger(message.requestId)) {
+		photoUI?.result(Number(message.requestId), 'error' in message && typeof message.error === 'string' ? message.error : undefined);
 	} else if (message.type === 'companion' && 'snapshot' in message) {
 		companionUI.receive(message.snapshot);
 		scheduleMessages();

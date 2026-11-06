@@ -1,15 +1,17 @@
 import { test, expect, _electron as electron, type ElectronApplication, type Frame, type Page, type TestInfo } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
 import { resolveCliPathFromVSCodeExecutablePath } from '@vscode/test-electron';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
+import { PNG } from 'pngjs';
 import { applyCompanionAction, defaultCompanionState } from '../companion-core';
 import { DEFAULT_STATE } from '../charm-state';
 import { CHARMS, TRIAL_CHARMS } from '../charm-catalog';
 import { learningCard } from '../learning-cards';
 import { MESSAGES } from '../messages';
 import { localDayKey, type GardenState } from '../garden-core';
+import { winsToday } from '../small-wins';
 import { command, readyFrame, reloadCharm } from './editor-helpers';
 
 interface OwnedEditor {
@@ -402,7 +404,7 @@ test('garden rewards and gentle reminders persist through the real editor', asyn
 		await frame.getByRole('button', { name: 'Hang my flower', exact: true }).click();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'garden:hibiscus');
-		await expect.poll(() => frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(72);
+		await expect.poll(() => frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(216);
 
 		frame = await reloadCharm(window);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'garden:hibiscus');
@@ -417,12 +419,12 @@ test('garden rewards and gentle reminders persist through the real editor', asyn
 		expect(stored.garden.plant.waterings).toBe(0);
 		expect(stored.garden.plant.flowerId).not.toBe('hibiscus');
 		expect(stored.garden.collection[0]).toMatchObject({ id: 'hibiscus', blooms: 1 });
-		await expect(frame.locator('#garden-art')).toHaveAttribute('src', /garden-seed\.svg$/);
+		await expect(frame.locator('#garden-art')).toHaveAttribute('src', /garden-seed-r1\.png$/);
 		await expect(frame.getByRole('button', { name: 'Water plant', exact: true })).toBeDisabled();
 		await frame.getByRole('button', { name: 'Hang Hibiscus, grown 1 time', exact: true }).click();
 		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'garden:hibiscus');
-		await expect(frame.locator('#garden-art')).toHaveAttribute('src', /garden-seed\.svg$/);
+		await expect(frame.locator('#garden-art')).toHaveAttribute('src', /garden-seed-r1\.png$/);
 		await expect(frame.getByRole('button', { name: 'Water plant', exact: true })).toBeDisabled();
 	} finally {
 		await closeOwnedEditor(editor, testInfo);
@@ -804,6 +806,153 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 	} finally {
 		await closeOwnedEditor(editor, testInfo);
 	}
+});
+
+const installedPersonalization = process.env.CHARMLET_TEST_PACKAGED === '1';
+test(`${installedPersonalization ? 'installed VSIX' : 'personalization'} keeps local photos, wins and a quiet live smiley`, async ({}, testInfo) => {
+	test.setTimeout(180000);
+	const editor = await launchOwnedEditor('charmlet-personalization-', ({ preferencesPath }) => {
+		writeFileSync(preferencesPath, JSON.stringify({
+			...DEFAULT_STATE, charmId: 'live:smiley', charmPinned: true, reducedMotion: true, rotateMessages: false,
+		}));
+	}, installedPersonalization);
+	try {
+		await editor.window.emulateMedia({ reducedMotion: 'no-preference' });
+		await command(editor.window, 'Charmlet: Show Charm');
+		let frame = await readyFrame(editor.window);
+		const expectWins = async (total: number) => {
+			await expect.poll(async () => {
+				const wins = JSON.parse(readFileSync(editor.companionPath, 'utf8')).wins;
+				return { total: wins.total, todayMatches: await frame.locator('#win-count').innerText() === `${winsToday(wins, Date.now())} today` };
+			}).toEqual({ total, todayMatches: true });
+		};
+		const face = frame.locator('#live-smiley');
+		await expect(face).toHaveAttribute('data-renderer', /^(webgl|canvas)$/);
+		await expect(face).toHaveAttribute('data-motion', 'still');
+		const stillFrames = await face.getAttribute('data-frames');
+		await editor.window.waitForTimeout(250);
+		expect(await face.getAttribute('data-frames')).toBe(stillFrames);
+		await frame.locator('#charm').focus();
+		await editor.window.keyboard.down('Space');
+		try { await expect(face).toHaveAttribute('data-expression', 'squish'); }
+		finally { await editor.window.keyboard.up('Space'); }
+		await expect(face).toHaveAttribute('data-expression', 'smile');
+		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('sunny.png') });
+
+		await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+		await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		await expect(face).toHaveAttribute('data-motion', 'live');
+		const liveFrames = Number(await face.getAttribute('data-frames'));
+		await expect.poll(async () => Number(await face.getAttribute('data-frames'))).toBeGreaterThan(liveFrames);
+		const orbBounds = await frame.locator('#charm').boundingBox();
+		if (!orbBounds) { throw new Error('Sunny must be visible to follow the pointer.'); }
+		await editor.window.mouse.move(orbBounds.x + orbBounds.width + 45, orbBounds.y + orbBounds.height / 2);
+		await expect.poll(async () => Number(await face.getAttribute('data-gaze-x'))).toBeGreaterThan(.1);
+		await expect.poll(async () => Math.abs(Number(await face.getAttribute('data-gaze-x')))).toBeLessThan(.015);
+		await expect.poll(() => face.getAttribute('data-expression'), { timeout: 12000, intervals: [50] }).toBe('blink');
+		await expect(face).toHaveAttribute('data-expression', 'smile');
+		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('sunny-live.png') });
+		if (await face.getAttribute('data-renderer') === 'webgl') {
+			await face.evaluate(canvas => {
+				const context = (canvas as HTMLCanvasElement).getContext('webgl2')!;
+				const extension = context.getExtension('WEBGL_lose_context');
+				if (!extension) { throw new Error('The WebGL loss test extension must be available.'); }
+				extension.loseContext();
+			});
+		}
+		await expect(face).toHaveAttribute('data-renderer', 'canvas');
+		expect(await face.evaluate(canvas => (canvas as HTMLCanvasElement).getContext('2d')!.getImageData(108, 126, 1, 1).data[3])).toBe(255);
+		await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+		await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		await expect(face).toHaveAttribute('data-motion', 'still');
+		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('sunny-fallback.png') });
+
+		await frame.getByRole('button', { name: 'Focus', exact: true }).click();
+		await frame.locator('#small-wins summary').click();
+		await frame.locator('#win-label').fill('Finished a small step');
+		await frame.locator('#win-label').press('Enter');
+		await expectWins(1);
+		await expect(frame.locator('#win-label')).toBeFocused();
+		await expect(face).toHaveAttribute('data-expression', 'happy');
+		await expect(frame.locator('.win-sparkles')).toHaveCount(0);
+		await frame.getByRole('button', { name: 'Undo win: Finished a small step', exact: true }).click();
+		await expectWins(0);
+		await expect(frame.locator('#win-label')).toBeFocused();
+		await frame.locator('#win-label').fill('Kept moving forward');
+		await frame.locator('#win-add').click();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
+		await expectWins(1);
+		await expect(frame.locator('#win-add')).toBeFocused();
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('small-wins.png') });
+		await frame.locator('#companion-close').click();
+
+		await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+		await frame.getByRole('menuitem', { name: 'Photo charms', exact: true }).click();
+		await expect(frame.locator('#photo-file')).toBeEnabled();
+		const fixture = new PNG({ width: 400, height: 200 });
+		for (let y = 0; y < 200; y++) {
+			for (let x = 0; x < 400; x++) {
+				const offset = (y * 400 + x) * 4;
+				fixture.data.set(x < 200 ? [255, 0, 0, 255] : [0, 0, 255, 255], offset);
+			}
+		}
+		await frame.locator('#photo-file').focus();
+		await frame.locator('#photo-file').setInputFiles({ name: 'private-source.png', mimeType: 'image/png', buffer: PNG.sync.write(fixture) });
+		await expect(frame.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'true');
+		await expect(frame.locator('#photo-file')).toBeFocused();
+		await frame.locator('#photo-preview').click({ position: { x: 6, y: 6 } });
+		await editor.window.keyboard.press('Escape');
+		await expect(frame.locator('#photo-editor')).toBeHidden();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'live:smiley');
+		const photoDirectory = join(editor.storage, 'packs');
+		expect(existsSync(photoDirectory) ? readdirSync(photoDirectory).filter(file => file.startsWith('photo-')).length : 0).toBe(0);
+		await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+		await frame.getByRole('menuitem', { name: 'Photo charms', exact: true }).click();
+		await expect(frame.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'false');
+		await frame.locator('#photo-file').setInputFiles({ name: 'private-source.png', mimeType: 'image/png', buffer: PNG.sync.write(fixture) });
+		await expect(frame.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'true');
+		await frame.locator('#photo-x').press('End');
+		expect(await frame.locator('#photo-canvas').evaluate(element =>
+			[...(element as HTMLCanvasElement).getContext('2d')!.getImageData(108, 147, 1, 1).data])).toEqual([0, 0, 255, 255]);
+		await frame.locator('#photo-name').fill('Blue keepsake');
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('photo-crop.png') });
+		await frame.locator('#photo-save').click();
+		await expect(frame.locator('#photo-editor')).toBeHidden();
+		const photo = (await frame.locator('#stage').getAttribute('data-charm'))!;
+		expect(photo).toMatch(/^pack:photo-[a-z0-9-]+:portrait$/);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		const packPath = join(editor.storage, 'packs', `${photo.split(':')[1]}.charmlet.json`);
+		const pack = JSON.parse(readFileSync(packPath, 'utf8'));
+		expect(pack.charms[0].name).toBe('Blue keepsake');
+		expect(JSON.stringify(pack)).not.toContain('private-source');
+		const decoded = PNG.sync.read(Buffer.from(pack.charms[0].png, 'base64'));
+		expect([decoded.width, decoded.height]).toEqual([216, 252]);
+		expect([...decoded.data.subarray((147 * 216 + 108) * 4, (147 * 216 + 108) * 4 + 4)]).toEqual([0, 0, 255, 255]);
+
+		frame = await reloadCharm(editor.window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', photo);
+		await expect(frame.locator('.win-sparkles')).toHaveCount(0);
+		await frame.getByRole('button', { name: 'Focus', exact: true }).click();
+		await frame.locator('#small-wins summary').click();
+		await expectWins(1);
+		await expect(frame.locator('#win-list')).toContainText('Kept moving forward');
+		await frame.locator('#companion-close').click();
+		await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+		await frame.getByRole('menuitem', { name: 'Photo charms', exact: true }).click();
+		await frame.getByRole('button', { name: 'Remove Blue keepsake', exact: true }).click();
+		await frame.locator('#photo-remove-no').click();
+		expect(existsSync(packPath)).toBe(true);
+		await frame.getByRole('button', { name: 'Remove Blue keepsake', exact: true }).click();
+		await frame.locator('#photo-remove-yes').click();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
+		expect(existsSync(packPath)).toBe(false);
+		await frame.locator('#photo-close').click();
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('terminal-refreshed.png') });
+	} finally { await closeOwnedEditor(editor, testInfo); }
 });
 
 if (process.env.CHARMLET_TEST_PACKAGED === '1') {
