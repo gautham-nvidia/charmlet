@@ -26,7 +26,7 @@ Finish Vercel's browser sign-in using the account that can access `greensilver-p
 
 ```powershell
 vercel whoami
-vercel teams list --format json
+vercel teams list --json
 ```
 
 The second command should show the supplied team. If it does not, check the account/team access before linking a project.
