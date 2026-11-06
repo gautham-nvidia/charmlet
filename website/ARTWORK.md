@@ -41,3 +41,9 @@ Gemini 3 Pro Image produced seventeen current new/revised candidates: seven repl
 There are 105 archive/current records, of which 64 are featured: 51 importable candidates, twelve earned flowers and the original Terminal. Sixteen curated packs include Refresh Sample and Bay Area Days. Changed pack payloads receive distinct identities rather than overwriting earlier downloads. All 105 prepared PNGs passed hash, transparency and bounded importer validation.
 
 `assets/app-review/` contains four comparison sheets assembled from actual installed 0.5.2 captures at 100% charm size. The native captures retain their original pixels and show only an isolated review profile. They demonstrate appearance, not final artwork or distribution approval.
+
+## 2026-11-06 - Pets and Cali trial
+
+Ten new Gemini 3 Pro Image candidates add a giant panda, seven dog breeds and two cats. Their raw images and receipts remain unchanged in the ignored authoring output. Preparation profile 3 explicitly neutralizes green backdrop spill in the neutral-fur subjects; the cats use an edge-only correction to retain their natural green irises. Alpha is preserved, previous profile-2 exports remain archived, and the existing importer validates every final 216x252 PNG.
+
+Cali is an original California-inspired golden bear drawn by the application's live WebGL and Canvas renderers, with a source SVG thumbnail. Its geometry and reactions are code, like Sunny, Nimbus and Byte. The static art review contains 160 selected designs; the four live companions and three fidgets bring the app trial to 167. These additions do not settle the owner's final public lineup, artwork terms or paid-pack decisions.

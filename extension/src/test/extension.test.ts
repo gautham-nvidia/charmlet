@@ -5,7 +5,16 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { command, commandInput, endOfDocument, primaryModifier, readyFrame, reloadCharm } from './editor-helpers';
 
+async function dismissPluginUpdateNotice(frame: Frame) {
+	// This editor-owned marketplace warning can cover the secondary-side toolbar.
+	// Dismiss only the observed unrelated notice; retain application notifications.
+	const notice = frame.page().locator('.notification-toast')
+		.filter({ hasText: 'Failed to update: github/awesome-copilot#marketplace' }).first();
+	if (await notice.isVisible()) { await notice.getByRole('button', { name: /Clear Notification/ }).click(); }
+}
+
 async function openAppearance(frame: Frame) {
+	await dismissPluginUpdateNotice(frame);
 	await frame.locator('#settings-toggle').click();
 	await expect(frame.locator('#settings-toggle')).toHaveAttribute('aria-expanded', 'true');
 	await frame.locator('#menu-appearance').click();
@@ -13,6 +22,7 @@ async function openAppearance(frame: Frame) {
 }
 
 async function menuAction(frame: Frame, id: string) {
+	await dismissPluginUpdateNotice(frame);
 	await frame.locator('#settings-toggle').click();
 	await frame.locator(`#${id}`).click();
 }
@@ -910,6 +920,8 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		});
 	} catch (error) {
 		await window.screenshot({ path: testInfo.outputPath('failure.png') });
+		writeFileSync(testInfo.outputPath('host-notifications.json'), JSON.stringify(await window.locator('.notifications-toasts').evaluateAll(nodes =>
+			nodes.map(node => ({ text: node.textContent, controls: [...node.querySelectorAll('[aria-label]')].map(control => control.getAttribute('aria-label')) }))), null, 2));
 		throw error;
 	} finally {
 		try {

@@ -524,3 +524,25 @@ Review sheets include actual editor views, six new flower previews and two optio
 The first PR28 matrix passed all eight companion scenarios on each editor platform but caught stale Originals/end-of-list expectations in the broader collection check. Both desktop jobs caught Escape failing after a photo load moved keyboard focus to the body. Focus restoration, open-photo Escape handling and closing photos through the desktop toolbar are now covered by the existing UI scenarios. Updated local personalisation (22.9s), full editor (3.4m) and desktop smoke (22.7s) pass; the updated hosted matrix remains pending.
 
 Sixteen actual installed-0.7.0 captures now show all eight matched cord materials, all six new flowers and light backgrounds. They preserve 100% size, normal motion, one charm per capture and unchanged garden state. The listing screenshots and review links use these current captures.
+
+## 2026-11-05 - Phase 9 live companions, fidgets and hosting candidate
+
+The owner tested both prior apps successfully, asked for faster Sunny reactions and a family of live characters, and reported the missing spinner and hard-to-find Stress Busters. Extension 0.8.0 and desktop 0.5.0 now include 156 charms: Sunny, Nimbus and Byte form Live 3D; Spinner, Bubble Pop and Worry Stone join the existing nine stress designs. Both collections appear first in the picker. Reactions render on input and rest between activity; the desktop keeps its charm-only default.
+
+Local type/lint/build, 83 shared models, twelve desktop models and development smoke pass. The editor regression run caught and fixed a Reduced Motion CSS precedence issue; its two failing scenarios then passed, including the complete editor interaction scenario. All three installed-VSIX scenarios and the extracted Windows archive pass. The native Windows and hosted cross-platform matrix remains the next gate.
+
+The updated website and review checks pass for 156 charms, 191 PNGs, 25 actual-app comparisons and 22 packs, without page errors or mobile overflow. Nine fresh installed-app captures show the companions and fidget tools at 100% size on dark/light backgrounds. Historical comparisons retain their original version labels.
+
+Root Vercel configuration builds the matching VSIX and static site for the supplied `greensilver-personal` team. Account sign-in is still incomplete; no project has been linked or deployed. The monetization guide recommends a free core and optional new one-time artwork packs, compares hosted delivery with Stripe, and explains reliable fulfillment. Prices are proposals; no merchant product, paid plan or checkout was activated. See `docs/phase-9-live-fidgets-hosting.md` for candidate hashes, validation scope and remaining release decisions.
+
+## 2026-11-06 - Cali and pets expand the Phase 9 trial
+
+The owner requested a California-inspired motivational mascot, a giant panda, more dogs including Goldendoodle and Husky, and fewer cats, then authorized completing implementation and checks overnight. Website launch, prices and paid-charm decisions remain for the owner's review.
+
+Extension 0.9.0 and desktop 0.6.0 now contain 167 charms: 159 rendered designs, Terminal, four live companions and three fidgets. Cali is an original golden bear with fast reactions, short passive encouragement, focus cues and optional win confetti. Its name, bubble and focus-prompt preferences stay local; schema-four migration retains earlier progress. Ten pets add the panda, seven dog breeds and two cats. Opt-in profile-three preparation removes backdrop spill without changing alpha and preserves the cats' natural eye colours.
+
+The earlier Windows Reduced Motion and editor-readiness failures are resolved: all eight hosted jobs passed at `3ca58c7`, with separate editor and desktop runs linked in the Phase 9 record. The expanded candidate passes 86 shared models, twelve desktop models, the 46.1-second desktop development scenario, all twelve local VS Code 1.90 scenarios including four installed-package cases, and a separate four-case installed rerun. Personal settings, editing during a pending save, confetti, opt-outs, restart, pets, imports, local photos and existing garden progress are covered.
+
+Both website checks pass for 167 unique charms, 201 validated PNGs, 160 selected designs, 29 app comparisons and 23 packs. New comparisons preserve actual capture pixels from the installed 0.9.0 extension and the 0.6.0 desktop development app; both pet sheets and Cali's normal/fallback, encouragement and win views were inspected. These are assistant inspections, not the owner's final artwork selection. Privacy, provenance, README and payment guidance now include Cali and the expanded count.
+
+The next gate is the expanded candidate's eight hosted jobs, followed by technical merge/main verification and fresh packages from that checkout. Public licences, publisher/signing choices, native macOS/mixed-display validation and the explicitly deferred website/paid decisions remain separate.

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="84" viewBox="0 0 72 84">
+  <defs>
+    <radialGradient id="jade" cx=".28" cy=".23" r=".85"><stop stop-color="#e6eee0"/><stop offset=".3" stop-color="#b9d8bc"/><stop offset=".7" stop-color="#79aa96"/><stop offset="1" stop-color="#386e66"/></radialGradient>
+    <radialGradient id="thumb"><stop stop-color="#689d88"/><stop offset=".7" stop-color="#8cbaa2"/><stop offset="1" stop-color="#d1e5cd"/></radialGradient>
+    <clipPath id="body"><ellipse cx="36" cy="49" rx="24" ry="30" transform="rotate(-7 36 49)"/></clipPath>
+  </defs>
+  <g fill="none" stroke="#aab9c4" stroke-width="1.8"><ellipse cx="36" cy="9" rx="5" ry="6"/><path d="M36 15v9"/></g>
+  <ellipse cx="36" cy="49" rx="24" ry="30" transform="rotate(-7 36 49)" fill="url(#jade)"/>
+  <g clip-path="url(#body)" fill="none" stroke="#f7fff633" stroke-width="1.4"><path d="M10 31C28 45 46 14 67 32M10 43C28 51 46 31 67 45M10 55C28 57 46 48 67 58M10 67C28 63 46 65 67 71"/></g>
+  <ellipse cx="36" cy="49" rx="11" ry="16" transform="rotate(-7 36 49)" fill="url(#thumb)"/>
+</svg>

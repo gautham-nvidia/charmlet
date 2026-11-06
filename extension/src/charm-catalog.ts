@@ -27,14 +27,40 @@ export const RETIRED_CHARMS: Readonly<Record<string, string>> = Object.freeze({
 });
 export const TRIAL_CHARMS: readonly CharmDefinition[] = trialCharms;
 export const LIVE_CHARMS: readonly CharmDefinition[] = [{
-	id: 'live:smiley', name: 'Sunny - Live Smiley', file: 'live-smiley.svg', group: 'Stress Busters', accent: '#f3cd48',
-	description: 'A little yellow face that looks your way, blinks and reacts. Hold to squish; release to bounce. Reduced Motion keeps it still.',
+	id: 'live:cali', name: 'Cali - Live Mascot', file: 'live-cali.svg', group: 'Live 3D', accent: '#dcaa65',
+	description: 'A California-inspired golden bear cheering for your next small step. Click for encouragement; focus prompts and celebrations are optional.',
+	attachment: { x: .5, y: 2.5 / 84 },
+}, {
+	id: 'live:smiley', name: 'Sunny - Live Smiley', file: 'live-smiley.svg', group: 'Live 3D', accent: '#f3cd48',
+	description: 'A sunny 3D stress ball with quick glances, blinks and a playful wink. Hold to squish; release to bounce.',
+	attachment: { x: .5, y: 2.5 / 84 },
+}, {
+	id: 'live:cloud', name: 'Nimbus - Live Cloud', file: 'live-cloud.svg', group: 'Live 3D', accent: '#a6ddef',
+	description: 'A soft little 3D cloud. It looks your way, brightens when greeted and puffs its cheeks when squeezed.',
+	attachment: { x: .5, y: 2.5 / 84 },
+}, {
+	id: 'live:robot', name: 'Byte - Live Robot', file: 'live-robot.svg', group: 'Live 3D', accent: '#78d8c1',
+	description: 'A rounded metal robot with lively mint eyes. Tap for a wink; record a win for a happy reaction.',
+	attachment: { x: .5, y: 2.5 / 84 },
+}];
+export const FIDGET_CHARMS: readonly CharmDefinition[] = [{
+	id: 'fidget:spinner', name: 'Fidget Spinner', file: 'fidget-spinner.svg', group: 'Stress Busters', accent: '#51bfc4',
+	description: 'Tap or flick the three-lobed spinner; its rotor spins and slows to a stop. Space spins it too. Silent, with no scores.',
+	attachment: { x: .5, y: 2.5 / 84 },
+}, {
+	id: 'fidget:bubbles', name: 'Bubble Pop', file: 'fidget-bubbles.svg', group: 'Stress Busters', accent: '#e7a7ae',
+	description: 'Six soft reusable bubbles. Tap a bubble to pop it or press it back out. Space presses the next bubble. Always silent.',
+	attachment: { x: .5, y: 2.5 / 84 },
+}, {
+	id: 'fidget:stone', name: 'Worry Stone', file: 'fidget-stone.svg', group: 'Stress Busters', accent: '#89bba5',
+	description: 'A smooth jade-coloured thumb stone. Hold and rub to gently rock it; release to settle. Space holds it still in your hand.',
 	attachment: { x: .5, y: 2.5 / 84 },
 }];
 export const CHARMS: readonly CharmDefinition[] = [
 	...ORIGINAL_CHARMS,
 	...TRIAL_CHARMS,
 	...LIVE_CHARMS,
+	...FIDGET_CHARMS,
 ];
 
 /** An identical imported review image keeps its saved ID without adding a second trial tile. */
@@ -65,7 +91,7 @@ export function getCharm(id: unknown, charms: readonly CharmDefinition[] = CHARM
 const SOFT_CHARM_KEYS = new Set([
 	'stress-ball', 'squishy-star',
 	'smiley-happy', 'smiley-determined', 'smiley-calm', 'smiley-wink',
-	'emoji-heart', 'emoji-thumbs-up', 'emoji-rocket', 'smiley',
+	'emoji-heart', 'emoji-thumbs-up', 'emoji-rocket', 'smiley', 'cloud', 'cali',
 ]);
 
 export function isSoftCharm(id: string): boolean {

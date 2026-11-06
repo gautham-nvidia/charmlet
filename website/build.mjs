@@ -10,7 +10,7 @@ import { curateArtwork, validateCuration } from './art-curation.mjs';
 const require = createRequire(import.meta.url);
 const { parseCharmPack } = require('../extension/out/charm-packs.js');
 const { FLOWERS } = require('../extension/out/garden-core.js');
-const { LIVE_CHARMS, ORIGINAL_CHARMS } = require('../extension/out/charm-catalog.js');
+const { FIDGET_CHARMS, LIVE_CHARMS, ORIGINAL_CHARMS } = require('../extension/out/charm-catalog.js');
 const { gardenArtwork, GARDEN_STAGE_FILES } = require('../extension/out/garden-catalog.js');
 const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
@@ -32,7 +32,7 @@ for (const [name, count] of Object.entries(expectedCollections)) {
 }
 if (extras.some(item => !Object.hasOwn(expectedCollections, item.collection))) throw new Error('Unknown collection.');
 const expectedWorlds = {
-  ai: 7, coding: 7, silicon: 18, testing: 12, animals: 0, trees: 2, space: 1, parks: 6,
+  live: 0, ai: 7, coding: 7, silicon: 18, testing: 12, animals: 0, trees: 2, space: 1, parks: 6,
   cities: 5, culture: 0, sports: 0, luck: 2, stress: 0, seasonal: 0,
   'solar-system': 0, gemstones: 0, zodiac: 0, sacred: 0, flowers: 0,
 };
@@ -75,14 +75,16 @@ for (const extra of extras) {
   validated.push({ extra, packPath });
 }
 await rm(dist, { recursive: true, force: true });
-for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'assets/garden', 'assets/app-review', 'packs', 'downloads', 'studio']) {
+for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'assets/garden', 'assets/app-review', 'packs', 'downloads', 'studio', 'api/studio']) {
   await mkdir(join(dist, path), { recursive: true });
 }
+// Static hosting advertises no paid service. Do not copy local API credentials.
+await writeFile(join(dist, 'api/studio/config.json'), `${JSON.stringify({ available: false, checkoutUrl: null, testMode: false })}\n`);
 for (const name of ['index.html', 'styles.css', 'app.js', 'concepts.html', 'concepts.css']) await copyFile(join(root, name), join(dist, name));
 for (const builtin of builtins) {
   await copyFile(join(repo, 'extension', 'media', builtin.file), join(dist, 'assets', 'default', builtin.file));
 }
-for (const live of LIVE_CHARMS) {
+for (const live of [...LIVE_CHARMS, ...FIDGET_CHARMS]) {
   await copyFile(join(repo, 'extension', 'media', live.file), join(dist, 'assets', 'default', live.file));
 }
 for (const { extra, packPath } of validated) {
@@ -127,8 +129,9 @@ const vsix = `charmlet-${manifest.version}.vsix`;
 await copyFile(join(repo, 'extension', vsix), join(dist, 'downloads', 'charmlet.vsix'));
 const charms = [
   ...ORIGINAL_CHARMS.map(item => ({ ...item, kind: 'included', preview: `./assets/default/${item.file}` })),
-  ...LIVE_CHARMS.map(item => ({ ...item, kind: 'extra', live: true, includedInTrial: true,
-    collectionId: 'stress', collectionLabel: 'Stress Busters', preview: `./assets/default/${item.file}`, download: null })),
+  ...[...LIVE_CHARMS, ...FIDGET_CHARMS].map(item => ({ ...item, kind: 'extra', live: true, includedInTrial: true,
+    collectionId: item.group === 'Live 3D' ? 'live' : 'stress', collectionLabel: item.group,
+    preview: `./assets/default/${item.file}`, download: null })),
 ];
 const artPreviews = previews.map(item => ({ ...item, preview: `./assets/previews/${item.file}` }));
 const review = await readFile(join(root, 'art-review.json'), 'utf8').then(JSON.parse, error => {
@@ -199,8 +202,8 @@ if (review) {
 }
 const collections = worlds.map(world => ({ ...world, charmIds: charms
   .filter(charm => charm.kind === 'extra' && charm.collectionId === world.id).map(charm => charm.id) }));
-if (!trial.length || charms.length !== ORIGINAL_CHARMS.length + trial.length + LIVE_CHARMS.length) throw new Error('The complete trial must appear in the gallery.');
+if (!trial.length || charms.length !== ORIGINAL_CHARMS.length + trial.length + LIVE_CHARMS.length + FIDGET_CHARMS.length) throw new Error('The complete trial must appear in the gallery.');
 await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version,
   extensionDownload: './downloads/charmlet.vsix', distribution, charms, collections, artPreviews,
   sportsWishlist: collectionConfig.sportsWishlist }, null, 2)}\n`, 'utf8');
-console.log(`Built Charmlet gallery ${manifest.version}: ${ORIGINAL_CHARMS.length} original, ${trial.length} rendered designs and ${LIVE_CHARMS.length} live charm included, ${review?.featured ?? 0} selected review designs.`);
+console.log(`Built Charmlet gallery ${manifest.version}: ${ORIGINAL_CHARMS.length} original, ${trial.length} rendered designs, ${LIVE_CHARMS.length} live companions and ${FIDGET_CHARMS.length} fidgets included, ${review?.featured ?? 0} selected review designs.`);

@@ -181,7 +181,9 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
           '-StartX', String(start.x), '-StartY', String(start.y), '-EndX', String(end.x), '-EndY', String(end.y),
           '-WindowHandle', handles.main, '-SurfaceHandle', handles.surface,
           '-CanvasWidth', String(canvas.width), '-CanvasHeight', String(canvas.height),
-        ], { timeout: 10000, windowsHide: true });
+        // Include PowerShell startup and Add-Type compilation on a cold runner.
+        // The gesture and its position/focus assertions keep their own bounds.
+        ], { timeout: 30000, windowsHide: true });
         evidence.actions.push(JSON.parse(stdout));
       };
       const surfaceState = () => application.evaluate(async () => ({
@@ -614,13 +616,25 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   await openTools(third.window);
   await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
   await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
-  await third.window.locator('#motion').click();
+  // Start a greeting and change motion in the same task. This reproduces the
+  // unfinished hover reaction that otherwise depends on native cursor timing.
+  const priorExpression = await third.window.evaluate(() => {
+    document.querySelector('#charm').dispatchEvent(new Event('pointerenter'));
+    const expression = document.querySelector('#live-smiley').dataset.expression;
+    document.querySelector('#motion').click();
+    return expression;
+  });
+  assert.equal(priorExpression, 'hello');
   await expect(face).toHaveAttribute('data-motion', 'still');
+  await expect(face).toHaveAttribute('data-expression', 'smile');
   await third.window.locator('#settings-close').click();
   await third.window.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
   const stillFrames = await face.getAttribute('data-frames');
-  await delay(250);
-  assert.equal(await face.getAttribute('data-frames'), stillFrames, 'Reduced Motion must stop the live animation loop.');
+  // Closing desktop controls returns focus to the underlying window. That blur
+  // must not repaint an already centred, still face.
+  await third.window.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await delay(600);
+  assert.equal(await face.getAttribute('data-frames'), stillFrames, 'Reduced Motion must stay idle when focus leaves the app.');
   await third.window.locator('#charm').screenshot({ path: join(output, 'sunny-live.png') });
   if (await face.getAttribute('data-renderer') === 'webgl') {
     await face.evaluate(canvas => canvas.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
@@ -628,5 +642,127 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     await expect(face).toBeVisible();
     await third.window.locator('#charm').screenshot({ path: join(output, 'sunny-fallback.png') });
   }
+  console.log('Desktop live collection: cloud, robot, bubble presses, spinner friction and quiet motion.');
+  const selectInteractive = async id => {
+    await openTools(third.window);
+    await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+    await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+    await third.window.locator('#charm-select').selectOption(id);
+    await third.window.locator('#settings-close').click();
+    await expect(third.window.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+  };
+  for (const [id, character] of [['live:cloud', 'cloud'], ['live:robot', 'robot']]) {
+    await selectInteractive(id);
+    await expect(face).toHaveAttribute('data-character', character);
+    await expect(face).toBeVisible();
+    await third.window.locator('#charm').focus();
+    await third.window.keyboard.down('Space');
+    try {
+      await expect(face).toHaveAttribute('data-expression', 'squish');
+      await expect(third.window.locator('#charm-image')).toHaveCSS('transition-duration', '0s');
+    }
+    finally { await third.window.keyboard.up('Space'); }
+    await expect(face).toHaveAttribute('data-expression', 'smile');
+    await third.window.locator('#charm').screenshot({ path: join(output, `live-${character}.png`) });
+  }
+  await selectInteractive('fidget:bubbles');
+  const toy = third.window.locator('#live-fidget');
+  await third.window.locator('#charm').click({ position: { x: 22, y: 33 } });
+  await expect(toy).toHaveAttribute('data-bubbles', '100000');
+  await third.window.locator('#charm').click({ position: { x: 22, y: 33 } });
+  await expect(toy).toHaveAttribute('data-bubbles', '000000');
+  await third.window.locator('#charm').focus();
+  await third.window.keyboard.press('Space');
+  await expect(toy).toHaveAttribute('data-bubbles', '010000');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'bubble-pop.png') });
+  await selectInteractive('fidget:stone');
+  await third.window.locator('#charm').focus();
+  await third.window.keyboard.down('Space');
+  try { await expect(toy).toHaveAttribute('data-held', 'true'); }
+  finally { await third.window.keyboard.up('Space'); }
+  await expect(toy).toHaveAttribute('data-held', 'false');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'worry-stone.png') });
+  await selectInteractive('fidget:spinner');
+  await third.window.locator('#charm').focus();
+  await third.window.keyboard.press('Space');
+  await expect(toy).toHaveAttribute('data-running', 'false');
+  assert.ok(Number(await toy.getAttribute('data-angle')) > .5);
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+  await third.window.locator('#motion').click();
+  await third.window.locator('#settings-close').click();
+  await third.window.locator('#charm').click();
+  await expect(toy).toHaveAttribute('data-running', 'true');
+  const spinningAngle = await toy.getAttribute('data-angle');
+  await expect.poll(() => toy.getAttribute('data-angle')).not.toBe(spinningAngle);
+  await expect(toy).toHaveAttribute('data-running', 'false', { timeout: 8000 });
+  await expect(toy).toHaveAttribute('data-velocity', '0.000');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'fidget-spinner.png') });
+  console.log('Desktop Cali: optional personal encouragement, confetti, pets and saved quiet preferences.');
+  await selectInteractive('live:cali');
+  await expect(face).toHaveAttribute('data-character', 'cali');
+  await expect(face).toBeVisible();
+  await third.window.locator('#charm').click();
+  await expect(third.window.locator('#mascot-bubble')).toBeVisible();
+  await expect(third.window.locator('#mascot-bubble')).toHaveCSS('pointer-events', 'none');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'live-cali.png') });
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Focus', exact: true }).click();
+  await third.window.locator('#mascot-settings summary').click();
+  await third.window.locator('#mascot-name').fill('River');
+  await third.window.locator('#mascot-save').click();
+  await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).mascot.name).toBe('River');
+  await third.window.locator('#wins-celebrate').check();
+  await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).wins.celebrate).toBe(true);
+  await third.window.locator('#win-label').fill('Another step worth keeping');
+  await third.window.locator('#win-add').click();
+  await expect(third.window.locator('.win-sparkles[data-kind="confetti"][data-still="false"]')).toHaveCount(1);
+  await third.window.locator('#companion-close').click();
+  await expect(third.window.locator('#mascot-words')).toContainText('River: That small win counts');
+  await third.window.locator('#app').screenshot({ path: join(output, 'desktop-cali-encouragement.png') });
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Focus', exact: true }).click();
+  await third.window.locator('#mascot-enabled').uncheck();
+  await third.window.locator('#mascot-nudges').uncheck();
+  await third.window.locator('#mascot-save').click();
+  await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).mascot)
+    .toEqual({ enabled: false, focusNudges: false, name: 'River' });
+  await third.window.locator('#companion-close').click();
+  await expect(third.window.locator('#mascot-bubble')).toBeHidden();
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+  await third.window.locator('#motion').click();
+  await third.window.locator('#settings-close').click();
+  await expect(face).toHaveAttribute('data-motion', 'still');
+  const pets = ['giant-panda', 'golden-retriever', 'labrador', 'german-shepherd', 'husky', 'corgi', 'beagle', 'goldendoodle', 'silver-tabby', 'tuxedo-cat'];
+  for (const id of pets) {
+    await selectInteractive(`trial:new-${id}`);
+    await expect(third.window.locator('#stage')).toHaveAttribute('data-charm', `trial:new-${id}`);
+    await expect.poll(() => third.window.locator('#charm-image').evaluate(image => image.complete && image.naturalWidth === 216)).toBe(true);
+    await expect(face).toBeHidden();
+    await third.window.locator('#charm').screenshot({ path: join(output, `pet-${id}.png`) });
+  }
+  await selectInteractive('live:cali');
   await quit(third.application);
+  const fourth = await launch();
+  await expect(fourth.window.locator('#stage')).toHaveAttribute('data-charm', 'live:cali');
+  await expect(fourth.window.locator('#mascot-bubble')).toBeHidden();
+  await expect(fourth.window.locator('.win-sparkles')).toHaveCount(0);
+  // Native click-through checks explicitly unpin the earlier saved controls.
+  // Restart must preserve the choices made by the active scenario.
+  await expect(fourth.window.locator('body')).toHaveAttribute('data-desktop-tools', String(!nativeInput));
+  await expect(fourth.window.locator('body')).toHaveAttribute('data-desktop-pinned-toolbar', String(!nativeInput));
+  assert.deepEqual((await diagnostic(fourth.application)).desktopView,
+    { background: !nativeInput, toolbarPinned: !nativeInput, messagesPinned: !nativeInput });
+  await openTools(fourth.window);
+  await fourth.window.getByRole('button', { name: 'Focus', exact: true }).click();
+  await fourth.window.locator('#mascot-settings summary').click();
+  await expect(fourth.window.locator('#mascot-name')).toHaveValue('River');
+  await expect(fourth.window.locator('#mascot-enabled')).not.toBeChecked();
+  await expect(fourth.window.locator('#mascot-nudges')).not.toBeChecked();
+  assert.equal(JSON.parse(readFileSync(companionPath, 'utf8')).wins.total, 3);
+  assert.equal(JSON.parse(readFileSync(companionPath, 'utf8')).garden.collection[0].id, 'hibiscus');
+  await quit(fourth.application);
 });

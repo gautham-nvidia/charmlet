@@ -1,16 +1,16 @@
 # Charmlet privacy
 
-Updated 2026-11-05.
+Updated 2026-11-06.
 
 Charmlet's extension runs locally. It does not send your source code, focus notes, garden progress or imported artwork to a Charmlet server. It does not include analytics, advertising or an account requirement.
 
 ## Data on your device
 
-The extension saves your chosen charm, cord choices, appearance and motion preferences, message preferences, optional focus intention, timer state, small-win notes and counts, reminder settings, watering dates and earned flowers in your editor's extension storage. Imported charm packs are copied to that storage so they keep working offline and survive extension updates.
+The extension saves your chosen charm, cord choices, appearance and motion preferences, message preferences, optional focus intention, timer state, small-win notes and counts, reminder settings, watering dates and earned flowers in your editor's extension storage. Cali's optional name, encouragement and focus-prompt preferences are stored there too. Imported charm packs are copied to that storage so they keep working offline and survive extension updates.
 
 The in-app **Photo charms** panel processes the image you choose in memory. It saves only the cropped, framed 216-by-252-pixel PNG and the keepsake name you enter, in a local charm pack. The original file and its embedded metadata are not retained. No photo is uploaded. Closing the editor before saving discards the draft.
 
-Sunny's gaze responds only to pointer coordinates in the Charmlet view. It does not use a camera, microphone, face recognition or a network service.
+The live companions' gaze responds only to pointer coordinates in the Charmlet view. They do not use a camera, microphone, face recognition or a network service. Cali's text comes from installed messages and your local focus/win state; it is not sent to a chat service.
 
 Charmlet reads the pack file you explicitly choose to import. It does not scan workspace files or send editor contents to an AI model. Its built-in facts, trivia, motivational messages and artwork are installed resources. AI-generated review artwork was prepared during development; displaying it does not make an AI request.
 
@@ -27,6 +27,8 @@ The optional website Photo Studio is separate and unavailable by default. Its pr
 ## Removing data
 
 Use **Charmlet: Remove Charm Pack** to remove an imported pack, or remove a keepsake in **Photo charms**. **Focus > Small wins > Clear history** removes saved win notes and counts. **Reset Charm** resets appearance; it does not erase garden progress.
+
+Clear Cali's optional name under **Focus > Cali's encouragement**, then save preferences to remove it from the current local state. The same panel turns encouragement and focus prompts off.
 
 To remove all extension data, first back up any packs or progress you want to keep, close the editor, and remove only Charmlet's `gautham-nvidia.charmlet` directory from that editor profile's `User/globalStorage` folder. Editor profiles and forks can use different locations. Uninstalling an extension may leave its saved storage behind.
 

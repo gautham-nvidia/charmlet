@@ -3,6 +3,8 @@ import { getLayout } from '../extension/src/charm-state';
 import { DEFAULT_ATTACHMENT, type CharmAttachment } from '../extension/src/charm-attachment';
 import { isSoftCharm } from '../extension/src/charm-catalog';
 import { createLiveSmiley } from '../extension/src/live-smiley';
+import { createFidgetView } from '../extension/src/fidget-view';
+import { fidgetAction, liveCharacter } from '../extension/src/interactive-motion';
 import { createCordView } from '../extension/src/cord-view';
 import { cordForCharm, type CordStyle } from '../extension/src/cord-design';
 
@@ -27,8 +29,9 @@ const resetButton = required<HTMLButtonElement>('demo-reset');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, 126, 100, 'hanging');
 const liveSmiley = createLiveSmiley(charm, image);
+const fidgetUI = createFidgetView(charm, image);
 const cordView = createCordView(thread.ownerSVGElement!, thread);
-let liveSelected = false;
+let selectedId = '';
 let cordStyle: CordStyle = 'thread';
 let scale = 1;
 let frameId: number | undefined;
@@ -55,7 +58,8 @@ function render() {
 	anchor.style.left = `${anchorX}px`;
 	anchor.style.top = `${anchorY}px`;
 	cordView.render(cordStyle, { x: anchorX, y: anchorY }, { x: hookX, y: hookY });
-	liveSmiley.update(liveSelected, visible && intersecting, reducedMotion.matches);
+	liveSmiley.update(selectedId, visible && intersecting, reducedMotion.matches);
+	fidgetUI.update(selectedId, visible && intersecting, reducedMotion.matches);
 	stage.dataset.frames = String(frames);
 	stage.dataset.cord = String(Math.round(cordLength));
 	stage.dataset.dragging = String(drag !== undefined);
@@ -172,7 +176,7 @@ charm.addEventListener('pointercancel', () => resetPose('The demo reset safely a
 charm.addEventListener('lostpointercapture', () => { if (drag) { resetPose('The demo reset safely after losing the pointer.'); } });
 charm.addEventListener('click', event => { if (event.detail === 0) { nudge(); } });
 charm.addEventListener('keydown', event => {
-	if ((event.key === ' ' || event.key === 'Enter') && charm.dataset.soft === 'true') {
+	if ((event.key === ' ' || event.key === 'Enter') && (charm.dataset.soft === 'true' || liveCharacter(selectedId))) {
 		event.preventDefault();
 		keyboardHeld = true;
 		charm.dataset.keyboardHeld = 'true';
@@ -210,14 +214,15 @@ export function setCharm(selected: DemoCharm) {
 	const assets = new URL('./assets/', document.baseURI);
 	if (preview.origin !== location.origin || !preview.pathname.startsWith(assets.pathname)) { return; }
 	image.src = preview.href;
-	liveSelected = selected.id === 'live:smiley';
+	selectedId = selected.id;
 	cordStyle = cordForCharm({ id: selected.id, name: selected.name, group: selected.group ?? '', file: '', description: '', accent: '' });
 	attachment = selected.attachment ?? DEFAULT_ATTACHMENT;
 	image.style.transformOrigin = `${attachment.x * 100}% ${attachment.y * 100}%`;
 	charm.dataset.soft = String(isSoftCharm(selected.id));
 	image.alt = `${selected.name} charm`;
 	name.textContent = selected.name;
-	charm.setAttribute('aria-label', `Swing ${selected.name} charm`);
+	charm.setAttribute('aria-label', `${fidgetAction(selected.id) ?? 'Swing'} ${selected.name} charm`);
+	charm.title = selected.name;
 	resize();
 	resetPose(`${selected.name} is ready to try.`);
 }

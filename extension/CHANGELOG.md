@@ -3,6 +3,23 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.9.0 - 2026-11-06 (Cali and pets trial)
+
+- Added Cali, an original California-inspired golden bear and motivational live 3D mascot. Brief text bubbles encourage your next step, acknowledge focus progress and cheer new wins.
+- Cali's name preference, encouraging bubbles and focus prompts are saved locally under Focus. Bubbles stay out of the charm's way, pass pointer input through and can be dismissed with Escape.
+- Optional win confetti follows the existing celebration setting. Everything stays silent; Reduced Motion stops idle animation and keeps celebrations still.
+- Added a giant panda, Golden Retriever, Labrador, German Shepherd, Husky, Corgi, Beagle and Goldendoodle, plus Silver Tabby and Tuxedo Cat. All 167 charms are included in this trial.
+- Preserved Sunny, Nimbus, Byte, all three fidget tools, local photos, imports, per-charm cords and the eighteen-flower garden.
+- Settled unfinished live-face reactions when Reduced Motion is enabled and cancelled in-flight celebrations when changing motion preferences.
+
+## 0.8.0 - 2026-11-05 (Live companions and fidgets trial)
+
+- Sunny responds promptly to nearby pointer movement, greets you and winks after release. Live faces sleep between reactions and blinks.
+- Added Nimbus, a live cloud, and Byte, a live robot, with distinct lit shapes and the same quiet interaction/accessibility support.
+- Added a working Fidget Spinner, six reusable Bubble Pop bubbles and a Worry Stone. Mouse, touch and keyboard interactions stay silent; Reduced Motion gives immediate still feedback.
+- Put Live 3D and Stress Busters first in the collection filters. All 156 trial charms remain included without imports.
+- Faster squeeze feedback, preserved per-charm cords, local photos, small wins and garden progress.
+
 ## 0.7.0 - 2026-11-05 (Personalisation trial)
 
 ### Added

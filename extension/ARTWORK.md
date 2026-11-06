@@ -74,3 +74,15 @@ Four botanical garden stages replace the earlier flat SVGs. They were generated 
 The owner then requested rose colours, jasmine and lily to grow from seeds. Six new photographic-style botanical renders add red, pink, white and yellow roses, Arabian jasmine and an oriental lily. Their prompts are in `website/art-review-jobs.mjs`; targeted background corrections for red rose and jasmine are in `website/art-review-revisions.json`. All eighteen earned flowers reuse the trial flower PNGs and their attachments. Original flower IDs, collected counts/dates and the active plant are preserved; new seeds prefer uncollected varieties. The new flower images remain available for visual review.
 
 This is provenance for the trial. The final artwork lineup, source/art licence and bundled/free/paid split remain owner decisions.
+
+## 2026-11-05 - Live companions and fidget tools
+
+The 0.8.0 trial adds Nimbus (a lit cloud), Byte (a bevelled metal robot), Fidget Spinner, Bubble Pop and Worry Stone. These five original designs are authored as SVG and canvas/WebGL geometry; no image-generation service, stock character or external 3D model was used. The live family shares bounded local rendering and uses static SVG thumbnails/fallbacks. Spinner friction, reusable bubble surfaces and the thumb stone are local interactive code. The total is 156 selectable trial charms. This addition does not grant a source or artwork licence or select a paid lineup.
+
+## 2026-11-06 - Cali and pets
+
+Cali is an original California-inspired golden bear with a teal scarf, front-facing eyes and a complete toy-like body. Its WebGL geometry, Canvas fallback and SVG thumbnail are code-authored. It adds local motivational text and optional celebrations while retaining Sunny, Nimbus and Byte.
+
+Ten new Gemini 3 Pro Image renders add Giant Panda, Golden Retriever, Labrador, German Shepherd, Husky, Corgi, Beagle, Goldendoodle, Silver Tabby and Tuxedo Cat. Raw images and receipts remain in the ignored authoring output. Preparation profile 3 removes green backdrop spill from the neutral-fur subjects without changing alpha; edge-only correction preserves the cats' green irises. Earlier exports remain archived.
+
+The 0.9.0 trial contains 159 PNG designs, Terminal, four live companions and three fidgets: 167 charms. Technical validation and assistant visual inspection do not constitute the owner's final artwork approval, a distribution licence or a paid-pack decision.

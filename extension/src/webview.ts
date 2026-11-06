@@ -13,6 +13,10 @@ import { createCordView } from './cord-view';
 import { createWinCelebration } from './win-celebration';
 import { createPhotoView, type PhotoView } from './photo-view';
 import { createLiveSmiley } from './live-smiley';
+import { createFidgetView } from './fidget-view';
+import { createMascotView } from './mascot-view';
+import { MASCOT_CHARM } from './mascot-core';
+import { fidgetAction, liveCharacter } from './interactive-motion';
 
 declare function acquireVsCodeApi(): {
 	getState(): unknown;
@@ -94,6 +98,12 @@ const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, state.cordLength, state.size, state.layoutMode);
 const winCelebration = createWinCelebration(charm, reducedMotion);
 const liveSmiley = createLiveSmiley(charm, charmImage);
+const fidgetUI = createFidgetView(charm, charmImage);
+const mascotUI = createMascotView({
+	charm, stage, canShow: () => !popupOpen(), reducedMotion,
+	cheer: () => liveSmiley.celebrate(),
+	celebrate: () => { if (visible && !state.hidden) { winCelebration.show('confetti'); } },
+});
 const companionUI = createCompanionView({
 	send: (action, requestId) => api.postMessage({ type: 'companion-action', action, requestId }),
 	openSource: cardId => api.postMessage({ type: 'learning-source', cardId }),
@@ -109,8 +119,10 @@ const companionUI = createCompanionView({
 		scheduleMessages();
 	},
 	onActivity: scheduleMessages,
-	onMilestone: () => { if (visible && !state.hidden) { winCelebration.show(); } },
+	onMilestone: () => { if (visible && !state.hidden && activeCharm.id !== MASCOT_CHARM) { winCelebration.show(); } },
 	onWin: () => liveSmiley.celebrate(),
+	onSnapshot: snapshot => mascotUI.receive(snapshot),
+	selectMascot: () => selectCharm(MASCOT_CHARM),
 });
 navigationUI = createNavigationView({
 	image: selected => selected.source ?? new URL(selected.file, mediaRoot).toString(),
@@ -144,6 +156,7 @@ function updateOverlays() {
 	appElement.classList.toggle('has-popup', open);
 	hanging.inert = state.hidden || open;
 	restore.inert = open;
+	mascotUI.refresh();
 }
 
 function closeAppearance(restoreFocus = true) {
@@ -210,7 +223,8 @@ function applyCharm() {
 	charm.dataset.soft = String(soft);
 	const attachment = selected.attachment ?? DEFAULT_ATTACHMENT;
 	charmImage.style.transformOrigin = `${attachment.x * 100}% ${attachment.y * 100}%`;
-	charm.setAttribute('aria-label', `${soft ? 'Squeeze' : 'Nudge'} ${selected.name.toLowerCase()} charm`);
+	charm.setAttribute('aria-label', `${fidgetAction(selected.id) ?? (soft ? 'Squeeze' : 'Nudge')} ${selected.name.toLowerCase()} charm`);
+	charm.title = selected.description;
 	stage.dataset.charm = selected.id;
 	stage.dataset.preferredCharm = state.charmId;
 	navigationUI?.setCatalogue(charms, selected.id);
@@ -221,7 +235,9 @@ function applyCharm() {
 }
 
 function updateLiveSmiley() {
-	liveSmiley.update(activeCharm.id === 'live:smiley', visible && !state.hidden, reducedMotion());
+	liveSmiley.update(activeCharm.id, visible && !state.hidden, reducedMotion());
+	fidgetUI.update(activeCharm.id, visible && !state.hidden, reducedMotion());
+	mascotUI.surface(activeCharm.id, visible && !state.hidden);
 }
 
 function updateCordChoice() {
@@ -367,6 +383,7 @@ function render() {
 	charm.dataset.positionX = positionX.toFixed(2);
 	charm.dataset.positionY = positionY.toFixed(2);
 	charm.dataset.angle = angle.toFixed(6);
+	mascotUI.position();
 }
 
 function stop() {
@@ -606,7 +623,7 @@ charm.addEventListener('keyup', event => {
 	}
 });
 charm.addEventListener('keydown', event => {
-	if ((event.key === ' ' || event.key === 'Enter') && isSoftCharm(activeCharm.id)) {
+	if ((event.key === ' ' || event.key === 'Enter') && (isSoftCharm(activeCharm.id) || liveCharacter(activeCharm.id))) {
 		event.preventDefault();
 		setKeyboardHeld(true);
 	} else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
@@ -657,9 +674,8 @@ layoutMode.addEventListener('click', () => {
 	save();
 });
 motion.addEventListener('click', () => {
-	cancelDrag();
 	state.reducedMotion = !state.reducedMotion;
-	showState();
+	updateMotionPreference();
 	save();
 });
 

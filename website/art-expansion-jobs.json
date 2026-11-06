@@ -318,5 +318,45 @@
   {
     "id": "shiva", "name": "Shiva", "group": "Sacred Traditions", "accent": "#7e9ea9",
     "subject": "A complete dignified hand-painted South Indian Shiva temple keepsake: seated meditation, blue-grey skin, three horizontal white vibhuti forehead stripes, crescent moon in piled hair, rudraksha beads, tiger-pattern cloth and a trident. One small closed silver hanging eyelet above the hair. No scenery or text."
+  },
+  {
+    "id": "giant-panda", "name": "Giant Panda", "group": "Animals", "accent": "#b8c8bc", "greenDespill": "all",
+    "subject": "One complete black-and-white giant panda, sitting upright with a relaxed round belly and all four paws visible. A creamy white head, two clearly rounded black ears, accurate black eye patches around warm dark forward-looking eyes, a small black nose, black shoulders and black limbs. Soft dense fur with natural strand detail and gentle neutral rim lighting so the black paws stay readable on a dark app background. Its head faces the viewer with a calm friendly expression. Believable panda anatomy with a compact full-body silhouette, clearly a giant panda rather than a red panda, bear costume or emoji. No bamboo, food, clothes, accessories, toy seams or additional animals."
+  },
+  {
+    "id": "golden-retriever", "name": "Golden Retriever", "group": "Animals", "accent": "#d7a85c", "greenDespill": "all",
+    "subject": "One complete golden retriever sitting neatly, looking directly toward the viewer with gentle dark brown eyes and a friendly relaxed closed mouth. Recognizable long honey-gold feathered fur, soft drooping ears, a broad black nose, a substantial muzzle and fuller chest feathering. Both front paws and the folded hind legs are visible, with one feathery tail curling close beside the body. Believable dog anatomy, natural fur detail and restrained golden highlights. The complete seated silhouette must remain compact and recognizable at 72 pixels. No collar, tag, clothing, ball, leash, toy seams, oversized cartoon eyes or extra animals."
+  },
+  {
+    "id": "labrador", "name": "Labrador", "group": "Animals", "accent": "#9e7355", "greenDespill": "all",
+    "subject": "One complete chocolate Labrador retriever sitting calmly and facing the viewer. A broad friendly head, short floppy ears, warm amber-brown eyes, a wide dark nose and a strong gently squared muzzle. Distinct smooth short chocolate-brown fur, a sturdy chest and one thick rounded otter tail tucked beside the body; this must not have the long feathered coat of a golden retriever. All four limbs are anatomically clear in the compact seated pose. Subtle warm brown highlights and soft neutral rim light preserve the silhouette on dark backgrounds. No collar, leash, clothing, props, open snarling mouth, cartoon exaggeration or extra animals."
+  },
+  {
+    "id": "german-shepherd", "name": "German Shepherd", "group": "Animals", "accent": "#b99262", "greenDespill": "all",
+    "subject": "One complete German Shepherd sitting alert but friendly, facing the viewer. Exactly two tall upright triangular ears, warm brown eyes, a long recognizable shepherd muzzle and a black nose. A natural black saddle and black facial mask contrast with rich tan cheeks, chest and legs. Medium-length dense fur, a sturdy athletic body, two straight front legs, visible folded hind legs and one bushy tail resting close beside the body. Preserve realistic breed proportions and a compact readable silhouette. No aggressive teeth, cropped body, collar, harness, uniform, props, oversized cartoon head or extra animals."
+  },
+  {
+    "id": "husky", "name": "Husky", "group": "Animals", "accent": "#90a9bd", "greenDespill": "all",
+    "subject": "One complete Siberian husky sitting upright and looking directly at the viewer with two clear icy-blue eyes. Exactly two erect triangular ears, a distinct charcoal-grey and white facial mask, a white muzzle and chest, a small black nose and thick grey-and-white double-coat fur. The bushy curled tail rests beside the body. All four legs are visible in a compact natural seated pose, with a friendly attentive expression. Make the facial mask and upright ears recognizable at tiny size; natural canine anatomy and detailed fur, not a wolf portrait or cartoon dog. No collar, harness, snow, scenery, props or extra animals."
+  },
+  {
+    "id": "corgi", "name": "Corgi", "group": "Animals", "accent": "#d79558", "greenDespill": "all",
+    "subject": "One complete Pembroke Welsh corgi sitting with its characteristically low long body and very short legs. Two large erect rounded triangular ears, a fox-like tan face, a white blaze down the forehead and muzzle, a black nose, dark forward-looking eyes and a broad white chest. Rich ginger-tan and white fur with natural fine texture, small visible paws and a short natural tail. A happy gentle expression without a cartoon grin. Clearly communicate the short-legged corgi breed in a compact full-body silhouette. No clothing, crown, collar, leash, props, extra limbs or other animals."
+  },
+  {
+    "id": "beagle", "name": "Beagle", "group": "Animals", "accent": "#c48c62", "greenDespill": "all",
+    "subject": "One complete tricolour beagle sitting compactly and facing the viewer with soft warm brown eyes. Long rounded drooping tan ears frame a tan-and-white face with a clear white muzzle and black nose. A black saddle, tan sides and white chest and paws distinguish its smooth short coat. Both front paws and folded hind legs are visible, with one short curved tail held close to the body and a white tail tip. Natural small hound anatomy and a gentle curious expression, with clear material depth and realistic fur. No collar, hunting gear, toy seams, props, cartoon eyes or extra animals."
+  },
+  {
+    "id": "goldendoodle", "name": "Goldendoodle", "group": "Animals", "accent": "#d6ac78", "greenDespill": "all",
+    "subject": "One complete apricot goldendoodle sitting and looking directly at the viewer. Its defining feature is a dense soft curly and wavy apricot coat, with a rounded fluffy head, long floppy curly ears, a broad fluffy beard around a black nose and dark friendly eyes that remain clearly visible rather than covered by hair. A compact soft chest, two fluffy front paws, visible folded hind legs and one plumed tail tucked beside the body. Believable dog anatomy and detailed small curls distinguish it from a straight-coated golden retriever or a clipped poodle. No pom-pom haircut, clothing, collar, leash, props, toy seams or additional animals."
+  },
+  {
+    "id": "silver-tabby", "name": "Silver Tabby", "group": "Animals", "accent": "#a5a7af", "greenDespill": "edges",
+    "subject": "One complete silver-grey tabby cat sitting upright and facing the viewer, with natural green eyes and a small pink nose. Clear charcoal stripes on soft silver-grey short fur, including the characteristic M-shaped forehead markings, a pale muzzle and neat visible paws. Exactly two triangular ears and one ringed tail curved closely around the paws. Natural feline proportions and a calm curious expression; clear individual stripes should remain readable at small charm size. No collar, bow, clothing, toys, oversized eyes, human expression or other animals."
+  },
+  {
+    "id": "tuxedo-cat", "name": "Tuxedo Cat", "group": "Animals", "accent": "#9aabb5", "greenDespill": "edges",
+    "subject": "One complete black-and-white tuxedo cat sitting upright and looking directly toward the viewer with natural golden-green eyes. Glossy short black fur, a clean white muzzle, a large distinct white chest bib and four small white paws, with a black tail tucked neatly around the body. Exactly two natural triangular ears, a small dark pink nose and delicate light whiskers. Soft neutral edge lighting keeps the black body visible against dark app backgrounds without a sticker outline. Believable feline anatomy and a gentle alert expression. No bow tie, collar, clothing, props, cartoon eyes or extra animals."
   }
 ]

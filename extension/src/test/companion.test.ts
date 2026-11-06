@@ -21,9 +21,92 @@ import { gardenArtwork, gardenCharms } from '../garden-catalog';
 import { buildCatalogue } from '../charm-catalog';
 import { restoreState } from '../charm-state';
 import { cordForCharm } from '../cord-design';
+import { followGaze, nearestBubble, stepSpinner } from '../interactive-motion';
+import { mascotEncouragement, mascotTransition } from '../mascot-core';
+
+test('live gaze responds within 84ms independently of refresh rate', () => {
+	for (const hz of [30, 60, 120]) {
+		let gaze = 0;
+		for (let elapsed = 0; elapsed < 84; elapsed += 1000 / hz) {
+			gaze = followGaze(gaze, 1, 1000 / hz);
+		}
+		assert.ok(gaze >= .95 && gaze <= 1, `${hz}Hz must respond promptly without overshoot: ${gaze}`);
+		assert.ok(followGaze(gaze, -1, 84) < -.9, 'A direction change must not retain a slow trailing gaze.');
+	}
+});
+
+test('spinner conserves direction, slows smoothly and rests at different refresh rates', () => {
+	const results = [];
+	for (const hz of [30, 60, 120]) {
+		let spin = { angle: 0, velocity: -24 };
+		for (let frame = 0; frame < hz * 4; frame++) {
+			const before = spin.velocity;
+			spin = stepSpinner(spin.angle, spin.velocity, 1000 / hz);
+			assert.ok(spin.velocity <= 0 && spin.velocity >= before, 'Friction must slow rather than reverse the rotor.');
+		}
+		assert.equal(spin.velocity, 0);
+		results.push(spin.angle);
+	}
+	assert.ok(Math.max(...results) - Math.min(...results) < .003, 'Refresh rate must not change the final rotation perceptibly.');
+	assert.equal(nearestBubble(22, 33), 0);
+	assert.equal(nearestBubble(50, 67), 5);
+});
 
 const START = 1800000000000;
 const startAction: CompanionAction = { type: 'focus-start', phase: 'focus', focusMinutes: 1, breakMinutes: 1, intent: 'Finish one small test' };
+
+test('mascot preferences migrate without losing a plant, wins or a paused focus session', () => {
+	let before = applyCompanionAction(defaultCompanionState(17), startAction, START).state;
+	before = applyCompanionAction(before, { type: 'focus-pause' }, START + 1234).state;
+	before = applyCompanionAction(before, { type: 'win-add', label: 'A meaningful step' }, START + 2000).state;
+	before.garden = garden.plantGarden(before.garden, START, 'existing-plant', () => 1);
+	const migrated = restoreCompanionState({ ...before, version: 3, mascot: undefined }, START + 3000);
+	assert.equal(migrated.version, 4);
+	for (const field of ['focus', 'settings', 'wins', 'garden', 'care', 'learning'] as const) {
+		assert.deepEqual(migrated[field], before[field], `${field} must survive the new preferences.`);
+	}
+	assert.deepEqual(migrated.mascot, { enabled: true, focusNudges: true, name: '' });
+	const action = parseCompanionAction({ type: 'mascot-configure', name: '  Ada  ', enabled: false, focusNudges: false })!;
+	const saved = applyCompanionAction(migrated, action, START + 4000).state;
+	assert.deepEqual(restoreCompanionState(JSON.parse(JSON.stringify(saved)), START + 5000), saved);
+	assert.deepEqual(saved.mascot, { enabled: false, focusNudges: false, name: 'Ada' });
+	assert.equal(parseCompanionAction({ ...action, name: 'x'.repeat(201) }), undefined);
+	assert.equal(parseCompanionAction({ ...action, enabled: 'false' }), undefined);
+	assert.equal(parseCompanionAction({ ...action, focusNudges: 1 }), undefined);
+});
+
+test('mascot cheers new wins once and distinguishes real focus completion from recovery', () => {
+	let state = defaultCompanionState();
+	state = applyCompanionAction(state, { type: 'wins-celebrate', enabled: true }, START).state;
+	state = applyCompanionAction(state, { type: 'mascot-configure', name: 'Ada', enabled: true, focusNudges: true }, START).state;
+	const idle = companionSnapshot(state, START);
+	assert.equal(mascotTransition(undefined, idle), undefined);
+	state = applyCompanionAction(state, startAction, START + 1).state;
+	const running = companionSnapshot(state, START + 1);
+	assert.match(mascotTransition(idle, running)!.text, /Ada.*started/);
+	assert.match(mascotEncouragement(state), /Finish one small test/);
+	const halfway = companionSnapshot(state, START + 30001);
+	assert.match(mascotTransition(running, halfway)!.text, /Halfway/);
+	assert.equal(mascotTransition(halfway, companionSnapshot(state, START + 31001)), undefined);
+	const recovered = companionSnapshot(reconcileCompanion(state, START + 60001, START + 1, true), START + 60001);
+	assert.equal(mascotTransition(running, recovered), undefined, 'A recovered timer must not pretend work was observed.');
+	const complete = companionSnapshot(reconcileCompanion(state, START + 60001, START + 59001), START + 60001);
+	assert.match(mascotTransition(halfway, complete)!.text, /Focus complete/);
+	assert.equal(mascotTransition(halfway, complete)!.celebrate, true);
+	assert.equal(mascotTransition(complete, complete), undefined);
+	assert.equal(mascotTransition(undefined, complete), undefined, 'Restarting must not replay an old win.');
+	assert.equal(mascotTransition(complete, running), undefined, 'A backwards clock must not replay encouragement.');
+	const quiet = applyCompanionAction(complete.state, { type: 'wins-celebrate', enabled: false }, START + 61000).state;
+	const nextWin = applyCompanionAction(quiet, { type: 'win-add', label: 'A second step' }, START + 62000).state;
+	assert.equal(mascotTransition(companionSnapshot(quiet, START + 61000), companionSnapshot(nextWin, START + 62000))!.celebrate, false);
+});
+
+test('turning off mascot focus prompts stops intention reminders and timer cues', () => {
+	let state = applyCompanionAction(defaultCompanionState(), startAction, START).state;
+	state = applyCompanionAction(state, { type: 'mascot-configure', name: '', enabled: true, focusNudges: false }, START + 1).state;
+	assert.doesNotMatch(mascotEncouragement(state), /Finish one small test/);
+	assert.equal(mascotTransition(companionSnapshot(state, START + 1), companionSnapshot(state, START + 31000)), undefined);
+});
 
 test('refreshed flower artwork keeps earned IDs, counts, dates and saved choices', () => {
 	const state: garden.GardenState = {

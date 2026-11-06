@@ -59,7 +59,9 @@ export function createNavigationView(options: NavigationOptions): NavigationView
 	}
 	function render() {
 		const focusedGroup = groups.contains(document.activeElement) ? (document.activeElement as HTMLElement).dataset.group : undefined;
-		const names = ['All', ...new Set(catalogue.map(charm => charm.group))];
+		const available = new Set(catalogue.map(charm => charm.group));
+		const featured = ['Live 3D', 'Stress Busters'].filter(name => available.has(name));
+		const names = ['All', ...featured, ...[...available].filter(name => !featured.includes(name))];
 		if (!names.includes(group)) { group = 'All'; }
 		groups.replaceChildren();
 		for (const name of names) {

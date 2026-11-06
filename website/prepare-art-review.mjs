@@ -6,6 +6,23 @@ import { fileURLToPath } from 'node:url';
 import { artworkJobs } from './art-review-jobs.mjs';
 import { extractGreenScreen } from './art-cutout.mjs';
 
+// Some neutral fur picked up the green studio backdrop. This opt-in correction
+// leaves alpha intact; edge-only mode protects the cats' genuine green irises.
+function neutralizeGreen(cutout, mode) {
+  const { data, width, height } = cutout;
+  for (let offset = 0; offset < data.length; offset += 4) {
+    if (!data[offset + 3] || data[offset + 1] <= Math.max(data[offset], data[offset + 2])) continue;
+    if (mode === 'edges' && data[offset + 3] >= 250) {
+      const pixel = offset / 4, x = pixel % width, y = Math.floor(pixel / width), reach = 10;
+      const edge = x < reach || y < reach || x >= width - reach || y >= height - reach
+        || data[offset - reach * 4 + 3] < 20 || data[offset + reach * 4 + 3] < 20
+        || data[offset - reach * width * 4 + 3] < 20 || data[offset + reach * width * 4 + 3] < 20;
+      if (!edge) continue;
+    }
+    data[offset + 1] = Math.max(data[offset], data[offset + 2]);
+  }
+}
+
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(join(repo, 'extension/package.json'));
 const { PNG } = require('pngjs');
@@ -32,7 +49,8 @@ const failures = [];
 try {
   const page = await browser.newPage();
   for (const job of jobs) {
-    const renderId = `${job.variant}-p2`;
+    const profile = job.greenDespill ? 3 : 2;
+    const renderId = `${job.variant}-p${profile}`;
     let raw, receipt;
     try {
       const sourceVariant = job.sourceVariant ?? job.variant;
@@ -45,7 +63,7 @@ try {
     if (receipt.sha256 !== digest(raw)) throw new Error(`Raw artwork hash mismatch: ${job.key}`);
     if (job.sourceVariant && receipt.promptHash !== digest(job.prompt)) throw new Error(`Approved prompt mismatch: ${job.key}`);
     const previous = items.get(job.key);
-    if (previous?.profile === 2 && previous.revision === job.revision) {
+    if (previous?.profile === profile && previous.revision === job.revision && previous.greenDespill === job.greenDespill) {
       if (previous.rawSha256 !== receipt.sha256) throw new Error(`Use a new revision instead of replacing ${job.key}.`);
       const image = await readFile(join(imageRoot, `${renderId}.png`));
       if (digest(image) !== previous.pngSha256) throw new Error(`Prepared artwork changed unexpectedly: ${job.key}`);
@@ -65,6 +83,7 @@ try {
         }
       }
       const cutout = extractGreenScreen(decoded);
+      if (job.greenDespill) neutralizeGreen(cutout, job.greenDespill);
       const clean = PNG.sync.write({ width: cutout.width, height: cutout.height, data: Buffer.from(cutout.data) }, { colorType: 6 });
       const rendered = await page.evaluate(async ({ encoded, bounds }) => {
         const image = new Image();
@@ -95,9 +114,10 @@ try {
       const item = {
         key: job.key, id: job.id, name: job.name, group: job.group, family: job.family, accent: job.accent,
         original: job.original, preview: `./assets/review/${renderId}.webp`, image: `./assets/review/${renderId}.png`,
-        revision: job.revision, profile: 2,
+        revision: job.revision, profile,
         ...(job.sourceVariant ? { sourceVariant: job.sourceVariant } : {}),
         ...(job.greenSpillCleanup ? { greenSpillCleanup: true } : {}),
+        ...(job.greenDespill ? { greenDespill: job.greenDespill } : {}),
         download: job.family === 'flowers' ? null : `./packs/review/${packId}.charmlet.json`,
         pngBytes: png.length, pngSha256: digest(png), rawSha256: receipt.sha256, promptHash: receipt.promptHash,
         model: 'Gemini 3 Pro Image', status: 'review-candidate', width: 216, height: 252,
@@ -112,7 +132,7 @@ try {
       const item = items.get(job.key);
       // Keep earlier candidates as archive entries while a requested redraw is
       // still being prepared. Curation excludes them from the visible lineup.
-      return item?.profile === 2 && item.revision <= job.revision ? [item] : [];
+      return (item?.profile === 2 || item?.profile === 3) && item.revision <= job.revision ? [item] : [];
     });
     await writeFile(manifestPath, `${JSON.stringify({ ...existing, status: 'review-only', expected: allJobs.length, prepared: ordered.length,
       note: 'Illustrated Gemini redraw candidates. No final bundled/free/paid decisions are implied. Flowers remain earned rewards.', items: ordered }, null, 2)}\n`);
