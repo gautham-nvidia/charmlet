@@ -33,6 +33,8 @@ The older platform failures were addressed separately: `76ea1f8` waits for compa
 
 The installed 0.9.0 captures add both pet sheets and Cali's encouragement/win views to the review page. Original capture pixels are retained; the desktop sheet uses the development app and the win view exercises the Canvas fallback. These are assistant review captures, not the owner's final public-artwork selection. Final artifact hashes belong to the finished checkout's readiness record.
 
+The expanded `e89eba0` matrix passed six jobs and identified two test follow-ups. Windows completed native Move/click-through/long-pull and the new interactions, then correctly restored the unpinned controls selected by its native-input setup; the new restart assertion had incorrectly expected the normal scenario's pinned controls. The assertion now checks the three preferences for each scenario. macOS 1.140 passed the source suite and the installed mascot/pet/photo cases, but the installed fidget case failed reopening its picker after reload. That case now explicitly restores keyboard focus before opening it; the broader editor scenario retains mouse-opening coverage. Updated local desktop smoke passes in 46.4 seconds and the installed 1.140 fidget case passes in 22.2 seconds. Fresh hosted verification is required for these follow-ups.
+
 The records below describe the earlier 0.8.0/0.5.0 trial.
 
 ## Earlier local verification - 2026-11-05

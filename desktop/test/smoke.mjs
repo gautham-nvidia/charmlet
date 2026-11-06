@@ -750,10 +750,12 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   await expect(fourth.window.locator('#stage')).toHaveAttribute('data-charm', 'live:cali');
   await expect(fourth.window.locator('#mascot-bubble')).toBeHidden();
   await expect(fourth.window.locator('.win-sparkles')).toHaveCount(0);
-  // The earlier preference checks pinned these controls. Cali must preserve
-  // that explicit choice; the first launch separately checks the minimal default.
-  await expect(fourth.window.locator('body')).toHaveAttribute('data-desktop-tools', 'true');
-  await expect(fourth.window.locator('body')).toHaveAttribute('data-desktop-pinned-toolbar', 'true');
+  // Native click-through checks explicitly unpin the earlier saved controls.
+  // Restart must preserve the choices made by the active scenario.
+  await expect(fourth.window.locator('body')).toHaveAttribute('data-desktop-tools', String(!nativeInput));
+  await expect(fourth.window.locator('body')).toHaveAttribute('data-desktop-pinned-toolbar', String(!nativeInput));
+  assert.deepEqual((await diagnostic(fourth.application)).desktopView,
+    { background: !nativeInput, toolbarPinned: !nativeInput, messagesPinned: !nativeInput });
   await openTools(fourth.window);
   await fourth.window.getByRole('button', { name: 'Focus', exact: true }).click();
   await fourth.window.locator('#mascot-settings summary').click();

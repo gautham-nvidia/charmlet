@@ -821,7 +821,12 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		await command(editor.window, 'Charmlet: Show Charm');
 		let frame = await readyFrame(editor.window);
 		const choose = async (name: string, group: string) => {
-			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+			// Restore keyboard focus after reload/captures. The broader editor
+			// scenario separately exercises opening the picker with the mouse.
+			const browse = frame.getByRole('button', { name: 'Browse charms', exact: true });
+			await browse.focus();
+			await expect(browse).toBeFocused();
+			await editor.window.keyboard.press('Enter');
 			await expect(frame.locator('#charm-picker')).toBeVisible();
 			await expect.poll(async () => (await frame.locator('#charm-groups button').allTextContents()).slice(0, 3))
 				.toEqual(['All', 'Live 3D', 'Stress Busters']);
