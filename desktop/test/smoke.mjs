@@ -181,7 +181,9 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
           '-StartX', String(start.x), '-StartY', String(start.y), '-EndX', String(end.x), '-EndY', String(end.y),
           '-WindowHandle', handles.main, '-SurfaceHandle', handles.surface,
           '-CanvasWidth', String(canvas.width), '-CanvasHeight', String(canvas.height),
-        ], { timeout: 10000, windowsHide: true });
+        // Include PowerShell startup and Add-Type compilation on a cold runner.
+        // The gesture and its position/focus assertions keep their own bounds.
+        ], { timeout: 30000, windowsHide: true });
         evidence.actions.push(JSON.parse(stdout));
       };
       const surfaceState = () => application.evaluate(async () => ({

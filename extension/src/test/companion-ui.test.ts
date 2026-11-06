@@ -822,9 +822,9 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		let frame = await readyFrame(editor.window);
 		const choose = async (name: string, group: string) => {
 			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
-			expect(await frame.locator('#charm-groups button').allTextContents()).toEqual(
-				expect.arrayContaining(['All', 'Live 3D', 'Stress Busters']));
-			expect((await frame.locator('#charm-groups button').allTextContents()).slice(0, 3)).toEqual(['All', 'Live 3D', 'Stress Busters']);
+			await expect(frame.locator('#charm-picker')).toBeVisible();
+			await expect.poll(async () => (await frame.locator('#charm-groups button').allTextContents()).slice(0, 3))
+				.toEqual(['All', 'Live 3D', 'Stress Busters']);
 			await frame.locator('#charm-groups').getByRole('button', { name: group, exact: true }).click();
 			await frame.getByRole('button', { name: `Select ${name}`, exact: true }).click();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
@@ -898,9 +898,15 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		expect(Number(await frame.locator('#live-smiley').getAttribute('data-first-frame-gaze'))).toBeGreaterThan(.1);
 		await testInfo.attach('first-frame-response', { body: JSON.stringify(await frame.locator('#live-smiley').evaluate(node => ({ ...((node as HTMLElement).dataset) }))), contentType: 'application/json' });
 		await expect.poll(async () => Math.abs(Number(await frame.locator('#live-smiley').getAttribute('data-gaze-x')))).toBeLessThan(.002);
-		const rested = await frame.locator('#live-smiley').getAttribute('data-frames');
-		await editor.window.waitForTimeout(150);
-		expect(await frame.locator('#live-smiley').getAttribute('data-frames')).toBe(rested);
+		await expect(frame.locator('#live-smiley')).toHaveAttribute('data-motion', 'live');
+		// A periodic blink may overlap the first sample. Require a complete idle
+		// interval while visible; a continuously running renderer cannot pass.
+		await expect.poll(async () => {
+			const rested = await frame.locator('#live-smiley').getAttribute('data-frames');
+			await editor.window.waitForTimeout(150);
+			return await frame.locator('#live-smiley').getAttribute('data-frames') === rested;
+		}, { timeout: 5000, intervals: [100] }).toBe(true);
+		await expect(frame.locator('#live-smiley')).toBeVisible();
 	} finally { await closeOwnedEditor(editor, testInfo); }
 });
 
