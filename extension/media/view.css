@@ -37,6 +37,19 @@ button:disabled { opacity: 0.5; cursor: default; }
 #cord { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 #thread { fill: none; stroke: #d3927b; stroke-width: 2; stroke-linecap: round; }
 .win-sparkles { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+.mascot-bubble {
+  position: absolute; z-index: 3; pointer-events: none; padding: 10px 13px;
+  border: 1px solid var(--vscode-widget-border, #bda36e66); border-radius: 15px;
+  background: var(--surface); color: var(--ink); box-shadow: 0 5px 18px #00000025;
+  font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; animation: mascot-appear .16s ease-out;
+}
+.mascot-bubble p { margin: 3px 0 0; }
+.mascot-badge { color: var(--quiet); font-size: 10px; font-weight: 600; letter-spacing: .04em; }
+.mascot-bubble[data-still="true"] { animation: none; }
+@keyframes mascot-appear { from { opacity: 0; } to { opacity: 1; } }
+#mascot-settings { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--quiet); }
+#mascot-settings summary { cursor: pointer; font-weight: 600; }
+#mascot-settings .care-choice { margin-block: 8px; }
 .win-sparkles i {
   position: absolute; width: 9px; height: 9px; margin: -4px;
   clip-path: polygon(50% 0, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0 50%, 35% 35%);
@@ -46,6 +59,13 @@ button:disabled { opacity: 0.5; cursor: default; }
   0% { transform: translate(0, 0) scale(.3); opacity: 0; }
   15% { opacity: 1; }
   100% { transform: translate(var(--win-x), var(--win-y)) scale(.7); opacity: 0; }
+}
+.win-sparkles[data-kind="confetti"] i { width: 5px; height: 8px; border-radius: 1px; clip-path: none; animation-name: win-confetti; }
+@keyframes win-confetti {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  15% { opacity: 1; }
+  55% { transform: translate(var(--win-x), calc(var(--win-y) - 20px)) rotate(160deg); opacity: 1; }
+  100% { transform: translate(var(--win-x), calc(var(--win-y) + 48px)) rotate(320deg); opacity: 0; }
 }
 .win-sparkles[data-still="true"] i { display: none; animation: none; }
 .win-sparkles[data-still="true"] i:first-child { display: block; opacity: 1; transform: translate(30px, -35px); }

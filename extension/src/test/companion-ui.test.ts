@@ -910,6 +910,140 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 	} finally { await closeOwnedEditor(editor, testInfo); }
 });
 
+test(`${installedPersonalization ? 'installed VSIX' : 'mascot companion'} keeps personal encouragement optional and includes the new pets`, async ({}, testInfo) => {
+	test.setTimeout(180000);
+	const editor = await launchOwnedEditor('charmlet-mascot-', ({ preferencesPath }) => {
+		writeFileSync(preferencesPath, JSON.stringify({
+			...DEFAULT_STATE, charmId: 'live:cali', charmPinned: true, reducedMotion: true, rotateMessages: false,
+		}));
+	}, installedPersonalization);
+	try {
+		await editor.window.emulateMedia({ reducedMotion: 'no-preference' });
+		await command(editor.window, 'Charmlet: Show Charm');
+		let frame = await readyFrame(editor.window);
+		const focus = async () => {
+			await frame.getByRole('button', { name: 'Focus', exact: true }).focus();
+			await editor.window.keyboard.press('Enter');
+			await expect(frame.locator('#companion-tools')).toBeVisible();
+		};
+		const appearance = async () => {
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).focus();
+			await editor.window.keyboard.press('Enter');
+			await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).focus();
+			await editor.window.keyboard.press('Enter');
+			await expect(frame.locator('#settings')).toBeVisible();
+		};
+		const face = () => frame.locator('#live-smiley');
+		await expect(face()).toHaveAttribute('data-character', 'cali');
+		await expect(face()).toHaveAttribute('data-renderer', /^(webgl|canvas)$/);
+		await expect(frame.locator('#mascot-bubble')).toBeVisible();
+		await expect(frame.locator('#mascot-bubble')).toHaveCSS('pointer-events', 'none');
+		await expect(frame.locator('#mascot-bubble')).toHaveCSS('animation-name', 'none');
+		const geometry = await frame.evaluate(() => {
+			const body = document.getElementById('charm')!.getBoundingClientRect();
+			const bubble = document.getElementById('mascot-bubble')!.getBoundingClientRect();
+			return { separate: bubble.right <= body.left || bubble.left >= body.right || bubble.bottom <= body.top || bubble.top >= body.bottom,
+				intercepts: document.getElementById('mascot-bubble')!.contains(document.elementFromPoint(bubble.x + bubble.width / 2, bubble.y + bubble.height / 2)) };
+		});
+		expect(geometry).toEqual({ separate: true, intercepts: false });
+		await frame.locator('#charm').focus();
+		await editor.window.keyboard.press('Enter');
+		await expect(frame.locator('#charm')).toBeFocused();
+		await expect(face()).toHaveAttribute('data-expression', 'happy');
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('cali-encouragement.png') });
+		await expect(face()).toHaveAttribute('data-expression', 'smile');
+		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('cali-live.png') });
+		if (await face().getAttribute('data-renderer') === 'webgl') {
+			await face().evaluate(canvas => (canvas as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext());
+		}
+		await expect(face()).toHaveAttribute('data-renderer', 'canvas');
+		expect(await face().evaluate(canvas => (canvas as HTMLCanvasElement).getContext('2d')!.getImageData(108, 111, 1, 1).data[3])).toBe(255);
+		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('cali-fallback.png') });
+
+		await focus();
+		await frame.locator('#mascot-settings summary').click();
+		await frame.locator('#mascot-name').fill('Ada');
+		// An edit made while the first save is in flight must remain an unsaved draft.
+		await frame.evaluate(() => {
+			document.getElementById('mascot-save')!.click();
+			const name = document.getElementById('mascot-name') as HTMLInputElement;
+			name.value = 'River'; name.dispatchEvent(new Event('input', { bubbles: true }));
+		});
+		await expect(frame.locator('#stage')).toHaveAttribute('data-companion-persisted', 'true');
+		expect(JSON.parse(readFileSync(editor.companionPath, 'utf8')).mascot.name).toBe('Ada');
+		await expect(frame.locator('#mascot-name')).toHaveValue('River');
+		const mascotTrace = await tracePointerInput(editor.window);
+		await frame.locator('#mascot-save').click();
+		await savePointerTrace(editor, mascotTrace, testInfo.outputPath('mascot-save-pointer.json'));
+		await testInfo.attach('mascot-save-state', {
+			body: JSON.stringify(await frame.evaluate(() => ({
+				name: (document.getElementById('mascot-name') as HTMLInputElement).value,
+				active: document.activeElement?.id,
+				disabled: (document.getElementById('mascot-save') as HTMLButtonElement).disabled,
+				aria: document.getElementById('mascot-save')!.getAttribute('aria-disabled'),
+				stage: { ...document.getElementById('stage')!.dataset },
+				text: document.getElementById('companion-tools')!.innerText,
+			}))), contentType: 'application/json',
+		});
+		await expect.poll(() => JSON.parse(readFileSync(editor.companionPath, 'utf8')).mascot.name).toBe('River');
+		await frame.locator('#focus-intent').fill('One concrete step');
+		await frame.locator('#focus-start').click();
+		await expect(frame.locator('#focus-status')).toHaveText('Focusing');
+		await frame.locator('#companion-close').click();
+		await expect(frame.locator('#mascot-words')).toContainText('River: You have started');
+		await expect(frame.locator('#mascot-bubble')).toBeVisible();
+		await appearance();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		await focus();
+		await frame.locator('#small-wins summary').click();
+		await frame.locator('#wins-celebrate').check();
+		await expect.poll(() => JSON.parse(readFileSync(editor.companionPath, 'utf8')).wins.celebrate).toBe(true);
+		await frame.locator('#win-label').fill('Finished one concrete step');
+		await frame.locator('#win-add').click();
+		await expect(frame.locator('.win-sparkles[data-kind="confetti"][data-still="false"]')).toHaveCount(1);
+		await expect(frame.locator('.win-sparkles i').first()).toHaveCSS('animation-name', 'win-confetti');
+		await frame.locator('#companion-close').click();
+		await expect(frame.locator('#mascot-words')).toContainText('River: That small win counts');
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('cali-small-win.png') });
+
+		await focus();
+		await frame.locator('#focus-stop').click();
+		await expect(frame.locator('#focus-status')).toHaveText('Ready to focus');
+		await frame.locator('#mascot-enabled').uncheck();
+		await frame.locator('#mascot-nudges').uncheck();
+		await frame.locator('#mascot-save').click();
+		await expect.poll(() => JSON.parse(readFileSync(editor.companionPath, 'utf8')).mascot)
+			.toEqual({ enabled: false, focusNudges: false, name: 'River' });
+		await frame.locator('#companion-close').click();
+		await expect(frame.locator('#mascot-bubble')).toBeHidden();
+		frame = await reloadCharm(editor.window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'live:cali');
+		await expect(frame.locator('#mascot-bubble')).toBeHidden();
+		await expect(frame.locator('.win-sparkles')).toHaveCount(0);
+		await focus();
+		await frame.locator('#mascot-settings summary').click();
+		await expect(frame.locator('#mascot-name')).toHaveValue('River');
+		await expect(frame.locator('#mascot-enabled')).not.toBeChecked();
+		await expect(frame.locator('#mascot-nudges')).not.toBeChecked();
+		await frame.locator('#companion-close').click();
+		const pets = ['giant-panda', 'golden-retriever', 'labrador', 'german-shepherd', 'husky', 'corgi', 'beagle', 'goldendoodle', 'silver-tabby', 'tuxedo-cat'];
+		for (const id of pets) {
+			await appearance();
+			await frame.locator('#charm-select').selectOption(`trial:new-${id}`);
+			await frame.locator('#settings-close').click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', `trial:new-${id}`);
+			await expect.poll(() => frame.locator('#charm-image').evaluate(node => {
+				const image = node as HTMLImageElement;
+				return image.complete && image.naturalWidth === 216;
+			})).toBe(true);
+			await expect(face()).toBeHidden();
+			expect(await alphaAtCordTip(frame)).toBeGreaterThan(80);
+			await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`pet-${id}.png`) });
+		}
+	} finally { await closeOwnedEditor(editor, testInfo); }
+});
+
 test(`${installedPersonalization ? 'installed VSIX' : 'personalization'} keeps local photos, wins and a quiet live smiley`, async ({}, testInfo) => {
 	test.setTimeout(180000);
 	const editor = await launchOwnedEditor('charmlet-personalization-', ({ preferencesPath }) => {

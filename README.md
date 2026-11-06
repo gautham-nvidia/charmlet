@@ -2,11 +2,11 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Phase 9 candidate, 2026-11-05:** **0.8.0** includes **156 offline charms**: 149 rendered designs, Terminal, three live 3D companions and three interactive fidget tools. Sunny responds promptly; Nimbus the cloud and Byte the robot add distinct faces. The spinner, bubble-pop charm and worry stone join the existing smiley balls and squishies. [Verification and release gates](docs/phase-9-live-fidgets-hosting.md) track this candidate. The matched cords, small wins, local photos, colour artwork and eighteen-flower garden from [Phase 8](docs/phase-8-personalization.md) carry forward.
+**Phase 9 candidate, 2026-11-06:** **0.9.0** includes **167 offline charms**: 159 rendered designs, Terminal, four live 3D companions and three interactive fidget tools. **Cali**, a California-inspired golden bear, adds personal encouragement, focus prompts and optional win confetti. Sunny, Nimbus and Byte retain their prompt live reactions. Ten new pets include a giant panda, seven dog breeds and two cats. The spinner, bubble-pop charm and worry stone join the existing smiley balls and squishies. [Verification and release gates](docs/phase-9-live-fidgets-hosting.md) track this candidate; matched cords, small wins, local photos and the eighteen-flower garden carry forward.
 
-Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **150 selected designs**, including the original Terminal and all eighteen flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. The separate website Photo Studio's paid access remains disabled; creating local photo charms inside the app is free.
+Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **160 selected designs**, including the original Terminal and all eighteen flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. The separate website Photo Studio's paid access remains disabled; creating local photo charms inside the app is free.
 
-**Desktop 0.5.0 candidate:** starts with only the charm and cord. Hover for Move and Tools; open one control panel at a time, with optional background, toolbar and messages. Live 3D and Stress Busters appear first in the picker. Pulls use the available screen space. See the [desktop guide](desktop/README.md).
+**Desktop 0.6.0 candidate:** starts with only the charm and cord. Hover for Move and Tools; open one control panel at a time, with optional background, toolbar and messages. Choose Cali for brief encouragement bubbles, or turn those off under Focus. Live 3D and Stress Busters appear first in the picker. Pulls use the available screen space. See the [desktop guide](desktop/README.md).
 
 The website has a [Vercel setup guide](docs/vercel-hosting.md) for the owner's `greensilver-personal` team. [Monetization and checkout setup](docs/monetization-and-payments.md) compares one-time packs, Stripe and hosted digital delivery. Prices are proposals; live sales are not enabled.
 
@@ -29,7 +29,11 @@ preference, while the visible cord may temporarily shorten to fit the current pa
 
 Hold a Stress Buster to squeeze, or hold Space/Enter with the charm focused. Choose happy, determined, calm or winking smiley balls, a soft heart, thumbs-up or rocket, or the original Stress Ball and Squishy Star. Release to let it recover. The cord stays attached; Reduced Motion removes the transition and bounce.
 
-**Charms > Live 3D** offers Sunny, Nimbus and Byte. Their lit shapes glance toward the pointer, greet, wink and react to holds and wins, then rest between interactions. Reduced Motion stops idle animation; canvas fallback retains the interactions when WebGL is unavailable.
+**Charms > Live 3D** offers Cali, Sunny, Nimbus and Byte. Their lit shapes glance toward the pointer, greet, wink and react to holds and wins, then rest between interactions. Reduced Motion stops idle animation; canvas fallback retains the interactions when WebGL is unavailable.
+
+**Cali** cheers for your next small step with brief text bubbles. Click or press Enter for encouragement; focus sessions add start, halfway and completion cues. **Focus > Cali's encouragement** lets you add an optional name, turn bubbles off or disable focus prompts. Words and preferences stay on the device. Escape dismisses a bubble; bubbles never take focus or block a desktop click. Enable **Celebrate milestones** under Small wins for Cali's win confetti. Everything is silent, and celebrations stay still with Reduced Motion.
+
+The new pets are **Giant Panda**, **Golden Retriever**, **Labrador**, **German Shepherd**, **Husky**, **Corgi**, **Beagle** and **Goldendoodle**, with just two new cats: **Silver Tabby** and **Tuxedo Cat**. They join the existing pets under **Animals**.
 
 **Charms > Stress Busters** also offers a working Fidget Spinner, reusable Bubble Pop and Worry Stone. Tap/flick to spin, tap bubbles to press them in/out, or hold and rub the stone. Space/Enter work too. The tools are silent and have no scores.
 
@@ -73,10 +77,13 @@ unchanged. After rebuilding, reload that demo window to load the updated code.
 3. Click to nudge or pull and release to return to rest. Switch on **Orbit layout** before dragging a full loop. A straight upward pull retracts the charm; the restore arrow brings it back.
 4. Click **Charms** to search/select artwork, or **Settings → Appearance** for size and resting cord. Escape closes the open panel.
 
-| Group | Bundled charms |
+| Try | Examples |
 |---|---|
-| Silicon & Code | Terminal, Chip, Wafer, Circuit, Transistor, Memory Stack |
-| Good Luck | Evil Eye, Drishti Doll, Hamsa, Lemon & Chilies |
+| Live 3D | Cali, Sunny, Nimbus and Byte |
+| Stress Busters | Fidget Spinner, Bubble Pop, Worry Stone, smiley balls and squishies |
+| Animals | Giant Panda, Goldendoodle, Husky and the other new and existing pets |
+| Test Bench | ATE Tester, Oscilloscope, Tweezers and other lab tools |
+| Garden Flowers | Eighteen varieties, including four rose colours, jasmine and lily |
 
 Extra free charms use validated `.charmlet.json` files. Run **Charmlet: Import Charm Pack** to add one and
 **Charmlet: Remove Charm Pack** to remove an imported pack. Imported PNG artwork is stored separately
@@ -94,7 +101,7 @@ npm.cmd --prefix extension test
 npm.cmd --prefix extension run package:vsix
 ```
 
-`test` builds and lints both bundles, runs the state/physics, pack, focus/learning/garden/care, persistence and file-store unit suites and six real-editor interaction
+`test` builds and lints both bundles, runs the state/physics, pack, focus/learning/garden/care, persistence and file-store unit suites and real-editor interaction
 regressions. It launches a disposable VS Code profile and edits only a temporary file. The test window
 ignores physical mouse input during automation. Set `VSCODE_TEST_VERSION` to select an exact cached/
 downloaded host; otherwise it uses the installed VS Code, with `VSCODE_EXECUTABLE` as an override.

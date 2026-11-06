@@ -15,11 +15,11 @@ const archived = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
 const review = JSON.parse(await readFile(join(root, 'art-review.json'), 'utf8'));
 const target = review.items.filter(item => item.featured && item.decision !== 'original');
 const originalIds = ['terminal'];
-const liveIds = ['live:smiley', 'live:cloud', 'live:robot', 'fidget:spinner', 'fidget:bubbles', 'fidget:stone'];
+const liveIds = ['live:cali', 'live:smiley', 'live:cloud', 'live:robot', 'fidget:spinner', 'fidget:bubbles', 'fidget:stone'];
 const trialCount = target.length + liveIds.length;
 const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
 const expectedWorldCounts = {
-  live: 3, ai: 1, coding: 0, silicon: 7, testing: 9, animals: 3, trees: 3, space: 5, parks: 6,
+  live: 4, ai: 1, coding: 0, silicon: 7, testing: 9, animals: 13, trees: 3, space: 5, parks: 6,
   cities: 6, culture: 8, sports: 5, luck: 2, stress: 12, seasonal: 22,
   'solar-system': 10, gemstones: 8, zodiac: 12, sacred: 15, flowers: 18,
 };

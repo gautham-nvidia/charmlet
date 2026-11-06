@@ -2084,5 +2084,145 @@
       "x": 0.4976851851851852,
       "y": 0.06746031746031746
     }
+  },
+  {
+    "id": "trial:new-giant-panda",
+    "name": "Giant Panda",
+    "file": "trial-new-giant-panda-r1-p3.png",
+    "description": "Giant Panda, included in the complete trial collection.",
+    "accent": "#b8c8bc",
+    "group": "Animals",
+    "artworkKey": "new-giant-panda",
+    "artworkHash": "dd61ccdbf576841c53e72610a4f407dce42184980b96a8b1d5e5767cc19517d1",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.0873015873015873
+    }
+  },
+  {
+    "id": "trial:new-golden-retriever",
+    "name": "Golden Retriever",
+    "file": "trial-new-golden-retriever-r1-p3.png",
+    "description": "Golden Retriever, included in the complete trial collection.",
+    "accent": "#d7a85c",
+    "group": "Animals",
+    "artworkKey": "new-golden-retriever",
+    "artworkHash": "58ffa169fd8eb4a40ddba94cb79c4c366f64d8f2c4ee3816694e5d6da8588719",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07539682539682539
+    }
+  },
+  {
+    "id": "trial:new-labrador",
+    "name": "Labrador",
+    "file": "trial-new-labrador-r1-p3.png",
+    "description": "Labrador, included in the complete trial collection.",
+    "accent": "#9e7355",
+    "group": "Animals",
+    "artworkKey": "new-labrador",
+    "artworkHash": "6d3cf7ad098f9cf05a57449e08d04804ef0b5037a99682768410c4eb27ad096d",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.12301587301587301
+    }
+  },
+  {
+    "id": "trial:new-german-shepherd",
+    "name": "German Shepherd",
+    "file": "trial-new-german-shepherd-r1-p3.png",
+    "description": "German Shepherd, included in the complete trial collection.",
+    "accent": "#b99262",
+    "group": "Animals",
+    "artworkKey": "new-german-shepherd",
+    "artworkHash": "2757c77179577d608cdde8231d56173b6626b3441e1d9cc1cce936a1eb9118ff",
+    "attachment": {
+      "x": 0.4236111111111111,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-husky",
+    "name": "Husky",
+    "file": "trial-new-husky-r1-p3.png",
+    "description": "Husky, included in the complete trial collection.",
+    "accent": "#90a9bd",
+    "group": "Animals",
+    "artworkKey": "new-husky",
+    "artworkHash": "11f8d528315e37eaa3b07c1302d43799ed619495c854c809b823489656b79e43",
+    "attachment": {
+      "x": 0.5671296296296297,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:new-corgi",
+    "name": "Corgi",
+    "file": "trial-new-corgi-r1-p3.png",
+    "description": "Corgi, included in the complete trial collection.",
+    "accent": "#d79558",
+    "group": "Animals",
+    "artworkKey": "new-corgi",
+    "artworkHash": "e1da1aa8c813a3213845afc0d137834b5739301da97b26657125fb9f2bd7e4d7",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-beagle",
+    "name": "Beagle",
+    "file": "trial-new-beagle-r1-p3.png",
+    "description": "Beagle, included in the complete trial collection.",
+    "accent": "#c48c62",
+    "group": "Animals",
+    "artworkKey": "new-beagle",
+    "artworkHash": "730fbfd5eed28eaae5d01052422c0571972b2d20f985e59bb0cfe3407aeaf23f",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.09523809523809523
+    }
+  },
+  {
+    "id": "trial:new-goldendoodle",
+    "name": "Goldendoodle",
+    "file": "trial-new-goldendoodle-r1-p3.png",
+    "description": "Goldendoodle, included in the complete trial collection.",
+    "accent": "#d6ac78",
+    "group": "Animals",
+    "artworkKey": "new-goldendoodle",
+    "artworkHash": "93cbd545083a8523c8b68cc408e0a1e69f307046645ac30368beeeb6b2b80edb",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-silver-tabby",
+    "name": "Silver Tabby",
+    "file": "trial-new-silver-tabby-r1-p3.png",
+    "description": "Silver Tabby, included in the complete trial collection.",
+    "accent": "#a5a7af",
+    "group": "Animals",
+    "artworkKey": "new-silver-tabby",
+    "artworkHash": "4a5e3332a84ca0fecbeaec751872df6dc8bcf7a5177cb29f7b1a2d686e4096ea",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.12301587301587301
+    }
+  },
+  {
+    "id": "trial:new-tuxedo-cat",
+    "name": "Tuxedo Cat",
+    "file": "trial-new-tuxedo-cat-r1-p3.png",
+    "description": "Tuxedo Cat, included in the complete trial collection.",
+    "accent": "#9aabb5",
+    "group": "Animals",
+    "artworkKey": "new-tuxedo-cat",
+    "artworkHash": "ea3276b869724ab2ffced37ba3f63b395d06c28b707ce37008c768512126a674",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.12301587301587301
+    }
   }
 ]

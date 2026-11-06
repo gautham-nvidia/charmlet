@@ -8,12 +8,12 @@ This is a proposal requested by the owner on 2026-11-05. No price, paid product,
 
 | Offer | Proposed price (USD) | What the buyer gets |
 |---|---:|---|
-| Free app | $0 | Focus, garden, small wins, local photo charms, importer, basic cords, Sunny and basic fidgets, plus a selected starter collection |
+| Free app | $0 | Focus, garden, small wins, local photo charms, importer, basic cords, Cali and the basic live companions/fidgets, plus a selected starter collection |
 | Optional themed pack | $4.99 once | 5-8 new, approved original artworks and future fixes to that pack |
 | Three-pack bundle | $12.99 once | Three named packs, delivered as separate importable files |
 | Optional support | Around $5 once | Support for the project, clearly described without implying exclusive content or all future products |
 
-Choose one or two distinctive themes first, such as original South Indian everyday objects or a recognizable lab collection. Quality and a clear theme are more useful than a very large catalogue. The current trial keeps all 156 charms available; the public bundle and any future paid additions still need the owner's selection.
+Choose one or two distinctive themes first, such as original South Indian everyday objects or a recognizable lab collection. Quality and a clear theme are more useful than a very large catalogue. The current trial keeps all 167 charms available; the public bundle and any future paid additions still need the owner's selection.
 
 Do not remove already promised free functionality to manufacture a paid tier. Local photos are already free. The older paid website Photo Studio proposal is poor launch value now that the apps can make photo charms locally; leave it disabled unless it gains a separate useful service.
 

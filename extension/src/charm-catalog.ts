@@ -27,6 +27,10 @@ export const RETIRED_CHARMS: Readonly<Record<string, string>> = Object.freeze({
 });
 export const TRIAL_CHARMS: readonly CharmDefinition[] = trialCharms;
 export const LIVE_CHARMS: readonly CharmDefinition[] = [{
+	id: 'live:cali', name: 'Cali - Live Mascot', file: 'live-cali.svg', group: 'Live 3D', accent: '#dcaa65',
+	description: 'A California-inspired golden bear cheering for your next small step. Click for encouragement; focus prompts and celebrations are optional.',
+	attachment: { x: .5, y: 2.5 / 84 },
+}, {
 	id: 'live:smiley', name: 'Sunny - Live Smiley', file: 'live-smiley.svg', group: 'Live 3D', accent: '#f3cd48',
 	description: 'A sunny 3D stress ball with quick glances, blinks and a playful wink. Hold to squish; release to bounce.',
 	attachment: { x: .5, y: 2.5 / 84 },
@@ -87,7 +91,7 @@ export function getCharm(id: unknown, charms: readonly CharmDefinition[] = CHARM
 const SOFT_CHARM_KEYS = new Set([
 	'stress-ball', 'squishy-star',
 	'smiley-happy', 'smiley-determined', 'smiley-calm', 'smiley-wink',
-	'emoji-heart', 'emoji-thumbs-up', 'emoji-rocket', 'smiley', 'cloud',
+	'emoji-heart', 'emoji-thumbs-up', 'emoji-rocket', 'smiley', 'cloud', 'cali',
 ]);
 
 export function isSoftCharm(id: string): boolean {

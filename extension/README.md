@@ -1,9 +1,9 @@
 # Charmlet: Coding Charms
 
-156 offline trial charms with matched cords, three live 3D companions, interactive fidgets, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders.
+167 offline trial charms with matched cords, four live 3D companions, interactive fidgets, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Live companions and fidgets trial, version 0.8.0.** Charmlet lives in a dockable VS Code view, not over your code
+**Cali and pets trial, version 0.9.0.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 It also works in Restricted Mode without asking you to trust workspace code.
 
@@ -26,13 +26,17 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 8. Click **Garden**, then **Plant a seed**, or run **Charmlet: Open Garden**. Water once per local day and earn an original flower after eleven valid waterings. Optional water/move schedules live under **Settings → Reminders**.
 9. Run **Charmlet: Import Charm Pack** for a free downloaded `.charmlet.json`; remove imported packs with **Charmlet: Remove Charm Pack**.
 
-The trial includes 149 rendered designs: recognizable components and lab instruments, animals, trees, cities and parks, local culture and sports, Stress Busters, all eight planets plus Sun and Moon, galaxies, eight gemstones, twelve zodiac signs, 22 seasonal designs, fifteen sacred-tradition designs and eighteen flower illustrations. Terminal, three live companions and three fidget tools bring the total to 156. Open **Charms** to search and filter them; no separate imports are needed.
+The trial includes 159 rendered designs: recognizable components and lab instruments, animals, trees, cities and parks, local culture and sports, Stress Busters, all eight planets plus Sun and Moon, galaxies, eight gemstones, twelve zodiac signs, 22 seasonal designs, fifteen sacred-tradition designs and eighteen flower illustrations. Terminal, four live companions and three fidget tools bring the total to 167. Open **Charms** to search and filter them; no separate imports are needed.
+
+New in **Animals**: Giant Panda, Golden Retriever, Labrador, German Shepherd, Husky, Corgi, Beagle and Goldendoodle, plus Silver Tabby and Tuxedo Cat.
 
 Grow red, pink, white and yellow roses, jasmine and lily alongside the original twelve garden flowers. Each seed still blooms after eleven daily waterings. Existing plants and collected flowers are preserved, and seeds choose flowers you have not collected before returning to familiar varieties.
 
 The nine early designs have retired from the picker. Saved choices, pins and cord materials move to the matching newer artwork. The garden now shows natural soil, terracotta and foliage; earned flowers use the current rendered artwork while keeping their saved IDs, dates and bloom counts.
 
-**Charms > Live 3D** offers Sunny, Nimbus the cloud and Byte the robot. They glance promptly toward a nearby pointer, greet you, blink and react to holds, releases and wins. They rest between interactions. Reduced Motion stops idle animation; unavailable graphics support falls back to a canvas rendering. Painted colour figures replace the bronze deity artwork, with seated Shiva available separately from Nataraja.
+**Charms > Live 3D** offers Cali the golden bear, Sunny, Nimbus the cloud and Byte the robot. They glance promptly toward a nearby pointer, greet you, blink and react to holds, releases and wins. They rest between interactions. Reduced Motion stops idle animation; unavailable graphics support falls back to a canvas rendering. Painted colour figures replace the bronze deity artwork, with seated Shiva available separately from Nataraja.
+
+**Cali** is an original California-inspired mascot. Click or press Enter for a short encouragement bubble; focus sessions add start, halfway and completion cues. Under **Focus > Cali's encouragement**, add an optional name, turn bubbles off or disable focus prompts. Escape dismisses a bubble. Text stays local and never takes keyboard focus. Enable celebrations under Small wins for confetti when you record a new win or complete a live focus session; everything stays silent, and Reduced Motion keeps celebrations still.
 
 **Charms > Stress Busters** puts the smiley balls, squishies and three new tools together. Tap or flick **Fidget Spinner** and watch its rotor coast to a stop; press any **Bubble Pop** bubble to turn it in or out; hold and rub **Worry Stone** to rock it gently. Space/Enter operate each tool too. Everything is silent, with no scores or streaks.
 

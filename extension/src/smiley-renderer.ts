@@ -49,7 +49,21 @@ vec4 surface(vec2 p) {
   float radius = dot(p, p);
   vec3 normal = normalize(vec3(p, sqrt(max(0.0, 1.0 - radius))));
   float alpha = 1.0 - smoothstep(0.97, 1.015, radius);
-  if (character > 0.5 && character < 1.5) {
+  if (character > 2.5) {
+    float cheer = max(happy, greeting);
+    vec3 lobes[8] = vec3[8](vec3(0.0, 0.30, 0.57),
+      vec3(-0.50, 0.82, 0.23), vec3(0.50, 0.82, 0.23), vec3(0.0, -0.49, 0.44),
+      vec3(-0.65, -0.29 + cheer * 0.50, 0.22), vec3(0.65, -0.29 + cheer * 0.50, 0.22),
+      vec3(-0.30, -0.91, 0.19), vec3(0.30, -0.91, 0.19));
+    float depth = -1.0;
+    alpha = 0.0;
+    for (int i = 0; i < 8; i++) {
+      vec2 local = p - lobes[i].xy;
+      float z = sqrt(max(0.0, lobes[i].z * lobes[i].z - dot(local, local)));
+      alpha = max(alpha, 1.0 - smoothstep(lobes[i].z - 0.012, lobes[i].z + 0.012, length(local)));
+      if (z > depth) { normal = normalize(vec3(local, max(0.01, z))); depth = z; }
+    }
+  } else if (character > 0.5 && character < 1.5) {
     vec3 lobes[5] = vec3[5](vec3(-0.51, -0.06, 0.47), vec3(0.51, -0.06, 0.47),
       vec3(-0.25, 0.30, 0.55), vec3(0.20, 0.24, 0.62), vec3(0.0, -0.22, 0.70));
     float depth = -1.0;
@@ -84,12 +98,27 @@ void main() {
   vec3 ink = vec3(0.036, 0.022, 0.015);
   vec3 eyeWhite = vec3(0.97, 0.96, 0.89);
   if (character > 0.5) { material = vec3(0.64, 0.83, 0.94); ink = vec3(0.025, 0.06, 0.12); }
-  if (character > 1.5) {
+  if (character > 1.5 && character < 2.5) {
     material = vec3(0.30, 0.54, 0.53);
     float screen = 1.0 - smoothstep(-0.01, 0.01, roundedBox(p - vec2(0.0, -0.02), vec2(0.73, 0.57), 0.18));
     material = mix(material, vec3(0.014, 0.035, 0.055), screen);
     ink = vec3(0.25, 1.0, 0.74);
     eyeWhite = vec3(0.18, 0.65, 0.52);
+  }
+  if (character > 2.5) {
+    material = vec3(0.59, 0.30, 0.11);
+    ink = vec3(0.055, 0.026, 0.012);
+    eyeWhite = vec3(0.99, 0.94, 0.82);
+    float cream = max(oval(p, vec2(0.0, -0.51), vec2(0.31, 0.34)),
+      oval(p, vec2(0.0, 0.04), vec2(0.30, 0.20)));
+    cream = max(cream, oval(p, vec2(-0.50, 0.82), vec2(0.12)));
+    cream = max(cream, oval(p, vec2(0.50, 0.82), vec2(0.12)));
+    material = mix(material, vec3(0.94, 0.72, 0.44), cream);
+    float scarf = (1.0 - smoothstep(0.05, 0.08, abs(p.y + 0.15)))
+      * (1.0 - smoothstep(0.27, 0.37, abs(p.x)));
+    material = mix(material, vec3(0.055, 0.42, 0.39), scarf);
+    material = mix(material, ink, oval(p, vec2(0.0, 0.20), vec2(0.105, 0.065)));
+    p = (p - vec2(0.0, 0.30)) / 0.60;
   }
   for (int index = 0; index < 2; index++) {
     float closing = max(max(blink, happy * 0.92), wink * (index == 0 ? 1.0 : 0.0));
@@ -117,14 +146,14 @@ void main() {
   float cheeks = oval(p, vec2(-0.53, -0.15), vec2(0.13, 0.075))
     + oval(p, vec2(0.53, -0.15), vec2(0.13, 0.075));
   material = mix(material, character > 0.5 ? vec3(0.95, 0.46, 0.50) : vec3(0.95, 0.30, 0.12),
-    cheeks * (0.10 + happy * 0.18) * (character > 1.5 ? 0.0 : 1.0));
+    cheeks * (0.10 + happy * 0.18) * (character > 1.5 && character < 2.5 ? 0.0 : 1.0));
   float shine = mix(0.02, 0.28, smoothstep(0.08, 0.35, dot(material, vec3(0.3, 0.6, 0.1))));
   vec3 color = pow(material * lighting + vec3(gloss * shine), vec3(1.0 / 2.2));
   // The silver eyelet and bail meet the top of the sphere at y=17.
   float ringDistance = abs(length((pixel - vec2(36.0, 75.0)) / vec2(5.0, 6.0)) - 1.0);
   float ring = 1.0 - smoothstep(0.12, 0.22, ringDistance);
   float bail = (1.0 - smoothstep(1.0, 1.6, abs(pixel.x - 36.0)))
-    * step(character > 1.5 ? 60.0 : 66.0, pixel.y) * (1.0 - smoothstep(69.0, 70.0, pixel.y));
+    * step(character > 2.5 ? 64.0 : character > 1.5 ? 60.0 : 66.0, pixel.y) * (1.0 - smoothstep(69.0, 70.0, pixel.y));
   float metalAlpha = max(ring, bail) * (1.0 - alpha);
   vec3 metal = mix(vec3(0.48, 0.55, 0.61), vec3(0.94, 0.97, 1.0), clamp((40.0 - pixel.x) / 10.0, 0.0, 1.0));
   color = mix(color, metal, metalAlpha);
@@ -170,7 +199,7 @@ export function createWebGLSmiley(canvas: HTMLCanvasElement): SmileyRenderer | u
 				gl.uniform1f(uniforms.blink, pose.blink);
 				gl.uniform1f(uniforms.pressed, Number(pose.pressed));
 				gl.uniform1f(uniforms.happy, Number(pose.happy));
-				gl.uniform1f(uniforms.character, pose.character === 'sunny' ? 0 : pose.character === 'cloud' ? 1 : 2);
+				gl.uniform1f(uniforms.character, pose.character === 'sunny' ? 0 : pose.character === 'cloud' ? 1 : pose.character === 'robot' ? 2 : 3);
 				gl.uniform1f(uniforms.wink, Number(pose.wink));
 				gl.uniform1f(uniforms.greeting, Number(pose.greeting));
 				gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -181,6 +210,23 @@ export function createWebGLSmiley(canvas: HTMLCanvasElement): SmileyRenderer | u
 		gl.getExtension('WEBGL_lose_context')?.loseContext();
 		return undefined;
 	}
+}
+
+function drawCaliBody(context: CanvasRenderingContext2D, pose: SmileyPose) {
+	const raised = pose.happy || pose.greeting ? 15 : 0;
+	const lobes = [[21, 21, 7], [51, 21, 7], [36, 61, 14],
+		[27, 75, 6], [45, 75, 6], [16.5, 55 - raised, 7], [55.5, 55 - raised, 7], [36, 37, 17.5]];
+	for (const [x, y, radius] of lobes) {
+		const gradient = context.createRadialGradient(x - radius * .35, y - radius * .45, 1, x, y, radius * 1.2);
+		gradient.addColorStop(0, '#f4ca88'); gradient.addColorStop(.5, '#cb9250'); gradient.addColorStop(1, '#855026');
+		context.fillStyle = gradient; context.beginPath(); context.arc(x, y, radius, 0, Math.PI * 2); context.fill();
+	}
+	context.fillStyle = '#edc796';
+	for (const [x, y, rx, ry] of [[21, 21, 3.5, 3.5], [51, 21, 3.5, 3.5], [36, 61, 9, 10], [36, 44, 9, 6]]) {
+		context.beginPath(); context.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); context.fill();
+	}
+	context.fillStyle = '#409d94'; context.beginPath(); context.roundRect(26, 49, 20, 4, 2); context.fill();
+	context.fillStyle = '#36271e'; context.beginPath(); context.ellipse(36, 40, 3.2, 2, 0, 0, Math.PI * 2); context.fill();
 }
 
 /** Keep the same interactions on hosts that cannot create a WebGL context. */
@@ -195,6 +241,7 @@ export function createCanvasSmiley(canvas: HTMLCanvasElement): SmileyRenderer | 
 			context.lineWidth = 1.8; context.strokeStyle = '#aab9c4'; context.lineCap = 'round';
 			context.beginPath(); context.ellipse(36, 9, 5, 6, 0, 0, Math.PI * 2); context.stroke();
 			context.beginPath(); context.moveTo(36, 15); context.lineTo(36, 26); context.stroke();
+			if (pose.character === 'cali') { drawCaliBody(context, pose); }
 			const gradient = context.createRadialGradient(25, 31, 3, 36, 46, 36);
 			const colors = pose.character === 'sunny' ? ['#fff2a7', '#ffdc45', '#bf7d19']
 				: pose.character === 'cloud' ? ['#ffffff', '#d5edf7', '#8cbbd1'] : ['#e0efeb', '#90b9b0', '#426c68'];
@@ -209,15 +256,17 @@ export function createCanvasSmiley(canvas: HTMLCanvasElement): SmileyRenderer | 
 				context.bezierCurveTo(59, 17, 67, 31, 62, 41);
 				context.bezierCurveTo(78, 49, 67, 74, 53, 69);
 				context.bezierCurveTo(42, 77, 24, 76, 17, 69);
-			} else {
+			} else if (pose.character === 'robot') {
 				context.roundRect(5, 39, 62, 15, 4);
 				context.roundRect(10, 23, 52, 46, 7);
 			}
-			context.fill();
+			if (pose.character !== 'cali') { context.fill(); }
 			if (pose.character === 'robot') {
 				context.fillStyle = '#132935'; context.beginPath(); context.roundRect(14, 29, 44, 34, 6); context.fill();
 			}
 			const ink = pose.character === 'robot' ? '#80ffd4' : '#36271e';
+			context.save();
+			if (pose.character === 'cali') { context.translate(36, 37); context.scale(.6, .6); context.translate(-36, -46); }
 			for (const x of [27, 45]) {
 				const closing = Math.max(pose.blink, pose.happy ? .95 : 0, pose.wink && x === 27 ? 1 : 0);
 				context.strokeStyle = ink; context.lineWidth = 1.8;
@@ -240,6 +289,7 @@ export function createCanvasSmiley(canvas: HTMLCanvasElement): SmileyRenderer | 
 				context.fillStyle = '#dc743e55';
 				for (const x of [20, 52]) { context.beginPath(); context.ellipse(x, 50, 4, 2.3, 0, 0, Math.PI * 2); context.fill(); }
 			}
+			context.restore();
 		},
 	};
 }

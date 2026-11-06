@@ -10,7 +10,7 @@ import { curateArtwork, validateCuration } from './art-curation.mjs';
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(join(repo, 'extension/package.json'));
 const { parseCharmPack, packCharms } = require('./out/charm-packs.js');
-const { LIVE_CHARMS, ORIGINAL_CHARMS } = require('./out/charm-catalog.js');
+const { FIDGET_CHARMS, LIVE_CHARMS, ORIGINAL_CHARMS } = require('./out/charm-catalog.js');
 const { FLOWERS } = require('./out/garden-core.js');
 const check = process.argv.includes('--check');
 const site = join(repo, 'website');
@@ -82,6 +82,7 @@ assert.deepEqual(new Set((await readdir(media)).filter(file => /^trial-.*\.png$/
   new Set(catalogue.map(charm => charm.file)), 'Unreferenced trial copies must not enter the package.');
 console.log(JSON.stringify({
   checked: check, trialCharms: catalogue.length, originalCharms: ORIGINAL_CHARMS.length,
-  totalAvailable: catalogue.length + ORIGINAL_CHARMS.length + LIVE_CHARMS.length, liveCharms: LIVE_CHARMS.length, bytesIncluded,
+  totalAvailable: catalogue.length + ORIGINAL_CHARMS.length + LIVE_CHARMS.length + FIDGET_CHARMS.length,
+  liveCharms: LIVE_CHARMS.length, fidgetCharms: FIDGET_CHARMS.length, bytesIncluded,
   groups: [...new Set(catalogue.map(charm => charm.group))],
 }));

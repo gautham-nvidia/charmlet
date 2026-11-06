@@ -7,6 +7,7 @@ import { FLOWERS, WATERINGS_TO_BLOOM, type FlowerId, type GardenStage } from './
 import { gardenArtwork, GARDEN_STAGE_FILES } from './garden-catalog';
 import { learningCard, type FeedMode, type LearningCard } from './learning-cards';
 import { createSmallWinsView } from './small-wins-view';
+import { createMascotControls } from './mascot-controls';
 
 export interface CompanionViewOptions {
 	send(action: CompanionAction, requestId: number): void;
@@ -18,6 +19,8 @@ export interface CompanionViewOptions {
 	onActivity(): void;
 	onMilestone?(count: number): void;
 	onWin?(): void;
+	onSnapshot?(snapshot: CompanionSnapshot): void;
+	selectMascot?(): void;
 }
 
 export interface CompanionView {
@@ -123,6 +126,7 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 	let feedbackText = '';
 	let gardenCollectionKey = '';
 	const winsUI = createSmallWinsView(focusPanel, send, options.onLayout);
+	const mascotControls = createMascotControls(focusPanel, send, () => { options.selectMascot?.(); close(); }, options.onLayout);
 
 	const requestControls: Array<HTMLInputElement | HTMLSelectElement | HTMLButtonElement> = [
 		focusMinutes, breakMinutes, focusIntent, preset25, preset50, focusStart, breakStart,
@@ -348,6 +352,7 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 		cardText(card);
 		renderCare();
 		winsUI.render(state.wins, snapshot.now, !ready || busy);
+		mascotControls.render(state.mascot, !ready || busy);
 		renderGarden(busy);
 		const showRing = focus.status !== 'idle';
 		focusRing.toggleAttribute('hidden', !showRing);
@@ -438,11 +443,12 @@ export function createCompanionView(options: CompanionViewOptions): CompanionVie
 		render();
 		if (milestone !== undefined) { options.onMilestone?.(milestone); }
 		if (earnedWin) { options.onWin?.(); }
+		options.onSnapshot?.(restored);
 	}
 
 	function result(requestId: number, error?: string, message?: string) {
 		if (requestId !== pendingRequest) { return; }
-		if (!error) { winsUI.saved(pendingAction); }
+		if (!error) { winsUI.saved(pendingAction); mascotControls.saved(pendingAction); }
 		pendingAction = undefined;
 		pendingRequest = undefined;
 		stage.dataset.companionPersisted = error ? 'error' : 'true';

@@ -1,6 +1,6 @@
 # Charmlet companion gallery
 
-This directory contains the Charmlet collection playground using the locked extension build dependencies. The current trial has **156 included charms**, with Live 3D and Stress Busters first in its twenty collection worlds. The Art review retains 150 selected designs and historical comparisons; the live companions and fidgets can be tried in the website playground. Previously shared pack downloads remain intact.
+This directory contains the Charmlet collection playground using the locked extension build dependencies. The current trial has **167 included charms**, with Live 3D and Stress Busters first in its collection filters. Cali joins the live companions, and ten new pets favour dogs, including Goldendoodle and Husky. The Art review retains 160 selected designs and historical comparisons; the live companions and fidgets can be tried in the website playground. Previously shared pack downloads remain intact.
 
 Root `vercel.json` builds the current VSIX and gallery from a clean checkout, publishes only `website/dist`, and serves the disabled Photo Studio configuration without a backend. No secret is needed. See [Vercel hosting](../docs/vercel-hosting.md) for the owner's team and account steps, and [monetization](../docs/monetization-and-payments.md) for the proposed commerce setup.
 

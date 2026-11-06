@@ -2,11 +2,12 @@ import { ENCOURAGEMENT_CARDS, feedDeck, isFeedMode, learningCard, type FeedMode,
 import { configureReminder, defaultCare, dismissReminder, restoreCare, settleCare, validReminderMinutes, visibleReminder, type CareState, type ReminderKind } from './care-core';
 import { canWaterGarden, emptyGarden, FLOWERS, gardenStage, localDayKey, plantGarden, restoreGarden, waterGarden, type GardenStage, type GardenState } from './garden-core';
 import { emptyWins, recordWin, removeWin, restoreWins, winLabel, type SmallWins } from './small-wins';
+import { mascotName, restoreMascotSettings, type MascotSettings } from './mascot-core';
 
 export const MINUTE_MS = 60000;
 export const FOCUS_MINUTES_LIMIT = 120;
 export const BREAK_MINUTES_LIMIT = 30;
-export const COMPANION_STATE_VERSION = 3;
+export const COMPANION_STATE_VERSION = 4;
 export type FocusPhase = 'focus' | 'break';
 export type FocusStatus = 'idle' | 'running' | 'paused' | 'finished';
 export type FocusNotice = 'elapsed-away' | 'clock-changed' | null;
@@ -22,7 +23,7 @@ export interface FocusState {
 }
 
 export interface CompanionState {
-	version: 3;
+	version: 4;
 	revision: number;
 	settings: { focusMinutes: number; breakMinutes: number; intent: string };
 	focus: FocusState;
@@ -30,6 +31,7 @@ export interface CompanionState {
 	garden: GardenState;
 	care: CareState;
 	wins: SmallWins;
+	mascot: MascotSettings;
 }
 
 export type CompanionAction =
@@ -49,6 +51,7 @@ export type CompanionAction =
 	| { type: 'win-add'; label: string }
 	| { type: 'win-remove'; id: number }
 	| { type: 'wins-celebrate'; enabled: boolean }
+	| { type: 'mascot-configure'; enabled: boolean; focusNudges: boolean; name: string }
 	| { type: 'wins-clear' };
 
 export interface GardenEntropy { plantId(): string; index(size: number): number; }
@@ -101,11 +104,11 @@ function idleFocus(minutes: number): FocusState {
 export function defaultCompanionState(legacyMessageIndex = 0): CompanionState {
 	const quote = ENCOURAGEMENT_CARDS[integer(legacyMessageIndex, 0, ENCOURAGEMENT_CARDS.length - 1, 0)];
 	return {
-		version: 3, revision: 0,
+		version: 4, revision: 0,
 		settings: { focusMinutes: 25, breakMinutes: 5, intent: '' },
 		focus: idleFocus(25),
 		learning: { mode: 'encouragement', cardId: quote.id, encouragementId: quote.id, revealed: false },
-		garden: emptyGarden(), care: defaultCare(), wins: emptyWins(),
+		garden: emptyGarden(), care: defaultCare(), wins: emptyWins(), mascot: restoreMascotSettings(undefined),
 	};
 }
 
@@ -119,7 +122,7 @@ export function restoreCompanionState(value: unknown, now: number, legacyMessage
 	clockValue(now);
 	const defaults = defaultCompanionState(legacyMessageIndex);
 	const raw = object(value);
-	if (raw.version !== 1 && raw.version !== 2 && raw.version !== 3) { return defaults; }
+	if (raw.version !== 1 && raw.version !== 2 && raw.version !== 3 && raw.version !== 4) { return defaults; }
 	const settings = object(raw.settings);
 	const focusMinutes = integer(settings.focusMinutes, 1, FOCUS_MINUTES_LIMIT, 25);
 	const breakMinutes = integer(settings.breakMinutes, 1, BREAK_MINUTES_LIMIT, 5);
@@ -143,17 +146,18 @@ export function restoreCompanionState(value: unknown, now: number, legacyMessage
 	const card = feedDeck(mode).find(entry => entry.id === learning.cardId) ?? feedDeck(mode)[0];
 	const quote = ENCOURAGEMENT_CARDS.find(entry => entry.id === learning.encouragementId) ?? learningCard(defaults.learning.encouragementId)!;
 	return {
-		version: 3, revision: integer(raw.revision, 0, 2147483646, 0),
+		version: 4, revision: integer(raw.revision, 0, 2147483646, 0),
 		settings: { focusMinutes, breakMinutes, intent: intent(settings.intent) },
 		focus: restoredFocus,
 		learning: { mode, cardId: card.id, encouragementId: quote.id, revealed: card.id === learning.cardId && card.kind === 'trivia' && learning.revealed === true },
 		garden: restoreGarden(raw.version !== 1 ? raw.garden : undefined, now),
 		care: restoreCare(raw.version !== 1 ? raw.care : undefined, now),
-		wins: restoreWins(raw.version === 3 ? raw.wins : undefined),
+		wins: restoreWins(raw.version === 3 || raw.version === 4 ? raw.wins : undefined),
+		mascot: restoreMascotSettings(raw.version === 4 ? raw.mascot : undefined),
 	};
 }
 
-function revised(state: CompanionState, changes: Partial<Pick<CompanionState, 'settings' | 'focus' | 'learning' | 'garden' | 'care' | 'wins'>>): CompanionState {
+function revised(state: CompanionState, changes: Partial<Pick<CompanionState, 'settings' | 'focus' | 'learning' | 'garden' | 'care' | 'wins' | 'mascot'>>): CompanionState {
 	return { ...state, ...changes, revision: (state.revision + 1) % 2147483647 };
 }
 
@@ -231,6 +235,10 @@ export function parseCompanionAction(value: unknown): CompanionAction | undefine
 				? { type: action.type, id: action.id } : undefined;
 		case 'wins-celebrate':
 			return typeof action.enabled === 'boolean' ? { type: action.type, enabled: action.enabled } : undefined;
+		case 'mascot-configure':
+			return typeof action.enabled === 'boolean' && typeof action.focusNudges === 'boolean'
+				&& typeof action.name === 'string' && action.name.length <= 200
+				? { type: action.type, enabled: action.enabled, focusNudges: action.focusNudges, name: mascotName(action.name) } : undefined;
 		case 'feed-mode':
 			return isFeedMode(action.mode) ? { type: action.type, mode: action.mode } : undefined;
 		case 'feed-reveal':
@@ -353,6 +361,9 @@ export function applyCompanionAction(state: CompanionState, action: CompanionAct
 		}
 		case 'wins-celebrate':
 			next = revised(next, { wins: { ...next.wins, celebrate: action.enabled } });
+			break;
+		case 'mascot-configure':
+			next = revised(next, { mascot: restoreMascotSettings(action) });
 			break;
 		case 'wins-clear':
 			next = revised(next, { wins: { ...emptyWins(), lastId: next.wins.lastId, celebrate: next.wins.celebrate } });

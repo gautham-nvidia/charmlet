@@ -699,5 +699,68 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   await expect(toy).toHaveAttribute('data-running', 'false', { timeout: 8000 });
   await expect(toy).toHaveAttribute('data-velocity', '0.000');
   await third.window.locator('#charm').screenshot({ path: join(output, 'fidget-spinner.png') });
+  console.log('Desktop Cali: optional personal encouragement, confetti, pets and saved quiet preferences.');
+  await selectInteractive('live:cali');
+  await expect(face).toHaveAttribute('data-character', 'cali');
+  await expect(face).toBeVisible();
+  await third.window.locator('#charm').click();
+  await expect(third.window.locator('#mascot-bubble')).toBeVisible();
+  await expect(third.window.locator('#mascot-bubble')).toHaveCSS('pointer-events', 'none');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'live-cali.png') });
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Focus', exact: true }).click();
+  await third.window.locator('#mascot-settings summary').click();
+  await third.window.locator('#mascot-name').fill('River');
+  await third.window.locator('#mascot-save').click();
+  await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).mascot.name).toBe('River');
+  await third.window.locator('#wins-celebrate').check();
+  await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).wins.celebrate).toBe(true);
+  await third.window.locator('#win-label').fill('Another step worth keeping');
+  await third.window.locator('#win-add').click();
+  await expect(third.window.locator('.win-sparkles[data-kind="confetti"][data-still="false"]')).toHaveCount(1);
+  await third.window.locator('#companion-close').click();
+  await expect(third.window.locator('#mascot-words')).toContainText('River: That small win counts');
+  await third.window.locator('#app').screenshot({ path: join(output, 'desktop-cali-encouragement.png') });
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Focus', exact: true }).click();
+  await third.window.locator('#mascot-enabled').uncheck();
+  await third.window.locator('#mascot-nudges').uncheck();
+  await third.window.locator('#mascot-save').click();
+  await expect.poll(() => JSON.parse(readFileSync(companionPath, 'utf8')).mascot)
+    .toEqual({ enabled: false, focusNudges: false, name: 'River' });
+  await third.window.locator('#companion-close').click();
+  await expect(third.window.locator('#mascot-bubble')).toBeHidden();
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+  await third.window.locator('#motion').click();
+  await third.window.locator('#settings-close').click();
+  await expect(face).toHaveAttribute('data-motion', 'still');
+  const pets = ['giant-panda', 'golden-retriever', 'labrador', 'german-shepherd', 'husky', 'corgi', 'beagle', 'goldendoodle', 'silver-tabby', 'tuxedo-cat'];
+  for (const id of pets) {
+    await selectInteractive(`trial:new-${id}`);
+    await expect(third.window.locator('#stage')).toHaveAttribute('data-charm', `trial:new-${id}`);
+    await expect.poll(() => third.window.locator('#charm-image').evaluate(image => image.complete && image.naturalWidth === 216)).toBe(true);
+    await expect(face).toBeHidden();
+    await third.window.locator('#charm').screenshot({ path: join(output, `pet-${id}.png`) });
+  }
+  await selectInteractive('live:cali');
   await quit(third.application);
+  const fourth = await launch();
+  await expect(fourth.window.locator('#stage')).toHaveAttribute('data-charm', 'live:cali');
+  await expect(fourth.window.locator('#mascot-bubble')).toBeHidden();
+  await expect(fourth.window.locator('.win-sparkles')).toHaveCount(0);
+  // The earlier preference checks pinned these controls. Cali must preserve
+  // that explicit choice; the first launch separately checks the minimal default.
+  await expect(fourth.window.locator('body')).toHaveAttribute('data-desktop-tools', 'true');
+  await expect(fourth.window.locator('body')).toHaveAttribute('data-desktop-pinned-toolbar', 'true');
+  await openTools(fourth.window);
+  await fourth.window.getByRole('button', { name: 'Focus', exact: true }).click();
+  await fourth.window.locator('#mascot-settings summary').click();
+  await expect(fourth.window.locator('#mascot-name')).toHaveValue('River');
+  await expect(fourth.window.locator('#mascot-enabled')).not.toBeChecked();
+  await expect(fourth.window.locator('#mascot-nudges')).not.toBeChecked();
+  assert.equal(JSON.parse(readFileSync(companionPath, 'utf8')).wins.total, 3);
+  assert.equal(JSON.parse(readFileSync(companionPath, 'utf8')).garden.collection[0].id, 'hibiscus');
+  await quit(fourth.application);
 });

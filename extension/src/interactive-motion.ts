@@ -1,8 +1,9 @@
-export type LiveCharacter = 'sunny' | 'cloud' | 'robot';
+export type LiveCharacter = 'sunny' | 'cloud' | 'robot' | 'cali';
 export type FidgetKind = 'spinner' | 'bubbles' | 'stone';
 
 export function liveCharacter(id: string): LiveCharacter | undefined {
 	switch (id) {
+		case 'live:cali': return 'cali';
 		case 'live:smiley': return 'sunny';
 		case 'live:cloud': return 'cloud';
 		case 'live:robot': return 'robot';

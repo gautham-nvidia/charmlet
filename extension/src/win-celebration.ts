@@ -8,16 +8,18 @@ export function createWinCelebration(charm: HTMLElement, reducedMotion: () => bo
 	};
 	return {
 		clear,
-		show() {
+		show(kind: 'sparkles' | 'confetti' = 'sparkles') {
 			clear();
 			if (document.hidden) { return; }
 			burst = document.createElement('span');
 			burst.className = 'win-sparkles';
+			burst.dataset.kind = kind;
 			burst.dataset.still = String(reducedMotion());
 			burst.setAttribute('aria-hidden', 'true');
-			for (let index = 0; index < 10; index++) {
+			const count = kind === 'confetti' ? 18 : 10;
+			for (let index = 0; index < count; index++) {
 				const particle = document.createElement('i');
-				const angle = index * Math.PI * 2 / 10;
+				const angle = index * Math.PI * 2 / count;
 				const distance = 52 + index % 3 * 12;
 				particle.style.setProperty('--win-x', `${Math.cos(angle) * distance}px`);
 				particle.style.setProperty('--win-y', `${Math.sin(angle) * distance}px`);

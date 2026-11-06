@@ -145,7 +145,8 @@ export async function artworkJobs(repo) {
     !/^[a-z][a-z0-9-]{0,31}$/.test(item.id) || typeof item.name !== 'string' || item.name.length > 48
     || typeof item.group !== 'string' || item.group.length > 48 || !/^#[0-9a-f]{6}$/i.test(item.accent)
     || typeof item.subject !== 'string' || item.subject.length > 2500
-    || (item.style !== undefined && !['object', 'gemstone', 'symbol', 'cosmos', 'soft'].includes(item.style)))) throw new Error('Invalid bounded art-expansion inventory.');
+    || (item.style !== undefined && !['object', 'gemstone', 'symbol', 'cosmos', 'soft'].includes(item.style))
+    || (item.greenDespill !== undefined && !['all', 'edges'].includes(item.greenDespill)))) throw new Error('Invalid bounded art-expansion inventory.');
   const records = [
     ...builtins.map(item => ({ ...item, key: `starter-${item.id}`, family: 'starters', subject: motifs[item.id], original: `default/${item.file}` })),
     ...extras.map(item => ({ ...item, key: `extra-${item.id}`, family: 'classics', subject: motifs[item.id], original: `extras/${item.file}` })),

@@ -1,17 +1,41 @@
 # Phase 9 - live companions, fidgets and hosting
 
-The owner tested extension 0.7.0 and desktop 0.4.0 and liked both, especially Sunny. This candidate makes live reactions more prompt, adds interactive fidget tools, and prepares the website for the supplied Vercel team.
+The owner tested extension 0.7.0 and desktop 0.4.0 and liked both, especially Sunny. This candidate adds prompt live reactions, working fidgets, a California-inspired motivational mascot and ten pets, while preparing the website for the supplied Vercel team. Website launch, prices and paid-charm choices remain deferred for the owner's review.
 
 ## Candidate behavior
 
-- Extension **0.8.0** and desktop **0.5.0**, with **156 included charms**.
+- Extension **0.9.0** and desktop **0.6.0**, with **167 included charms**: 159 rendered designs, Terminal, four live companions and three fidget tools.
+- Cali is an original golden bear, with WebGL and Canvas renderers, a forward gaze, quick reactions and brief passive encouragement bubbles. Its optional name, text and focus-prompt preferences stay local. No chat service or speech is required. Only selecting Cali enables its bubbles; existing favourites remain selected.
+- New pets: giant panda; Golden Retriever, Labrador, German Shepherd, Husky, Corgi, Beagle and Goldendoodle; Silver Tabby and Tuxedo Cat. Neutral-fur background spill was removed in an opt-in preparation profile, preserving alpha and the cats' natural eye colours.
+- Cali acknowledges new wins and live focus completion, with confetti when celebrations are enabled. Start/halfway prompts and occasional encouragement use the current focus intention and the local motivation deck. Reduced Motion cancels ongoing reactions; bubbles do not take focus or intercept pointer input.
 - Sunny reacts directly to pointer/press input, uses time-based gaze smoothing, greets and winks, and sleeps between reactions/blinks. Input smoothing reaches 95% in 84 ms in the model, independent of refresh rate; this is a model measurement, not an end-to-end latency guarantee.
 - Nimbus is a lit cloud; Byte is a bevelled robot. Both have distinct shapes in WebGL and canvas fallback. Static SVGs remain thumbnails/final fallback.
 - Fidget Spinner has an independently rotating rotor and friction. Bubble Pop has six reusable pressable surfaces. Worry Stone responds to holding/rubbing. Keyboard input and Reduced Motion are supported; all tools are silent.
 - Live 3D and Stress Busters are first in the picker. The existing nine smiley/squishy designs remain included, bringing Stress Busters to twelve. The desktop remains charm-only by default.
 - [Vercel configuration and account instructions](vercel-hosting.md) and [monetization/Stripe guidance](monetization-and-payments.md) accompany the candidate. Paid access remains disabled.
 
-## Local verification - 2026-11-05
+## Expanded candidate verification - 2026-11-06
+
+Shared type/lint/build and all 86 model tests pass, including schema-four migration, preference validation, clock recovery and avoiding repeated win announcements. The new editor scenario checks passive bubble geometry, keyboard encouragement, renderer fallback, edits while saving, local preferences, focus cues, confetti, opt-outs, reload and all ten pet images with cord contact. Source and installed runs now verify the second name save; pointer diagnostics remain after the initial unsuccessful second-save attempt.
+
+| Expanded local check | Result before the final hosted matrix |
+|---|---|
+| Shared build, lint and model tests | Pass; 86 models |
+| Desktop build and models | Pass; 12 models |
+| Expanded desktop development smoke | Pass, 46.1 seconds; personal settings, confetti, quiet opt-outs, ten pets and restart, plus existing imports/photos/garden/tools |
+| VS Code 1.90 scenarios | All 12 pass, 6.4 minutes, including four installed-VSIX scenarios |
+| Rebuilt installed VSIX checks | All four pass, 1.3 minutes |
+| Website | Pass; 167 unique charms, all collections/downloads, no desktop/mobile overflow or page errors |
+| Artwork review | Pass; 201 validated PNGs, 160 selected designs, 29 app comparisons and 23 packs |
+| Assistant visual inspection | Both pet sheets, Cali's normal/fallback rendering, encouragement and win captures inspected at 100% charm setting |
+
+The older platform failures were addressed separately: `76ea1f8` waits for companion readiness and a complete idle interval; `3ca58c7` cancels an unfinished greeting when Reduced Motion is enabled and exercises that transition in a single task. All eight hosted jobs passed at `3ca58c7`: [editor matrix](https://github.com/gautham-nvidia/charmlet/actions/runs/42189259972) and [desktop archives](https://github.com/gautham-nvidia/charmlet/actions/runs/42189260060), including isolated native Windows input. Those results precede the new mascot and pets; [PR #29](https://github.com/gautham-nvidia/charmlet/pull/29) carries the final candidate and post-merge results.
+
+The installed 0.9.0 captures add both pet sheets and Cali's encouragement/win views to the review page. Original capture pixels are retained; the desktop sheet uses the development app and the win view exercises the Canvas fallback. These are assistant review captures, not the owner's final public-artwork selection. Final artifact hashes belong to the finished checkout's readiness record.
+
+The records below describe the earlier 0.8.0/0.5.0 trial.
+
+## Earlier local verification - 2026-11-05
 
 | Check | Result |
 |---|---|
