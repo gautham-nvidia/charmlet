@@ -80,7 +80,7 @@ function ensureMessages() {
 function setExpanded(value: boolean) {
 	if (value === expanded) { return; }
 	if (!value) {
-		for (const id of ['picker-close', 'menu-close', 'settings-close', 'companion-close']) {
+		for (const id of ['picker-close', 'menu-close', 'settings-close', 'companion-close', 'photo-close']) {
 			const close = element<HTMLButtonElement>(id);
 			if (close.getClientRects().length) { close.click(); }
 		}

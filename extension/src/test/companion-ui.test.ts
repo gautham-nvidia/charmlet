@@ -1,7 +1,7 @@
 import { test, expect, _electron as electron, type ElectronApplication, type Frame, type Page, type TestInfo } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
 import { resolveCliPathFromVSCodeExecutablePath } from '@vscode/test-electron';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { PNG } from 'pngjs';
@@ -900,6 +900,19 @@ test(`${installedPersonalization ? 'installed VSIX' : 'personalization'} keeps l
 				fixture.data.set(x < 200 ? [255, 0, 0, 255] : [0, 0, 255, 255], offset);
 			}
 		}
+		await frame.locator('#photo-file').focus();
+		await frame.locator('#photo-file').setInputFiles({ name: 'private-source.png', mimeType: 'image/png', buffer: PNG.sync.write(fixture) });
+		await expect(frame.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'true');
+		await expect(frame.locator('#photo-file')).toBeFocused();
+		await frame.locator('#photo-preview').click({ position: { x: 6, y: 6 } });
+		await editor.window.keyboard.press('Escape');
+		await expect(frame.locator('#photo-editor')).toBeHidden();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'live:smiley');
+		const photoDirectory = join(editor.storage, 'packs');
+		expect(existsSync(photoDirectory) ? readdirSync(photoDirectory).filter(file => file.startsWith('photo-')).length : 0).toBe(0);
+		await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+		await frame.getByRole('menuitem', { name: 'Photo charms', exact: true }).click();
+		await expect(frame.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'false');
 		await frame.locator('#photo-file').setInputFiles({ name: 'private-source.png', mimeType: 'image/png', buffer: PNG.sync.write(fixture) });
 		await expect(frame.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'true');
 		await frame.locator('#photo-x').press('End');

@@ -115,6 +115,7 @@ export function createPhotoView(options: PhotoViewOptions): PhotoView {
 	}
 	async function loadPhoto(selected: File) {
 		const token = ++loadSequence;
+		const restoreFileFocus = document.activeElement === file;
 		bitmap?.close(); bitmap = undefined; draftPack = undefined;
 		loading = true; status('Preparing your local preview...'); controls();
 		try {
@@ -136,7 +137,12 @@ export function createPhotoView(options: PhotoViewOptions): PhotoView {
 				draw();
 			}
 		} finally {
-			if (token === loadSequence) { loading = false; controls(); }
+			if (token === loadSequence) {
+				loading = false; controls();
+				if (restoreFileFocus && !panel.hidden && document.activeElement === document.body) {
+					file.focus({ preventScroll: true });
+				}
+			}
 		}
 	}
 	function renderPhotos() {
@@ -189,7 +195,12 @@ export function createPhotoView(options: PhotoViewOptions): PhotoView {
 		canvas.classList.toggle('actual', (event.target as HTMLInputElement).checked);
 	});
 	closeButton.addEventListener('click', () => close());
-	panel.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); } });
+	// File loading can move focus to the body; Escape still dismisses the open tool.
+	document.addEventListener('keydown', event => {
+		if (event.key === 'Escape' && !panel.hidden) {
+			event.preventDefault(); event.stopPropagation(); close();
+		}
+	}, true);
 	removeNo.addEventListener('click', () => { confirm.hidden = true; removeId = undefined; });
 	removeYes.addEventListener('click', () => { if (removeId) { request('remove', removeId); } });
 	canvas.addEventListener('pointerdown', event => {

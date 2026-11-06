@@ -226,8 +226,6 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 		await window.screenshot({ path: testInfo.outputPath('compact-window.png') });
 
 		await test.step('the free collection loads, keeps preferences and remembers its selection', async () => {
-			const lastCharm = CHARMS[CHARMS.length - 1];
-			expect(lastCharm.name).toBe('Original Lemon & Chilies');
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
 			frame = await readyFrame(window);
 			await openAppearance(frame);
@@ -235,7 +233,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect(picker.locator('option')).toHaveCount(CHARMS.length);
 			await expect(picker.locator('optgroup')).toHaveCount(new Set(CHARMS.map(charm => charm.group)).size);
 			await expect(picker.locator('optgroup[label="Solar System"]')).toHaveCount(1);
-			await expect(picker.locator('optgroup[label="Originals"]')).toHaveCount(1);
+			await expect(picker.locator('option[value="terminal"]')).toHaveText('Terminal');
+			// Category grouping can place a newly appended charm inside an earlier group.
+			const lastId = await picker.locator('option').last().getAttribute('value');
+			const lastCharm = CHARMS.find(charm => charm.id === lastId)!;
+			expect(lastCharm).toBeDefined();
 			await frame.evaluate(() => {
 				const view = globalThis as unknown as Window & { __charmletRecordPreference: (value: unknown) => Promise<void> };
 				const capture = view.__charmletRecordPreference;

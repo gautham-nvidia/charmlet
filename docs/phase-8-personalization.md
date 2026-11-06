@@ -42,3 +42,13 @@ General implementation permission does not resolve these publication decisions. 
 - Desktop type/build and twelve model checks pass. Complete the full smoke, extracted archive and native Windows input gate on the isolated runner; local desktop mouse activity can interrupt synthetic hover.
 - Eight cord styles, the live face and private photos remain accessible on demand. The desktop starts with the charm alone. Bracelet and hanging-row pages are review concepts; one charm remains the implemented layout.
 - The native packaging command now fails clearly if it skipped an existing output; `--overwrite` explicitly rebuilds that generated candidate. This prevents a stale package from being mistaken for a successful rebuild.
+
+### Follow-up after the first hosted run
+
+All six editor jobs passed the eight companion scenarios, then reached an obsolete expectation for the retired Originals collection. The collection check now verifies Terminal and follows the actual grouped option order for keyboard End selection. Its selection, saved preference, reload and reset checks remain.
+
+Both desktop jobs exposed an Escape cancellation failure after loading a photo. Disabling the file input had moved focus outside the panel. The editor now restores file-input focus after decoding and handles Escape while the photo tool is open, including when focus is on its background. The desktop toolbar also closes the photo tool when hiding controls. The existing editor and desktop checks now verify cancellation without saving and a fresh empty preview on reopening.
+
+The updated personalisation check passes locally (22.9 seconds), the complete editor scenario passes (3.4 minutes), and the desktop development smoke passes (22.7 seconds). Native OS input and extracted archives still require the updated hosted run.
+
+Sixteen new captures from the installed 0.7.0 VSIX show all eight cord materials, the six new flowers and three light-background examples at 100% size. Normal motion stayed enabled, each picture uses one selected charm, and garden data remained unchanged. The current listing screenshots were refreshed from that installation.

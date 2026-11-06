@@ -495,9 +495,11 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   const photoRequests = [];
   const observePhoto = request => { if (/^https?:/.test(request.url())) photoRequests.push(request.url()); };
   personal.on('request', observePhoto);
+  await personal.locator('#photo-file').focus();
   await personal.locator('#photo-file').setInputFiles({ name: 'invalid.png', mimeType: 'image/png', buffer: Buffer.from('This is not an image.') });
   await expect(personal.locator('#photo-feedback')).toContainText('header');
   await expect(personal.locator('#photo-save')).toBeDisabled();
+  await expect(personal.locator('#photo-file')).toBeFocused();
   const { PNG: PhotoPNG } = require(join(repo, 'extension/node_modules/pngjs'));
   const fixture = new PhotoPNG({ width: 400, height: 200 });
   for (let y = 0; y < fixture.height; y++) for (let x = 0; x < fixture.width; x++) {
@@ -511,11 +513,24 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     name: 'private-fixture.png', mimeType: 'image/png', buffer: PhotoPNG.sync.write(fixture),
   });
   await expect(personal.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'true');
-  await personal.locator('#photo-editor').press('Escape');
+  await expect(personal.locator('#photo-file')).toBeFocused();
+  await personal.locator('#photo-preview').click({ position: { x: 6, y: 6 } });
+  await personal.keyboard.press('Escape');
   await expect(personal.locator('#photo-editor')).toBeHidden();
   await expect(personal.locator('#stage')).toHaveAttribute('data-charm', 'trial:new-ruby');
   assert.equal(existsSync(join(profile, 'packs')) ? readdirSync(join(profile, 'packs')).filter(file => file.startsWith('photo-')).length : 0, 0,
     'Cancelling a preview must not write a photo.');
+  await openTools(personal);
+  await personal.getByRole('button', { name: 'Browse charms', exact: true }).click();
+  await personal.locator('#picker-photo').click();
+  await expect(personal.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'false');
+  await personal.locator('#photo-file').setInputFiles({
+    name: 'private-fixture.png', mimeType: 'image/png', buffer: PhotoPNG.sync.write(fixture),
+  });
+  await expect(personal.locator('#photo-editor')).toHaveAttribute('data-photo-ready', 'true');
+  await personal.getByRole('button', { name: 'Hide controls', exact: true }).click();
+  await expect(personal.locator('#photo-editor')).toBeHidden();
+  assert.equal(existsSync(join(profile, 'packs')) ? readdirSync(join(profile, 'packs')).filter(file => file.startsWith('photo-')).length : 0, 0);
   await openTools(personal);
   await personal.getByRole('button', { name: 'Browse charms', exact: true }).click();
   await personal.locator('#picker-photo').click();
