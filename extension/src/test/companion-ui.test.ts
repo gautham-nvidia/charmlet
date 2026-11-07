@@ -25,6 +25,14 @@ interface OwnedEditor {
 	window: Page;
 }
 
+async function focusCharmForKeyboard(editor: OwnedEditor, frame: Frame): Promise<void> {
+	await editor.window.bringToFront();
+	const charm = frame.locator('#charm');
+	await charm.focus();
+	await expect(charm).toBeFocused();
+	await expect.poll(() => frame.evaluate(() => document.hasFocus())).toBe(true);
+}
+
 async function alphaAtCordTip(frame: Frame): Promise<number> {
 	const id = await frame.locator('#stage').getAttribute('data-charm');
 	const bundled = CHARMS.find(charm => charm.id === id && charm.file.endsWith('.png'));
@@ -825,6 +833,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		await editor.window.emulateMedia({ reducedMotion: 'no-preference' });
 		await command(editor.window, 'Charmlet: Show Charm');
 		let frame = await readyFrame(editor.window);
+		const holdTrace = await tracePointerInput(editor.window);
 		const choose = async (name: string, group: string) => {
 			// Restore keyboard focus after reload/captures. The broader editor
 			// scenario separately exercises opening the picker with the mouse.
@@ -844,10 +853,13 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 			const face = frame.locator('#live-smiley');
 			await expect(face).toHaveAttribute('data-character', character);
 			await expect(face).toBeVisible();
-			await frame.locator('#charm').focus();
+			await focusCharmForKeyboard(editor, frame);
 			await editor.window.keyboard.down('Space');
 			try { await expect(face).toHaveAttribute('data-expression', 'squish'); }
-			finally { await editor.window.keyboard.up('Space'); }
+			finally {
+				await savePointerTrace(editor, holdTrace, testInfo.outputPath(`live-${character}-hold-input.json`));
+				await editor.window.keyboard.up('Space');
+			}
 			await expect(face).toHaveAttribute('data-expression', 'smile');
 			await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`live-${character}.png`) });
 		}
@@ -855,20 +867,20 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		await expect(frame.locator('#charm')).toHaveAttribute('data-soft', 'true');
 		await choose('Bubble Pop', 'Stress Busters');
 		const toy = frame.locator('#live-fidget');
-		await frame.locator('#charm').focus();
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.press('Space');
 		await expect(toy).toHaveAttribute('data-bubbles', '100000');
 		for (let index = 0; index < 6; index++) { await editor.window.keyboard.press('Space'); }
 		await expect(toy).toHaveAttribute('data-bubbles', '011111');
 		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('bubble-pop.png') });
 		await choose('Worry Stone', 'Stress Busters');
-		await frame.locator('#charm').focus();
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.down('Space');
 		try { await expect(toy).toHaveAttribute('data-held', 'true'); }
 		finally { await editor.window.keyboard.up('Space'); }
 		await expect(toy).toHaveAttribute('data-held', 'false');
 		await choose('Fidget Spinner', 'Stress Busters');
-		await frame.locator('#charm').focus();
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.press('Space');
 		await expect(toy).toHaveAttribute('data-running', 'false');
 		expect(Number(await toy.getAttribute('data-angle'))).toBeGreaterThan(.5);
@@ -879,7 +891,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
 		await frame.locator('#motion').click();
 		await frame.locator('#settings-close').click();
-		await frame.locator('#charm').focus();
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.press('Space');
 		await expect(toy).toHaveAttribute('data-running', 'true');
 		const spinningAngle = await toy.getAttribute('data-angle');
@@ -1154,9 +1166,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'personalization'} keeps l
 		await editor.window.waitForTimeout(250);
 		expect(await face.getAttribute('data-frames')).toBe(stillFrames);
 		const holdTrace = await tracePointerInput(editor.window);
-		await editor.window.bringToFront();
-		await frame.locator('#charm').focus();
-		await expect.poll(() => frame.evaluate(() => document.hasFocus())).toBe(true);
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.down('Space');
 		try { await expect(face).toHaveAttribute('data-expression', 'squish'); }
 		finally {
