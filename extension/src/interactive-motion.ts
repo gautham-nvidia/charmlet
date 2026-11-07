@@ -1,9 +1,12 @@
-export type LiveCharacter = 'sunny' | 'cloud' | 'robot' | 'cali';
+import { isArtCharacter, type ArtCharacter } from './live-art-core';
+
+export type LiveCharacter = 'sunny' | 'cloud' | 'robot' | ArtCharacter;
 export type FidgetKind = 'spinner' | 'bubbles' | 'stone';
 
 export function liveCharacter(id: string): LiveCharacter | undefined {
+	const character = id.startsWith('live:') ? id.slice(5) : undefined;
+	if (isArtCharacter(character)) { return character; }
 	switch (id) {
-		case 'live:cali': return 'cali';
 		case 'live:smiley': return 'sunny';
 		case 'live:cloud': return 'cloud';
 		case 'live:robot': return 'robot';

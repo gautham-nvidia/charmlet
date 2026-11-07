@@ -87,6 +87,15 @@ for (const builtin of builtins) {
 for (const live of [...LIVE_CHARMS, ...FIDGET_CHARMS]) {
   await copyFile(join(repo, 'extension', 'media', live.file), join(dist, 'assets', 'default', live.file));
 }
+const liveArt = JSON.parse(await readFile(join(root, 'live-art-assets.json'), 'utf8'));
+if (liveArt.version !== 1 || !Array.isArray(liveArt.assets) || liveArt.assets.length !== 32
+  || new Set(liveArt.assets.map(asset => asset.file)).size !== 32) throw new Error('Invalid live artwork manifest.');
+for (const asset of liveArt.assets) {
+  if (!/^live-(?:art-)?[a-z0-9-]+\.png$/.test(asset.file)) throw new Error('Invalid live artwork filename.');
+  const bytes = await readFile(join(repo, 'extension/media', asset.file));
+  if (createHash('sha256').update(bytes).digest('hex') !== asset.sha256) throw new Error(`Live artwork changed: ${asset.file}`);
+  await writeFile(join(dist, 'assets/default', asset.file), bytes);
+}
 for (const { extra, packPath } of validated) {
   await copyFile(join(root, 'assets', extra.file), join(dist, 'assets', 'extras', extra.file));
   await copyFile(packPath, join(dist, 'packs', `${extra.id}.charmlet.json`));
@@ -130,7 +139,7 @@ await copyFile(join(repo, 'extension', vsix), join(dist, 'downloads', 'charmlet.
 const charms = [
   ...ORIGINAL_CHARMS.map(item => ({ ...item, kind: 'included', preview: `./assets/default/${item.file}` })),
   ...[...LIVE_CHARMS, ...FIDGET_CHARMS].map(item => ({ ...item, kind: 'extra', live: true, includedInTrial: true,
-    collectionId: item.group === 'Live 3D' ? 'live' : 'stress', collectionLabel: item.group,
+    collectionId: item.group === 'Live Companions' ? 'live' : 'stress', collectionLabel: item.group,
     preview: `./assets/default/${item.file}`, download: null })),
 ];
 const artPreviews = previews.map(item => ({ ...item, preview: `./assets/previews/${item.file}` }));

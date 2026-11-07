@@ -28,7 +28,7 @@ const nudgeButton = required<HTMLButtonElement>('demo-nudge');
 const resetButton = required<HTMLButtonElement>('demo-reset');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, 126, 100, 'hanging');
-const liveSmiley = createLiveSmiley(charm, image);
+const liveSmiley = createLiveSmiley(charm, image, file => new URL(`assets/default/${file}`, document.baseURI).href);
 const fidgetUI = createFidgetView(charm, image);
 const cordView = createCordView(thread.ownerSVGElement!, thread);
 let selectedId = '';
@@ -202,7 +202,8 @@ document.addEventListener('visibilitychange', () => {
 reducedMotion.addEventListener('change', () => resetPose(reducedMotion.matches
 	? 'Reduced motion is active. Dragging still follows your pointer.' : 'Drag the charm, then let it settle.'));
 new IntersectionObserver(entries => {
-	intersecting = entries[0]?.isIntersecting === true;
+	// A quick catalogue-to-demo scroll can queue both exit and entry together.
+	intersecting = entries[entries.length - 1]?.isIntersecting === true;
 	if (!intersecting) { resetPose(); }
 	else { render(); }
 }).observe(stage);

@@ -1,10 +1,11 @@
 import { strict as assert } from 'node:assert';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync } from 'node:fs';
 import { readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { execFileSync } from 'node:child_process';
+import { PNG } from 'pngjs';
 import {
 	applyCompanionAction, companionSnapshot, currentLearningCard, defaultCompanionState, formatFocusTime,
 	matchesCompanionState, MINUTE_MS, COMPANION_STATE_VERSION, parseCompanionAction, reconcileCompanion, remainingFocusMs,
@@ -18,11 +19,60 @@ import * as garden from '../garden-core';
 import * as care from '../care-core';
 import { winsToday } from '../small-wins';
 import { gardenArtwork, gardenCharms } from '../garden-catalog';
-import { buildCatalogue } from '../charm-catalog';
+import { buildCatalogue, LIVE_CHARMS, isSoftCharm } from '../charm-catalog';
 import { restoreState } from '../charm-state';
 import { cordForCharm } from '../cord-design';
-import { followGaze, nearestBubble, stepSpinner } from '../interactive-motion';
+import { followGaze, liveCharacter, nearestBubble, stepSpinner } from '../interactive-motion';
 import { mascotEncouragement, mascotTransition } from '../mascot-core';
+import { CALI_WEEK } from '../cali-wardrobe';
+import { caliArt, isArtCharacter } from '../live-art-core';
+import { CALIFORNIA_COMPANIONS, regionalArt } from '../california-companions';
+
+test('Cali wears distinct local weekday outfits and changes at local midnight', () => {
+	const output = execFileSync(process.execPath, ['-e', `
+		const wardrobe = require(process.argv[1]), garden = require(process.argv[2]);
+		const week = Array.from({length:7}, (_, index) => wardrobe.caliOutfitAt(new Date(2026,10,2+index,12).getTime()));
+		const friday = Date.parse('2026-11-06T23:59:59-08:00');
+		const midnight = garden.nextLocalMidnight(friday);
+		console.log(JSON.stringify({week, before:wardrobe.caliOutfitAt(friday).id,
+			after:wardrobe.caliOutfitAt(midnight).id, wait:midnight-friday}));
+	`, require.resolve('../cali-wardrobe'), require.resolve('../garden-core')],
+	{ env: { ...process.env, TZ: 'America/Los_Angeles' }, encoding: 'utf8' });
+	const observed = JSON.parse(output);
+	assert.deepEqual(observed.week.map((outfit: { id: string }) => outfit.id), [
+		'monday-denim', 'tuesday-hoodie', 'wednesday-vest', 'thursday-flannel',
+		'friday-coast', 'saturday-trail', 'sunday-knit',
+	]);
+	assert.equal(new Set(observed.week.map((outfit: { file: string }) => outfit.file)).size, 7);
+	assert.equal(observed.before, 'friday-coast');
+	assert.equal(observed.after, 'saturday-trail');
+	assert.equal(observed.wait, 1000);
+});
+
+test('live illustrated characters have complete bundled frames and cords touching their hooks', () => {
+	const definitions = [
+		...CALI_WEEK.map((_, day) => caliArt(new Date(2026, 10, 1 + day, 12).getTime())),
+		...CALIFORNIA_COMPANIONS.map(companion => regionalArt(companion.character)!),
+	];
+	const files = new Set(definitions.flatMap(definition => definition.parts.map(part => part.file)));
+	assert.equal(files.size, 20, 'Seven outfits, two donor gestures and eleven regional figures are bundled.');
+	for (const file of files) {
+		assert.match(file, /^live-art-[a-z0-9-]+\.png$/);
+		const frame = PNG.sync.read(readFileSync(join(__dirname, '../../media', file)));
+		assert.equal(frame.width, 512);
+		assert.equal(frame.height, 512);
+		assert.equal(frame.data[3], 0, `${file} must have a transparent background.`);
+	}
+	for (const charm of LIVE_CHARMS) {
+		if (!isArtCharacter(liveCharacter(charm.id))) { continue; }
+		const image = PNG.sync.read(readFileSync(join(__dirname, '../../media', charm.file)));
+		const x = Math.round(charm.attachment!.x * image.width);
+		const y = Math.round(charm.attachment!.y * image.height);
+		assert.ok(image.data[(y * image.width + x) * 4 + 3] > 80, `${charm.id} cord must touch its visible hook.`);
+		assert.equal(isSoftCharm(charm.id), false, 'Detailed figures react without the stress-ball squash.');
+		assert.equal(cordForCharm(charm, { [charm.id]: 'ribbon' }), 'ribbon', 'A saved manual cord choice takes precedence.');
+	}
+});
 
 test('live gaze responds within 84ms independently of refresh rate', () => {
 	for (const hz of [30, 60, 120]) {

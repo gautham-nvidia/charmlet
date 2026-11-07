@@ -1,5 +1,7 @@
 import builtinCharms from './builtin-charms.json';
 import trialCharms from './trial-charms.json';
+import { CALIFORNIA_COMPANIONS } from './california-companions';
+import { artToStage } from './live-art-core';
 import type { CharmAttachment } from './charm-attachment';
 export interface CharmDefinition {
 	id: string;
@@ -27,22 +29,27 @@ export const RETIRED_CHARMS: Readonly<Record<string, string>> = Object.freeze({
 });
 export const TRIAL_CHARMS: readonly CharmDefinition[] = trialCharms;
 export const LIVE_CHARMS: readonly CharmDefinition[] = [{
-	id: 'live:cali', name: 'Cali - Live Mascot', file: 'live-cali.svg', group: 'Live 3D', accent: '#dcaa65',
-	description: 'A California-inspired golden bear cheering for your next small step. Click for encouragement; focus prompts and celebrations are optional.',
+	id: 'live:cali', name: 'Cali - Live Mascot', file: 'live-cali.png', group: 'Live Companions', accent: '#dcaa65',
+	description: 'A California grizzly with a coder wardrobe, a new outfit each day and a relaxed Friday look. Live glances, waves and thumbs-up; click for encouragement. Focus prompts and celebrations are optional.',
 	attachment: { x: .5, y: 2.5 / 84 },
 }, {
-	id: 'live:smiley', name: 'Sunny - Live Smiley', file: 'live-smiley.svg', group: 'Live 3D', accent: '#f3cd48',
+	id: 'live:smiley', name: 'Sunny - Live Smiley', file: 'live-smiley.svg', group: 'Live Companions', accent: '#f3cd48',
 	description: 'A sunny 3D stress ball with quick glances, blinks and a playful wink. Hold to squish; release to bounce.',
 	attachment: { x: .5, y: 2.5 / 84 },
 }, {
-	id: 'live:cloud', name: 'Nimbus - Live Cloud', file: 'live-cloud.svg', group: 'Live 3D', accent: '#a6ddef',
+	id: 'live:cloud', name: 'Nimbus - Live Cloud', file: 'live-cloud.svg', group: 'Live Companions', accent: '#a6ddef',
 	description: 'A soft little 3D cloud. It looks your way, brightens when greeted and puffs its cheeks when squeezed.',
 	attachment: { x: .5, y: 2.5 / 84 },
 }, {
-	id: 'live:robot', name: 'Byte - Live Robot', file: 'live-robot.svg', group: 'Live 3D', accent: '#78d8c1',
+	id: 'live:robot', name: 'Byte - Live Robot', file: 'live-robot.svg', group: 'Live Companions', accent: '#78d8c1',
 	description: 'A rounded metal robot with lively mint eyes. Tap for a wink; record a win for a happy reaction.',
 	attachment: { x: .5, y: 2.5 / 84 },
-}];
+}, ...CALIFORNIA_COMPANIONS.map(companion => ({
+	id: `live:${companion.character}`, name: `${companion.name} - Live Companion`,
+	file: `live-${companion.character}.png`, group: 'Live Companions', accent: companion.accent,
+	description: companion.description,
+	attachment: { x: artToStage(companion, companion.anchor)[0] / 72, y: 2.5 / 84 },
+}))];
 export const FIDGET_CHARMS: readonly CharmDefinition[] = [{
 	id: 'fidget:spinner', name: 'Fidget Spinner', file: 'fidget-spinner.svg', group: 'Stress Busters', accent: '#51bfc4',
 	description: 'Tap or flick the three-lobed spinner; its rotor spins and slows to a stop. Space spins it too. Silent, with no scores.',
@@ -91,7 +98,7 @@ export function getCharm(id: unknown, charms: readonly CharmDefinition[] = CHARM
 const SOFT_CHARM_KEYS = new Set([
 	'stress-ball', 'squishy-star',
 	'smiley-happy', 'smiley-determined', 'smiley-calm', 'smiley-wink',
-	'emoji-heart', 'emoji-thumbs-up', 'emoji-rocket', 'smiley', 'cloud', 'cali',
+	'emoji-heart', 'emoji-thumbs-up', 'emoji-rocket', 'smiley', 'cloud',
 ]);
 
 export function isSoftCharm(id: string): boolean {

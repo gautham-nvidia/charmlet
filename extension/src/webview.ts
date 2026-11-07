@@ -97,7 +97,7 @@ let drag: { id: number; start: Point; screenStart: Point; moved: boolean; lastAn
 const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, state.cordLength, state.size, state.layoutMode);
 const winCelebration = createWinCelebration(charm, reducedMotion);
-const liveSmiley = createLiveSmiley(charm, charmImage);
+const liveSmiley = createLiveSmiley(charm, charmImage, file => new URL(file, mediaRoot).toString());
 const fidgetUI = createFidgetView(charm, charmImage);
 const mascotUI = createMascotView({
 	charm, stage, canShow: () => !popupOpen(), reducedMotion,

@@ -9,17 +9,20 @@ const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
 const require = createRequire(join(repo, 'extension', 'package.json'));
 const { chromium, expect } = require('@playwright/test');
+const { PNG } = require('pngjs');
 const { parseCharmPack } = require('./out/charm-packs.js');
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
 const archived = JSON.parse(await readFile(join(root, 'extras.json'), 'utf8'));
 const review = JSON.parse(await readFile(join(root, 'art-review.json'), 'utf8'));
 const target = review.items.filter(item => item.featured && item.decision !== 'original');
 const originalIds = ['terminal'];
-const liveIds = ['live:cali', 'live:smiley', 'live:cloud', 'live:robot', 'fidget:spinner', 'fidget:bubbles', 'fidget:stone'];
+const liveIds = ['live:cali', 'live:smiley', 'live:cloud', 'live:robot', 'live:redwood', 'live:yosemite',
+  'live:tahoe', 'live:gull', 'live:seal', 'live:golden-gate', 'live:santa-cruz', 'live:whale',
+  'live:dolphin', 'live:condor', 'live:eagle', 'fidget:spinner', 'fidget:bubbles', 'fidget:stone'];
 const trialCount = target.length + liveIds.length;
 const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
 const expectedWorldCounts = {
-  live: 4, ai: 1, coding: 0, silicon: 7, testing: 9, animals: 13, trees: 3, space: 5, parks: 6,
+  live: 15, ai: 1, coding: 0, silicon: 7, testing: 9, animals: 13, trees: 3, space: 5, parks: 6,
   cities: 6, culture: 8, sports: 5, luck: 2, stress: 12, seasonal: 22,
   'solar-system': 10, gemstones: 8, zodiac: 12, sacred: 15, flowers: 18,
 };
@@ -63,6 +66,22 @@ async function downloadPack(page, id) {
 try {
   browser = await chromium.launch({ channel: 'msedge', headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
+  await page.addInitScript(() => {
+    const NativeObserver = IntersectionObserver;
+    window.IntersectionObserver = class extends NativeObserver {
+      constructor(callback, options) {
+        super((entries, observer) => {
+          for (const entry of entries) {
+            if (entry.target.id !== 'demo-stage') continue;
+            const record = window.__charmletDemoVisibility ??= {};
+            record.callback = callback; record.observer = observer;
+            record[entry.isIntersecting ? 'enter' : 'exit'] = entry;
+          }
+          callback(entries, observer);
+        }, options);
+      }
+    };
+  });
   page.on('console', message => {
     if (message.type() !== 'error') return;
     errors.push(`console ${message.location().url}: ${message.text()}`);
@@ -317,6 +336,38 @@ try {
   await expect(page.locator('#demo-image')).toHaveCSS('transform', 'none');
   await page.keyboard.up('Space');
   assert.equal(await demo.getAttribute('data-running'), 'false');
+  for (const id of liveIds.filter(id => id.startsWith('live:'))) {
+    await page.locator(`.charm-card[data-charm-id="${id}"]`).getByRole('button', { name: /^Preview / }).click();
+    await page.locator('.hero-demo').scrollIntoViewIfNeeded();
+    const face = page.locator('#live-smiley');
+    await expect(face).toBeVisible();
+    await expect(face).toHaveAttribute('data-renderer', /^(webgl|canvas)$/);
+    if (!['live:smiley', 'live:cloud', 'live:robot'].includes(id)) {
+      await expect(face).toHaveAttribute('data-art-ready', id === 'live:cali' ? /^cali:/ : `${id.slice(5)}:`);
+      await expect(demoButton).toHaveAttribute('data-soft', 'false');
+    }
+    if (id === 'live:whale') {
+      const contact = await face.evaluate(canvas => {
+        const path = document.getElementById('demo-thread');
+        const point = path.getPointAtLength(path.getTotalLength());
+        const screen = new DOMPoint(point.x, point.y).matrixTransform(path.getScreenCTM());
+        const bounds = canvas.getBoundingClientRect();
+        return { png: canvas.toDataURL(), x: Math.round((screen.x - bounds.x) / bounds.width * canvas.width),
+          y: Math.round((screen.y - bounds.y) / bounds.height * canvas.height) };
+      });
+      const pixels = PNG.sync.read(Buffer.from(contact.png.split(',')[1], 'base64'));
+      assert.ok(pixels.data[(contact.y * pixels.width + contact.x) * 4 + 3] > 80,
+        'The playground cord must touch the whale hook at the raised tail.');
+    }
+  }
+  // Browsers can queue both transitions before delivering one observer callback.
+  await page.evaluate(() => {
+    const record = window.__charmletDemoVisibility;
+    if (!record?.enter || !record.exit) throw new Error('Expected real demo entry and exit observations.');
+    record.callback([record.exit, record.enter], record.observer);
+  });
+  await expect(page.locator('#live-smiley')).toBeVisible();
+  await expect(page.locator('#live-smiley')).toHaveAttribute('data-art-ready', 'eagle:');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 
   const [vsixDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.extension-download').first().click()]);

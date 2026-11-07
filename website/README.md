@@ -1,6 +1,6 @@
 # Charmlet companion gallery
 
-This directory contains the Charmlet collection playground using the locked extension build dependencies. The current trial has **167 included charms**, with Live 3D and Stress Busters first in its collection filters. Cali joins the live companions, and ten new pets favour dogs, including Goldendoodle and Husky. The Art review retains 160 selected designs and historical comparisons; the live companions and fidgets can be tried in the website playground. Previously shared pack downloads remain intact.
+This directory contains the Charmlet collection playground using the locked extension build dependencies. The current trial has **178 included charms**, with Live Companions and Stress Busters first in its collection filters. Cali has seven daily outfits and jointed gestures, joined by eleven California companions. The Art review retains 160 selected static designs and historical comparisons, with new live-renderer and app views shown separately. The playground uses the same live renderer and bundled textures as both apps. Previously shared pack downloads remain intact.
 
 Root `vercel.json` builds the current VSIX and gallery from a clean checkout, publishes only `website/dist`, and serves the disabled Photo Studio configuration without a backend. No secret is needed. See [Vercel hosting](../docs/vercel-hosting.md) for the owner's team and account steps, and [monetization](../docs/monetization-and-payments.md) for the proposed commerce setup.
 
@@ -11,6 +11,7 @@ Root `vercel.json` builds the current VSIX and gallery from a clean checkout, pu
 | `index.html`, `styles.css`, `app.js` | Static website source |
 | `extras.json`, `assets/` | Frozen classic metadata and source-authored SVGs |
 | `collections.json` | Twenty categories, preserved legacy mapping, four early studies and the sports wishlist |
+| `live-art-assets.json` | Hashes and provenance for the 32 bundled live-character textures and thumbnails |
 | `assets/previews/` | Earlier photographic/playful style studies |
 | `review.html`, `review.js`, `review.css`, `art-review.json` | Searchable full redraw review, original comparison, dark backdrop and review downloads |
 | `assets/review/`, `packs/review/` | Transparent PNG/WebP candidates and separately namespaced review packs |

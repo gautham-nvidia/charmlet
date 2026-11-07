@@ -9,9 +9,13 @@ export interface SmileyPose {
 	happy: boolean;
 	wink: boolean;
 	greeting: boolean;
+	now?: number;
+	reactionProgress?: number;
+	reducedMotion?: boolean;
 }
 export interface SmileyRenderer {
 	kind: 'webgl' | 'canvas';
+	readonly ready?: boolean;
 	draw(pose: SmileyPose): void;
 	dispose(): void;
 }
