@@ -12,6 +12,11 @@ export const CORD_STYLES = {
 } as const;
 export type CordStyle = keyof typeof CORD_STYLES;
 export type CordChoices = Readonly<Record<string, CordStyle>>;
+const CALIFORNIA_CORDS: Readonly<Record<string, CordStyle>> = {
+	'live:cali': 'braid', 'live:redwood': 'leather', 'live:yosemite': 'leather', 'live:tahoe': 'silver-chain',
+	'live:gull': 'soft', 'live:seal': 'soft', 'live:golden-gate': 'ball-chain', 'live:santa-cruz': 'braid',
+	'live:whale': 'soft', 'live:dolphin': 'soft', 'live:condor': 'leather', 'live:eagle': 'leather',
+};
 
 export function isCordStyle(value: unknown): value is CordStyle {
 	return typeof value === 'string' && Object.hasOwn(CORD_STYLES, value);
@@ -33,9 +38,10 @@ export function restoreCordChoices(value: unknown, charms: readonly CharmDefinit
 
 export function cordForCharm(charm: CharmDefinition, choices: CordChoices = {}): CordStyle {
 	if (Object.hasOwn(choices, charm.id) && isCordStyle(choices[charm.id])) { return choices[charm.id]; }
+	if (Object.hasOwn(CALIFORNIA_CORDS, charm.id)) { return CALIFORNIA_CORDS[charm.id]; }
 	if (isSoftCharm(charm.id) || charm.group === 'Stress Busters') { return 'soft'; }
 	switch (charm.group) {
-		case 'Live 3D':
+		case 'Live Companions':
 			return 'silver-chain';
 		case 'Gemstones':
 		case 'Personal Keepsakes':

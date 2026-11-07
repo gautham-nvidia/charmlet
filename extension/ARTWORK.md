@@ -86,3 +86,13 @@ Cali is an original California-inspired golden bear with a teal scarf, front-fac
 Ten new Gemini 3 Pro Image renders add Giant Panda, Golden Retriever, Labrador, German Shepherd, Husky, Corgi, Beagle, Goldendoodle, Silver Tabby and Tuxedo Cat. Raw images and receipts remain in the ignored authoring output. Preparation profile 3 removes green backdrop spill from the neutral-fur subjects without changing alpha; edge-only correction preserves the cats' green irises. Earlier exports remain archived.
 
 The 0.9.0 trial contains 159 PNG designs, Terminal, four live companions and three fidgets: 167 charms. Technical validation and assistant visual inspection do not constitute the owner's final artwork approval, a distribution licence or a paid-pack decision.
+
+## 2026-11-06 - Detailed Cali and California companions
+
+The 0.10.0 candidate replaces Cali's toy-like rendering with detailed Gemini 3 Pro Image artwork, a consistent grizzly face and seven registered daily outfits. Curved illustrated surfaces provide depth; the head, arms and paws move separately for glances, waves and thumbs-up cheers. The GPU and software renderers share these textures and geometry.
+
+Eleven new illustrated companions depict Coast Redwood, Yosemite, Lake Tahoe, Western Gull, Harbor Seal, Golden Gate, Santa Cruz Otter, Pacific Gray Whale, Pacific Dolphin, California Condor and Golden Eagle. They have gentle live gaze and figure movement. Sunny, Nimbus and Byte retain their procedural geometry.
+
+Thirty-two prepared PNGs comprise seven outfit frames, two gesture references, eleven regional frames and twelve thumbnails. `website/live-art-assets.json` in the source repository records source, prompt and output hashes, dimensions, model and authoring timestamps. Original images and receipts remain in ignored authoring storage; normal builds never call a model. The images are generated illustrations, not documentary photographs or downloaded 3D models.
+
+The candidate contains 178 selectable charms. These new designs remain for the owner's visual review; licensing, final lineup and paid offerings remain undecided. Earlier Cali captures and original artwork are retained for comparison.

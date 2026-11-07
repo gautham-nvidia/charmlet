@@ -3,6 +3,14 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.10.0 - 2026-11-06 (California companions trial)
+
+- Redesigned Cali as a detailed California grizzly with a consistent face, seven daily outfits and a relaxed Friday coastal shirt.
+- Added live head and arm movement, a clear thumbs-up and a waving cheer. The shared GPU and software renderers retain the same detailed artwork.
+- Added eleven California companions: Coast Redwood, Yosemite, Lake Tahoe, Western Gull, Harbor Seal, Golden Gate, Santa Cruz Otter, Pacific Gray Whale, Pacific Dolphin, California Condor and Golden Eagle.
+- Renamed the collection to Live Companions. All 178 charms are included, with matching cord defaults and attachment points for the new silhouettes.
+- Kept personal encouragement, optional confetti, saved controls, local photos, fidget toys and garden progress. Detailed figures react without the stress-ball squeeze; Reduced Motion remains still.
+
 ## 0.9.0 - 2026-11-06 (Cali and pets trial)
 
 - Added Cali, an original California-inspired golden bear and motivational live 3D mascot. Brief text bubbles encourage your next step, acknowledge focus progress and cheer new wins.

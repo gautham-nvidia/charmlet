@@ -1,7 +1,11 @@
 import { createCanvasSmiley, createWebGLSmiley, type SmileyRenderer } from './smiley-renderer';
 import { followGaze, liveCharacter, type LiveCharacter } from './interactive-motion';
+import { createArtLibrary } from './live-art-assets';
+import { createCanvasArt, createWebGLArt } from './live-art-renderer';
+import { isArtCharacter } from './live-art-core';
+import { nextLocalMidnight } from './garden-core';
 
-export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement) {
+export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, resource: (file: string) => string) {
 	let canvas: HTMLCanvasElement | undefined;
 	let renderer: SmileyRenderer | undefined;
 	let selected = '';
@@ -14,12 +18,16 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement) {
 	let wake: number | undefined;
 	let reaction: 'hello' | 'wink' | 'happy' | undefined;
 	let reactionUntil = 0;
+	let reactionStartedAt = 0;
+	let nextOutfitAt = 0;
+	let artEngine = false;
 	let lastPointerAt = 0;
 	let lastPaintAt = 0;
 	let nextBlinkAt = 0;
 	let frames = 0;
 	let lastPressed = false;
 	let gazeX = 0, gazeY = 0, targetX = 0, targetY = 0;
+	const art = createArtLibrary(resource, () => { if (!disposed) { refresh(); } });
 	const stop = () => {
 		if (frame !== undefined) { cancelAnimationFrame(frame); frame = undefined; }
 		if (wake !== undefined) { clearTimeout(wake); wake = undefined; }
@@ -31,33 +39,48 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement) {
 		charm.append(element);
 		return element;
 	}
+	function clearRenderer() {
+		const previousCanvas = canvas, previousRenderer = renderer;
+		canvas = undefined; renderer = undefined;
+		previousRenderer?.dispose();
+		if (previousRenderer?.kind === 'webgl') {
+			previousCanvas?.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();
+		}
+		previousCanvas?.remove();
+	}
 	function useCanvasFallback() {
-		renderer?.dispose(); canvas?.remove();
+		clearRenderer();
 		canvas = makeCanvas();
-		renderer = createCanvasSmiley(canvas);
+		renderer = artEngine ? createCanvasArt(canvas, art) : createCanvasSmiley(canvas);
 		syncSurface();
 		paint();
 	}
 	function initialize() {
+		if (canvas && artEngine !== isArtCharacter(character)) { clearRenderer(); }
 		if (canvas || disposed) { return; }
+		artEngine = isArtCharacter(character);
 		canvas = makeCanvas();
-		renderer = createWebGLSmiley(canvas);
+		renderer = artEngine ? createWebGLArt(canvas, art) : createWebGLSmiley(canvas);
 		if (!renderer) { useCanvasFallback(); }
 		else {
-			canvas.addEventListener('webglcontextlost', event => {
+			const currentCanvas = canvas;
+			currentCanvas.addEventListener('webglcontextlost', event => {
 				event.preventDefault();
+				if (canvas !== currentCanvas || disposed) { return; }
 				useCanvasFallback();
 			}, { once: true });
 		}
 	}
 	function syncSurface() {
 		if (!canvas) { return; }
-		canvas.hidden = !active || !renderer;
+		const rendered = Boolean(renderer && renderer.ready !== false);
+		canvas.hidden = !active || !rendered;
 		canvas.style.transformOrigin = image.style.transformOrigin;
 		canvas.dataset.renderer = renderer?.kind ?? 'static';
 		canvas.dataset.motion = active && !reduced ? 'live' : 'still';
 		canvas.dataset.character = character ?? '';
-		charm.dataset.liveRendered = String(Boolean(character && renderer));
+		charm.dataset.liveRendered = String(Boolean(character && rendered));
+		canvas.dataset.artError = artEngine ? art.error ?? '' : '';
 	}
 	function paint() {
 		if (!active || !character || !renderer || !canvas || document.hidden || disposed) { return; }
@@ -73,21 +96,32 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement) {
 		lastPressed = pressed;
 		if (now >= reactionUntil) { reaction = undefined; }
 		const expression = pressed ? undefined : reaction;
+		const localNow = Date.now();
+		if (character === 'cali') { nextOutfitAt = nextLocalMidnight(localNow); }
 		renderer.draw({ character, gazeX, gazeY, blink, pressed,
-			happy: expression === 'happy', wink: expression === 'wink', greeting: expression === 'hello' });
+			happy: expression === 'happy', wink: expression === 'wink', greeting: expression === 'hello',
+			now: localNow, reducedMotion: reduced,
+			reactionProgress: (now - reactionStartedAt) / Math.max(1, reactionUntil - reactionStartedAt) });
+		syncSurface();
 		canvas.dataset.frames = String(++frames);
 		canvas.dataset.expression = pressed ? 'squish' : expression ?? (blink > .5 ? 'blink' : 'smile');
 		canvas.dataset.gazeX = gazeX.toFixed(3); canvas.dataset.gazeY = gazeY.toFixed(3);
 	}
 	function schedule() {
-		if (!active || disposed) { return; }
+		if (!active || disposed || document.hidden) { return; }
 		const now = performance.now();
-		const moving = gazeX !== targetX || gazeY !== targetY || (now >= nextBlinkAt && now < nextBlinkAt + 180);
+		const moving = gazeX !== targetX || gazeY !== targetY || (now >= nextBlinkAt && now < nextBlinkAt + 180)
+			|| artEngine && !lastPressed && (reaction === 'hello' || reaction === 'happy') && now < reactionUntil;
 		if (!reduced && moving) {
 			frame = requestAnimationFrame(() => { frame = undefined; paint(); schedule(); });
 			return;
 		}
-		const deadlines = [reactionUntil > now ? reactionUntil : Infinity];
+		// A deadline can pass while drawing. Keep it until a paint consumes it,
+		// otherwise a still face or yesterday's outfit can remain until new input.
+		const deadlines = [reaction ? reactionUntil : Infinity];
+		if (character === 'cali') {
+			deadlines.push(now + Math.max(1, nextOutfitAt - Date.now()));
+		}
 		if (!reduced) {
 			deadlines.push(nextBlinkAt);
 			if (targetX || targetY) { deadlines.push(lastPointerAt + 900); }
@@ -100,7 +134,7 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement) {
 	function refresh() { stop(); paint(); schedule(); }
 	function react(expression: 'hello' | 'wink' | 'happy', duration: number) {
 		if (!active) { return; }
-		reaction = expression; reactionUntil = performance.now() + duration;
+		reaction = expression; reactionStartedAt = performance.now(); reactionUntil = reactionStartedAt + duration;
 		refresh();
 	}
 	const pointer = (event: PointerEvent) => {
@@ -153,7 +187,7 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement) {
 		update(selected, lastVisible, reduced);
 		active = false; stop();
 		if (event.persisted) { return; }
-		disposed = true; press.disconnect(); renderer?.dispose();
+		disposed = true; press.disconnect(); clearRenderer(); art.dispose();
 		charm.removeEventListener('pointerenter', greet);
 		window.removeEventListener('pointermove', pointer);
 		window.removeEventListener('blur', resetGaze);

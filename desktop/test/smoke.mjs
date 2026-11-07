@@ -702,6 +702,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   console.log('Desktop Cali: optional personal encouragement, confetti, pets and saved quiet preferences.');
   await selectInteractive('live:cali');
   await expect(face).toHaveAttribute('data-character', 'cali');
+  await expect(face).toHaveAttribute('data-art-ready', /^cali:/);
   await expect(face).toBeVisible();
   await third.window.locator('#charm').click();
   await expect(third.window.locator('#mascot-bubble')).toBeVisible();
@@ -744,7 +745,17 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     await expect(face).toBeHidden();
     await third.window.locator('#charm').screenshot({ path: join(output, `pet-${id}.png`) });
   }
+  console.log('Desktop California family: eleven rendered companions and saved selections.');
+  for (const character of ['redwood', 'yosemite', 'tahoe', 'gull', 'seal', 'golden-gate', 'santa-cruz',
+    'whale', 'dolphin', 'condor', 'eagle']) {
+    await selectInteractive(`live:${character}`);
+    await expect(face).toHaveAttribute('data-art-ready', `${character}:`);
+    await expect(face).toBeVisible();
+    await expect(third.window.locator('#mascot-bubble')).toBeHidden();
+    await third.window.locator('#charm').screenshot({ path: join(output, `california-${character}.png`) });
+  }
   await selectInteractive('live:cali');
+  await expect(face).toHaveAttribute('data-art-ready', /^cali:/);
   await quit(third.application);
   const fourth = await launch();
   await expect(fourth.window.locator('#stage')).toHaveAttribute('data-charm', 'live:cali');

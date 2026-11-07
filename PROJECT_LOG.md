@@ -546,3 +546,17 @@ The earlier Windows Reduced Motion and editor-readiness failures are resolved: a
 Both website checks pass for 167 unique charms, 201 validated PNGs, 160 selected designs, 29 app comparisons and 23 packs. New comparisons preserve actual capture pixels from the installed 0.9.0 extension and the 0.6.0 desktop development app; both pet sheets and Cali's normal/fallback, encouragement and win views were inspected. These are assistant inspections, not the owner's final artwork selection. Privacy, provenance, README and payment guidance now include Cali and the expanded count.
 
 The next gate is the expanded candidate's eight hosted jobs, followed by technical merge/main verification and fresh packages from that checkout. Public licences, publisher/signing choices, native macOS/mixed-display validation and the explicitly deferred website/paid decisions remain separate.
+
+## 2026-11-06 - Phase 10 California mascot candidate
+
+Starting from verified main `4bb0905` (PR #29), the owner requested a sharper real-grizzly Cali with a Silicon Valley coder wardrobe, a relaxed Friday outfit, clear live gestures and California companions. The new branch `feat/phase-10-california-mascots` contains extension 0.10.0 / desktop 0.7.0 and 178 charms.
+
+The illustrated renderer preserves the detailed concepts through curved surfaces and a jointed Cali head, arms and paws. Seven outfits follow the local date; eleven California figures have live gaze and gentle reactions. GPU and software rendering share artwork and geometry. The rejected untextured mesh prototype was not retained as the production implementation. Thirty-two prepared textures/thumbnails are covered by provenance hashes.
+
+Local source verification passed compile/lint, 88 models, the expanded 25.9-second editor mascot check, twelve desktop models and the existing 46.6-second desktop scenario. The editor check covers all eleven new figures, visible cord contact, current outfit, rendered cheer, GPU loss, saved preferences and restart. Production audit reported zero vulnerabilities. Final installed-package, expanded desktop, website, archive and hosted checks remain in progress; [Phase 10 verification](docs/phase-10-california-mascots.md) tracks the current gates.
+
+Artwork remains for the owner's design review. Website launch and paid choices remain explicitly deferred, alongside the existing licence, publisher, signing, native macOS and mixed-display decisions.
+
+The final local Phase 10 pass completed all four installed-extension scenarios on Windows / VS Code 1.145.0, twelve desktop models, the expanded 51.1-second desktop scenario, the extracted 59.8-second Windows archive scenario, both website checks and 28 artwork/Photo Studio/package tests. Catalogue and exact VSIX-download validation passed. Review sheets now cover the installed app, desktop development app, seven outfits and detailed California figures.
+
+Regression work corrected a pending-reaction/midnight scheduling boundary and the website's handling of batched visibility observations; both have deterministic regression coverage. An initial local Sunny hold missed without a failure trace; its cause remains unconfirmed, while an explicit focus gate and traced four-case rerun passed. The eight hosted platform jobs are the next gate, tracked on the candidate PR.

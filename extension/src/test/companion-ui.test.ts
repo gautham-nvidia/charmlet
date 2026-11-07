@@ -12,6 +12,8 @@ import { learningCard } from '../learning-cards';
 import { MESSAGES } from '../messages';
 import { localDayKey, type GardenState } from '../garden-core';
 import { winsToday } from '../small-wins';
+import { caliOutfitAt } from '../cali-wardrobe';
+import { CALIFORNIA_COMPANIONS } from '../california-companions';
 import { command, readyFrame, reloadCharm } from './editor-helpers';
 
 interface OwnedEditor {
@@ -23,9 +25,17 @@ interface OwnedEditor {
 	window: Page;
 }
 
+async function focusCharmForKeyboard(editor: OwnedEditor, frame: Frame): Promise<void> {
+	await editor.window.bringToFront();
+	const charm = frame.locator('#charm');
+	await charm.focus();
+	await expect(charm).toBeFocused();
+	await expect.poll(() => frame.evaluate(() => document.hasFocus())).toBe(true);
+}
+
 async function alphaAtCordTip(frame: Frame): Promise<number> {
 	const id = await frame.locator('#stage').getAttribute('data-charm');
-	const bundled = TRIAL_CHARMS.find(charm => charm.id === id);
+	const bundled = CHARMS.find(charm => charm.id === id && charm.file.endsWith('.png'));
 	// VS Code serves bundled images from a different origin. Read the same
 	// packaged pixels locally while measuring the real rendered geometry.
 	const png = bundled ? readFileSync(resolve('media', bundled.file)).toString('base64') : undefined;
@@ -58,11 +68,11 @@ async function tracePointerInput(window: Page): Promise<Frame[]> {
 		await target.evaluate(() => {
 			const events: Record<string, unknown>[] = [];
 			for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel',
-				'gotpointercapture', 'lostpointercapture', 'mousedown', 'mouseup', 'focus', 'blur']) {
+				'gotpointercapture', 'lostpointercapture', 'mousedown', 'mouseup', 'focus', 'blur', 'keydown', 'keyup']) {
 				globalThis.window.addEventListener(type, event => {
 					const pointer = event as PointerEvent;
 					const target = event.target instanceof Element ? event.target : undefined;
-					events.push({ type, id: pointer.pointerId, buttons: pointer.buttons, trusted: event.isTrusted,
+					events.push({ type, id: pointer.pointerId, buttons: pointer.buttons, key: (event as KeyboardEvent).key, trusted: event.isTrusted,
 						x: pointer.clientX, y: pointer.clientY, target: target?.id || target?.tagName,
 						classes: target?.getAttribute('class'),
 						captured: document.getElementById('charm')?.hasPointerCapture(pointer.pointerId),
@@ -85,6 +95,9 @@ async function savePointerTrace(editor: OwnedEditor, frames: Frame[], path: stri
 				viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
 				captured: document.getElementById('charm')?.hasPointerCapture(1),
 				classes: document.getElementById('charm')?.className,
+				keyboardHeld: document.getElementById('charm')?.dataset.keyboardHeld,
+				expression: document.getElementById('live-smiley')?.dataset.expression,
+				activeElement: document.activeElement?.id,
 				soft: document.getElementById('charm')?.dataset.soft,
 				phase: document.getElementById('phase')?.textContent,
 				events: JSON.parse(document.documentElement.dataset.pointerTrace ?? '[]'),
@@ -820,6 +833,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		await editor.window.emulateMedia({ reducedMotion: 'no-preference' });
 		await command(editor.window, 'Charmlet: Show Charm');
 		let frame = await readyFrame(editor.window);
+		const holdTrace = await tracePointerInput(editor.window);
 		const choose = async (name: string, group: string) => {
 			// Restore keyboard focus after reload/captures. The broader editor
 			// scenario separately exercises opening the picker with the mouse.
@@ -829,20 +843,23 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 			await editor.window.keyboard.press('Enter');
 			await expect(frame.locator('#charm-picker')).toBeVisible();
 			await expect.poll(async () => (await frame.locator('#charm-groups button').allTextContents()).slice(0, 3))
-				.toEqual(['All', 'Live 3D', 'Stress Busters']);
+				.toEqual(['All', 'Live Companions', 'Stress Busters']);
 			await frame.locator('#charm-groups').getByRole('button', { name: group, exact: true }).click();
 			await frame.getByRole('button', { name: `Select ${name}`, exact: true }).click();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
 		};
 		for (const [name, character] of [['Sunny - Live Smiley', 'sunny'], ['Nimbus - Live Cloud', 'cloud'], ['Byte - Live Robot', 'robot']]) {
-			await choose(name, 'Live 3D');
+			await choose(name, 'Live Companions');
 			const face = frame.locator('#live-smiley');
 			await expect(face).toHaveAttribute('data-character', character);
 			await expect(face).toBeVisible();
-			await frame.locator('#charm').focus();
+			await focusCharmForKeyboard(editor, frame);
 			await editor.window.keyboard.down('Space');
 			try { await expect(face).toHaveAttribute('data-expression', 'squish'); }
-			finally { await editor.window.keyboard.up('Space'); }
+			finally {
+				await savePointerTrace(editor, holdTrace, testInfo.outputPath(`live-${character}-hold-input.json`));
+				await editor.window.keyboard.up('Space');
+			}
 			await expect(face).toHaveAttribute('data-expression', 'smile');
 			await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`live-${character}.png`) });
 		}
@@ -850,20 +867,20 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		await expect(frame.locator('#charm')).toHaveAttribute('data-soft', 'true');
 		await choose('Bubble Pop', 'Stress Busters');
 		const toy = frame.locator('#live-fidget');
-		await frame.locator('#charm').focus();
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.press('Space');
 		await expect(toy).toHaveAttribute('data-bubbles', '100000');
 		for (let index = 0; index < 6; index++) { await editor.window.keyboard.press('Space'); }
 		await expect(toy).toHaveAttribute('data-bubbles', '011111');
 		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('bubble-pop.png') });
 		await choose('Worry Stone', 'Stress Busters');
-		await frame.locator('#charm').focus();
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.down('Space');
 		try { await expect(toy).toHaveAttribute('data-held', 'true'); }
 		finally { await editor.window.keyboard.up('Space'); }
 		await expect(toy).toHaveAttribute('data-held', 'false');
 		await choose('Fidget Spinner', 'Stress Busters');
-		await frame.locator('#charm').focus();
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.press('Space');
 		await expect(toy).toHaveAttribute('data-running', 'false');
 		expect(Number(await toy.getAttribute('data-angle'))).toBeGreaterThan(.5);
@@ -874,7 +891,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
 		await frame.locator('#motion').click();
 		await frame.locator('#settings-close').click();
-		await frame.locator('#charm').focus();
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.press('Space');
 		await expect(toy).toHaveAttribute('data-running', 'true');
 		const spinningAngle = await toy.getAttribute('data-angle');
@@ -885,7 +902,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		frame = await reloadCharm(editor.window);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'fidget:spinner');
 		await expect(frame.locator('#live-fidget')).toHaveAttribute('data-running', 'false');
-		await choose('Sunny - Live Smiley', 'Live 3D');
+		await choose('Sunny - Live Smiley', 'Live Companions');
 		await frame.evaluate(() => {
 			const face = document.getElementById('live-smiley')!;
 			window.addEventListener('pointermove', () => {
@@ -915,7 +932,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 	} finally { await closeOwnedEditor(editor, testInfo); }
 });
 
-test(`${installedPersonalization ? 'installed VSIX' : 'mascot companion'} keeps personal encouragement optional and includes the new pets`, async ({}, testInfo) => {
+test(`${installedPersonalization ? 'installed VSIX' : 'mascot companion'} keeps personal encouragement optional with daily outfits and the California family`, async ({}, testInfo) => {
 	test.setTimeout(180000);
 	const editor = await launchOwnedEditor('charmlet-mascot-', ({ preferencesPath }) => {
 		writeFileSync(preferencesPath, JSON.stringify({
@@ -941,6 +958,8 @@ test(`${installedPersonalization ? 'installed VSIX' : 'mascot companion'} keeps 
 		const face = () => frame.locator('#live-smiley');
 		await expect(face()).toHaveAttribute('data-character', 'cali');
 		await expect(face()).toHaveAttribute('data-renderer', /^(webgl|canvas)$/);
+		await expect(face()).toHaveAttribute('data-art-ready', /^cali:/);
+		await expect(face()).toHaveAttribute('data-outfit', caliOutfitAt(Date.now()).id);
 		await expect(frame.locator('#mascot-bubble')).toBeVisible();
 		await expect(frame.locator('#mascot-bubble')).toHaveCSS('pointer-events', 'none');
 		await expect(frame.locator('#mascot-bubble')).toHaveCSS('animation-name', 'none');
@@ -951,13 +970,36 @@ test(`${installedPersonalization ? 'installed VSIX' : 'mascot companion'} keeps 
 				intercepts: document.getElementById('mascot-bubble')!.contains(document.elementFromPoint(bubble.x + bubble.width / 2, bubble.y + bubble.height / 2)) };
 		});
 		expect(geometry).toEqual({ separate: true, intercepts: false });
+		await expect(face()).toHaveAttribute('data-expression', 'smile');
+		const restingPixels = await face().evaluate(canvas => (canvas as HTMLCanvasElement).toDataURL());
 		await frame.locator('#charm').focus();
 		await editor.window.keyboard.press('Enter');
 		await expect(frame.locator('#charm')).toBeFocused();
 		await expect(face()).toHaveAttribute('data-expression', 'happy');
+		expect(await face().evaluate(canvas => (canvas as HTMLCanvasElement).toDataURL())).not.toBe(restingPixels);
+		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('cali-cheer.png') });
 		await frame.locator('#app').screenshot({ path: testInfo.outputPath('cali-encouragement.png') });
 		await expect(face()).toHaveAttribute('data-expression', 'smile');
 		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('cali-live.png') });
+		// Cross the reaction deadline between the last held-release paint and
+		// scheduling. Reduced Motion must still receive its final resting pose.
+		const boundaryExpression = await frame.evaluate(async () => {
+			const original = performance.now.bind(performance), start = original();
+			const charm = document.getElementById('charm')!;
+			try {
+				performance.now = () => start;
+				charm.click();
+				charm.dataset.keyboardHeld = 'true';
+				await Promise.resolve();
+				let reads = 0;
+				performance.now = () => start + (reads++ === 0 ? 1099.9 : 1100.1);
+				charm.dataset.keyboardHeld = 'false';
+				await Promise.resolve();
+				return document.getElementById('live-smiley')!.dataset.expression;
+			} finally { performance.now = original; charm.dataset.keyboardHeld = 'false'; }
+		});
+		expect(boundaryExpression).toBe('happy');
+		await expect(face()).toHaveAttribute('data-expression', 'smile');
 		if (await face().getAttribute('data-renderer') === 'webgl') {
 			await face().evaluate(canvas => (canvas as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext());
 		}
@@ -1046,6 +1088,57 @@ test(`${installedPersonalization ? 'installed VSIX' : 'mascot companion'} keeps 
 			expect(await alphaAtCordTip(frame)).toBeGreaterThan(80);
 			await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`pet-${id}.png`) });
 		}
+		for (const companion of CALIFORNIA_COMPANIONS) {
+			const id = `live:${companion.character}`;
+			await appearance();
+			await frame.locator('#charm-select').selectOption(id);
+			await frame.locator('#settings-close').click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', id);
+			await expect(face()).toHaveAttribute('data-art-ready', `${companion.character}:`);
+			await expect(face()).toBeVisible();
+			await expect(frame.locator('#mascot-bubble')).toBeHidden();
+			expect(await alphaAtCordTip(frame)).toBeGreaterThan(80);
+			await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`california-${companion.character}.png`) });
+		}
+		frame = await reloadCharm(editor.window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'live:eagle');
+		await expect(face()).toHaveAttribute('data-art-ready', 'eagle:');
+		const rested = await face().getAttribute('data-frames');
+		await editor.window.waitForTimeout(250);
+		expect(await face().getAttribute('data-frames')).toBe(rested);
+		await appearance();
+		await frame.locator('#charm-select').selectOption('live:cali');
+		await frame.locator('#settings-close').click();
+		await expect(face()).toHaveAttribute('data-art-ready', /^cali:/);
+		const wallClock = await frame.evaluateHandle(() => Date.now);
+		try {
+			await frame.evaluate(async () => {
+				Date.now = () => new Date(2026, 10, 6, 12).getTime();
+				const charm = document.getElementById('charm')!;
+				charm.dataset.keyboardHeld = 'true'; await Promise.resolve();
+				charm.dataset.keyboardHeld = 'false'; await Promise.resolve();
+			});
+			await expect(face()).toHaveAttribute('data-art-ready', 'cali:friday-coast');
+			const midnightOutfit = await frame.evaluate(async () => {
+				const charm = document.getElementById('charm')!;
+				charm.dataset.keyboardHeld = 'true'; await Promise.resolve();
+				const midnight = new Date(2026, 10, 7).getTime();
+				let reads = 0;
+				Date.now = () => midnight + (reads++ === 0 ? -1 : 1);
+				charm.dataset.keyboardHeld = 'false'; await Promise.resolve();
+				return document.getElementById('live-smiley')!.dataset.outfit;
+			});
+			expect(midnightOutfit).toBe('friday-coast');
+			await expect(face()).toHaveAttribute('data-art-ready', 'cali:saturday-trail');
+		} finally {
+			await frame.evaluate(async original => {
+				Date.now = original;
+				const charm = document.getElementById('charm')!;
+				charm.dataset.keyboardHeld = 'true'; await Promise.resolve();
+				charm.dataset.keyboardHeld = 'false'; await Promise.resolve();
+			}, wallClock);
+			await wallClock.dispose();
+		}
 	} finally { await closeOwnedEditor(editor, testInfo); }
 });
 
@@ -1072,10 +1165,14 @@ test(`${installedPersonalization ? 'installed VSIX' : 'personalization'} keeps l
 		const stillFrames = await face.getAttribute('data-frames');
 		await editor.window.waitForTimeout(250);
 		expect(await face.getAttribute('data-frames')).toBe(stillFrames);
-		await frame.locator('#charm').focus();
+		const holdTrace = await tracePointerInput(editor.window);
+		await focusCharmForKeyboard(editor, frame);
 		await editor.window.keyboard.down('Space');
 		try { await expect(face).toHaveAttribute('data-expression', 'squish'); }
-		finally { await editor.window.keyboard.up('Space'); }
+		finally {
+			await savePointerTrace(editor, holdTrace, testInfo.outputPath('sunny-hold-input.json'));
+			await editor.window.keyboard.up('Space');
+		}
 		await expect(face).toHaveAttribute('data-expression', 'smile');
 		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('sunny.png') });
 
