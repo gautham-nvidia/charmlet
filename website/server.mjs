@@ -9,6 +9,7 @@ const root = resolve(fileURLToPath(new URL('./dist/', import.meta.url)));
 const mime = new Map([
   ['.html', 'text/html; charset=utf-8'], ['.css', 'text/css; charset=utf-8'], ['.js', 'text/javascript; charset=utf-8'],
   ['.json', 'application/json; charset=utf-8'], ['.svg', 'image/svg+xml'], ['.png', 'image/png'], ['.webp', 'image/webp'], ['.vsix', 'application/vsix'],
+  ['.ttf', 'font/ttf'], ['.woff2', 'font/woff2'],
 ]);
 
 export function createGalleryServer({

@@ -108,3 +108,11 @@ The same 0.11.0 candidate now contains 200 charms: 175 static PNG designs, Termi
 Nimbus and Byte replace their earlier procedural appearance with registered Gemini 3 Pro Image cloud and metal-body textures. Their live projection, weather effects, narrow cloud-fold eyes, jointed robot arms and binary/code display are application code. The same textures and geometry work in GPU and software rendering. `website/live-art-assets.json` now records 36 output hashes, including the two new source frames and two thumbnails. Sunny remains procedural; the approved Cali and eleven California companion artwork files are unchanged.
 
 These are generated illustrations, not documentary photographs or verified architectural models. The Cupertino design is inspired by the original Infinite Loop campus rather than Apple Park. New artwork remains available for owner review; public distribution terms and the free/paid lineup remain undecided. Separately prepared artist-inspired studies are local review material and are not bundled in this trial.
+
+## Music Icons trial, 0.12.0 (2026-11-10)
+
+The owner approved inclusion of all 34 artist studies: the original ten, twelve legends and twelve current performers, including twelve women. They now form Music Icons in the 234-charm trial; the previous paragraph describes 0.11.0. `website/artist-artwork.json` records each final prompt, generation variant, approved source pack and PNG SHA256. No new generation request was needed for integration.
+
+Profile4 preserves the exact PNG bytes previously supplied in the three review packs. Reprocessing those sources changed their hashes and produced duplicate imported/bundled figures; the canonical images now preserve the original saved selections, pins and cords. Generated large previews use the same source artwork. Original receipts and sources remain in ignored authoring storage.
+
+These are original generated, artist-inspired illustrations, not official products, endorsements or licensed merchandise. Design approval does not settle names/likenesses, trademarks, generation-provider terms or commercial distribution rights. Public and paid use still require the owner's separate review. New paid collections should use artwork cleared for that purpose; this addition activates no sales.

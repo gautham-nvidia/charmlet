@@ -95,6 +95,10 @@ test('every bundled selection survives saved-state restoration', () => {
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Zodiac').length, 12);
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Garden Flowers').length, 18);
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Music').length, 12);
+	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Music Icons').length, 34);
+	for (const artist of ['travis-scott', 'whitney-houston', 'beyonce', 'prince']) {
+		assert.ok(TRIAL_CHARMS.some(charm => charm.id === `trial:artist-${artist}`));
+	}
 	assert.ok(TRIAL_CHARMS.every(charm => !charm.source && /^trial-[a-z0-9-]+\.png$/.test(charm.file)));
 	assert.equal(MESSAGES.length, 80);
 	assert.equal(new Set(MESSAGES).size, MESSAGES.length);

@@ -85,6 +85,26 @@ test('attachment decoding handles all PNG filters without changing pack bytes or
 	}
 });
 
+test('approved artist packs preserve every imported selection without duplicate bundled figures', async () => {
+	const packs = await Promise.all(['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review']
+		.map(async id => parseCharmPack(await readFile(join(__dirname, '../../../website/packs/review', `${id}.charmlet.json`)))));
+	const imported = packCharms(packs);
+	const catalogue = buildCatalogue(imported);
+	assert.equal(imported.length, 34);
+	assert.equal(catalogue.length, CHARMS.length);
+	for (const charm of imported) {
+		const bundled = TRIAL_CHARMS.find(item => item.artworkKey === charm.artworkKey)!;
+		assert.ok(bundled, charm.name);
+		assert.equal(charm.artworkHash, bundled.artworkHash, `Keep the approved PNG bytes for ${charm.name}.`);
+		assert.equal(catalogue.some(item => item.id === bundled.id), false);
+		const restored = restoreState({ charmId: charm.id, charmPinned: true,
+			cordChoices: { [charm.id]: 'ribbon' } }, catalogue);
+		assert.equal(restored.charmId, charm.id);
+		assert.equal(restored.charmPinned, true);
+		assert.equal(restored.cordChoices[charm.id], 'ribbon');
+	}
+});
+
 test('identical imported trial art keeps its saved ID and pack bytes without a duplicate bundled tile', async () => {
 	const trial = TRIAL_CHARMS.find(charm => charm.artworkKey === 'starter-chip')!;
 	assert.ok(trial, 'The refreshed Chip must be included in the trial.');

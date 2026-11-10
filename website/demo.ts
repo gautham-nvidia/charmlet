@@ -30,7 +30,9 @@ const hint = required<HTMLParagraphElement>('demo-hint');
 const nudgeButton = required<HTMLButtonElement>('demo-nudge');
 const resetButton = required<HTMLButtonElement>('demo-reset');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const pendulum = new Pendulum(280, 320, 126, 100, 'hanging');
+const demoSize = Math.max(60, Math.min(200, Number(stage.dataset.charmSize) || 100));
+const viewScale = Math.max(1, Math.min(1.5, Number(stage.dataset.viewScale) || 1));
+const pendulum = new Pendulum(280, 320, 126, demoSize, 'hanging');
 const liveSmiley = createLiveSmiley(charm, image, file => new URL(`assets/default/${file}`, document.baseURI).href);
 const fidgetUI = createFidgetView(charm, image, {
 	rotate: held => { if (held) { tapWiggle.stop(); stop(); } else { start(); } },
@@ -113,9 +115,9 @@ function start() {
 function resize() {
 	clearPointer();
 	const { width, height } = stage.getBoundingClientRect();
-	const layout = getLayout(width, height, 126, 100, 'hanging', attachment);
-	scale = Math.max(0.01, Math.min(1, width / layout.minimumWidth, height / layout.minimumHeight));
-	pendulum.resize(width / scale, height / scale, 126, 100, 'hanging', attachment);
+	const layout = getLayout(width, height, 126, demoSize, 'hanging', attachment);
+	scale = Math.max(0.01, Math.min(viewScale, width / layout.minimumWidth, height / layout.minimumHeight));
+	pendulum.resize(width / scale, height / scale, 126, demoSize, 'hanging', attachment);
 	rig.style.width = `${pendulum.layout.width}px`;
 	rig.style.height = `${pendulum.layout.height}px`;
 	rig.style.transform = `scale(${scale})`;

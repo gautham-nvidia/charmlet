@@ -548,12 +548,12 @@ test('motivation has no category heading and reminder checkboxes remain compact'
 	}
 });
 
-test('navigation A searches installed charms and exposes quiet reminders and build identity', async ({}, testInfo) => {
+test(`${process.env.CHARMLET_TEST_PACKAGED === '1' ? 'installed VSIX' : 'navigation A'} searches installed charms and exposes quiet reminders and build identity`, async ({}, testInfo) => {
 	const editor = await launchOwnedEditor('charmlet-navigation-', ({ preferencesPath, companionPath }) => {
 		writeFileSync(preferencesPath, `${JSON.stringify({ ...DEFAULT_STATE, reducedMotion: true })}\n`);
 		const state = applyCompanionAction(defaultCompanionState(), { type: 'care-configure', kind: 'water', enabled: true, intervalMinutes: 15 }, Date.now() - 16 * 60000).state;
 		writeFileSync(companionPath, `${JSON.stringify(state)}\n`);
-	});
+	}, process.env.CHARMLET_TEST_PACKAGED === '1');
 	try {
 		await command(editor.window, 'Charmlet: Show Charm');
 		let frame = await readyFrame(editor.window);
@@ -578,6 +578,21 @@ test('navigation A searches installed charms and exposes quiet reminders and bui
 		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(12);
 		await expect(frame.getByRole('button', { name: 'Select MIDI Keyboard', exact: true })).toBeVisible();
 		await expect(frame.getByRole('button', { name: 'Select Grand Piano', exact: true })).toBeVisible();
+		await frame.locator('#charm-groups').getByRole('button', { name: 'Music Icons', exact: true }).click();
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(34);
+		for (const artist of ['Travis Scott', 'Whitney Houston', 'Beyoncé', 'Prince']) {
+			await expect(frame.getByRole('button', { name: `Select ${artist} inspired`, exact: true })).toBeVisible();
+		}
+		for (const [artist, id] of [['Travis Scott', 'travis-scott'], ['Whitney Houston', 'whitney-houston'],
+			['Beyoncé', 'beyonce'], ['Prince', 'prince']]) {
+			await frame.getByRole('button', { name: `Select ${artist} inspired`, exact: true }).click();
+			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', `trial:artist-${id}`);
+			await expect(frame.locator('#charm-image')).toHaveAttribute('src', new RegExp(`artist-${id}`));
+			await frame.locator('#charm-image').evaluate(node => (node as HTMLImageElement).decode());
+			await expect.poll(() => frame.locator('#charm-image').evaluate(node => (node as HTMLImageElement).naturalWidth)).toBe(216);
+			await frame.locator('#app').screenshot({ path: testInfo.outputPath(`artist-${id}.png`) });
+			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+		}
 		await frame.locator('#charm-groups').getByRole('button', { name: 'All', exact: true }).click();
 		for (const retired of ['soldering iron', 'digital caliper']) {
 			await frame.locator('#charm-search').fill(retired);

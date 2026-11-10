@@ -2,13 +2,13 @@
 
 Charmlet Desktop is an unpublished Windows/macOS developer beta. It reuses the extension's charm renderer, physics, Focus/Learn/Garden controller, validated pack parser and confirmed JSON stores in one floating tray-managed window.
 
-The **0.8.0 candidate** starts with just the charm and cord. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
+The **0.9.0 candidate** starts with just the charm and cord. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
 
 Drag **Move** to place the charm, or focus that button and use the arrow keys (Shift moves farther). Pulling the charm itself stretches the cord within the current display's available space, then releases into the shared bounce. The peg starts near the screen's top edge; compact controls no longer restrict the play area.
 
 Under **Tools > Settings**, **Background**, **Keep toolbar visible** and **Keep messages visible** are separate saved preferences, all off by default. The tray's **Open Controls** and **Reset Window Position** remain available.
 
-The trial shares the extension's **200 offline charms**: 175 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools. Terminal leads the picker, followed by **Live 3D**, **Stress Busters** and **Music**. Nimbus has sunrise, rain and lightning reactions; Byte has a metal body and animated binary/code display. Music includes twelve instruments and controllers. California landmarks, Diwali Diyas and Halloween Lantern join the themed packs, while Soldering Iron and Digital Caliper retire.
+The trial shares the extension's **234 offline charms**: 209 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools. Terminal leads the picker, followed by **Live 3D**, **Stress Busters**, **Music** and **Music Icons**. Nimbus has sunrise, rain and lightning reactions; Byte has a metal body and animated binary/code display. Music includes twelve instruments and controllers; Music Icons adds all 34 approved artist studies, including Travis Scott, legends and twelve women. Previously imported artist packs retain their selections and exact artwork without duplicate bundled tiles.
 
 **Live 3D** also includes Cali, Sunny and eleven California companions. **Stress Busters** brings four spinners, Bubble Pop, Worry Stone and three puzzles together with the smiley balls and squishies. Giant Panda, seven dog breeds including Goldendoodle and Husky, and two cats remain under **Pets & Wildlife**. The eighteen-flower garden, imports, photos, saved cords and pins carry forward. Final public lineup and pricing remain undecided.
 
@@ -34,7 +34,7 @@ npm.cmd --prefix desktop run test
 npm.cmd --prefix desktop run package
 ```
 
-The Windows 0.8.0 packaging target is an unsigned folder under `desktop/release/0.8.0/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. Current checks are recorded in the [playful charms verification log](../docs/phase-11-playful-charms.md). Signing, notarization, update service, store listing and public distribution remain release work.
+The Windows 0.9.0 packaging target is an unsigned folder under `desktop/release/0.9.0/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. The earlier [playful charms verification log](../docs/phase-11-playful-charms.md) describes its own candidate. Signing, notarization, update service, store listing and public distribution remain release work.
 
 For a portable download, archive and test the extracted application.
 

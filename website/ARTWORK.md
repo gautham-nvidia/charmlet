@@ -67,3 +67,9 @@ The same trial candidate now contains 200 charms. Twenty-four new/replaced stati
 Nimbus and Byte now use registered Gemini 3 Pro Image textures with code-rendered weather and screen effects. Nimbus retains narrow eyes shaped like cloud folds; Byte's visor displays bits, a compile check and a prompt instead of smiley eyes. Articulation, projection, rain, the sun, the single local lightning bolt and display updates are application code. GPU and software modes share the same sources and poses. The live manifest now records 36 texture/poster hashes. Original sources and receipts remain in ignored authoring storage; ordinary builds make no generation requests.
 
 The owner's approved Cali and eleven California companion textures remain unchanged. Dated earlier entries describe their respective trial stages. New replacement artwork and artist-inspired studies remain subject to owner review; this work does not settle public distribution, pricing or artwork terms.
+
+## Artist integration and website refresh (2026-11-10)
+
+All 34 artist designs are now approved for inclusion in the trial. `artist-artwork.json` preserves their prompts and references; profile4 retains the exact approved review-pack PNGs so existing imports are not duplicated. The review has 253 records and 210 featured designs; the complete app has 234 selectable charms. Design selection and commercial rights are separate: no artist endorsement, merchandising licence or paid product is implied.
+
+The refreshed homepage and separate collection browser reuse the approved Charmlet artwork and live renderer. No new image or video generation was requested. Typography uses self-hosted Manrope from Google Fonts, under the SIL Open Font License included at `assets/fonts/OFL.txt`. Brand direction and the owner's video reference are documented in `../docs/charmlet-brand-kit.md`.

@@ -3,7 +3,7 @@
 184 offline trial charms with matched cords, fifteen live companions, interactive fidgets and puzzles, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Playful charms trial, version 0.11.0.** Charmlet lives in a dockable VS Code view, not over your code
+**Music Icons trial, version 0.12.0.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 It also works in Restricted Mode without asking you to trust workspace code.
 
@@ -26,7 +26,7 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 8. Click **Garden**, then **Plant a seed**, or run **Charmlet: Open Garden**. Water once per local day and earn an original flower after eleven valid waterings. Optional water/move schedules live under **Settings → Reminders**.
 9. Run **Charmlet: Import Charm Pack** for a free downloaded `.charmlet.json`; remove imported packs with **Charmlet: Remove Charm Pack**.
 
-The trial includes 175 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools: **200 charms** in all. Open **Charms** to search the themed packs. Terminal is first, followed by Live 3D, Stress Busters and Music; no separate imports are needed.
+The trial includes 209 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools: **234 charms** in all. Open **Charms** to search the themed packs. Terminal is first, followed by Live 3D, Stress Busters, Music and Music Icons; no separate imports are needed. Music Icons includes all 34 approved artist studies, with Travis Scott, legends and twelve women. Existing artist imports keep their saved IDs and exact artwork without duplicate bundled figures.
 
 **Music** has twelve instruments and controllers. **California** includes Palace of Fine Arts, Painted Ladies, Pebble Beach, Coastal Cypress, Salesforce Tower, Granite Dome and campus designs inspired by NVIDIA Santa Clara and Apple's original Infinite Loop. **Celebrations** adds Diwali Diyas and Halloween Lantern, with clearer Black Friday and Cyber Monday designs. Soldering Iron and Digital Caliper have retired from the built-in collection; their saved selections move to Terminal.
 

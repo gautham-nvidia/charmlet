@@ -2448,5 +2448,481 @@
       "x": 0.5,
       "y": 0.11904761904761904
     }
+  },
+  {
+    "id": "trial:artist-michael-jackson",
+    "name": "Michael Jackson inspired",
+    "file": "trial-artist-michael-jackson-r1-p4.png",
+    "description": "An artist-inspired Michael Jackson stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-michael-jackson",
+    "artworkHash": "853c0979800737281f69ab354dd2b61a2dc74fec77dbb607ae8b7b8752aa235f",
+    "attachment": {
+      "x": 0.4930555555555556,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:artist-daft-punk",
+    "name": "Daft Punk inspired",
+    "file": "trial-artist-daft-punk-r1-p4.png",
+    "description": "An artist-inspired Daft Punk stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-daft-punk",
+    "artworkHash": "0093773d36758e3d7f3a1d01e9d943995eac3f5a9eb449dd3d6c17be1e9e5ccc",
+    "attachment": {
+      "x": 0.5162037037037037,
+      "y": 0.17063492063492064
+    }
+  },
+  {
+    "id": "trial:artist-skrillex",
+    "name": "Skrillex inspired",
+    "file": "trial-artist-skrillex-r1-p4.png",
+    "description": "An artist-inspired Skrillex stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-skrillex",
+    "artworkHash": "4c4bc851d40e0ed333a0d908517fbc14b15d5825cdb76cb7ed738f6a0a85a16d",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:artist-coldplay",
+    "name": "Coldplay inspired",
+    "file": "trial-artist-coldplay-r1-p4.png",
+    "description": "An artist-inspired Coldplay stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-coldplay",
+    "artworkHash": "f7628968bf3e321a2308c58ddab174a68bf7c857990eb2625234a692b9ff681f",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:artist-bruno-mars",
+    "name": "Bruno Mars inspired",
+    "file": "trial-artist-bruno-mars-r2-p4.png",
+    "description": "An artist-inspired Bruno Mars stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-bruno-mars",
+    "artworkHash": "34f3a68a0450fa74aa3659259730451320be6f9d1e140ffa979a947d3853a065",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:artist-maroon-5",
+    "name": "Maroon 5 inspired",
+    "file": "trial-artist-maroon-5-r2-p4.png",
+    "description": "An artist-inspired Maroon 5 stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-maroon-5",
+    "artworkHash": "993b8a0777a709a1bf9107423a78d769f81fb4879d9a99b41e74f0b60d11d6f5",
+    "attachment": {
+      "x": 0.4375,
+      "y": 0.09126984126984126
+    }
+  },
+  {
+    "id": "trial:artist-imagine-dragons",
+    "name": "Imagine Dragons inspired",
+    "file": "trial-artist-imagine-dragons-r2-p4.png",
+    "description": "An artist-inspired Imagine Dragons stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-imagine-dragons",
+    "artworkHash": "27c36e2e726a35ce49ffdecc5f9dde9507954f3ecd398625425d3f8840de7abe",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.14682539682539683
+    }
+  },
+  {
+    "id": "trial:artist-tiesto",
+    "name": "Tiesto inspired",
+    "file": "trial-artist-tiesto-r2-p4.png",
+    "description": "An artist-inspired Tiesto stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-tiesto",
+    "artworkHash": "f32547b3232286acb1f065e7f6224cd684a1228c34530375adaabd7e2ccc111e",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:artist-ac-dc",
+    "name": "AC/DC inspired",
+    "file": "trial-artist-ac-dc-r1-p4.png",
+    "description": "An artist-inspired AC/DC stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-ac-dc",
+    "artworkHash": "425dae368308fc722850f14c3d637953835f94ff8724e431c4e88e91f2694593",
+    "attachment": {
+      "x": 0.4791666666666667,
+      "y": 0.09523809523809523
+    }
+  },
+  {
+    "id": "trial:artist-led-zeppelin",
+    "name": "Led Zeppelin inspired",
+    "file": "trial-artist-led-zeppelin-r1-p4.png",
+    "description": "An artist-inspired Led Zeppelin stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-led-zeppelin",
+    "artworkHash": "1ae8098292c6b31d75331bbfa05a1f42b2b43cb2e4d07631e09fa3b0f298fed0",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.34523809523809523
+    }
+  },
+  {
+    "id": "trial:artist-freddie-mercury",
+    "name": "Freddie Mercury inspired",
+    "file": "trial-artist-freddie-mercury-r1-p4.png",
+    "description": "An artist-inspired Freddie Mercury stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-freddie-mercury",
+    "artworkHash": "83e8f7ada876a18065b2af390a6fd372e793e4155bfe5172aba892c8f3bacdc7",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:artist-whitney-houston",
+    "name": "Whitney Houston inspired",
+    "file": "trial-artist-whitney-houston-r1-p4.png",
+    "description": "An artist-inspired Whitney Houston stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-whitney-houston",
+    "artworkHash": "354def1d16d367671e13c891cd84b97de01d262a96d1a526efc8bec46a14f6c8",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.07539682539682539
+    }
+  },
+  {
+    "id": "trial:artist-prince",
+    "name": "Prince inspired",
+    "file": "trial-artist-prince-r2-p4.png",
+    "description": "An artist-inspired Prince stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-prince",
+    "artworkHash": "b3ed59efc3d9145e565df67263f4f6589e366b50a82eb6e4b3d9ddcacb63bd7c",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.07539682539682539
+    }
+  },
+  {
+    "id": "trial:artist-tina-turner",
+    "name": "Tina Turner inspired",
+    "file": "trial-artist-tina-turner-r2-p4.png",
+    "description": "An artist-inspired Tina Turner stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-tina-turner",
+    "artworkHash": "54533de1d72e0d96eb44a5eebeed95a79d4f81a06c69e1b17d1dd551ff3a1505",
+    "attachment": {
+      "x": 0.4791666666666667,
+      "y": 0.12301587301587301
+    }
+  },
+  {
+    "id": "trial:artist-david-bowie",
+    "name": "David Bowie inspired",
+    "file": "trial-artist-david-bowie-r1-p4.png",
+    "description": "An artist-inspired David Bowie stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-david-bowie",
+    "artworkHash": "204e0efa264a258d85fd9dd22d843a4ca6532e4845115e9313fe7108dde4a720",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.21428571428571427
+    }
+  },
+  {
+    "id": "trial:artist-aretha-franklin",
+    "name": "Aretha Franklin inspired",
+    "file": "trial-artist-aretha-franklin-r1-p4.png",
+    "description": "An artist-inspired Aretha Franklin stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-aretha-franklin",
+    "artworkHash": "59c9c9177b70633c4f1465b1e6a4576763921c950df31630f20c2c304ad5b9d9",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:artist-elvis-presley",
+    "name": "Elvis Presley inspired",
+    "file": "trial-artist-elvis-presley-r1-p4.png",
+    "description": "An artist-inspired Elvis Presley stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-elvis-presley",
+    "artworkHash": "e82f2ac2acf2217119cf132b136a50ccb74d104fb863c066f2ff9bd8b679de5e",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:artist-madonna",
+    "name": "Madonna inspired",
+    "file": "trial-artist-madonna-r1-p4.png",
+    "description": "An artist-inspired Madonna stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-madonna",
+    "artworkHash": "332bc3cd1af910fdb6a0fe90925c92fc0f9baa2c8acd79d8560db5516fbe8122",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:artist-bob-marley",
+    "name": "Bob Marley inspired",
+    "file": "trial-artist-bob-marley-r1-p4.png",
+    "description": "An artist-inspired Bob Marley stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-bob-marley",
+    "artworkHash": "1652f3fb7e60daef2c2886aed63ba090e58571c3285f6df48894b4ea60f92425",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.09523809523809523
+    }
+  },
+  {
+    "id": "trial:artist-dolly-parton",
+    "name": "Dolly Parton inspired",
+    "file": "trial-artist-dolly-parton-r1-p4.png",
+    "description": "An artist-inspired Dolly Parton stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-dolly-parton",
+    "artworkHash": "bf5fc87d4d233245a780f8d746151698992755de1b18d9cc08c7c0f95c5f27f4",
+    "attachment": {
+      "x": 0.4930555555555556,
+      "y": 0.10317460317460317
+    }
+  },
+  {
+    "id": "trial:artist-elton-john",
+    "name": "Elton John inspired",
+    "file": "trial-artist-elton-john-r1-p4.png",
+    "description": "An artist-inspired Elton John stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-elton-john",
+    "artworkHash": "2a134269ea7a28b501a46c6717fe9a2eb7f9798a490682947fe5ec82aba9b8b2",
+    "attachment": {
+      "x": 0.3680555555555556,
+      "y": 0.11507936507936507
+    }
+  },
+  {
+    "id": "trial:artist-stevie-wonder",
+    "name": "Stevie Wonder inspired",
+    "file": "trial-artist-stevie-wonder-r1-p4.png",
+    "description": "An artist-inspired Stevie Wonder stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-stevie-wonder",
+    "artworkHash": "7447c5d13d33185b1408efc73cececa21385a6648792d3f15575ca6250680d85",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.09523809523809523
+    }
+  },
+  {
+    "id": "trial:artist-travis-scott",
+    "name": "Travis Scott inspired",
+    "file": "trial-artist-travis-scott-r1-p4.png",
+    "description": "An artist-inspired Travis Scott stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-travis-scott",
+    "artworkHash": "61682ecdddbe03af9dea58b1c63eb5f53f5ea5717905fa25f308b038321cbf0a",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.15873015873015872
+    }
+  },
+  {
+    "id": "trial:artist-beyonce",
+    "name": "Beyoncé inspired",
+    "file": "trial-artist-beyonce-r1-p4.png",
+    "description": "An artist-inspired Beyoncé stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-beyonce",
+    "artworkHash": "cd1d07daba7ff03aa55c4129834e0c892e56ccd269aee178d9cca222c87f5f91",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.10317460317460317
+    }
+  },
+  {
+    "id": "trial:artist-the-weeknd",
+    "name": "The Weeknd inspired",
+    "file": "trial-artist-the-weeknd-r2-p4.png",
+    "description": "An artist-inspired The Weeknd stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-the-weeknd",
+    "artworkHash": "64b4713a592737f42e121e0e681d54092576073298b2ba1e8eb6569a6f08881a",
+    "attachment": {
+      "x": 0.47453703703703703,
+      "y": 0.09523809523809523
+    }
+  },
+  {
+    "id": "trial:artist-taylor-swift",
+    "name": "Taylor Swift inspired",
+    "file": "trial-artist-taylor-swift-r2-p4.png",
+    "description": "An artist-inspired Taylor Swift stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-taylor-swift",
+    "artworkHash": "092dcc203a81888dbbaf27f31f6d73068b044dc8b4cca51a070cb48b2a4145d8",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.07936507936507936
+    }
+  },
+  {
+    "id": "trial:artist-kendrick-lamar",
+    "name": "Kendrick Lamar inspired",
+    "file": "trial-artist-kendrick-lamar-r1-p4.png",
+    "description": "An artist-inspired Kendrick Lamar stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-kendrick-lamar",
+    "artworkHash": "9695cd3c7771757c8e6061ddf7f37cfba6fdc6e10337092fa30c058191071c91",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:artist-rihanna",
+    "name": "Rihanna inspired",
+    "file": "trial-artist-rihanna-r1-p4.png",
+    "description": "An artist-inspired Rihanna stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-rihanna",
+    "artworkHash": "171307caf2c4da852923c105ae5fcff805d4b99a6bbb267c1ba2320940a81f36",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:artist-bad-bunny",
+    "name": "Bad Bunny inspired",
+    "file": "trial-artist-bad-bunny-r2-p4.png",
+    "description": "An artist-inspired Bad Bunny stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-bad-bunny",
+    "artworkHash": "0c00644dcc5c17156044fbfd33c0b97b9d4f20f202a291588c7a790ac518ccbb",
+    "attachment": {
+      "x": 0.4699074074074074,
+      "y": 0.07936507936507936
+    }
+  },
+  {
+    "id": "trial:artist-billie-eilish",
+    "name": "Billie Eilish inspired",
+    "file": "trial-artist-billie-eilish-r1-p4.png",
+    "description": "An artist-inspired Billie Eilish stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-billie-eilish",
+    "artworkHash": "b560d6038859ece8978d9b55828f1fb23fd0b300b1e631e886bfe23641177230",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:artist-post-malone",
+    "name": "Post Malone inspired",
+    "file": "trial-artist-post-malone-r2-p4.png",
+    "description": "An artist-inspired Post Malone stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-post-malone",
+    "artworkHash": "7a10a3ed7cf961d5f0b1060bf30088f28dee103eceafb6f1e84ac6b5eed6f369",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.08333333333333333
+    }
+  },
+  {
+    "id": "trial:artist-lady-gaga",
+    "name": "Lady Gaga inspired",
+    "file": "trial-artist-lady-gaga-r2-p4.png",
+    "description": "An artist-inspired Lady Gaga stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-lady-gaga",
+    "artworkHash": "33a9f0e6812cdc9af17baa16e89e5cfd5c1351856fe82eba4f93015e4e06cfc7",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:artist-sabrina-carpenter",
+    "name": "Sabrina Carpenter inspired",
+    "file": "trial-artist-sabrina-carpenter-r1-p4.png",
+    "description": "An artist-inspired Sabrina Carpenter stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-sabrina-carpenter",
+    "artworkHash": "ceec9d4956eb54c39f8c65d04688831d0437c3188b0fb779e2c3b7ab2e36726a",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.09126984126984126
+    }
+  },
+  {
+    "id": "trial:artist-olivia-rodrigo",
+    "name": "Olivia Rodrigo inspired",
+    "file": "trial-artist-olivia-rodrigo-r1-p4.png",
+    "description": "An artist-inspired Olivia Rodrigo stage study, with a distinctive performance outfit or signature music object.",
+    "accent": "#c7a4d2",
+    "group": "Music Icons",
+    "artworkKey": "artist-olivia-rodrigo",
+    "artworkHash": "6f85d3b4a395a64d82da8251e82f55a6b544b79826aef7d19a33834f9efa1781",
+    "attachment": {
+      "x": 0.4699074074074074,
+      "y": 0.10317460317460317
+    }
   }
 ]

@@ -3,6 +3,12 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.12.0 - Unreleased (Music Icons trial)
+
+- Added all 34 approved artist studies under Music Icons, immediately after Music: the original ten, twelve legends and twelve current performers, including Travis Scott and twelve women.
+- The complete trial now has 234 charms. Previously imported copies retain their saved IDs and preferences without adding duplicate tiles when the artwork is identical.
+- Updated the companion website for the current digital app, desktop installation and future optional collections.
+
 ## 0.11.0 - 2026-11-09 (Live reactions, music and playful charms trial)
 
 - Expanded the trial to 200 charms. Terminal is first and remains the fresh-profile default, followed by Live 3D, Stress Busters, Music and other themed packs.

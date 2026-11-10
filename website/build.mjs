@@ -7,6 +7,7 @@ import { build } from '../extension/node_modules/esbuild/lib/main.js';
 import { validateDistribution } from './distribution.mjs';
 import { curateArtwork, validateCuration } from './art-curation.mjs';
 import { trialCollections } from './trial-collections.mjs';
+import { validateLaunch } from './launch.mjs';
 
 const require = createRequire(import.meta.url);
 const { parseCharmPack } = require('../extension/out/charm-packs.js');
@@ -25,6 +26,7 @@ const collectionConfig = JSON.parse(await readFile(join(root, 'collections.json'
 const curation = JSON.parse(await readFile(join(root, 'art-curation.json'), 'utf8'));
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
 const distribution = validateDistribution(JSON.parse(await readFile(join(root, 'distribution.json'), 'utf8')), manifest);
+const launch = validateLaunch(JSON.parse(await readFile(join(root, 'launch.json'), 'utf8')));
 if (builtins.length !== 10 || extras.length !== 60) throw new Error('Expected ten included and sixty extra charms.');
 const ids = new Set([...builtins, ...extras].map(item => item.id));
 if (ids.size !== 70) throw new Error('Charm IDs must be unique across the gallery.');
@@ -78,12 +80,17 @@ for (const extra of extras) {
   validated.push({ extra, packPath });
 }
 await rm(dist, { recursive: true, force: true });
-for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'assets/garden', 'assets/app-review', 'packs', 'downloads', 'studio', 'api/studio']) {
+for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'assets/garden', 'assets/app-review', 'assets/fonts', 'packs', 'downloads', 'studio', 'api/studio']) {
   await mkdir(join(dist, path), { recursive: true });
 }
 // Static hosting advertises no paid service. Do not copy local API credentials.
 await writeFile(join(dist, 'api/studio/config.json'), `${JSON.stringify({ available: false, checkoutUrl: null, testMode: false })}\n`);
-for (const name of ['index.html', 'styles.css', 'app.js', 'concepts.html', 'concepts.css']) await copyFile(join(root, name), join(dist, name));
+for (const name of ['index.html', 'charms.html', 'site.css', 'site.js', 'home.js', 'styles.css', 'app.js', 'concepts.html', 'concepts.css']) {
+  await copyFile(join(root, name), join(dist, name));
+}
+for (const name of ['manrope-variable.ttf', 'OFL.txt']) {
+  await copyFile(join(root, 'assets/fonts', name), join(dist, 'assets/fonts', name));
+}
 await copyFile(join(repo, 'extension', 'media', 'puzzle.css'), join(dist, 'puzzle.css'));
 for (const builtin of builtins) {
   await copyFile(join(repo, 'extension', 'media', builtin.file), join(dist, 'assets', 'default', builtin.file));
@@ -152,7 +159,7 @@ const review = await readFile(join(root, 'art-review.json'), 'utf8').then(JSON.p
   throw error;
 });
 if (review) {
-  if (review.status !== 'review-only' || !Array.isArray(review.items) || review.items.length > 220
+  if (review.status !== 'review-only' || !Array.isArray(review.items) || review.items.length > 256
     || new Set(review.items.map(item => item.key)).size !== review.items.length) throw new Error('Invalid bounded art review.');
   validateCuration(curation, review.items);
   await mkdir(join(dist, 'assets/review'), { recursive: true });
@@ -221,6 +228,6 @@ const collections = currentWorlds.map(world => ({ ...world, charmIds: orderedCha
   .filter(charm => charm.collectionId === world.id).map(charm => charm.id) }));
 if (!trial.length || charms.length !== ORIGINAL_CHARMS.length + trial.length + LIVE_CHARMS.length + FIDGET_CHARMS.length) throw new Error('The complete trial must appear in the gallery.');
 await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version,
-  extensionDownload: './downloads/charmlet.vsix', distribution, charms: orderedCharms, collections, artPreviews,
+  extensionDownload: './downloads/charmlet.vsix', distribution, launch, charms: orderedCharms, collections, artPreviews,
   sportsWishlist: collectionConfig.sportsWishlist }, null, 2)}\n`, 'utf8');
 console.log(`Built Charmlet gallery ${manifest.version}: ${ORIGINAL_CHARMS.length} original, ${trial.length} rendered designs, ${LIVE_CHARMS.length} live companions and ${FIDGET_CHARMS.length} fidgets included, ${review?.featured ?? 0} selected review designs.`);

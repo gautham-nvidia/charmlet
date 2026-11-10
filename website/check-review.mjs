@@ -20,6 +20,7 @@ const downloadable = featured.filter(item => item.download);
 validateCuration(rules, review.items);
 const version = JSON.parse(await readFile(join(repo, 'extension/package.json'), 'utf8')).version;
 const output = join(repo, 'extension/test-results', `art-review-${version}`);
+const base = process.env.CHARMLET_GALLERY_URL || 'http://127.0.0.1:4173/';
 await mkdir(output, { recursive: true });
 assert.equal(review.expected, jobs.length);
 assert.equal(review.items.length, jobs.length);
@@ -65,7 +66,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
-  await page.goto('http://127.0.0.1:4173/review.html', { waitUntil: 'networkidle' });
+  await page.goto(new URL('review.html', base).href, { waitUntil: 'networkidle' });
   await expect(page.locator('.review-captures summary').first()).toContainText(version);
   const captureUrls = await page.locator('.review-captures a').evaluateAll(links => links.map(link => link.href));
   const pngCaptures = captureUrls.filter(url => new URL(url).pathname.endsWith('.png'));
@@ -81,7 +82,7 @@ try {
   const originals = [...new Set(review.items.map(item => item.original).filter(Boolean))];
   for (const original of originals) {
     assert.match(original, /^(?:default|extras|garden)\/[a-z0-9-]+\.svg$/);
-    const response = await page.request.get(`http://127.0.0.1:4173/assets/${original}`);
+    const response = await page.request.get(new URL(`assets/${original}`, base).href);
     assert.equal(response.status(), 200, `Original comparison is unavailable: ${original}`);
     assert.match(response.headers()['content-type'], /^image\/svg\+xml/);
   }

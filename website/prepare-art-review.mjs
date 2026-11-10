@@ -49,7 +49,7 @@ const failures = [];
 try {
   const page = await browser.newPage();
   for (const job of jobs) {
-    const profile = job.greenDespill ? 3 : 2;
+    const profile = job.approvedPack ? 4 : job.greenDespill ? 3 : 2;
     const renderId = `${job.variant}-p${profile}`;
     let raw, receipt;
     try {
@@ -65,6 +65,9 @@ try {
     const previous = items.get(job.key);
     if (previous?.profile === profile && previous.revision === job.revision && previous.greenDespill === job.greenDespill) {
       if (previous.rawSha256 !== receipt.sha256) throw new Error(`Use a new revision instead of replacing ${job.key}.`);
+      if (job.approvedPack && (previous.approvedPack !== job.approvedPack || previous.pngSha256 !== job.approvedPngSha256)) {
+        throw new Error(`Use a new revision instead of replacing approved artwork: ${job.key}`);
+      }
       const image = await readFile(join(imageRoot, `${renderId}.png`));
       if (digest(image) !== previous.pngSha256) throw new Error(`Prepared artwork changed unexpectedly: ${job.key}`);
       console.log(JSON.stringify({ key: job.key, status: 'reused' }));
@@ -101,6 +104,17 @@ try {
         };
         return { png: render(216, 252, 'image/png'), preview: render(432, 504, 'image/webp') };
       }, { encoded: clean.toString('base64'), bounds: cutout.bounds });
+      // Keep the exact approved import pixels and encoding. A new rasterization
+      // of the same source can change the hash and create duplicate trial tiles.
+      if (job.approvedPack) {
+        if (!/^[a-z0-9-]+$/.test(job.approvedPack)) throw new Error('Invalid approved artwork pack.');
+        const approved = parseCharmPack(await readFile(join(packRoot, `${job.approvedPack}.charmlet.json`)));
+        const charm = approved.charms.find(charm => charm.id === job.key);
+        if (!charm || digest(Buffer.from(charm.png, 'base64')) !== job.approvedPngSha256) {
+          throw new Error(`Approved import changed: ${job.key}`);
+        }
+        rendered.png = charm.png;
+      }
       const png = Buffer.from(rendered.png, 'base64');
       if (png.length > MAX_PNG_BYTES) throw new Error('Cutout exceeds the existing PNG cap.');
       const packId = `review-${renderId}`;
@@ -119,6 +133,7 @@ try {
         ...(job.sourceVariant ? { sourceVariant: job.sourceVariant } : {}),
         ...(job.greenSpillCleanup ? { greenSpillCleanup: true } : {}),
         ...(job.greenDespill ? { greenDespill: job.greenDespill } : {}),
+        ...(job.approvedPack ? { approvedPack: job.approvedPack, approvedPngSha256: job.approvedPngSha256 } : {}),
         download: job.family === 'flowers' ? null : `./packs/review/${packId}.charmlet.json`,
         pngBytes: png.length, pngSha256: digest(png), rawSha256: receipt.sha256, promptHash: receipt.promptHash,
         model: 'Gemini 3 Pro Image', status: 'review-candidate', width: 216, height: 252,
@@ -133,7 +148,7 @@ try {
       const item = items.get(job.key);
       // Keep earlier candidates as archive entries while a requested redraw is
       // still being prepared. Curation excludes them from the visible lineup.
-      return (item?.profile === 2 || item?.profile === 3) && item.revision <= job.revision ? [item] : [];
+      return [2, 3, 4].includes(item?.profile) && item.revision <= job.revision ? [item] : [];
     });
     await writeFile(manifestPath, `${JSON.stringify({ ...existing, status: 'review-only', expected: allJobs.length, prepared: ordered.length,
       note: 'Illustrated Gemini redraw candidates. No final bundled/free/paid decisions are implied. Flowers remain earned rewards.', items: ordered }, null, 2)}\n`);

@@ -208,6 +208,25 @@ export async function artworkJobs(repo) {
     }
     merged.set(item.key, { ...previous, ...item });
   }
-  if (merged.size > 220) throw new Error('The artwork inventory exceeds its bounded limit.');
+  const artists = JSON.parse(await readFile(join(repo, 'website/artist-artwork.json'), 'utf8'));
+  if (artists.version !== 1 || !Array.isArray(artists.entries) || artists.entries.length > 40) {
+    throw new Error('Invalid artist artwork inventory.');
+  }
+  for (const item of artists.entries) {
+    if (!/^artist-[a-z0-9-]{1,40}$/.test(item.key) || item.id !== item.key || merged.has(item.key)
+      || typeof item.name !== 'string' || !item.name.trim() || item.name.length > 48
+      || item.group !== 'Music Icons' || item.family !== 'artists' || item.original !== null
+      || typeof item.description !== 'string' || item.description.length > 160
+      || !/^#[0-9a-f]{6}$/i.test(item.accent) || !Number.isInteger(item.revision) || item.revision < 1
+      || item.revision > 20 || item.variant !== `${item.key}-r${item.revision}`
+      || typeof item.prompt !== 'string' || !item.prompt.trim() || item.prompt.length > 5000
+      || !['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review'].includes(item.approvedPack)
+      || !/^[a-f0-9]{64}$/.test(item.approvedPngSha256)
+      || item.greenDespill !== undefined && !['all', 'edges'].includes(item.greenDespill)) {
+      throw new Error(`Invalid artist artwork entry: ${item.key}`);
+    }
+    merged.set(item.key, item);
+  }
+  if (merged.size > 256) throw new Error('The artwork inventory exceeds its bounded limit.');
   return [...merged.values()];
 }
