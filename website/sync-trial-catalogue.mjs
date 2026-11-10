@@ -37,7 +37,7 @@ for (const item of selected) {
   const group = item.family === 'flowers' ? 'Garden Flowers' : item.group;
   const description = item.family === 'flowers'
     ? `${item.name} artwork. Try it here; your garden still records the flowers you grow.`
-    : `${item.name}, included in the complete trial collection.`;
+    : item.description ?? `${item.name}, included in the complete trial collection.`;
   // Reuse the real importer's bounded PNG validation and cord geometry.
   const pack = parseCharmPack(JSON.stringify({
     format: 'charmlet-pack', version: 1, id: `trial-${item.key}`,

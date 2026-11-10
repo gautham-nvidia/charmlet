@@ -5,7 +5,7 @@ const resultCount = document.querySelector('#result-count');
 const emptyState = document.querySelector('#empty-state');
 const story = document.querySelector('#collection-story');
 const dialog = document.querySelector('#art-dialog');
-const state = { kind: 'extra', group: 'All', query: '' };
+const state = { kind: 'all', group: 'All', query: '' };
 let catalogue = [];
 let collections = [];
 let artPreviews = [];
@@ -63,7 +63,7 @@ function artButton(preview, className = 'art-study') {
   return button;
 }
 function chooseWorld(id) {
-  state.kind = 'extra';
+  state.kind = 'all';
   state.group = id;
   state.query = '';
   search.value = '';
@@ -91,7 +91,7 @@ function renderWorlds() {
 }
 function renderGroups() {
   const focusedGroup = groupFilters.contains(document.activeElement) ? document.activeElement.dataset.group : undefined;
-  const groups = [{ id: 'All', name: 'All' }, ...(state.kind === 'extra' ? collections
+  const groups = [{ id: 'All', name: 'All' }, ...(state.kind === 'all' ? collections
     : [...new Set(catalogue.filter(item => item.kind === 'included').map(presentationGroup))].map(name => ({ id: name, name })))];
   groupFilters.replaceChildren();
   let restoreFocus;
@@ -107,7 +107,7 @@ function renderGroups() {
   restoreFocus?.focus({ preventScroll: true });
 }
 function renderStory() {
-  const world = state.kind === 'extra' ? collections.find(item => item.id === state.group) : undefined;
+  const world = state.kind === 'all' ? collections.find(item => item.id === state.group) : undefined;
   story.replaceChildren();
   story.hidden = !world;
   if (!world) return;
@@ -136,12 +136,12 @@ function tryCharm(item) {
 }
 function render() {
   for (const button of document.querySelectorAll('[data-kind]')) button.setAttribute('aria-pressed', String(button.dataset.kind === state.kind));
-  for (const button of document.querySelectorAll('[data-world]')) button.setAttribute('aria-pressed', String(state.kind === 'extra' && state.group === button.dataset.world));
+  for (const button of document.querySelectorAll('[data-world]')) button.setAttribute('aria-pressed', String(state.kind === 'all' && state.group === button.dataset.world));
   renderGroups();
   renderStory();
   const query = state.query.trim().toLowerCase();
-  const items = catalogue.filter(item => item.kind === state.kind
-    && (state.group === 'All' || (state.kind === 'extra' ? item.collectionId === state.group : presentationGroup(item) === state.group))
+  const items = catalogue.filter(item => (state.kind === 'all' || item.kind === state.kind)
+    && (state.group === 'All' || (state.kind === 'all' ? item.collectionId === state.group : presentationGroup(item) === state.group))
     && `${item.name} ${item.description} ${presentationGroup(item)}`.toLowerCase().includes(query));
   grid.replaceChildren();
   for (const item of items) {
@@ -176,10 +176,10 @@ function render() {
     card.append(art, copy);
     grid.append(card);
   }
-  const planned = state.kind === 'extra' && collections.some(world => world.id === state.group && !world.charmIds.length);
+  const planned = state.kind === 'all' && collections.some(world => world.id === state.group && !world.charmIds.length);
   emptyState.hidden = items.length !== 0 || (planned && !query);
   resultCount.textContent = planned && !query ? 'New collection in progress. Explore the art preview and ideas above.'
-    : `${items.length} ${items.length === 1 ? 'charm' : 'charms'} to ${state.kind === 'extra' ? 'discover' : 'enjoy right away'}`;
+    : `${items.length} ${items.length === 1 ? 'charm' : 'charms'} to ${state.kind === 'all' ? 'discover' : 'enjoy right away'}`;
 }
 for (const button of document.querySelectorAll('[data-kind]')) {
   button.addEventListener('click', () => { state.kind = button.dataset.kind; state.group = 'All'; render(); });
@@ -224,7 +224,7 @@ try {
   renderStoreLinks(data.distribution);
   renderWorlds();
   document.querySelector('#included-count').textContent = String(catalogue.filter(item => item.kind === 'included').length);
-  document.querySelector('#extra-count').textContent = String(catalogue.filter(item => item.kind === 'extra').length);
+  document.querySelector('#extra-count').textContent = String(catalogue.length);
   document.querySelector('#release-label').textContent = `Trial ${data.version} · ${catalogue.length} offline charms`;
   document.querySelector('#surprise-charm').disabled = false;
   for (const link of document.querySelectorAll('.extension-download')) {

@@ -4,9 +4,12 @@ import { DEFAULT_ATTACHMENT, type CharmAttachment } from '../extension/src/charm
 import { isSoftCharm } from '../extension/src/charm-catalog';
 import { createLiveSmiley } from '../extension/src/live-smiley';
 import { createFidgetView } from '../extension/src/fidget-view';
-import { fidgetAction, liveCharacter } from '../extension/src/interactive-motion';
+import { fidgetAction } from '../extension/src/interactive-motion';
+import { createTapWiggle } from '../extension/src/tap-wiggle';
 import { createCordView } from '../extension/src/cord-view';
 import { cordForCharm, type CordStyle } from '../extension/src/cord-design';
+import { DEFAULT_PUZZLES, puzzleKind, type PuzzleState } from '../extension/src/puzzle-core';
+import { createPuzzleView } from '../extension/src/puzzle-view';
 
 interface DemoCharm { id: string; name: string; preview: string; group?: string; attachment?: CharmAttachment; }
 
@@ -29,7 +32,11 @@ const resetButton = required<HTMLButtonElement>('demo-reset');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, 126, 100, 'hanging');
 const liveSmiley = createLiveSmiley(charm, image, file => new URL(`assets/default/${file}`, document.baseURI).href);
-const fidgetUI = createFidgetView(charm, image);
+const fidgetUI = createFidgetView(charm, image, {
+	rotate: held => { if (held) { tapWiggle.stop(); stop(); } else { start(); } },
+	tap: () => tap(),
+});
+const tapWiggle = createTapWiggle(charm);
 const cordView = createCordView(thread.ownerSVGElement!, thread);
 let selectedId = '';
 let cordStyle: CordStyle = 'thread';
@@ -43,12 +50,20 @@ let intersecting = true;
 let drag: { id: number; startX: number; startY: number; moved: boolean } | undefined;
 let attachment: CharmAttachment = DEFAULT_ATTACHMENT;
 let keyboardHeld = false;
+let puzzles: PuzzleState = DEFAULT_PUZZLES;
+const puzzleUI = createPuzzleView({
+	panel: required<HTMLElement>('puzzle-editor'), toggle: required<HTMLButtonElement>('demo-puzzle'),
+	getState: () => puzzles,
+	change: next => { puzzles = next; render(); },
+	onOpen: () => resetPose(), onChange: () => render(),
+});
 
 function canAnimate() {
-	return visible && intersecting && !reducedMotion.matches;
+	return visible && intersecting && !reducedMotion.matches && !puzzleUI.isOpen();
 }
 
 function render() {
+	tapWiggle.update(canAnimate());
 	const { anchorX, anchorY, cordLength, attachmentOffset, attachmentX } = pendulum.layout;
 	const { x, y } = pendulum.position;
 	const angle = pendulum.angle;
@@ -59,7 +74,8 @@ function render() {
 	anchor.style.top = `${anchorY}px`;
 	cordView.render(cordStyle, { x: anchorX, y: anchorY }, { x: hookX, y: hookY });
 	liveSmiley.update(selectedId, visible && intersecting, reducedMotion.matches);
-	fidgetUI.update(selectedId, visible && intersecting, reducedMotion.matches);
+	fidgetUI.update(selectedId, visible && intersecting, reducedMotion.matches, puzzles);
+	puzzleUI.update(selectedId, true);
 	stage.dataset.frames = String(frames);
 	stage.dataset.cord = String(Math.round(cordLength));
 	stage.dataset.dragging = String(drag !== undefined);
@@ -87,6 +103,7 @@ function tick(time: number) {
 }
 
 function start() {
+	if (charm.dataset.rotorHeld === 'true') { return; }
 	if (frameId === undefined && pendulum.moving && canAnimate()) {
 		stage.dataset.running = 'true';
 		frameId = requestAnimationFrame(tick);
@@ -114,6 +131,7 @@ function point(event: PointerEvent): Point {
 }
 
 function clearPointer() {
+	tapWiggle.stop();
 	keyboardHeld = false;
 	charm.dataset.keyboardHeld = 'false';
 	const pointerId = drag?.id;
@@ -139,18 +157,26 @@ function releaseDrag() {
 	if (reducedMotion.matches) { pendulum.settle(); stop(); render(); } else { start(); }
 }
 
-function nudge() {
+function nudge(strength = 1) {
 	if (reducedMotion.matches) {
 		hint.textContent = 'Reduced motion is active. Dragging still follows your pointer.';
 		return;
 	}
-	pendulum.nudge(-1);
+	pendulum.nudge(-strength);
 	hint.textContent = 'A little swing. Drag the charm to stretch the cord.';
 	start();
 }
 
+function tap() {
+	nudge(.45);
+	liveSmiley.playful();
+	puzzleUI.tap();
+	tapWiggle.play();
+}
+
 charm.addEventListener('pointerdown', event => {
-	if (event.button !== 0 || drag) { return; }
+	if (event.defaultPrevented || event.button !== 0 || drag) { return; }
+	tapWiggle.stop();
 	drag = { id: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
 	pendulum.grab(point(event));
 	charm.setPointerCapture(event.pointerId);
@@ -170,14 +196,15 @@ charm.addEventListener('pointerup', event => {
 	const moved = drag.moved;
 	clearPointer();
 	releaseDrag();
-	if (!moved && !reducedMotion.matches) { nudge(); }
+	if (!moved) { tap(); }
 });
 charm.addEventListener('pointercancel', () => resetPose('The demo reset safely after an interrupted drag.'));
 charm.addEventListener('lostpointercapture', () => { if (drag) { resetPose('The demo reset safely after losing the pointer.'); } });
-charm.addEventListener('click', event => { if (event.detail === 0) { nudge(); } });
+charm.addEventListener('click', event => { if (event.detail === 0) { tap(); } });
 charm.addEventListener('keydown', event => {
-	if ((event.key === ' ' || event.key === 'Enter') && (charm.dataset.soft === 'true' || liveCharacter(selectedId))) {
+	if (event.key === ' ' || event.key === 'Enter') {
 		event.preventDefault();
+		tapWiggle.stop();
 		keyboardHeld = true;
 		charm.dataset.keyboardHeld = 'true';
 	}
@@ -187,12 +214,12 @@ charm.addEventListener('keyup', event => {
 		event.preventDefault();
 		keyboardHeld = false;
 		charm.dataset.keyboardHeld = 'false';
-		nudge();
+		tap();
 	}
 });
 charm.addEventListener('blur', () => { keyboardHeld = false; charm.dataset.keyboardHeld = 'false'; });
 window.addEventListener('blur', () => resetPose());
-nudgeButton.addEventListener('click', nudge);
+nudgeButton.addEventListener('click', () => nudge());
 resetButton.addEventListener('click', () => resetPose('Demo reset.'));
 document.addEventListener('visibilitychange', () => {
 	visible = !document.hidden;
@@ -225,7 +252,7 @@ export function setCharm(selected: DemoCharm) {
 	charm.setAttribute('aria-label', `${fidgetAction(selected.id) ?? 'Swing'} ${selected.name} charm`);
 	charm.title = selected.name;
 	resize();
-	resetPose(`${selected.name} is ready to try.`);
+	resetPose(puzzleKind(selected.id) ? `${selected.name}: tap for a move, or open Play puzzle for the full board.` : `${selected.name} is ready to try.`);
 }
 
 resize();

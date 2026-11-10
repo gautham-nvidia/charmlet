@@ -113,6 +113,7 @@ try {
       if (job.family !== 'flowers') await writeFile(join(packRoot, `${packId}.charmlet.json`), `${JSON.stringify(pack)}\n`, { flag: 'wx' });
       const item = {
         key: job.key, id: job.id, name: job.name, group: job.group, family: job.family, accent: job.accent,
+        description: job.description,
         original: job.original, preview: `./assets/review/${renderId}.webp`, image: `./assets/review/${renderId}.png`,
         revision: job.revision, profile,
         ...(job.sourceVariant ? { sourceVariant: job.sourceVariant } : {}),

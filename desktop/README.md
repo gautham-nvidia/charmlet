@@ -2,15 +2,23 @@
 
 Charmlet Desktop is an unpublished Windows/macOS developer beta. It reuses the extension's charm renderer, physics, Focus/Learn/Garden controller, validated pack parser and confirmed JSON stores in one floating tray-managed window.
 
-The **0.7.0 candidate** starts with just the charm and cord. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
+The **0.8.0 candidate** starts with just the charm and cord. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
 
 Drag **Move** to place the charm, or focus that button and use the arrow keys (Shift moves farther). Pulling the charm itself stretches the cord within the current display's available space, then releases into the shared bounce. The peg starts near the screen's top edge; compact controls no longer restrict the play area.
 
 Under **Tools > Settings**, **Background**, **Keep toolbar visible** and **Keep messages visible** are separate saved preferences, all off by default. The tray's **Open Controls** and **Reset Window Position** remain available.
 
-The trial shares the extension's 178 offline charms: 159 rendered designs, Terminal, fifteen live companions and three fidget tools. **Charms > Live Companions** offers Cali, Sunny, Nimbus, Byte and eleven California characters: redwood, Yosemite, Tahoe, gull, seal, Golden Gate, Santa Cruz otter, whale, dolphin, condor and eagle. **Stress Busters** brings the working spinner, bubble-pop charm and worry stone together with the smiley balls and squishies. Tap/flick, press a bubble or hold/rub the stone; Space/Enter also work. Giant Panda, seven dog breeds including Goldendoodle and Husky, and two cats remain under Animals. The eighteen-flower garden, imports, photos, saved cords and pins carry forward. Final release artwork and pricing remain undecided.
+The trial shares the extension's **200 offline charms**: 175 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools. Terminal leads the picker, followed by **Live 3D**, **Stress Busters** and **Music**. Nimbus has sunrise, rain and lightning reactions; Byte has a metal body and animated binary/code display. Music includes twelve instruments and controllers. California landmarks, Diwali Diyas and Halloween Lantern join the themed packs, while Soldering Iron and Digital Caliper retire.
 
-Choose **Cali** for a detailed California grizzly with a coder wardrobe, a new outfit each day and a relaxed Friday shirt. Click for a positive word and a thumbs-up, or use focus sessions for gentle prompts. **Tools > Focus > Cali's encouragement** saves your optional name and controls for bubbles and focus prompts. Escape dismisses a bubble; it never blocks clicks through the desktop. Confetti for new wins follows the Small wins celebration setting and Reduced Motion. Everything stays silent.
+**Live 3D** also includes Cali, Sunny and eleven California companions. **Stress Busters** brings four spinners, Bubble Pop, Worry Stone and three puzzles together with the smiley balls and squishies. Giant Panda, seven dog breeds including Goldendoodle and Husky, and two cats remain under **Pets & Wildlife**. The eighteen-flower garden, imports, photos, saved cords and pins carry forward. Final public lineup and pricing remain undecided.
+
+Choose **Cali** for a detailed California grizzly with a coder wardrobe, a new outfit each day and a relaxed Friday shirt. Taps cycle through a curious head tilt, a wink, a double take and a victory shimmy. **Tools > Focus > Cali's encouragement** saves your optional name and controls for bubbles and focus prompts. Escape dismisses a bubble; it never blocks clicks through the desktop. Confetti for new wins follows the Small wins celebration setting and Reduced Motion. Everything stays silent.
+
+Every charm gives a brief wiggle when clicked or activated with Space/Enter. A new hold stops the wiggle; Reduced Motion keeps feedback still. The default 100% is 15% larger than earlier trials. **Tools > Settings > Appearance** offers sizes from 60% to 200% in 5% steps, with room for the larger charm at the desktop edges.
+
+With Cali selected, **Appearance > Cali's outfit** offers automatic daily changes or a saved choice of any seven looks. Four spinner designs—Classic, Orbit, Pinwheel and Bar—turn when you drag their rotor and coast after release; pull the centre for the cord. Shift+Space spins backwards.
+
+Select **Twisty Cube**, **Sliding Tiles** or **Lights Out** and open **Tools > Play** for the larger board. The cube has six working faces, tiles slide into the gap and light switches flip their neighbours. Shuffle, undo and reset are available, and progress saves locally. Closing the board returns to the charm; no puzzle timers or scores are added.
 
 **Appearance > Cord material** matches the charm or remembers your chosen cord. **Focus > Small wins** records achievements and completed live focus sessions, with undo and optional celebrations. **Photo charms** opens a local crop and frame editor: only the finished keepsake is stored, with no uploads. Sunny blinks, glances toward a nearby pointer and reacts to squeezing and wins; Reduced Motion stops idle animation. All these controls stay tucked away until selected.
 
@@ -26,7 +34,7 @@ npm.cmd --prefix desktop run test
 npm.cmd --prefix desktop run package
 ```
 
-The Windows 0.6.0 packaging target is an unsigned folder under `desktop/release/0.6.0/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. Current checks are recorded in the [Phase 9 verification log](../docs/phase-9-live-fidgets-hosting.md). Signing, notarization, update service, store listing and public distribution remain release work.
+The Windows 0.8.0 packaging target is an unsigned folder under `desktop/release/0.8.0/Charmlet-win32-x64/`. Packaging uses the manifest version and a versioned output directory, refuses overwrites and leaves earlier releases intact. Current checks are recorded in the [playful charms verification log](../docs/phase-11-playful-charms.md). Signing, notarization, update service, store listing and public distribution remain release work.
 
 For a portable download, archive and test the extracted application.
 

@@ -1,6 +1,6 @@
 # California companions candidate
 
-Extension **0.10.0** and desktop **0.7.0** redesign Cali as a sharper California grizzly and add eleven California companions. The candidate contains **178 offline charms**, including fifteen live companions. Artwork remains for the owner's design review; website launch and paid offerings remain deferred.
+Extension **0.10.0** and desktop **0.7.0** redesign Cali as a sharper California grizzly and add eleven California companions. The candidate contains **178 offline charms**, including fifteen live companions. The owner approved Cali and the California artwork on 2026-11-09; the [playful charms follow-up](phase-11-playful-charms.md) records the requested gestures and size changes. Website launch and paid offerings remain deferred.
 
 ## Appearance and behavior
 
@@ -57,4 +57,4 @@ The review page includes native installed-editor and desktop-development capture
 
 ## Remaining release decisions
 
-The owner still needs to review the new artwork and decide the final public/free/paid lineup, source and artwork terms, publisher identity and signing. Builds remain unsigned. Native macOS and mixed-display validation remain separate from automated archive checks. The Vercel configuration is prepared, with public deployment deferred; the Photo Studio and live purchases remain disabled.
+The owner approved this artwork on 2026-11-09. The final public/free/paid lineup, source and artwork terms, publisher identity and signing remain decisions. Builds remain unsigned. Native macOS and mixed-display validation remain separate from automated archive checks. The Vercel configuration is prepared, with public deployment deferred; the Photo Studio and live purchases remain disabled.

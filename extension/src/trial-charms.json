@@ -239,58 +239,58 @@
   },
   {
     "id": "trial:extra-campus-path",
-    "name": "Campus Path",
-    "file": "trial-extra-campus-path-r1-p2.png",
-    "description": "Campus Path, included in the complete trial collection.",
+    "name": "NVIDIA Campus",
+    "file": "trial-extra-campus-path-r2-p3.png",
+    "description": "Folded triangular roofs and glass walls inspired by NVIDIA’s Santa Clara campus.",
     "accent": "#8db7a6",
-    "group": "Cities",
+    "group": "California",
     "artworkKey": "extra-campus-path",
-    "artworkHash": "52c78d2a8cdf1da2ff85b3be7d115d540e528d8bb2223b8e121b347611f0064a",
+    "artworkHash": "7b377d7efd9f4c079d0201d23f15ca96ddd40a9e62df16d47257b827d40b2c53",
     "attachment": {
       "x": 0.5,
-      "y": 0.1349206349206349
+      "y": 0.0992063492063492
     }
   },
   {
     "id": "trial:extra-coffee-street",
-    "name": "Coffee Street",
-    "file": "trial-extra-coffee-street-r1-p2.png",
-    "description": "Coffee Street, included in the complete trial collection.",
+    "name": "Painted Ladies",
+    "file": "trial-extra-coffee-street-r3-p3.png",
+    "description": "Three colourful San Francisco Victorian houses, with ornate gables, bay windows and front steps.",
     "accent": "#d3927b",
-    "group": "Cities",
+    "group": "California",
     "artworkKey": "extra-coffee-street",
-    "artworkHash": "b58d77d58c149d51e3d0867ad0a05109c8842e71edc720898ee0b9c35ef4142a",
+    "artworkHash": "54d5d69e637adc0632a03e7eac118ada14cd52c5e1d7c9313d133f53a5f90975",
     "attachment": {
-      "x": 0.4976851851851852,
-      "y": 0.05952380952380952
+      "x": 0.5023148148148148,
+      "y": 0.0992063492063492
     }
   },
   {
     "id": "trial:extra-mountain-sun",
-    "name": "Mountain Sun",
-    "file": "trial-extra-mountain-sun-r2-p2.png",
-    "description": "Mountain Sun, included in the complete trial collection.",
+    "name": "Pebble Beach",
+    "file": "trial-extra-mountain-sun-r4-p3.png",
+    "description": "Pebble Beach’s seventh hole: a small coastal green above granite rocks and Pacific surf.",
     "accent": "#e8b577",
-    "group": "National Parks",
+    "group": "California",
     "artworkKey": "extra-mountain-sun",
-    "artworkHash": "1a19dcc7b25a04eef586fd4ce9a6e708da22b98033598246f5f00b2499fcf5d2",
+    "artworkHash": "29f49aeab4b813dfcbbdfde925af1564b5536ab1473f2c38d168edf1e122f429",
     "attachment": {
-      "x": 0.4837962962962963,
-      "y": 0.06349206349206349
+      "x": 0.5,
+      "y": 0.1388888888888889
     }
   },
   {
     "id": "trial:extra-granite-dome",
     "name": "Granite Dome",
-    "file": "trial-extra-granite-dome-r1-p2.png",
-    "description": "Granite Dome, included in the complete trial collection.",
+    "file": "trial-extra-granite-dome-r2-p3.png",
+    "description": "Yosemite’s Half Dome, with a sheer granite face, rounded shoulder and dark valley pines.",
     "accent": "#b7b8bb",
-    "group": "National Parks",
+    "group": "California",
     "artworkKey": "extra-granite-dome",
-    "artworkHash": "cb4ef3f53e19d41c9eb8f56c289045af979706c026e6bab0a86f942a713deb3c",
+    "artworkHash": "ebf352fc57221f23e746734716c1d08dccf07290fcb5c296e60102c5ab2f0fb0",
     "attachment": {
-      "x": 0.5023148148148148,
-      "y": 0.11904761904761904
+      "x": 0.5,
+      "y": 0.05952380952380952
     }
   },
   {
@@ -940,29 +940,29 @@
   {
     "id": "trial:new-black-friday-bag",
     "name": "Black Friday",
-    "file": "trial-new-black-friday-bag-r1-p2.png",
-    "description": "Black Friday, included in the complete trial collection.",
+    "file": "trial-new-black-friday-bag-r2-p3.png",
+    "description": "A black shopping bag with a bold red discount tag for the big shopping day.",
     "accent": "#9b919e",
-    "group": "Seasonal",
+    "group": "Celebrations",
     "artworkKey": "new-black-friday-bag",
-    "artworkHash": "cc04e20ab5a23aeff28326c1f161bc25c8e549c5b9a5ce614c7a9175b507f5cd",
+    "artworkHash": "3f489bc9a1c324b6d2010514f0812691f50e0d76855e7d39e24eaa76272d8735",
     "attachment": {
-      "x": 0.5,
-      "y": 0.06349206349206349
+      "x": 0.5023148148148148,
+      "y": 0.05952380952380952
     }
   },
   {
     "id": "trial:new-cyber-monday-keyboard",
     "name": "Cyber Monday",
-    "file": "trial-new-cyber-monday-keyboard-r1-p2.png",
-    "description": "Cyber Monday, included in the complete trial collection.",
+    "file": "trial-new-cyber-monday-keyboard-r2-p3.png",
+    "description": "An online-shopping cart on a laptop, paired with a bright discount tag.",
     "accent": "#91b5c4",
-    "group": "Seasonal",
+    "group": "Celebrations",
     "artworkKey": "new-cyber-monday-keyboard",
-    "artworkHash": "393fd490cad175d57b7f89bc04dfdca10004c2fe0ae4844518bc257b2d0afe5a",
+    "artworkHash": "16d8c19de98edf1bbdc2c31ee3ab7c79a423f02036d62de2d9feac68f9964797",
     "attachment": {
       "x": 0.5,
-      "y": 0.14285714285714285
+      "y": 0.07142857142857142
     }
   },
   {
@@ -1050,20 +1050,6 @@
     }
   },
   {
-    "id": "trial:new-soldering-iron",
-    "name": "Soldering Iron",
-    "file": "trial-new-soldering-iron-r1-p2.png",
-    "description": "Soldering Iron, included in the complete trial collection.",
-    "accent": "#6f9ba9",
-    "group": "Test Bench",
-    "artworkKey": "new-soldering-iron",
-    "artworkHash": "bd75a5a4312e682366d7776cfc7d4386644d7e48ce12a85bc69a5a76799e90ff",
-    "attachment": {
-      "x": 0.5023148148148148,
-      "y": 0.29365079365079366
-    }
-  },
-  {
     "id": "trial:new-bench-power-supply",
     "name": "Bench Power Supply",
     "file": "trial-new-bench-power-supply-r1-p2.png",
@@ -1075,20 +1061,6 @@
     "attachment": {
       "x": 0.5,
       "y": 0.07936507936507936
-    }
-  },
-  {
-    "id": "trial:new-digital-caliper",
-    "name": "Digital Caliper",
-    "file": "trial-new-digital-caliper-r1-p2.png",
-    "description": "Digital Caliper, included in the complete trial collection.",
-    "accent": "#a0adb3",
-    "group": "Test Bench",
-    "artworkKey": "new-digital-caliper",
-    "artworkHash": "e67899db1697018072639f80186d0c13d5de4b7f17561403b10b5db89a6ce6ad",
-    "attachment": {
-      "x": 0.4791666666666667,
-      "y": 0.30952380952380953
     }
   },
   {
@@ -2223,6 +2195,258 @@
     "attachment": {
       "x": 0.5,
       "y": 0.12301587301587301
+    }
+  },
+  {
+    "id": "trial:new-palace-fine-arts",
+    "name": "Palace of Fine Arts",
+    "file": "trial-new-palace-fine-arts-r1-p3.png",
+    "description": "San Francisco’s terracotta rotunda, classical columns and curved colonnades.",
+    "accent": "#7faea0",
+    "group": "California",
+    "artworkKey": "new-palace-fine-arts",
+    "artworkHash": "79c9e9cbee2e679950a6079bd40210e87a5805a0311d9af4d1543bc238f7653f",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:new-coastal-cypress",
+    "name": "Coastal Cypress",
+    "file": "trial-new-coastal-cypress-r1-p3.png",
+    "description": "A windswept Monterey cypress rooted in coastal granite above a curl of Pacific surf.",
+    "accent": "#7faea0",
+    "group": "California",
+    "artworkKey": "new-coastal-cypress",
+    "artworkHash": "f77c00e785c397a89381450ff636dbc7495151d0336fa4b2e76bef0f31448c15",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-salesforce-tower",
+    "name": "Salesforce Tower",
+    "file": "trial-new-salesforce-tower-r1-p3.png",
+    "description": "San Francisco’s tapered glass tower, with curved sides and its rounded louvered crown.",
+    "accent": "#7faea0",
+    "group": "California",
+    "artworkKey": "new-salesforce-tower",
+    "artworkHash": "60085d5ae8c8f0d278f8ec958daba9eea841b0facd782b669abb83ed9446c6cc",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-cupertino-loop",
+    "name": "Cupertino Loop",
+    "file": "trial-new-cupertino-loop-r1-p3.png",
+    "description": "A miniature inspired by Apple’s original Infinite Loop campus, with separate buildings around a courtyard.",
+    "accent": "#7faea0",
+    "group": "California",
+    "artworkKey": "new-cupertino-loop",
+    "artworkHash": "e227dab04a3be99e21d1986d096446a3c54069faa25eeb063c5e9db30fb6737f",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:new-diwali-diyas",
+    "name": "Diwali Diyas",
+    "file": "trial-new-diwali-diyas-r1-p3.png",
+    "description": "Two lit terracotta diyas, warm gold flames and marigolds for the festival of lights.",
+    "accent": "#e9aa58",
+    "group": "Celebrations",
+    "artworkKey": "new-diwali-diyas",
+    "artworkHash": "6704c1546de40b7479cbcbf9669ecf073dc65c47da6150fa8e68ce12770a5f7d",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.1626984126984127
+    }
+  },
+  {
+    "id": "trial:new-halloween-lantern",
+    "name": "Halloween Lantern",
+    "file": "trial-new-halloween-lantern-r1-p3.png",
+    "description": "A glowing carved pumpkin with a crooked purple witch hat and a friendly grin.",
+    "accent": "#e9aa58",
+    "group": "Celebrations",
+    "artworkKey": "new-halloween-lantern",
+    "artworkHash": "0aec8e129bffae57bed409f0307ee1f9dcd8baed51bdcc5119fd94ee2a17e3f0",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.18253968253968253
+    }
+  },
+  {
+    "id": "trial:new-midi-keyboard",
+    "name": "MIDI Keyboard",
+    "file": "trial-new-midi-keyboard-r2-p3.png",
+    "description": "A compact music controller with piano keys, lit performance pads and rotary knobs.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-midi-keyboard",
+    "artworkHash": "75247329e9252c5a48870117fc51d4659b4c68f574733348c28bda49ac15f392",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.1349206349206349
+    }
+  },
+  {
+    "id": "trial:new-analog-synth",
+    "name": "Analog Synth",
+    "file": "trial-new-analog-synth-r1-p3.png",
+    "description": "An analog keyboard with walnut end cheeks, silver knobs and colourful patch cables.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-analog-synth",
+    "artworkHash": "4eba14c2d890f35c30847d9cec2117c778b358a2d7c57e08bb139d3d2d087fb5",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.10714285714285714
+    }
+  },
+  {
+    "id": "trial:new-grand-piano",
+    "name": "Grand Piano",
+    "file": "trial-new-grand-piano-r1-p3.png",
+    "description": "A polished black grand piano, open lid, golden strings and brass pedals.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-grand-piano",
+    "artworkHash": "54b86d3cd695f953ffd21eb3f940cfe31289928602c2bec9d76721491f490bd9",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.15873015873015872
+    }
+  },
+  {
+    "id": "trial:new-electric-guitar",
+    "name": "Electric Guitar",
+    "file": "trial-new-electric-guitar-r1-p3.png",
+    "description": "A cherry-red six-string electric guitar with an ivory pickguard and chrome hardware.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-electric-guitar",
+    "artworkHash": "a3174482e6901b4432184bcba7d56dbf5a3ec70e9d33014d28059d3c89cdf874",
+    "attachment": {
+      "x": 0.5671296296296297,
+      "y": 0.1746031746031746
+    }
+  },
+  {
+    "id": "trial:new-acoustic-guitar",
+    "name": "Acoustic Guitar",
+    "file": "trial-new-acoustic-guitar-r2-p3.png",
+    "description": "A warm spruce and walnut acoustic guitar, with six strings and a round sound hole.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-acoustic-guitar",
+    "artworkHash": "080d0eedf4e14240fda59cef1a610fea241dfa81ade167d5405c273da939d06c",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-ukulele",
+    "name": "Ukulele",
+    "file": "trial-new-ukulele-r1-p3.png",
+    "description": "A little four-string koa ukulele, with a short neck and rich natural wood grain.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-ukulele",
+    "artworkHash": "0b3127cbadbff92610f03aa928e64dc542117abf07ba3333dba93bbe59ac8938",
+    "attachment": {
+      "x": 0.5486111111111112,
+      "y": 0.1111111111111111
+    }
+  },
+  {
+    "id": "trial:new-flute",
+    "name": "Concert Flute",
+    "file": "trial-new-flute-r1-p3.png",
+    "description": "A silver concert flute with raised round keys and delicate mechanical detail.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-flute",
+    "artworkHash": "6a368067e34b638104bdf3bf1b9197e9877ec32b717a23f6f9eda9b92c0e0152",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.35714285714285715
+    }
+  },
+  {
+    "id": "trial:new-saxophone",
+    "name": "Saxophone",
+    "file": "trial-new-saxophone-r1-p3.png",
+    "description": "A golden-brass saxophone with curved neck, pearl keys and a wide flared bell.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-saxophone",
+    "artworkHash": "8e4b6512e9c170569a7b0cb99bbb9ec9e6271450656012679f1f27fcea275176",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.07936507936507936
+    }
+  },
+  {
+    "id": "trial:new-violin",
+    "name": "Violin",
+    "file": "trial-new-violin-r1-p3.png",
+    "description": "An amber wooden violin with four strings, carved scroll and a slender bow.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-violin",
+    "artworkHash": "12c5bcc444ee472d4b7a2e640a28bc5868b9d28ad5a599325b2e6f32326c9aff",
+    "attachment": {
+      "x": 0.5856481481481481,
+      "y": 0.15079365079365079
+    }
+  },
+  {
+    "id": "trial:new-drum-kit",
+    "name": "Drum Kit",
+    "file": "trial-new-drum-kit-r1-p3.png",
+    "description": "A midnight-blue drum kit with white drumheads, chrome stands and golden cymbals.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-drum-kit",
+    "artworkHash": "30815299d9bab5587c361e13f321532ba5b80b9d8982474da96dac7f48093cfc",
+    "attachment": {
+      "x": 0.4976851851851852,
+      "y": 0.1984126984126984
+    }
+  },
+  {
+    "id": "trial:new-bass-guitar",
+    "name": "Bass Guitar",
+    "file": "trial-new-bass-guitar-r1-p3.png",
+    "description": "A midnight-blue four-string bass with a long maple neck and chrome bridge.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-bass-guitar",
+    "artworkHash": "a9e4df6d6dada1567abc516a3e646121f808a2c436f521ca7e9490d1637011ba",
+    "attachment": {
+      "x": 0.5486111111111112,
+      "y": 0.15476190476190477
+    }
+  },
+  {
+    "id": "trial:new-dj-controller",
+    "name": "DJ Controller",
+    "file": "trial-new-dj-controller-r1-p3.png",
+    "description": "A two-deck DJ console with jog wheels, mixer faders and colourful performance pads.",
+    "accent": "#d2a474",
+    "group": "Music",
+    "artworkKey": "new-dj-controller",
+    "artworkHash": "4e2b48f698031e727a80f4439b57efbc69f24637cfdc7d3d55d1c4921332ed7b",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.11904761904761904
     }
   }
 ]

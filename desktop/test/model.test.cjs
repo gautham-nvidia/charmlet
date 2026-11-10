@@ -93,3 +93,16 @@ test('desktop physics can stretch far beyond the small controls without moving t
   assert.equal(layout.width, primary.width);
   assert.equal(layout.height, primary.height);
 });
+
+test('the largest desktop charm stays visible when a saved peg is near the lower screen edge', () => {
+  for (const size of [60, 100, 140, 200]) {
+    for (const mode of ['hanging', 'orbit']) {
+      const layout = placeDesktopAnchor(getLayout(primary.width, primary.height, 700, size, mode),
+        { x: primary.width - 5, y: primary.height - 5 });
+      assert.ok(layout.anchorX + layout.visualRadius + layout.edgePadding <= layout.width);
+      assert.ok(layout.anchorY + layout.cordLength + layout.attachmentOffset
+        + layout.visualRadius + layout.edgePadding <= layout.height);
+      assert.ok(layout.maximumDragCord - layout.cordLength >= layout.pullAllowance - .001);
+    }
+  }
+});

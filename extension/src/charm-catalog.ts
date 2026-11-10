@@ -2,6 +2,7 @@ import builtinCharms from './builtin-charms.json';
 import trialCharms from './trial-charms.json';
 import { CALIFORNIA_COMPANIONS } from './california-companions';
 import { artToStage } from './live-art-core';
+import { orderByCollection } from './charm-collections';
 import type { CharmAttachment } from './charm-attachment';
 export interface CharmDefinition {
 	id: string;
@@ -26,8 +27,10 @@ export const RETIRED_CHARMS: Readonly<Record<string, string>> = Object.freeze({
 	drishti: 'trial:starter-drishti',
 	hamsa: 'trial:starter-hamsa',
 	'lemon-chilies': 'trial:starter-lemon-chilies',
+	'trial:new-soldering-iron': 'terminal',
+	'trial:new-digital-caliper': 'terminal',
 });
-export const TRIAL_CHARMS: readonly CharmDefinition[] = trialCharms;
+export const TRIAL_CHARMS: readonly CharmDefinition[] = trialCharms.filter(charm => !Object.hasOwn(RETIRED_CHARMS, charm.id));
 export const LIVE_CHARMS: readonly CharmDefinition[] = [{
 	id: 'live:cali', name: 'Cali - Live Mascot', file: 'live-cali.png', group: 'Live Companions', accent: '#dcaa65',
 	description: 'A California grizzly with a coder wardrobe, a new outfit each day and a relaxed Friday look. Live glances, waves and thumbs-up; click for encouragement. Focus prompts and celebrations are optional.',
@@ -37,12 +40,12 @@ export const LIVE_CHARMS: readonly CharmDefinition[] = [{
 	description: 'A sunny 3D stress ball with quick glances, blinks and a playful wink. Hold to squish; release to bounce.',
 	attachment: { x: .5, y: 2.5 / 84 },
 }, {
-	id: 'live:cloud', name: 'Nimbus - Live Cloud', file: 'live-cloud.svg', group: 'Live Companions', accent: '#a6ddef',
-	description: 'A soft little 3D cloud. It looks your way, brightens when greeted and puffs its cheeks when squeezed.',
+	id: 'live:cloud', name: 'Nimbus - Live Cloud', file: 'live-cloud.png', group: 'Live Companions', accent: '#a6ddef',
+	description: 'A textured cloud with its own tiny cloud-fold face. Tap for sunrise, rain and a gentle lightning bolt; hold for a little shower.',
 	attachment: { x: .5, y: 2.5 / 84 },
 }, {
-	id: 'live:robot', name: 'Byte - Live Robot', file: 'live-robot.svg', group: 'Live Companions', accent: '#78d8c1',
-	description: 'A rounded metal robot with lively mint eyes. Tap for a wink; record a win for a happy reaction.',
+	id: 'live:robot', name: 'Byte - Live Robot', file: 'live-robot.png', group: 'Live Companions', accent: '#78d8c1',
+	description: 'A brushed-metal coding robot with articulated arms and a binary display. Tap for flowing bits, a compile check and a terminal prompt.',
 	attachment: { x: .5, y: 2.5 / 84 },
 }, ...CALIFORNIA_COMPANIONS.map(companion => ({
 	id: `live:${companion.character}`, name: `${companion.name} - Live Companion`,
@@ -52,9 +55,17 @@ export const LIVE_CHARMS: readonly CharmDefinition[] = [{
 }))];
 export const FIDGET_CHARMS: readonly CharmDefinition[] = [{
 	id: 'fidget:spinner', name: 'Fidget Spinner', file: 'fidget-spinner.svg', group: 'Stress Busters', accent: '#51bfc4',
-	description: 'Tap or flick the three-lobed spinner; its rotor spins and slows to a stop. Space spins it too. Silent, with no scores.',
+	description: 'Drag the rotor to turn it, then release to coast. Pull the centre to stretch the cord. Space spins; Shift+Space reverses.',
 	attachment: { x: .5, y: 2.5 / 84 },
-}, {
+}, ...([
+	['orbit', 'Orbit Spinner', '#aaa2e6', 'A violet orbital ring with three coloured satellites.'],
+	['pinwheel', 'Pinwheel Spinner', '#ed829c', 'Five folded, colourful blades with a satin sheen.'],
+	['bar', 'Bar Spinner', '#d2b071', 'A balanced brass bar with two polished bearings.'],
+] as const).map(([design, name, accent, description]) => ({
+	id: `fidget:spinner-${design}`, name, accent, file: `fidget-spinner-${design}.svg`, group: 'Stress Busters',
+	description: `${description} Drag the rotor to turn; release to coast. Pull the centre for the cord. Space spins; Shift+Space reverses.`,
+	attachment: { x: .5, y: 2.5 / 84 },
+})), {
 	id: 'fidget:bubbles', name: 'Bubble Pop', file: 'fidget-bubbles.svg', group: 'Stress Busters', accent: '#e7a7ae',
 	description: 'Six soft reusable bubbles. Tap a bubble to pop it or press it back out. Space presses the next bubble. Always silent.',
 	attachment: { x: .5, y: 2.5 / 84 },
@@ -62,19 +73,26 @@ export const FIDGET_CHARMS: readonly CharmDefinition[] = [{
 	id: 'fidget:stone', name: 'Worry Stone', file: 'fidget-stone.svg', group: 'Stress Busters', accent: '#89bba5',
 	description: 'A smooth jade-coloured thumb stone. Hold and rub to gently rock it; release to settle. Space holds it still in your hand.',
 	attachment: { x: .5, y: 2.5 / 84 },
-}];
-export const CHARMS: readonly CharmDefinition[] = [
+}, ...([
+	['cube', 'Twisty Cube', '#55ad8a', 'A working three-by-three colour cube. Tap to turn the front face; open Play for all six sides, shuffle and undo.'],
+	['tiles', 'Sliding Tiles', '#d7b889', 'A little number puzzle. Tap to slide a tile; open Play to arrange one through eight with the gap at the end.'],
+	['lights', 'Lights Out', '#e1a952', 'Switch off all nine lights. Each press flips that light and its neighbours. Tap the charm for the centre switch; open Play to solve.'],
+] as const).map(([kind, name, accent, description]) => ({
+	id: `fidget:${kind}`, name, accent, description, file: `fidget-${kind}.svg`, group: 'Stress Busters',
+	attachment: { x: .5, y: 2.5 / 84 },
+}))];
+export const CHARMS: readonly CharmDefinition[] = orderByCollection([
 	...ORIGINAL_CHARMS,
-	...TRIAL_CHARMS,
 	...LIVE_CHARMS,
 	...FIDGET_CHARMS,
-];
+	...TRIAL_CHARMS,
+]);
 
 /** An identical imported review image keeps its saved ID without adding a second trial tile. */
 export function buildCatalogue(custom: readonly CharmDefinition[]): CharmDefinition[] {
 	const imported = new Set(custom.flatMap(charm => charm.artworkKey && charm.artworkHash
 		? [`${charm.artworkKey}:${charm.artworkHash}`] : []));
-	return [
+	return orderByCollection([
 		...CHARMS.filter(charm => !charm.artworkKey || !charm.artworkHash
 			|| !imported.has(`${charm.artworkKey}:${charm.artworkHash}`)),
 		...custom.map(charm => {
@@ -82,7 +100,7 @@ export function buildCatalogue(custom: readonly CharmDefinition[]): CharmDefinit
 			return current && current.artworkHash !== charm.artworkHash
 				? { ...charm, name: `${charm.name} (Imported)` } : charm;
 		}),
-	];
+	]);
 }
 export type CharmId = string;
 export function getCharm(id: unknown, charms: readonly CharmDefinition[] = CHARMS): CharmDefinition {

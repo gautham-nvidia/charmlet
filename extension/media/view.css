@@ -1,3 +1,5 @@
+@import url("./puzzle.css");
+
 :root {
   color-scheme: light dark;
   --surface: var(--vscode-sideBar-background, #202020);
@@ -131,7 +133,7 @@ button:disabled { opacity: 0.5; cursor: default; }
 #settings { display: grid; grid-template-columns: auto minmax(36px, 1fr) 48px; align-items: center; gap: 8px; padding: 4px 14px 12px; max-height: min(42vh, 220px); overflow-y: auto; }
 #settings label { color: var(--quiet); font-size: 11px; }
 #settings output { text-align: right; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-#charm-select, #cord-style { grid-column: 2 / -1; width: 100%; min-width: 0; padding: 4px 6px; color: var(--vscode-dropdown-foreground, var(--ink)); background: var(--vscode-dropdown-background, var(--surface)); border: 1px solid var(--vscode-dropdown-border, #88888880); border-radius: 3px; font: inherit; }
+#charm-select, #cord-style, #cali-outfit { grid-column: 2 / -1; width: 100%; min-width: 0; padding: 4px 6px; color: var(--vscode-dropdown-foreground, var(--ink)); background: var(--vscode-dropdown-background, var(--surface)); border: 1px solid var(--vscode-dropdown-border, #88888880); border-radius: 3px; font: inherit; }
 #charm-description { grid-column: 1 / -1; margin: 0 0 2px; color: var(--quiet); font-size: 11px; line-height: 1.4; }
 .message-choice { grid-column: 1 / -1; display: flex; align-items: center; gap: 7px; }
 .message-choice input { margin: 0; accent-color: var(--focus); }
@@ -212,7 +214,8 @@ body.vscode-high-contrast #charm:focus-visible { outline-width: 2px; }
 #app-version { margin-left: 5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 #tools-backdrop { position: absolute; inset: 0 0 var(--popup-bottom); z-index: 4; background: var(--vscode-editorWidget-background, #20202055); opacity: .35; }
 #app.has-popup #hanging { pointer-events: none; }
-#settings.tool-popup, #companion-tools.tool-popup, #charm-picker.tool-popup, #photo-editor.tool-popup { position: absolute; inset: 8px 8px var(--popup-bottom); z-index: 5; display: flex; flex-direction: column; min-height: 70px; max-height: none; padding: 0; overflow: hidden; border: 1px solid var(--vscode-widget-border, #88888860); border-radius: 9px; color: var(--ink); background: var(--surface); box-shadow: 0 8px 24px #00000030; }
+#settings.tool-popup, #companion-tools.tool-popup, #charm-picker.tool-popup, #photo-editor.tool-popup, #puzzle-editor.tool-popup { position: absolute; inset: 8px 8px var(--popup-bottom); z-index: 5; display: flex; flex-direction: column; min-height: 70px; max-height: none; padding: 0; overflow: hidden; border: 1px solid var(--vscode-widget-border, #88888860); border-radius: 9px; color: var(--ink); background: var(--surface); box-shadow: 0 8px 24px #00000030; }
+#primary-nav.has-puzzle { grid-template-columns: 1fr .8fr 1fr .8fr 1.1fr; }
 .popup-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: 0 0 auto; padding: 10px 11px; border-bottom: 1px solid var(--vscode-widget-border, #88888825); }
 .popup-heading h2 { margin: 0; font: 600 12px/1.4 var(--vscode-font-family, system-ui, sans-serif); }
 .popup-heading p { margin: 3px 0 0; font-size: 10px; color: var(--quiet); }
@@ -228,6 +231,7 @@ body.vscode-high-contrast #charm:focus-visible { outline-width: 2px; }
 #charm-groups button[aria-pressed="true"] { color: var(--ink); border-color: var(--focus); background: var(--hover); }
 #charm-results { margin: 6px 0 9px; color: var(--quiet); font-size: 10px; }
 #charm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 7px; }
+.charm-pack-heading { grid-column: 1 / -1; margin: 7px 0 0; padding: 5px 0; border-bottom: 1px solid var(--vscode-widget-border, #88888835); color: var(--quiet); font-size: 11px; font-weight: 600; }
 .charm-tile { min-width: 0; padding: 8px 4px 6px; border: 1px solid var(--vscode-widget-border, #88888835); border-radius: 7px; background: var(--vscode-editorWidget-background, #88888808); font: inherit; font-size: 10px; }
 .charm-tile:hover, .charm-tile[aria-pressed="true"] { border-color: var(--focus); background: var(--hover); }
 .charm-tile img { width: 54px; height: 63px; object-fit: contain; margin-bottom: 5px; }

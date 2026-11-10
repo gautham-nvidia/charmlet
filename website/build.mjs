@@ -6,11 +6,13 @@ import { fileURLToPath } from 'node:url';
 import { build } from '../extension/node_modules/esbuild/lib/main.js';
 import { validateDistribution } from './distribution.mjs';
 import { curateArtwork, validateCuration } from './art-curation.mjs';
+import { trialCollections } from './trial-collections.mjs';
 
 const require = createRequire(import.meta.url);
 const { parseCharmPack } = require('../extension/out/charm-packs.js');
 const { FLOWERS } = require('../extension/out/garden-core.js');
 const { FIDGET_CHARMS, LIVE_CHARMS, ORIGINAL_CHARMS } = require('../extension/out/charm-catalog.js');
+const { charmCollection, orderByCollection } = require('../extension/out/charm-collections.js');
 const { gardenArtwork, GARDEN_STAGE_FILES } = require('../extension/out/garden-catalog.js');
 const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
@@ -37,6 +39,7 @@ const expectedWorlds = {
   'solar-system': 0, gemstones: 0, zodiac: 0, sacred: 0, flowers: 0,
 };
 const worlds = collectionConfig.collections;
+const currentWorlds = trialCollections(worlds);
 const previews = collectionConfig.previews;
 if (!Array.isArray(worlds) || worlds.length !== Object.keys(expectedWorlds).length || !Array.isArray(previews) || previews.length !== 4) throw new Error('Unexpected collection worlds or art previews.');
 const worldIds = new Set();
@@ -81,6 +84,7 @@ for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'asset
 // Static hosting advertises no paid service. Do not copy local API credentials.
 await writeFile(join(dist, 'api/studio/config.json'), `${JSON.stringify({ available: false, checkoutUrl: null, testMode: false })}\n`);
 for (const name of ['index.html', 'styles.css', 'app.js', 'concepts.html', 'concepts.css']) await copyFile(join(root, name), join(dist, name));
+await copyFile(join(repo, 'extension', 'media', 'puzzle.css'), join(dist, 'puzzle.css'));
 for (const builtin of builtins) {
   await copyFile(join(repo, 'extension', 'media', builtin.file), join(dist, 'assets', 'default', builtin.file));
 }
@@ -88,8 +92,8 @@ for (const live of [...LIVE_CHARMS, ...FIDGET_CHARMS]) {
   await copyFile(join(repo, 'extension', 'media', live.file), join(dist, 'assets', 'default', live.file));
 }
 const liveArt = JSON.parse(await readFile(join(root, 'live-art-assets.json'), 'utf8'));
-if (liveArt.version !== 1 || !Array.isArray(liveArt.assets) || liveArt.assets.length !== 32
-  || new Set(liveArt.assets.map(asset => asset.file)).size !== 32) throw new Error('Invalid live artwork manifest.');
+if (liveArt.version !== 1 || !Array.isArray(liveArt.assets) || liveArt.assets.length !== 36
+  || new Set(liveArt.assets.map(asset => asset.file)).size !== 36) throw new Error('Invalid live artwork manifest.');
 for (const asset of liveArt.assets) {
   if (!/^live-(?:art-)?[a-z0-9-]+\.png$/.test(asset.file)) throw new Error('Invalid live artwork filename.');
   const bytes = await readFile(join(repo, 'extension/media', asset.file));
@@ -182,8 +186,7 @@ if (review) {
       if (!bundled || bundled.artworkHash !== item.pngSha256 || bundled.name !== item.name) {
         throw new Error(`Trial artwork differs from the gallery: ${item.key}`);
       }
-      const alias = { 'Silicon & Code': 'silicon', 'Good Luck': 'luck' }[bundled.group];
-      const world = worlds.find(world => world.name === bundled.group || world.id === alias);
+      const world = currentWorlds.find(world => world.name === charmCollection(bundled));
       if (!world) throw new Error(`Missing curated collection: ${bundled.group}`);
       charms.push({ id: item.key, name: item.name, description: bundled.description, accent: item.accent,
         kind: 'extra', review: true, includedInTrial: true, group: bundled.group,
@@ -209,10 +212,15 @@ if (review) {
   }
   for (const name of ['review.html', 'review.js', 'review.css', 'art-review.json']) await copyFile(join(root, name), join(dist, name));
 }
-const collections = worlds.map(world => ({ ...world, charmIds: charms
-  .filter(charm => charm.kind === 'extra' && charm.collectionId === world.id).map(charm => charm.id) }));
+const orderedCharms = orderByCollection(charms).map(charm => {
+  const world = currentWorlds.find(world => world.name === charmCollection(charm));
+  if (!world) throw new Error(`Missing trial pack for ${charm.id}`);
+  return { ...charm, collectionId: world.id, collectionLabel: world.name };
+});
+const collections = currentWorlds.map(world => ({ ...world, charmIds: orderedCharms
+  .filter(charm => charm.collectionId === world.id).map(charm => charm.id) }));
 if (!trial.length || charms.length !== ORIGINAL_CHARMS.length + trial.length + LIVE_CHARMS.length + FIDGET_CHARMS.length) throw new Error('The complete trial must appear in the gallery.');
 await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version,
-  extensionDownload: './downloads/charmlet.vsix', distribution, charms, collections, artPreviews,
+  extensionDownload: './downloads/charmlet.vsix', distribution, charms: orderedCharms, collections, artPreviews,
   sportsWishlist: collectionConfig.sportsWishlist }, null, 2)}\n`, 'utf8');
 console.log(`Built Charmlet gallery ${manifest.version}: ${ORIGINAL_CHARMS.length} original, ${trial.length} rendered designs, ${LIVE_CHARMS.length} live companions and ${FIDGET_CHARMS.length} fidgets included, ${review?.featured ?? 0} selected review designs.`);

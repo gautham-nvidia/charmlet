@@ -63,6 +63,7 @@ if (command === 'plan') {
       console.log(JSON.stringify({ key: job.key, status: 'reused', completed, total: selected.length }));
       return;
     }
+    if (job.reference) throw new Error(`Use the explicit reference-edit workflow for ${job.key}; its reference must accompany the prompt.`);
     await preservePrompt();
     const response = await fetch(endpoint, {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(240000),

@@ -2,11 +2,13 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Phase 10 candidate, 2026-11-06:** **0.10.0** includes **178 offline charms**: 159 rendered designs, Terminal, fifteen live companions and three interactive fidget tools. **Cali** is a detailed California grizzly with a Silicon Valley coder wardrobe, a different outfit each weekday and weekend day, a relaxed Friday shirt, waves and clear thumbs-up celebrations. Eleven California companions join Sunny, Nimbus and Byte. [Verification and release gates](docs/phase-10-california-mascots.md) track the candidate; personal encouragement, the dog-led pet collection, matched cords, small wins, local photos and the eighteen-flower garden carry forward.
+**Expanded trial candidate, 2026-11-09:** **0.11.0** includes **200 offline charms**: 175 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools. Terminal leads the collection, followed by **Live 3D**, **Stress Busters** and **Music**. Nimbus brings sunrise, rain and lightning; Byte has a metal body and animated binary/code display. Twelve instruments, recognizable California landmarks, Diwali lamps and a Halloween lantern join the themed packs.
 
-Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **160 selected designs**, including the original Terminal and all eighteen flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. The separate website Photo Studio's paid access remains disabled; creating local photo charms inside the app is free.
+**Cali** keeps the approved grizzly face, seven outfits, saved wardrobe choice and four playful tap reactions. Four spinner designs turn under your pointer; Twisty Cube, Sliding Tiles and Lights Out have optional boards and saved progress. Every charm has a brief tap wiggle. The default 100% is 15% larger, and Appearance offers 60-200% sizing. [Verification and release gates](docs/phase-12-collections.md) track this candidate; encouragement, pets, matched cords, small wins, local photos and the eighteen-flower garden carry forward.
 
-**Desktop 0.7.0 candidate:** starts with only the charm and cord. Hover for Move and Tools; open one control panel at a time, with optional background, toolbar and messages. Choose Cali for brief encouragement bubbles, or turn those off under Focus. Live Companions and Stress Busters appear first in the picker. Pulls use the available screen space. See the [desktop guide](desktop/README.md).
+Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **176 featured designs**, including the original Terminal and all eighteen flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. The separate website Photo Studio's paid access remains disabled; creating local photo charms inside the app is free.
+
+**Desktop 0.8.0 candidate:** starts with only the charm and cord. Hover for Move and Tools; open one control panel at a time, with optional background, toolbar and messages. Choose Cali for brief encouragement bubbles, or turn those off under Focus. Terminal, Live 3D, Stress Busters and Music lead the picker. Pulls use the available screen space. See the [desktop guide](desktop/README.md).
 
 The website has a [Vercel setup guide](docs/vercel-hosting.md) for the owner's `greensilver-personal` team. [Monetization and checkout setup](docs/monetization-and-payments.md) compares one-time packs, Stripe and hosted digital delivery. Prices are proposals; live sales are not enabled.
 
@@ -37,7 +39,7 @@ Cali's week goes from **Monday denim** to a **Tuesday hoodie**, **Wednesday vest
 
 The new pets are **Giant Panda**, **Golden Retriever**, **Labrador**, **German Shepherd**, **Husky**, **Corgi**, **Beagle** and **Goldendoodle**, with just two new cats: **Silver Tabby** and **Tuxedo Cat**. They join the existing pets under **Animals**.
 
-**Charms > Stress Busters** also offers a working Fidget Spinner, reusable Bubble Pop and Worry Stone. Tap/flick to spin, tap bubbles to press them in/out, or hold and rub the stone. Space/Enter work too. The tools are silent and have no scores.
+**Charms > Stress Busters** offers four spinner designs, reusable Bubble Pop, Worry Stone and three puzzles. Drag a spinner's rotor to turn it and release to coast; pull the centre for the cord. Select Twisty Cube, Sliding Tiles or Lights Out and open **Play** for the board, shuffle, undo and reset. Puzzle progress saves locally. The tools are silent, with no timers or scores.
 
 Under **Settings > Appearance > Cord material**, choose a matching default or save a separate choice for each charm: thread, soft cord, braid, leather, ribbon, silver chain, gold chain or ball chain.
 
@@ -82,7 +84,7 @@ unchanged. After rebuilding, reload that demo window to load the updated code.
 | Try | Examples |
 |---|---|
 | Live 3D | Cali, Sunny, Nimbus and Byte |
-| Stress Busters | Fidget Spinner, Bubble Pop, Worry Stone, smiley balls and squishies |
+| Stress Busters | Four spinners, Bubble Pop, Worry Stone, Twisty Cube, Sliding Tiles, Lights Out, smiley balls and squishies |
 | Animals | Giant Panda, Goldendoodle, Husky and the other new and existing pets |
 | Test Bench | ATE Tester, Oscilloscope, Tweezers and other lab tools |
 | Garden Flowers | Eighteen varieties, including four rose colours, jasmine and lily |

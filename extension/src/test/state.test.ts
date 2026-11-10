@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, promises as filesystem } from 'node:fs';
 import { readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -28,7 +28,7 @@ test('hide and motion preferences survive a reload without trusting unknown fiel
 	assert.deepEqual(restoreState({ cordLength: 180, hidden: true, reducedMotion: true, extra: 'ignored' }), {
 		version: 1, charmId: 'terminal', layoutMode: 'hanging', showMessages: true, rotateMessages: true, messageIndex: 0,
 		cordLength: 180, size: 100, hidden: true, reducedMotion: true,
-		festiveEnabled: true, charmPinned: false, cordChoices: {},
+		festiveEnabled: true, charmPinned: false, cordChoices: {}, caliOutfit: 'daily', puzzles: DEFAULT_STATE.puzzles,
 	});
 });
 
@@ -82,8 +82,11 @@ test('every bundled selection survives saved-state restoration', () => {
 	assert.deepEqual(ORIGINAL_CHARMS.map(charm => charm.id), ['terminal']);
 	assert.equal(CHARMS.length, ORIGINAL_CHARMS.length + TRIAL_CHARMS.length + LIVE_CHARMS.length + FIDGET_CHARMS.length);
 	assert.equal(new Set(CHARMS.map(charm => charm.id)).size, CHARMS.length);
+	assert.equal(CHARMS[0].id, 'terminal');
+	assert.equal(CHARMS[1].id, 'live:cali');
+	assert.ok(CHARMS.slice(1, 1 + LIVE_CHARMS.length).every(charm => charm.id.startsWith('live:')));
 	assert.ok(TRIAL_CHARMS.length > 100, 'The complete curated trial must be bundled, not require imports.');
-	for (const group of ['Solar System', 'Gemstones', 'Zodiac', 'Test Bench', 'Sacred Traditions', 'Seasonal']) {
+	for (const group of ['Solar System', 'Gemstones', 'Zodiac', 'Test Bench', 'Sacred Traditions', 'Seasonal', 'California', 'Celebrations', 'Music']) {
 		assert.ok(TRIAL_CHARMS.some(charm => charm.group === group), `Missing trial collection: ${group}`);
 	}
 	for (const planet of ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune']) {
@@ -91,6 +94,7 @@ test('every bundled selection survives saved-state restoration', () => {
 	}
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Zodiac').length, 12);
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Garden Flowers').length, 18);
+	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Music').length, 12);
 	assert.ok(TRIAL_CHARMS.every(charm => !charm.source && /^trial-[a-z0-9-]+\.png$/.test(charm.file)));
 	assert.equal(MESSAGES.length, 80);
 	assert.equal(new Set(MESSAGES).size, MESSAGES.length);
@@ -317,6 +321,33 @@ test('unreadable preference JSON reports the problem and leaves the legacy fallb
 	assert.equal(await readFile(store.path, 'utf8'), '{broken');
 });
 
+test('Windows file replacement retries temporary locks, bounds failures and preserves the prior save',
+	{ skip: process.platform !== 'win32' }, async context => {
+		const directory = mkdtempSync(join(tmpdir(), 'charmlet-state-'));
+		context.after(() => rm(directory, { recursive: true, force: true }));
+		const store = new StateStore(directory);
+		await store.write({ ...DEFAULT_STATE });
+		const originalRename = filesystem.rename;
+		let busyAttempts = 2, calls = 0;
+		const locked = Object.assign(new Error('File temporarily locked'), { code: 'EPERM' });
+		context.mock.method(filesystem, 'rename', async (...args: Parameters<typeof filesystem.rename>) => {
+			calls++;
+			if (busyAttempts-- > 0) { throw locked; }
+			return originalRename(...args);
+		});
+		const selected = { ...DEFAULT_STATE, charmId: 'fidget:cube' };
+		await store.write(selected);
+		assert.equal(calls, 3);
+		assert.deepEqual(await store.read(), selected);
+		assert.deepEqual(await readdir(directory), ['preferences.json']);
+
+		busyAttempts = Infinity; calls = 0;
+		await assert.rejects(store.write({ ...DEFAULT_STATE }), error => error === locked);
+		assert.equal(calls, 6);
+		assert.deepEqual(await store.read(), selected);
+		assert.deepEqual(await readdir(directory), ['preferences.json']);
+	});
+
 test('preference file errors reject saves and allow a later successful write', async context => {
 	const root = mkdtempSync(join(tmpdir(), 'charmlet-state-'));
 	context.after(() => rm(root, { recursive: true, force: true }));
@@ -403,14 +434,16 @@ test('size persists and Phase 0 states gain the default without losing their par
 	assert.equal(restoreState({ cordLength: 210 }).size, 100);
 	assert.equal(restoreState({ cordLength: 210 }).cordLength, 210);
 	assert.equal(restoreState({ size: 140 }).size, 140);
-	assert.equal(restoreState({ size: 999 }).size, 140);
+	assert.equal(restoreState({ size: 175 }).size, 175);
+	assert.equal(restoreState({ size: 200 }).size, 200);
+	assert.equal(restoreState({ size: 999 }).size, 200);
 	assert.equal(restoreState({ size: -1 }).size, 60);
 	assert.equal(restoreState({ size: Number.NaN }).size, 100);
 });
 
 test('every supported size fits the logical view without overwriting requested preferences', () => {
 	for (const mode of ['hanging', 'orbit'] as LayoutMode[]) {
-		for (const size of [60, 100, 140]) {
+		for (const size of [60, 100, 140, 175, 200]) {
 			for (const height of [80, 144, 240, 500]) {
 				const state = restoreState({ cordLength: 320, size });
 				const layout = getLayout(96, height, state.cordLength, state.size, mode);
@@ -443,7 +476,7 @@ test('resizing clamps the parked cord to keep the charm in the view', () => {
 });
 
 test('compact panels keep downward pull room and return to the visible rest', () => {
-	for (const size of [60, 100, 140]) {
+	for (const size of [60, 100, 140, 200]) {
 		for (const mode of ['hanging', 'orbit'] as LayoutMode[]) {
 			const requestedPreference = 126;
 			const pendulum = new Pendulum(180, 120, requestedPreference, size, mode);
@@ -492,7 +525,7 @@ test('a click impulse moves the charm, then the pendulum sleeps', () => {
 });
 
 test('opposite nudges have balanced travel in a narrow dock', () => {
-	for (const size of [60, 100, 140]) {
+	for (const size of [60, 100, 140, 200]) {
 		const left = new Pendulum(180, 500, 320, size);
 		const right = new Pendulum(180, 500, 320, size);
 		try {
@@ -631,7 +664,7 @@ test('release before the next physics frame does not jump to an unrendered point
 test('imported attachment geometry scales with the image and remains bounded during a rebound', () => {
 	for (const mode of ['hanging', 'orbit'] as const) {
 		for (const attachment of [{ x: 0.5, y: 0 }, { x: 0.45, y: 14 / 84 }, { x: 0.55, y: 0.5 }]) {
-			const p = new Pendulum(180, 140, 48, 140, mode, attachment);
+			const p = new Pendulum(180, 140, 48, 200, mode, attachment);
 			try {
 				const rest = p.position;
 				assert.ok(Math.abs(p.layout.attachmentX - (attachment.x - 0.5) * p.layout.charmWidth) < 0.001);
@@ -718,12 +751,14 @@ test('a downward pull returns to rest without a stuck drag constraint', () => {
 
 test('size changes scale the body and attachment without accumulating walls or constraints', () => {
 	const pendulum = new Pendulum(280, 400, 126);
-	for (const size of [140, 60, 100]) {
+	for (const size of [140, 200, 60, 100]) {
 		pendulum.grab(pendulum.position);
 		pendulum.resize(280, 400, 126, size);
 		const radius = pendulum.body.circleRadius;
 		assert.ok(typeof radius === 'number');
-		assert.ok(Math.abs(radius - 34 * size / 100) < 0.001);
+		assert.ok(Math.abs(radius - 34 * 1.15 * size / 100) < 0.001);
+		assert.ok(Math.abs(pendulum.layout.charmWidth - 82.8 * size / 100) < 0.001);
+		assert.ok(Math.abs(pendulum.layout.charmHeight - 96.6 * size / 100) < 0.001);
 		assert.equal(pendulum.tether.length, pendulum.layout.cordLength + pendulum.layout.attachmentOffset);
 		assert.equal(pendulum.engine.world.constraints.length, 1);
 		assert.equal(pendulum.engine.world.bodies.length, 4);
@@ -733,7 +768,7 @@ test('size changes scale the body and attachment without accumulating walls or c
 });
 
 test('complete peg orbits stay visible in both directions and return from above', () => {
-	for (const size of [60, 100, 140]) {
+	for (const size of [60, 100, 140, 200]) {
 		for (const immediate of [false, true]) {
 			for (const direction of [-1, 1]) {
 				const p = new Pendulum(340, 800, 126, size, 'orbit');

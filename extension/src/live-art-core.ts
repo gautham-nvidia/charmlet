@@ -1,24 +1,32 @@
-import { CALI_WEEK, caliOutfitAt } from './cali-wardrobe';
+import { CALI_WEEK, caliOutfitAt, type CaliOutfitChoice } from './cali-wardrobe';
 import type { SmileyPose } from './smiley-renderer';
 
-export type ArtCharacter = 'cali' | 'redwood' | 'yosemite' | 'tahoe' | 'gull' | 'seal'
+export type ArtCharacter = 'cali' | 'cloud' | 'robot' | 'redwood' | 'yosemite' | 'tahoe' | 'gull' | 'seal'
 	| 'golden-gate' | 'santa-cruz' | 'whale' | 'dolphin' | 'condor' | 'eagle';
-export const ART_CHARACTERS: readonly ArtCharacter[] = ['cali', 'redwood', 'yosemite', 'tahoe', 'gull',
+export const ART_CHARACTERS: readonly ArtCharacter[] = ['cali', 'cloud', 'robot', 'redwood', 'yosemite', 'tahoe', 'gull',
 	'seal', 'golden-gate', 'santa-cruz', 'whale', 'dolphin', 'condor', 'eagle'];
 export function isArtCharacter(value: string | undefined): value is ArtCharacter {
 	return ART_CHARACTERS.includes(value as ArtCharacter);
 }
 export type ArtPoint = readonly [number, number];
+export const CALI_TAP_GESTURES = ['curious', 'wink', 'double-take', 'shimmy'] as const;
+export type CaliGesture = typeof CALI_TAP_GESTURES[number];
+export const NIMBUS_GESTURES = ['sunrise', 'rain', 'lightning'] as const;
+export const BYTE_GESTURES = ['binary', 'compile', 'cursor'] as const;
+export type ArtGesture = CaliGesture | typeof NIMBUS_GESTURES[number] | typeof BYTE_GESTURES[number];
+const CALI_ANCHOR: ArtPoint = [512,101];
 export interface ArtBounds { x: number; y: number; width: number; height: number; }
 export interface ArtEye { x: number; y: number; rx: number; ry: number; }
 export interface ArtPart {
 	id: string;
 	file: string;
 	polygon: readonly ArtPoint[];
-	role: 'body' | 'head' | 'figure' | 'arm' | 'hand' | 'thumb' | 'wave' | 'wing';
+	role: 'body' | 'head' | 'figure' | 'arm' | 'hand' | 'thumb' | 'wave' | 'wing' | 'servo';
 	pivot: ArtPoint;
 	side?: -1 | 1;
 	eyes?: readonly ArtEye[];
+	effect?: 'weather-back' | 'weather-front';
+	display?: ArtBounds;
 	volume?: { x: number; y: number; rx: number; ry: number; depth: number };
 }
 export interface ArtDefinition {
@@ -41,8 +49,8 @@ const armOutline: readonly ArtPoint[] = [[365,293],[403,350],[343,491],[302,614]
 	[190,645],[194,582],[215,524],[222,528],[262,413],[310,334]];
 const handOutline: readonly ArtPoint[] = [[190,616],[287,614],[302,719],[270,780],[179,762]];
 
-export function caliArt(now: number): ArtDefinition {
-	const outfit = caliOutfitAt(now), file = outfit.file;
+export function caliArt(now: number, choice: CaliOutfitChoice = 'daily'): ArtDefinition {
+	const outfit = caliOutfitAt(now, choice), file = outfit.file;
 	const parts: ArtPart[] = [];
 	for (const side of [-1, 1] as const) {
 		const transform = side === -1 ? (value: ArtPoint) => value : mirror;
@@ -66,7 +74,7 @@ export function caliArt(now: number): ArtDefinition {
 			pivot: [835,372], side });
 	}
 	return { character: 'cali', bounds: { x: 193, y: 71, width: 647, height: 905 },
-		anchor: [512,101], outfit: outfit.id, parts };
+		anchor: CALI_ANCHOR, outfit: outfit.id, parts };
 }
 
 export function artBounds(points: readonly ArtPoint[]): ArtBounds {
@@ -76,7 +84,7 @@ export function artBounds(points: readonly ArtPoint[]): ArtBounds {
 }
 
 export function artReaction(pose: ArtPose): number {
-	if ((!pose.happy && !pose.greeting) || pose.pressed) { return 0; }
+	if ((!pose.happy && !pose.greeting && !pose.gesture) || pose.pressed) { return 0; }
 	if (pose.reducedMotion) { return 1; }
 	const progress = Math.max(0, Math.min(1, pose.reactionProgress ?? .5));
 	const ramp = progress < .2 ? progress / .2 : progress > .8 ? (1 - progress) / .2 : 1;
@@ -92,37 +100,46 @@ function smooth(value: number) {
 	return bounded * bounded * (3 - 2 * bounded);
 }
 function armPose(side: -1 | 1, pose: ArtPose) {
-	const amount = side === 1 || pose.happy ? artReaction(pose) : 0;
+	const amount = pose.happy || pose.greeting && side === 1 ? artReaction(pose) : 0;
 	const wave = pose.greeting && !pose.reducedMotion ? Math.sin((pose.reactionProgress ?? .5) * Math.PI * 5) * amount : 0;
-	return { amount, upper: -side * amount * .12, lower: -side * (amount * 1.95 + wave * .08),
+	const pump = pose.gesture === 'shimmy' && !pose.reducedMotion
+		? Math.sin((pose.reactionProgress ?? .5) * Math.PI * 6 + side * .7) * amount * .18 : 0;
+	return { amount, upper: -side * amount * (pose.gesture === 'shimmy' ? -.08 : .12),
+		lower: -side * (amount * 1.95 + wave * .08 + pump),
 		shoulder: (side === -1 ? [366,352] : [658,352]) as ArtPoint,
 		elbow: (side === -1 ? [278,503] : [746,503]) as ArtPoint,
 		wrist: (side === -1 ? [240,635] : [784,635]) as ArtPoint };
 }
 export function partOpacity(part: ArtPart, pose: ArtPose): number {
 	const amount = part.side ? armPose(part.side, pose).amount : artReaction(pose);
-	if (part.role === 'hand') { return 1 - amount; }
-	if (part.role === 'thumb') { return pose.happy && part.side === 1 ? amount : 0; }
-	if (part.role === 'wave') { return pose.greeting || pose.happy && part.side === -1 ? amount : 0; }
+	// Change paws before the elbow bends far enough to swing a hanging paw off-frame.
+	const hand = Math.min(1, amount * 3);
+	if (part.role === 'hand') { return 1 - hand; }
+	if (part.role === 'thumb') { return pose.happy && part.side === 1 ? hand : 0; }
+	if (part.role === 'wave') { return pose.greeting || pose.happy && part.side === -1 ? hand : 0; }
 	return 1;
 }
 
 /** Source pixels stay registered across outfits; skin weights bend fabric across the elbow. */
-export function artPoint(part: ArtPart, source: ArtPoint, pose: ArtPose): ArtPoint {
+function jointPoint(part: ArtPart, source: ArtPoint, pose: ArtPose): ArtPoint {
 	const amount = artReaction(pose);
 	if (part.role === 'head' || part.role === 'figure') {
 		const [cx, cy] = part.pivot, dx = source[0] - cx, dy = source[1] - cy;
 		const volume = part.volume ?? { x: 512, y: 215, rx: 160, ry: 160, depth: 78 };
 		const radius = Math.hypot((source[0] - volume.x) / volume.rx, (source[1] - volume.y) / volume.ry);
 		const depth = Math.sqrt(Math.max(0, 1 - radius * radius)) * volume.depth;
-		const yaw = pose.reducedMotion ? 0 : pose.gazeX * .10;
+		const glance = pose.gesture === 'double-take'
+			? Math.sin((pose.reactionProgress ?? .5) * Math.PI * 4) * amount : 0;
+		const yaw = pose.reducedMotion ? 0 : pose.gazeX * .10 + glance * .22;
 		const pitch = pose.reducedMotion ? 0 : pose.gazeY * .05;
 		const projected: ArtPoint = [cx + dx * Math.cos(yaw) + depth * Math.sin(yaw),
 			cy + dy * Math.cos(pitch) - depth * Math.sin(pitch)];
 		const greeting = part.role === 'figure'
 			? Math.sin((pose.reactionProgress ?? .5) * Math.PI * 3) * amount * .025 + pose.gazeX * .012
 			: amount * .025;
-		const tilt = pose.reducedMotion ? 0 : pose.pressed ? -.05 : greeting;
+		const playful = pose.gesture === 'curious' ? amount * -.13
+			: pose.gesture === 'wink' ? amount * .07 : glance * .045;
+		const tilt = pose.reducedMotion ? 0 : pose.pressed ? -.05 : greeting + playful;
 		return rotate(projected, part.pivot, tilt);
 	}
 	if (part.side && ['arm','hand','thumb','wave'].includes(part.role)) {
@@ -144,7 +161,19 @@ export function artPoint(part: ArtPart, source: ArtPoint, pose: ArtPose): ArtPoi
 	if (part.role === 'wing' && !pose.reducedMotion) {
 		return rotate(source, part.pivot, (part.side ?? 1) * amount * .18);
 	}
+	if (part.role === 'servo' && !pose.reducedMotion) {
+		const typing = pose.gesture === 'compile'
+			? Math.sin((pose.reactionProgress ?? .5) * Math.PI * 6) * amount * .035 : 0;
+		return rotate(source, part.pivot, -(part.side ?? 1) * (pose.pressed ? .1 : amount * .28 + typing));
+	}
 	return source;
+}
+
+export function artPoint(part: ArtPart, source: ArtPoint, pose: ArtPose): ArtPoint {
+	const point = jointPoint(part, source, pose);
+	if (pose.character !== 'cali' || pose.gesture !== 'shimmy' || pose.reducedMotion) { return point; }
+	const sway = Math.sin((pose.reactionProgress ?? .5) * Math.PI * 6) * artReaction(pose) * .035;
+	return rotate(point, CALI_ANCHOR, sway);
 }
 
 export function artToStage(definition: Pick<ArtDefinition, 'bounds'>, point: ArtPoint): ArtPoint {

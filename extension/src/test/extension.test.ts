@@ -1,6 +1,7 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
 import { copyFileSync, cpSync, existsSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { CHARMS, ORIGINAL_CHARMS } from '../charm-catalog';
+import { charmCollection } from '../charm-collections';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { command, commandInput, endOfDocument, primaryModifier, readyFrame, reloadCharm } from './editor-helpers';
@@ -241,8 +242,8 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await openAppearance(frame);
 			let picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
 			await expect(picker.locator('option')).toHaveCount(CHARMS.length);
-			await expect(picker.locator('optgroup')).toHaveCount(new Set(CHARMS.map(charm => charm.group)).size);
-			await expect(picker.locator('optgroup[label="Solar System"]')).toHaveCount(1);
+			await expect(picker.locator('optgroup')).toHaveCount(new Set(CHARMS.map(charmCollection)).size);
+			await expect(picker.locator('optgroup[label="Space & Stars"]')).toHaveCount(1);
 			await expect(picker.locator('option[value="terminal"]')).toHaveText('Terminal');
 			// Category grouping can place a newly appended charm inside an earlier group.
 			const lastId = await picker.locator('option').last().getAttribute('value');
@@ -380,7 +381,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			const defaultCharmWidth = await frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width);
 			await frame.getByRole('slider', { name: 'Size', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Size', exact: true }).press('End');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
 			await expect.poll(() => frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width)).toBeGreaterThan(defaultCharmWidth);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			const maximumCord = (await frame.getByRole('slider', { name: 'Cord', exact: true }).getAttribute('max'))!;
@@ -404,7 +405,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			expect(expandedCordAfterClose).toBeLessThanOrEqual(Number(maximumCord));
 			const expandedVisibleCord = (await frame.locator('#stage').getAttribute('data-cord'))!;
 			frame = await reloadCharm(window);
-			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', expandedVisibleCord);
 			await expect(frame.locator('#cord-length')).toHaveValue(maximumCord);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 500));
@@ -460,7 +461,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 650));
 			await expect(frame.locator('#phase')).toHaveText('Parked');
 			await window.mouse.up();
-			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 			await expect(frame.locator('#charm')).not.toHaveClass(/dragging/);
@@ -489,7 +490,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			}).toBe(true);
 			await window.keyboard.press(`${primaryModifier}+Alt+B`);
 			frame = await readyFrame(window);
-			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
 			await expect(frame.locator('#phase')).toHaveText('Parked');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');

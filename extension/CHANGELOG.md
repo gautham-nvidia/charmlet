@@ -3,6 +3,22 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.11.0 - 2026-11-09 (Live reactions, music and playful charms trial)
+
+- Expanded the trial to 200 charms. Terminal is first and remains the fresh-profile default, followed by Live 3D, Stress Busters, Music and other themed packs.
+- Redrew Nimbus as a textured cloud with sunrise, rain and a gentle lightning reaction. Byte now has a brushed-metal body, jointed arms and animated binary, compile-check and terminal displays.
+- Added twelve instruments: MIDI keyboard, analog synth, grand piano, electric/acoustic/bass guitars, ukulele, flute, saxophone, violin, drum kit and DJ controller.
+- Replaced vague place artwork with NVIDIA's Santa Clara campus, Painted Ladies and Pebble Beach; redrew Granite Dome as Yosemite's Half Dome. Added Palace of Fine Arts, Coastal Cypress, Salesforce Tower and an original-Infinite-Loop-inspired Cupertino campus.
+- Redrew Black Friday and Cyber Monday; added Diwali Diyas and Halloween Lantern. Retired the bundled Soldering Iron and Digital Caliper; saved selections move to Terminal while retaining pin and cord preferences.
+- Choose Cali's outfit in Appearance: automatic daily changes or any of his seven looks, saved across restarts.
+- Added Orbit, Pinwheel and Bar spinners. Drag the rotor to turn it and release to coast; pull the centre for the cord. Shift+Space spins backwards.
+- Added Twisty Cube, Sliding Tiles and Lights Out. Select a puzzle and open Play for its larger board, shuffle, undo and reset. Progress saves locally; the boards stay closed until opened.
+- Cali cycles through a curious head tilt, a wink, a double take and a victory shimmy on taps. Daily outfits, the approved grizzly artwork and win celebrations remain available.
+- Every charm gives a brief wiggle on a click or Space/Enter, including imported artwork, photos, flowers and fidget tools. New holds interrupt the wiggle, and Reduced Motion uses still feedback.
+- Made 100% about 15% larger. Appearance now offers 60-200% in 5% steps; saved percentages are preserved.
+- Kept the artwork's hook attached during the wiggle and extended layout, orbit and desktop-edge bounds for larger charms.
+- Added bounded retries for temporary Windows settings-file locks; a failed replacement preserves the previous saved file.
+
 ## 0.10.0 - 2026-11-06 (California companions trial)
 
 - Redesigned Cali as a detailed California grizzly with a consistent face, seven daily outfits and a relaxed Friday coastal shirt.

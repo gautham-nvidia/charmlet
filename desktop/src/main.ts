@@ -227,7 +227,8 @@ async function registerResources() {
 			}
 			const fixed = new Map([
 				['/renderer.js', join(root, 'renderer.js')], ['/overlay.js', join(root, 'overlay.js')],
-				['/view.css', join(root, 'view.css')], ['/desktop.css', join(root, 'desktop.css')],
+		['/view.css', join(root, 'view.css')], ['/desktop.css', join(root, 'desktop.css')],
+		['/puzzle.css', join(root, 'puzzle.css')],
 			]);
 			let file = fixed.get(path);
 			if (!file && path.startsWith('/media/')) {
@@ -509,6 +510,9 @@ async function initialize() {
 	mainWindow.webContents.on('did-finish-load', showInactive);
 	applyWindowSize();
 	await mainWindow.loadURL('charmlet://app/');
+	// A Windows first show can lose the constructor's topmost flag.
+	// Apply the initial preference after the native window has finished loading.
+	if (process.platform === 'win32') { mainWindow.setAlwaysOnTop(true); }
 	createTray();
 	unsubscribeCompanion = companion.subscribe(snapshot => {
 		latestCompanion = snapshot;

@@ -29,8 +29,8 @@ export function restoreCordChoices(value: unknown, charms: readonly CharmDefinit
 	for (const charm of charms) {
 		if (entries.length >= 512) { break; }
 		const artworkId = charm.artworkKey ? `trial:${charm.artworkKey}` : charm.id;
-		const retired = Object.entries(RETIRED_CHARMS).find(([, current]) => current === artworkId)?.[0];
-		const key = [charm.id, artworkId, retired].find(id => id && Object.hasOwn(raw, id) && isCordStyle(raw[id]));
+		const retired = Object.entries(RETIRED_CHARMS).filter(([, current]) => current === artworkId).map(([id]) => id);
+		const key = [charm.id, artworkId, ...retired].find(id => Object.hasOwn(raw, id) && isCordStyle(raw[id]));
 		if (key) { entries.push([charm.id, raw[key] as CordStyle]); }
 	}
 	return Object.fromEntries(entries);
@@ -58,7 +58,12 @@ export function cordForCharm(charm: CharmDefinition, choices: CordChoices = {}):
 		case 'Garden Flowers':
 		case 'Grown by you':
 		case 'Seasonal':
+		case 'Celebrations':
 			return 'ribbon';
+		case 'Music':
+			return /acoustic|ukulele|violin/.test(charm.id) ? 'leather' : 'silver-chain';
+		case 'California':
+			return /granite|mountain|cypress/.test(charm.id) ? 'leather' : 'silver-chain';
 		case 'Solar System':
 		case 'Stars & Galaxies':
 		case 'Zodiac':

@@ -2,8 +2,13 @@ import { CHARMS, getCharm, RETIRED_CHARMS, type CharmDefinition, type CharmId } 
 import { MESSAGES } from './messages';
 import { DEFAULT_ATTACHMENT, type CharmAttachment } from './charm-attachment';
 import { restoreCordChoices, type CordChoices } from './cord-design';
+import { restoreCaliOutfit, type CaliOutfitChoice } from './cali-wardrobe';
+import { DEFAULT_PUZZLES, matchesPuzzles, restorePuzzles, type PuzzleState } from './puzzle-core';
 
 export type LayoutMode = 'hanging' | 'orbit';
+export const MIN_CHARM_SIZE = 60;
+export const MAX_CHARM_SIZE = 200;
+const BASE_CHARM_SCALE = 1.15;
 
 export interface CharmState {
 	version: 1;
@@ -14,6 +19,8 @@ export interface CharmState {
 	messageIndex: number;
 	cordLength: number;
 	cordChoices: CordChoices;
+	caliOutfit: CaliOutfitChoice;
+	puzzles: PuzzleState;
 	size: number;
 	hidden: boolean;
 	reducedMotion: boolean;
@@ -30,6 +37,8 @@ export const DEFAULT_STATE: Readonly<CharmState> = Object.freeze({
 	messageIndex: 0,
 	cordLength: 126,
 	cordChoices: Object.freeze({}),
+	caliOutfit: 'daily',
+	puzzles: DEFAULT_PUZZLES,
 	size: 100,
 	hidden: false,
 	reducedMotion: false,
@@ -59,8 +68,10 @@ export function restoreState(value: unknown, charms: readonly CharmDefinition[] 
 			? Math.max(48, candidate.cordLength)
 			: DEFAULT_STATE.cordLength,
 		cordChoices: restoreCordChoices(candidate.cordChoices, charms),
+		caliOutfit: restoreCaliOutfit(candidate.caliOutfit),
+		puzzles: restorePuzzles(candidate.puzzles),
 		size: typeof candidate.size === 'number' && Number.isFinite(candidate.size)
-			? clamp(candidate.size, 60, 140)
+			? clamp(candidate.size, MIN_CHARM_SIZE, MAX_CHARM_SIZE)
 			: DEFAULT_STATE.size,
 		hidden: typeof candidate.hidden === 'boolean' ? candidate.hidden : DEFAULT_STATE.hidden,
 		reducedMotion: typeof candidate.reducedMotion === 'boolean'
@@ -83,7 +94,8 @@ export function matchesSavedState(expected: CharmState, actual: unknown): boolea
 		|| Object.keys(choices).length !== Object.keys(expected.cordChoices).length
 		|| !Object.entries(expected.cordChoices).every(([id, style]) => Object.hasOwn(choices, id)
 			&& (choices as Record<string, unknown>)[id] === style)) { return false; }
-	return Object.entries(expected).every(([key, value]) => key === 'cordChoices' || Object.is(stored[key], value));
+	return matchesPuzzles(expected.puzzles, stored.puzzles)
+		&& Object.entries(expected).every(([key, value]) => key === 'cordChoices' || key === 'puzzles' || Object.is(stored[key], value));
 }
 
 export function resetState(state: CharmState): CharmState {
@@ -98,11 +110,13 @@ export function resetState(state: CharmState): CharmState {
 		festiveEnabled: state.festiveEnabled,
 		charmPinned: state.charmPinned,
 		cordChoices: state.cordChoices,
+		caliOutfit: state.caliOutfit,
+		puzzles: state.puzzles,
 	};
 }
 
 export function getLayout(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode, attachment: CharmAttachment = DEFAULT_ATTACHMENT) {
-	const factor = clamp(size, 60, 140) / 100;
+	const factor = BASE_CHARM_SCALE * clamp(size, MIN_CHARM_SIZE, MAX_CHARM_SIZE) / 100;
 	const charmWidth = 72 * factor;
 	const charmHeight = 84 * factor;
 	const attachmentX = (attachment.x * 72 - 36) * factor;

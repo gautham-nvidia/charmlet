@@ -14,6 +14,7 @@ import { localDayKey, type GardenState } from '../garden-core';
 import { winsToday } from '../small-wins';
 import { caliOutfitAt } from '../cali-wardrobe';
 import { CALIFORNIA_COMPANIONS } from '../california-companions';
+import { DEFAULT_PUZZLES } from '../puzzle-core';
 import { command, readyFrame, reloadCharm } from './editor-helpers';
 
 interface OwnedEditor {
@@ -517,7 +518,7 @@ test('navigation A searches installed charms and exposes quiet reminders and bui
 		await expect(frame.locator('#companion-tools')).toBeHidden();
 		await expect(frame.locator('#care-cue')).toBeVisible();
 		await expect(frame.locator('#message-meta')).toBeHidden();
-		await expect(frame.locator('#primary-nav > button')).toHaveCount(4);
+		await expect(frame.locator('#primary-nav > button:not([hidden])')).toHaveCount(4);
 		await expect(frame.locator('#primary-nav .nav-chevron')).toHaveCount(2);
 		const version = JSON.parse(readFileSync(resolve('package.json'), 'utf8')).version;
 		await expect(frame.locator('#app-version')).toHaveText(`v${version}`);
@@ -528,7 +529,19 @@ test('navigation A searches installed charms and exposes quiet reminders and bui
 		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
 		await expect(frame.locator('#charm-search')).toBeFocused();
 		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(CHARMS.length);
+		await expect(frame.locator('#charm-grid .charm-tile').nth(0)).toHaveAttribute('aria-label', 'Select Terminal');
+		await expect(frame.locator('#charm-grid .charm-tile').nth(1)).toHaveAttribute('aria-label', /^Select Cali /);
 		await frame.locator('#app').screenshot({ path: testInfo.outputPath('navigation-picker.png') });
+		await frame.locator('#charm-groups').getByRole('button', { name: 'Music', exact: true }).click();
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(12);
+		await expect(frame.getByRole('button', { name: 'Select MIDI Keyboard', exact: true })).toBeVisible();
+		await expect(frame.getByRole('button', { name: 'Select Grand Piano', exact: true })).toBeVisible();
+		await frame.locator('#charm-groups').getByRole('button', { name: 'All', exact: true }).click();
+		for (const retired of ['soldering iron', 'digital caliper']) {
+			await frame.locator('#charm-search').fill(retired);
+			await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(0);
+		}
+		await frame.locator('#charm-search').fill('');
 		await frame.locator('#charm-groups').getByRole('button', { name: 'Gemstones', exact: true }).click();
 		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(8);
 		await frame.locator('#charm-search').fill('ruby');
@@ -822,6 +835,190 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 });
 
 const installedPersonalization = process.env.CHARMLET_TEST_PACKAGED === '1';
+test(`${installedPersonalization ? 'installed VSIX' : 'playful charms'} reacts to taps and preserves 200 percent sizing`, async ({}, testInfo) => {
+	test.setTimeout(180000);
+	const editor = await launchOwnedEditor('charmlet-playful-ui-', ({ preferencesPath, companionPath }) => {
+		writeFileSync(preferencesPath, JSON.stringify({ ...DEFAULT_STATE, charmId: 'live:cali',
+			charmPinned: true, showMessages: false, rotateMessages: false, reducedMotion: false }));
+		const companion = defaultCompanionState();
+		companion.mascot.enabled = false;
+		writeFileSync(companionPath, JSON.stringify(companion));
+	}, installedPersonalization);
+	try {
+		await editor.window.emulateMedia({ reducedMotion: 'no-preference' });
+		await command(editor.window, 'Charmlet: Show Charm');
+		let frame = await readyFrame(editor.window);
+		const appearance = async () => {
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).focus();
+			await editor.window.keyboard.press('Enter');
+			await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).focus();
+			await editor.window.keyboard.press('Enter');
+			await expect(frame.locator('#settings')).toBeVisible();
+		};
+		const closeAppearance = async () => {
+			await frame.locator('#settings-close').focus();
+			await editor.window.keyboard.press('Enter');
+			await expect(frame.locator('#settings')).toBeHidden();
+		};
+		const face = frame.locator('#live-smiley');
+		await expect(face).toHaveAttribute('data-art-ready', /^cali:/);
+		await appearance();
+		await expect(frame.locator('#cali-outfit')).toHaveValue('daily');
+		await frame.locator('#cali-outfit').selectOption('friday-coast');
+		await frame.locator('#settings').screenshot({ path: testInfo.outputPath('cali-wardrobe-settings.png') });
+		await closeAppearance();
+		await expect(face).toHaveAttribute('data-outfit', 'friday-coast');
+		await expect.poll(() => JSON.parse(readFileSync(editor.preferencesPath, 'utf8')).caliOutfit).toBe('friday-coast');
+		expect(await frame.locator('#rig').evaluate(node => parseFloat(node.style.getPropertyValue('--charm-width')))).toBeCloseTo(82.8);
+		await expect(face).toHaveAttribute('data-expression', 'smile');
+		for (const gesture of ['curious', 'wink', 'double-take', 'shimmy']) {
+			const resting = await face.evaluate(canvas => (canvas as HTMLCanvasElement).toDataURL());
+			await focusCharmForKeyboard(editor, frame);
+			await editor.window.keyboard.press('Enter');
+			await expect(frame.locator('#charm')).toHaveAttribute('data-tap-motion', 'playing');
+			await expect(face).toHaveAttribute('data-expression', gesture);
+			await expect.poll(() => face.evaluate(canvas => (canvas as HTMLCanvasElement).toDataURL())).not.toBe(resting);
+			await frame.locator('#stage').screenshot({ path: testInfo.outputPath(`cali-${gesture}.png`) });
+			await expect(face).toHaveAttribute('data-expression', 'smile');
+			await expect(frame.locator('#charm')).toHaveAttribute('data-tap-motion', 'idle');
+		}
+		const rendered = (key: string) => TRIAL_CHARMS.find(charm => charm.artworkKey === key)!.id;
+		for (const id of ['terminal', rendered('starter-drishti'), rendered('new-emoji-heart'),
+			'live:seal', 'fidget:bubbles', rendered('flower-sunflower')]) {
+			await appearance();
+			await frame.locator('#charm-select').selectOption(id);
+			await closeAppearance();
+			if (id === 'terminal') {
+				await frame.locator('#charm').click();
+				await expect(frame.locator('#charm')).toHaveAttribute('data-tap-motion', 'playing');
+			}
+			await focusCharmForKeyboard(editor, frame);
+			await editor.window.keyboard.press('Space');
+			await expect(frame.locator('#charm')).toHaveAttribute('data-tap-motion', 'playing');
+			if (id === 'fidget:bubbles') { await expect(frame.locator('#live-fidget')).toHaveAttribute('data-bubbles', '100000'); }
+			// A new hold cancels feedback immediately instead of queuing a second animation.
+			await editor.window.keyboard.down('Space');
+			try { await expect(frame.locator('#charm')).toHaveAttribute('data-tap-motion', 'idle'); }
+			finally { await editor.window.keyboard.up('Space'); }
+			await expect(frame.locator('#charm')).toHaveAttribute('data-tap-motion', 'playing');
+			await frame.evaluate(() => (document.getElementById('motion') as HTMLButtonElement).click());
+			await expect(frame.locator('#charm')).toHaveAttribute('data-tap-motion', 'idle');
+			expect(await frame.locator('#charm').evaluate(node => node.getAnimations({ subtree: true })
+				.some(animation => (animation.effect as KeyframeEffect).getKeyframes().some(keyframe => 'rotate' in keyframe)))).toBe(false);
+			await frame.evaluate(() => (document.getElementById('motion') as HTMLButtonElement).click());
+		}
+		await appearance();
+		await frame.locator('#size').focus();
+		await editor.window.keyboard.press('End');
+		await expect(frame.locator('#size')).toHaveValue('200');
+		await expect(frame.locator('#size-value')).toHaveText('200%');
+		await frame.locator('#motion').click();
+		await closeAppearance();
+		await expect.poll(() => JSON.parse(readFileSync(editor.preferencesPath, 'utf8')).size).toBe(200);
+		frame = await reloadCharm(editor.window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
+		expect(JSON.parse(readFileSync(editor.preferencesPath, 'utf8')).caliOutfit).toBe('friday-coast');
+		expect(await frame.locator('#rig').evaluate(node => parseFloat(node.style.getPropertyValue('--charm-width')))).toBeCloseTo(165.6);
+		const bounds = await frame.evaluate(() => {
+			const stage = document.getElementById('stage')!.getBoundingClientRect();
+			const charm = document.getElementById('charm')!.getBoundingClientRect();
+			return charm.left >= stage.left - 1 && charm.right <= stage.right + 1
+				&& charm.top >= stage.top - 1 && charm.bottom <= stage.bottom + 1;
+		});
+		expect(bounds, 'The enlarged charm must fit its available view.').toBe(true);
+		await frame.locator('#stage').screenshot({ path: testInfo.outputPath('charm-200-percent.png') });
+		await focusCharmForKeyboard(editor, frame);
+		await editor.window.keyboard.press('Enter');
+		await expect(frame.locator('#charm')).toHaveAttribute('data-tap-motion', 'idle');
+		await appearance();
+		await frame.locator('#charm-select').selectOption('live:cali');
+		await expect(frame.locator('#cali-outfit')).toHaveValue('friday-coast');
+		await expect(frame.locator('#live-smiley')).toHaveAttribute('data-outfit', 'friday-coast');
+		await frame.locator('#cali-outfit').selectOption('daily');
+		await closeAppearance();
+		await expect(frame.locator('#live-smiley')).toHaveAttribute('data-outfit', caliOutfitAt(Date.now()).id);
+	} finally { await closeOwnedEditor(editor, testInfo); }
+});
+
+test(`${installedPersonalization ? 'installed VSIX' : 'puzzle collection'} keeps playable boards and their progress across reloads`, async ({}, testInfo) => {
+	test.setTimeout(180000);
+	const editor = await launchOwnedEditor('charmlet-puzzle-ui-', ({ preferencesPath }) => {
+		writeFileSync(preferencesPath, JSON.stringify({ ...DEFAULT_STATE, charmId: 'fidget:cube',
+			charmPinned: true, reducedMotion: true, showMessages: false }));
+	}, installedPersonalization);
+	try {
+		await command(editor.window, 'Charmlet: Show Charm');
+		let frame = await readyFrame(editor.window);
+		const choose = async (id: string) => {
+			await frame.getByRole('button', { name: 'Charm settings', exact: true }).focus();
+			await editor.window.keyboard.press('Enter');
+			await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+			await frame.locator('#charm-select').selectOption(id);
+			await frame.locator('#settings-close').click();
+		};
+		const open = async () => {
+			await frame.getByRole('button', { name: 'Open puzzle', exact: true }).click();
+			await expect(frame.locator('#puzzle-editor')).toBeVisible();
+			await expect(frame.locator('#puzzle-shuffle')).toBeFocused();
+		};
+		await expect(frame.locator('#live-fidget')).toHaveAttribute('data-kind', 'cube');
+		await frame.locator('#charm').click();
+		await open();
+		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'false');
+		await expect(frame.locator('.cube-stickers')).toHaveCount(6);
+		await expect(frame.locator('.cube-net')).toHaveCSS('display', 'grid');
+		await frame.locator('#puzzle-reverse').check();
+		await frame.getByRole('button', { name: 'Turn front counterclockwise', exact: true }).click();
+		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'true');
+		await frame.locator('#puzzle-shuffle').click();
+		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'false');
+		await frame.locator('#puzzle-editor').screenshot({ path: testInfo.outputPath('puzzle-cube.png') });
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		const savedCube = JSON.parse(readFileSync(editor.preferencesPath, 'utf8')).puzzles.cube;
+		await editor.window.keyboard.press('Escape');
+		await expect(frame.locator('#puzzle-toggle')).toBeFocused();
+		frame = await reloadCharm(editor.window);
+		await expect(frame.locator('#live-fidget')).toHaveAttribute('data-board', savedCube.join(','));
+		await open();
+		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'false');
+		await frame.locator('#puzzle-close').click();
+		await choose('fidget:tiles');
+		await open();
+		await expect(frame.getByRole('button', { name: 'Move tile 1', exact: true })).toHaveAttribute('aria-disabled', 'true');
+		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'true');
+		await frame.getByRole('button', { name: 'Move tile 8', exact: true }).click();
+		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'false');
+		await expect(frame.locator('[data-cell="7"]')).toBeFocused();
+		await editor.window.keyboard.press('ArrowRight');
+		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'true');
+		await frame.locator('#puzzle-shuffle').click();
+		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'false');
+		await frame.locator('#puzzle-editor').screenshot({ path: testInfo.outputPath('puzzle-tiles.png') });
+		await frame.locator('#puzzle-close').click();
+		await choose('fidget:lights');
+		await open();
+		await frame.getByRole('button', { name: 'Light row 2, column 2', exact: true }).click();
+		await expect(frame.locator('.puzzle-lights [aria-pressed="true"]')).toHaveCount(5);
+		await frame.getByRole('button', { name: 'Light row 2, column 2', exact: true }).click();
+		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'true');
+		await frame.locator('#puzzle-undo').click();
+		await expect(frame.locator('.puzzle-lights [aria-pressed="true"]')).toHaveCount(5);
+		await frame.locator('#puzzle-editor').screenshot({ path: testInfo.outputPath('puzzle-lights.png') });
+		await frame.locator('#puzzle-close').click();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		const saved = JSON.parse(readFileSync(editor.preferencesPath, 'utf8'));
+		expect(saved.puzzles.cube).toEqual(savedCube);
+		expect(saved.puzzles.tiles).not.toEqual(DEFAULT_PUZZLES.tiles);
+		expect(saved.puzzles.lights).toBe(186);
+		frame = await reloadCharm(editor.window);
+		await expect(frame.locator('#live-fidget')).toHaveAttribute('data-board', '186');
+		await open();
+		await expect(frame.locator('.puzzle-lights [aria-pressed="true"]')).toHaveCount(5);
+		await editor.window.keyboard.press('Escape');
+		await expect(frame.locator('#puzzle-editor')).toBeHidden();
+	} finally { await closeOwnedEditor(editor, testInfo); }
+});
+
 test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has responsive companions and working fidget tools`, async ({}, testInfo) => {
 	test.setTimeout(180000);
 	const editor = await launchOwnedEditor('charmlet-live-tools-', ({ preferencesPath }) => {
@@ -843,13 +1040,13 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 			await editor.window.keyboard.press('Enter');
 			await expect(frame.locator('#charm-picker')).toBeVisible();
 			await expect.poll(async () => (await frame.locator('#charm-groups button').allTextContents()).slice(0, 3))
-				.toEqual(['All', 'Live Companions', 'Stress Busters']);
+				.toEqual(['All', 'Terminal', 'Live 3D']);
 			await frame.locator('#charm-groups').getByRole('button', { name: group, exact: true }).click();
 			await frame.getByRole('button', { name: `Select ${name}`, exact: true }).click();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
 		};
 		for (const [name, character] of [['Sunny - Live Smiley', 'sunny'], ['Nimbus - Live Cloud', 'cloud'], ['Byte - Live Robot', 'robot']]) {
-			await choose(name, 'Live Companions');
+			await choose(name, 'Live 3D');
 			const face = frame.locator('#live-smiley');
 			await expect(face).toHaveAttribute('data-character', character);
 			await expect(face).toBeVisible();
@@ -862,6 +1059,27 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 			}
 			await expect(face).toHaveAttribute('data-expression', 'smile');
 			await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`live-${character}.png`) });
+			if (character === 'cloud' || character === 'robot') {
+				await expect(face).toHaveAttribute('data-art-ready', new RegExp(`^${character}:`));
+				const reactions = new Set<string>();
+				const images = new Set<string>();
+				for (let index = 0; index < 3; index++) {
+					await focusCharmForKeyboard(editor, frame);
+					await editor.window.keyboard.press('Enter');
+					await expect(face).toHaveAttribute('data-expression', character === 'cloud'
+						? /^(sunrise|rain|lightning)$/ : /^(binary|compile|cursor)$/);
+					const expression = (await face.getAttribute('data-expression'))!;
+					reactions.add(expression);
+					images.add(await face.evaluate(canvas => (canvas as HTMLCanvasElement).toDataURL()));
+					await frame.locator('#charm').screenshot({ path: testInfo.outputPath(`live-${character}-${expression}.png`) });
+				}
+				expect([...reactions].sort()).toEqual(character === 'cloud'
+					? ['lightning', 'rain', 'sunrise'] : ['binary', 'compile', 'cursor']);
+				expect(images.size).toBe(3);
+				const stillFrames = await face.getAttribute('data-frames');
+				await editor.window.waitForTimeout(100);
+				expect(await face.getAttribute('data-frames')).toBe(stillFrames);
+			}
 		}
 		await choose('Stress Ball', 'Stress Busters');
 		await expect(frame.locator('#charm')).toHaveAttribute('data-soft', 'true');
@@ -899,10 +1117,48 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		await expect(toy).toHaveAttribute('data-running', 'false', { timeout: 8000 });
 		await expect(toy).toHaveAttribute('data-velocity', '0.000');
 		await frame.locator('#charm').screenshot({ path: testInfo.outputPath('fidget-spinner.png') });
+		for (const [name, design, direction] of [
+			['Orbit Spinner', 'orbit', 1], ['Pinwheel Spinner', 'pinwheel', -1], ['Bar Spinner', 'bar', 1],
+		] as const) {
+			await choose(name, 'Stress Busters');
+			await expect(toy).toHaveAttribute('data-design', design);
+			const rotorCharm = frame.locator('#charm'), box = await rotorCharm.boundingBox();
+			if (!box) { throw new Error('Spinner must be visible for direct rotation.'); }
+			const x = box.x + box.width / 2, y = box.y + box.height * 46 / 84, radius = box.width * 22 / 72;
+			const parked = await rotorCharm.evaluate(node => [node.getAttribute('data-position-x'), node.getAttribute('data-position-y')]);
+			await editor.window.mouse.move(x + radius, y);
+			await editor.window.mouse.down();
+			try {
+				await expect(rotorCharm).toHaveAttribute('data-rotor-held', 'true');
+				for (let step = 1; step <= 8; step++) {
+					const angle = direction * step * Math.PI / 16;
+					await editor.window.mouse.move(x + radius * Math.cos(angle), y + radius * Math.sin(angle));
+				}
+			} finally { await editor.window.mouse.up(); }
+			await expect(toy).toHaveAttribute('data-running', 'true');
+			expect(Number(await toy.getAttribute('data-velocity')) * direction).toBeGreaterThan(0);
+			expect(await rotorCharm.evaluate(node => [node.getAttribute('data-position-x'), node.getAttribute('data-position-y')])).toEqual(parked);
+			await expect(toy).toHaveAttribute('data-running', 'false', { timeout: 8000 });
+			await rotorCharm.screenshot({ path: testInfo.outputPath(`spinner-${design}.png`) });
+		}
+		await focusCharmForKeyboard(editor, frame);
+		await editor.window.keyboard.press('Shift+Space');
+		expect(Number(await toy.getAttribute('data-velocity'))).toBeLessThan(0);
+		await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+		await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		await expect(toy).toHaveAttribute('data-running', 'false');
+		await expect(toy).toHaveAttribute('data-velocity', '0.000');
+		await frame.getByRole('button', { name: 'Charm settings', exact: true }).click();
+		await frame.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+		await frame.locator('#motion').click();
+		await frame.locator('#settings-close').click();
+		await choose('Fidget Spinner', 'Stress Busters');
 		frame = await reloadCharm(editor.window);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'fidget:spinner');
 		await expect(frame.locator('#live-fidget')).toHaveAttribute('data-running', 'false');
-		await choose('Sunny - Live Smiley', 'Live Companions');
+	await choose('Sunny - Live Smiley', 'Live 3D');
 		await frame.evaluate(() => {
 			const face = document.getElementById('live-smiley')!;
 			window.addEventListener('pointermove', () => {

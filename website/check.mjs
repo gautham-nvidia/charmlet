@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { validateDistribution } from './distribution.mjs';
+import { trialCollections } from './trial-collections.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
@@ -18,13 +19,13 @@ const target = review.items.filter(item => item.featured && item.decision !== 'o
 const originalIds = ['terminal'];
 const liveIds = ['live:cali', 'live:smiley', 'live:cloud', 'live:robot', 'live:redwood', 'live:yosemite',
   'live:tahoe', 'live:gull', 'live:seal', 'live:golden-gate', 'live:santa-cruz', 'live:whale',
-  'live:dolphin', 'live:condor', 'live:eagle', 'fidget:spinner', 'fidget:bubbles', 'fidget:stone'];
-const trialCount = target.length + liveIds.length;
+  'live:dolphin', 'live:condor', 'live:eagle', 'fidget:spinner', 'fidget:bubbles', 'fidget:stone',
+  'fidget:spinner-orbit', 'fidget:spinner-pinwheel', 'fidget:spinner-bar', 'fidget:cube', 'fidget:tiles', 'fidget:lights'];
+const trialCount = target.length + liveIds.length + originalIds.length;
 const worldConfig = JSON.parse(await readFile(join(root, 'collections.json'), 'utf8'));
 const expectedWorldCounts = {
-  live: 15, ai: 1, coding: 0, silicon: 7, testing: 9, animals: 13, trees: 3, space: 5, parks: 6,
-  cities: 6, culture: 8, sports: 5, luck: 2, stress: 12, seasonal: 22,
-  'solar-system': 10, gemstones: 8, zodiac: 12, sacred: 15, flowers: 18,
+  coding: 1, live: 15, stress: 18, music: 12, california: 12, animals: 13, silicon: 15,
+  parks: 7, space: 15, zodiac: 12, gemstones: 8, culture: 25, sports: 5, seasonal: 24, flowers: 18,
 };
 const output = join(repo, 'extension', 'test-results', `website-check-${manifest.version}`);
 await mkdir(output, { recursive: true });
@@ -91,6 +92,10 @@ try {
   assert.equal(response?.status(), 200);
   await page.locator('.charm-card').first().waitFor();
   assert.equal(await page.locator('.charm-card').count(), trialCount);
+  await expect(page.locator('.charm-card').nth(0)).toHaveAttribute('data-charm-id', 'terminal');
+  await expect(page.locator('.charm-card').nth(1)).toHaveAttribute('data-charm-id', 'live:cali');
+  assert.deepEqual((await page.locator('#group-filters button').allTextContents()).slice(0, 5),
+    ['All', 'Terminal', 'Live 3D', 'Stress Busters', 'Music']);
   assert.equal(await page.locator('#extra-count').textContent(), String(trialCount));
   assert.equal(await page.locator('#included-count').textContent(), String(originalIds.length));
   assert.equal(await page.locator('.site-header a[href="#install"]').last().getAttribute('href'), '#install');
@@ -119,9 +124,9 @@ try {
   assert.ok(desktopOverflow.scroll <= desktopOverflow.width);
   await page.screenshot({ path: join(output, 'desktop.png'), fullPage: true });
 
-  assert.equal(await page.locator('#collection-worlds .world-card').count(), worldConfig.collections.length);
+  assert.equal(await page.locator('#collection-worlds .world-card').count(), trialCollections(worldConfig.collections).length);
   assert.equal(await page.locator('#art-studies .art-study').count(), 4);
-  for (const world of worldConfig.collections) {
+  for (const world of trialCollections(worldConfig.collections)) {
     const filter = page.locator('#group-filters').getByRole('button', { name: world.name, exact: true });
     await filter.focus();
     await page.keyboard.press('Enter');
@@ -177,7 +182,7 @@ try {
   await page.locator('#garden').screenshot({ path: join(output, 'visual-refresh-garden.png') });
   await page.reload({ waitUntil: 'networkidle' });
 
-  await page.getByRole('button', { name: /^Originals/ }).click();
+  await page.locator('[data-kind="included"]').click();
   assert.equal(await page.locator('.charm-card').count(), originalIds.length);
   assert.equal(await page.locator('.included-label').count(), originalIds.length);
   const includedImages = await decodeImages(page);
@@ -187,7 +192,7 @@ try {
   await page.locator('.hero-demo').scrollIntoViewIfNeeded();
   assert.equal(await page.locator('#demo-name').textContent(), 'Terminal');
   assert.match(await page.locator('#demo-image').getAttribute('src'), /keycap\.svg$/);
-  await page.getByRole('button', { name: /^Trial collection/ }).click();
+  await page.getByRole('button', { name: /^Complete trial/ }).click();
   const oldPack = await downloadPack(page, 'extra-probe-card');
   const newPack = await downloadPack(page, 'extra-gpu-tile');
   const legacy = await page.request.get(new URL('packs/review/review-starter-redraws-1.charmlet.json', base).href);
@@ -370,6 +375,18 @@ try {
   await expect(page.locator('#live-smiley')).toHaveAttribute('data-art-ready', 'eagle:');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 
+  for (const kind of ['cube', 'tiles', 'lights']) {
+    await page.locator(`.charm-card[data-charm-id="fidget:${kind}"]`).getByRole('button', { name: /^Preview / }).click();
+    await page.locator('.hero-demo').scrollIntoViewIfNeeded();
+    await expect(page.locator('#live-fidget')).toHaveAttribute('data-kind', kind);
+    await page.getByRole('button', { name: 'Open puzzle', exact: true }).click();
+    await expect(page.locator('#puzzle-editor')).toBeVisible();
+    await page.locator('#puzzle-shuffle').click();
+    await expect(page.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'false');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#puzzle-editor')).toBeHidden();
+  }
+
   const [vsixDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.extension-download').first().click()]);
   const vsixPath = join(output, `downloaded-charmlet-${manifest.version}.vsix`);
   await vsixDownload.saveAs(vsixPath);
@@ -409,7 +426,7 @@ try {
     url: base,
     extras: trialCount,
     included: originalIds.length,
-    uniqueIds: trialCount + originalIds.length,
+    uniqueIds: trialCount,
     collections: expectedWorldCounts,
     artPreviews: 4,
     gardenEntry: 'growth preview and direct Open Garden installation guidance',

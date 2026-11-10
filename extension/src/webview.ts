@@ -1,6 +1,7 @@
 import { createElement, ArrowDown, ArrowRight, Eye, EyeOff, Orbit, Pause, Play, RotateCcw, Timer, X } from 'lucide';
 import { resetState, clamp, getLayout, restoreState, type CharmState } from './charm-state';
 import { CHARMS, getCharm, isSoftCharm, type CharmDefinition } from './charm-catalog';
+import { charmCollection } from './charm-collections';
 import { DEFAULT_ATTACHMENT } from './charm-attachment';
 import { displayedCharm, festiveCharm, festiveDay } from './festive-charms';
 import { nextLocalMidnight } from './garden-core';
@@ -16,7 +17,10 @@ import { createLiveSmiley } from './live-smiley';
 import { createFidgetView } from './fidget-view';
 import { createMascotView } from './mascot-view';
 import { MASCOT_CHARM } from './mascot-core';
-import { fidgetAction, liveCharacter } from './interactive-motion';
+import { fidgetAction } from './interactive-motion';
+import { createTapWiggle } from './tap-wiggle';
+import { CALI_WEEK, restoreCaliOutfit } from './cali-wardrobe';
+import { createPuzzleView, type PuzzleView } from './puzzle-view';
 
 declare function acquireVsCodeApi(): {
 	getState(): unknown;
@@ -38,6 +42,7 @@ const primaryNav = element<HTMLElement>('primary-nav');
 const backdrop = element<HTMLDivElement>('tools-backdrop');
 let navigationUI: NavigationView | undefined;
 let photoUI: PhotoView | undefined;
+let puzzleUI: PuzzleView | undefined;
 const stage = element<HTMLDivElement>('stage');
 const rig = element<HTMLDivElement>('rig');
 const hanging = element<HTMLDivElement>('hanging');
@@ -52,6 +57,9 @@ const companionToggle = element<HTMLButtonElement>('companion-toggle');
 const layoutMode = element<HTMLButtonElement>('layout-mode');
 const settings = element<HTMLDivElement>('settings');
 const sizeInput = element<HTMLInputElement>('size');
+const outfitInput = element<HTMLSelectElement>('cali-outfit');
+outfitInput.add(new Option('Automatic - daily outfits', 'daily'));
+for (const outfit of [...CALI_WEEK.slice(1), CALI_WEEK[0]]) { outfitInput.add(new Option(outfit.label, outfit.id)); }
 const cordInput = element<HTMLInputElement>('cord-length');
 const sizeValue = element<HTMLOutputElement>('size-value');
 const cordValue = element<HTMLOutputElement>('cord-value');
@@ -98,7 +106,15 @@ const systemMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const pendulum = new Pendulum(280, 320, state.cordLength, state.size, state.layoutMode);
 const winCelebration = createWinCelebration(charm, reducedMotion);
 const liveSmiley = createLiveSmiley(charm, charmImage, file => new URL(file, mediaRoot).toString());
-const fidgetUI = createFidgetView(charm, charmImage);
+const fidgetUI = createFidgetView(charm, charmImage, {
+	rotate: held => {
+		if (held) { tapWiggle.stop(); setKeyboardHeld(false); stop(); }
+		else { start(); }
+		render();
+	},
+	tap: () => tap(),
+});
+const tapWiggle = createTapWiggle(charm);
 const mascotUI = createMascotView({
 	charm, stage, canShow: () => !popupOpen(), reducedMotion,
 	cheer: () => liveSmiley.celebrate(),
@@ -113,6 +129,7 @@ const companionUI = createCompanionView({
 		settings.hidden = true;
 		navigationUI?.close(false);
 		photoUI?.close(false);
+		puzzleUI?.close(false);
 	},
 	onLayout: () => {
 		resize();
@@ -133,18 +150,26 @@ navigationUI = createNavigationView({
 		else if (action === 'reminders') { companionUI.openReminders(); }
 		else if (action === 'photos') { photoUI?.open(); }
 	},
-	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); photoUI?.close(false); },
+	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); photoUI?.close(false); puzzleUI?.close(false); },
 	onChange: () => { updateOverlays(); scheduleMessages(); },
 });
 photoUI = createPhotoView({
 	send: message => api.postMessage(message),
 	select: selectCharm,
-	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); navigationUI?.close(false); },
+	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); navigationUI?.close(false); puzzleUI?.close(false); },
+	onChange: () => { updateOverlays(); scheduleMessages(); },
+});
+puzzleUI = createPuzzleView({
+	panel: element<HTMLElement>('puzzle-editor'), toggle: element<HTMLButtonElement>('puzzle-toggle'),
+	getState: () => state.puzzles,
+	change: puzzles => { state.puzzles = puzzles; updateLiveSmiley(); save(); },
+	onOpen: () => { cancelDrag(); settings.hidden = true; companionUI.close(false); navigationUI?.close(false); photoUI?.close(false); },
 	onChange: () => { updateOverlays(); scheduleMessages(); },
 });
 element<HTMLButtonElement>('picker-photo').addEventListener('click', () => photoUI?.open());
 
-function popupOpen() { return !settings.hidden || companionUI.isOpen() || navigationUI?.isOpen() === true || photoUI?.isOpen() === true; }
+function popupOpen() { return !settings.hidden || companionUI.isOpen() || navigationUI?.isOpen() === true
+	|| photoUI?.isOpen() === true || puzzleUI?.isOpen() === true; }
 
 function updateOverlays() {
 	const appBounds = appElement.getBoundingClientRect();
@@ -172,6 +197,7 @@ function openAppearance() {
 	navigationUI?.close(false);
 	companionUI.close(false);
 	photoUI?.close(false);
+	puzzleUI?.close(false);
 	settings.hidden = false;
 	updateOverlays();
 	charmSelect.focus({ preventScroll: true });
@@ -189,7 +215,8 @@ function selectCharm(id: string) {
 }
 
 backdrop.addEventListener('click', () => {
-	if (photoUI?.isOpen()) { photoUI.close(); }
+	if (puzzleUI?.isOpen()) { puzzleUI.close(); }
+	else if (photoUI?.isOpen()) { photoUI.close(); }
 	else if (navigationUI?.isOpen()) { navigationUI.close(); }
 	else if (!settings.hidden) { closeAppearance(); }
 	else { companionUI.close(); }
@@ -208,6 +235,7 @@ function save() {
 }
 
 function applyCharm() {
+	tapWiggle.stop();
 	setKeyboardHeld(false);
 	const selected = displayedCharm(state, charms, Date.now());
 	activeCharm = selected;
@@ -219,6 +247,9 @@ function applyCharm() {
 	charmSwatch.style.backgroundColor = selected.accent;
 	charmDescription.textContent = selected.description;
 	charmSelect.value = selected.id;
+	outfitInput.value = state.caliOutfit;
+	outfitInput.hidden = selected.id !== 'live:cali';
+	element<HTMLElement>('cali-outfit-label').hidden = outfitInput.hidden;
 	const soft = isSoftCharm(selected.id);
 	charm.dataset.soft = String(soft);
 	const attachment = selected.attachment ?? DEFAULT_ATTACHMENT;
@@ -235,8 +266,9 @@ function applyCharm() {
 }
 
 function updateLiveSmiley() {
-	liveSmiley.update(activeCharm.id, visible && !state.hidden, reducedMotion());
-	fidgetUI.update(activeCharm.id, visible && !state.hidden, reducedMotion());
+	liveSmiley.update(activeCharm.id, visible && !state.hidden, reducedMotion(), state.caliOutfit);
+	fidgetUI.update(activeCharm.id, visible && !state.hidden, reducedMotion(), state.puzzles);
+	puzzleUI?.update(activeCharm.id, ready);
 	mascotUI.surface(activeCharm.id, visible && !state.hidden);
 }
 
@@ -296,7 +328,8 @@ const messageRotation = new MessageRotation(advanceMessage);
 
 function scheduleMessages() {
 	const enabled = ready && stage.dataset.companionReady === 'true' && visible && !document.hidden
-		&& state.showMessages && state.rotateMessages && settings.hidden && !navigationUI?.isOpen() && !drag && !keyboardHeld && companionUI.canRotate();
+		&& state.showMessages && state.rotateMessages && settings.hidden && !navigationUI?.isOpen() && !puzzleUI?.isOpen()
+		&& !drag && !keyboardHeld && companionUI.canRotate();
 	messageRotation.setEnabled(enabled);
 	messageCard.dataset.rotation = enabled ? 'active' : 'paused';
 }
@@ -305,11 +338,12 @@ function populateCharms() {
 	charmSelect.replaceChildren();
 	const groups = new Map<string, HTMLOptGroupElement>();
 	for (const entry of charms) {
-		let group = groups.get(entry.group);
+		const collection = charmCollection(entry);
+		let group = groups.get(collection);
 		if (!group) {
 			group = document.createElement('optgroup');
-			group.label = entry.group;
-			groups.set(entry.group, group);
+			group.label = collection;
+			groups.set(collection, group);
 			charmSelect.append(group);
 		}
 		const option = document.createElement('option');
@@ -344,6 +378,7 @@ function controls() {
 }
 
 function render() {
+	tapWiggle.update(ready && visible && !state.hidden && !reducedMotion() && !popupOpen());
 	const { anchorX, anchorY, cordLength, attachmentOffset, attachmentX } = pendulum.layout;
 	const { x: positionX, y: positionY } = pendulum.position;
 	const angle = pendulum.angle;
@@ -366,7 +401,8 @@ function render() {
 	cordValue.value = `${Math.round(state.cordLength)} px`;
 	sizeInput.setAttribute('aria-valuetext', sizeValue.value);
 	cordInput.setAttribute('aria-valuetext', cordValue.value);
-	const status = state.hidden ? 'Retracted' : drag || keyboardHeld ? 'Held' : pendulum.moving && !reducedMotion() ? 'Swinging' : 'Parked';
+	const status = state.hidden ? 'Retracted' : drag || keyboardHeld || charm.dataset.rotorHeld === 'true'
+		? 'Held' : pendulum.moving && !reducedMotion() ? 'Swinging' : 'Parked';
 	if (phase.textContent !== status) {
 		phase.textContent = status;
 	}
@@ -417,7 +453,8 @@ function tick(time: number) {
 }
 
 function start() {
-	if (frameId === undefined && pendulum.moving && ready && visible && !document.hidden && !state.hidden && !reducedMotion()) {
+	if (frameId === undefined && pendulum.moving && ready && visible && !document.hidden && !state.hidden
+		&& charm.dataset.rotorHeld !== 'true' && !reducedMotion()) {
 		stage.dataset.running = 'true';
 		frameId = requestAnimationFrame(tick);
 	}
@@ -429,6 +466,15 @@ function nudge(direction = -1) {
 	}
 	pendulum.nudge(direction);
 	start();
+}
+
+function tap(direction = -1) {
+	if (state.hidden || popupOpen() || !ready || !visible || document.hidden) { return; }
+	nudge(direction * .45);
+	mascotUI.encourage();
+	liveSmiley.playful();
+	puzzleUI?.tap();
+	tapWiggle.play();
 }
 
 function showState(drop = false) {
@@ -488,6 +534,7 @@ function setKeyboardHeld(held: boolean) {
 }
 
 function cancelDrag() {
+	tapWiggle.stop();
 	setKeyboardHeld(false);
 	const cancelled = finishDrag();
 	if (!cancelled) { return; }
@@ -521,10 +568,11 @@ function point(event: PointerEvent): Point {
 }
 
 charm.addEventListener('pointerdown', event => {
-	if (event.button !== 0 || drag || state.hidden) {
+	if (event.defaultPrevented || event.button !== 0 || drag || state.hidden) {
 		return;
 	}
 	transition?.cancel();
+	tapWiggle.stop();
 	setKeyboardHeld(false);
 	const startPoint = point(event);
 	drag = {
@@ -592,7 +640,7 @@ charm.addEventListener('pointerup', event => {
 	} else {
 		pendulum.returnToLength(state.cordLength, reducedMotion());
 		if (!completed.moved) {
-			nudge(completed.start.x < pendulum.position.x ? 1 : -1);
+			tap(completed.start.x < pendulum.position.x ? 1 : -1);
 		}
 		if (reducedMotion()) {
 			stop();
@@ -605,26 +653,27 @@ charm.addEventListener('pointerup', event => {
 });
 
 charm.addEventListener('pointercancel', cancelDrag);
-charm.addEventListener('lostpointercapture', cancelDrag);
+charm.addEventListener('lostpointercapture', () => { if (drag) { cancelDrag(); } });
 window.addEventListener('blur', cancelDrag);
 window.addEventListener('pointermove', event => {
 	if (drag && event.pointerId === drag.id && event.buttons === 0) {
 		cancelDrag();
 	}
 }, true);
-charm.addEventListener('click', event => { if (event.detail === 0) { nudge(); } });
+charm.addEventListener('click', event => { if (event.detail === 0) { tap(); } });
 charm.addEventListener('blur', () => setKeyboardHeld(false));
 charm.addEventListener('keyup', event => {
 	if ((event.key === ' ' || event.key === 'Enter') && keyboardHeld) {
 		event.preventDefault();
 		setKeyboardHeld(false);
-		nudge();
+		tap();
 		render();
 	}
 });
 charm.addEventListener('keydown', event => {
-	if ((event.key === ' ' || event.key === 'Enter') && (isSoftCharm(activeCharm.id) || liveCharacter(activeCharm.id))) {
+	if (event.key === ' ' || event.key === 'Enter') {
 		event.preventDefault();
+		tapWiggle.stop();
 		setKeyboardHeld(true);
 	} else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
 		event.preventDefault();
@@ -732,6 +781,12 @@ removePack.addEventListener('click', () => api.postMessage({ type: 'command', co
 sizeInput.addEventListener('input', () => {
 	state.size = Number(sizeInput.value);
 	resize();
+	save();
+});
+outfitInput.addEventListener('change', () => {
+	cancelDrag();
+	state.caliOutfit = restoreCaliOutfit(outfitInput.value);
+	updateLiveSmiley();
 	save();
 });
 cordInput.addEventListener('input', () => {

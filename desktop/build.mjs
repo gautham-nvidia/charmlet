@@ -30,6 +30,7 @@ await Promise.all([
 await cp(join(repo, 'extension', 'media'), join(dist, 'media'), { recursive: true });
 await copyFile(join(repo, 'extension', 'media', 'view.html'), join(dist, 'view.html'));
 await copyFile(join(repo, 'extension', 'media', 'view.css'), join(dist, 'view.css'));
+await copyFile(join(repo, 'extension', 'media', 'puzzle.css'), join(dist, 'puzzle.css'));
 await copyFile(join(root, 'src', 'desktop.css'), join(dist, 'desktop.css'));
 await copyFile(join(repo, 'extension', 'THIRD_PARTY_NOTICES.md'), join(dist, 'THIRD_PARTY_NOTICES.md'));
 await copyFile(join(repo, 'extension', 'ARTWORK.md'), join(dist, 'ARTWORK.md'));

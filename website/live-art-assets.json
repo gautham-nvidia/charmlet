@@ -120,6 +120,19 @@
       "preparation": "Chroma removal; neutral spill correction with green clothes protected; 512px registered frame."
     },
     {
+      "file": "live-art-cloud.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "dfc14a59fad39de5fd653e8ee537539e8f0bd05cde4a26c24500817edbf9027d",
+      "sourceVariant": "phase12-nimbus-rig-r1",
+      "sourceHash": "223bad43a58328c906e506b49aa5abb1c452773b9f5fd9f385889120a2349d19",
+      "model": "gcp/google/gemini-3-pro-image",
+      "promptHash": "3121c6b6a1a93ce79ff7d6fbd8d8648d5888cd81d81183b6c559b9067504f57a",
+      "referenceHash": "f0cde6460c6cf6d0d9e93712e6904e97c5e1b5bbd7e842a34987b6a14dea1a1d",
+      "generatedAt": "2026-11-09T23:40:00.645Z",
+      "preparation": "Transparent registered artwork; neutral cloud spill correction, resized to 512px. Live effects are rendered in the app."
+    },
+    {
       "file": "live-art-condor.png",
       "width": 512,
       "height": 512,
@@ -198,6 +211,19 @@
       "preparation": "Chroma removal and neutral spill correction with natural foliage protected; complete silhouette."
     },
     {
+      "file": "live-art-robot.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "bcd91296ba0c838e3881c93d9a04725e7f0df3040608cb47333af1047740c1e0",
+      "sourceVariant": "phase12-byte-rig-r1",
+      "sourceHash": "77c643bb7c44fa757c1a24d6efd1eed80838fea5f130e27ef9e8d5873eb5c2bb",
+      "model": "gcp/google/gemini-3-pro-image",
+      "promptHash": "a0d93809822a6551e76f5d2510c1d1ff1d57929555b468c448ad709174693540",
+      "referenceHash": "47eac443912684d618083047c148fe0cd4d384dd5bc27eb0142a7c25ee75477b",
+      "generatedAt": "2026-11-09T23:40:19.349Z",
+      "preparation": "Transparent registered artwork; neutral cloud spill correction, resized to 512px. Live effects are rendered in the app."
+    },
+    {
       "file": "live-art-santa-cruz.png",
       "width": 512,
       "height": 512,
@@ -265,6 +291,19 @@
       "sha256": "42a6ff726870676e14230f3eb95515a4fcc7686460a78282476b263279753c01",
       "sourceVariant": "phase10-cali-master-r2",
       "preparation": "Registered Tuesday outfit with matching silver attachment; picker and static fallback."
+    },
+    {
+      "file": "live-cloud.png",
+      "width": 216,
+      "height": 252,
+      "sha256": "e938415d6c2fe1427ca93acafa00dbbb2a3960577009510b93b01f9cabdce4e0",
+      "sourceVariant": "phase12-nimbus-rig-r1",
+      "sourceHash": "223bad43a58328c906e506b49aa5abb1c452773b9f5fd9f385889120a2349d19",
+      "model": "gcp/google/gemini-3-pro-image",
+      "promptHash": "3121c6b6a1a93ce79ff7d6fbd8d8648d5888cd81d81183b6c559b9067504f57a",
+      "referenceHash": "f0cde6460c6cf6d0d9e93712e6904e97c5e1b5bbd7e842a34987b6a14dea1a1d",
+      "generatedAt": "2026-11-09T23:40:00.645Z",
+      "preparation": "Poster rendered by the same layered artwork renderer and effects as the app."
     },
     {
       "file": "live-condor.png",
@@ -343,6 +382,19 @@
       "referenceHash": "ef123a36fef54c0cd17b658647e4298237d8106f2a4ecdfda9cb6239d2cf1939",
       "generatedAt": "2026-11-06T23:24:45.670Z",
       "preparation": "Chroma removal and neutral spill correction with natural foliage protected; complete silhouette."
+    },
+    {
+      "file": "live-robot.png",
+      "width": 216,
+      "height": 252,
+      "sha256": "3ac43f0b82c9c474018a632b37007ffebe1fc631a398e97fff7a50d903876e66",
+      "sourceVariant": "phase12-byte-rig-r1",
+      "sourceHash": "77c643bb7c44fa757c1a24d6efd1eed80838fea5f130e27ef9e8d5873eb5c2bb",
+      "model": "gcp/google/gemini-3-pro-image",
+      "promptHash": "a0d93809822a6551e76f5d2510c1d1ff1d57929555b468c448ad709174693540",
+      "referenceHash": "47eac443912684d618083047c148fe0cd4d384dd5bc27eb0142a7c25ee75477b",
+      "generatedAt": "2026-11-09T23:40:19.349Z",
+      "preparation": "Poster rendered by the same layered artwork renderer and effects as the app."
     },
     {
       "file": "live-santa-cruz.png",

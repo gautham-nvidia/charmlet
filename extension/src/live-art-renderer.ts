@@ -86,7 +86,7 @@ export function createWebGLArt(canvas: HTMLCanvasElement, library: ArtLibrary): 
 					const alpha = partOpacity(layer.part, pose as ArtPose);
 					if (alpha <= .001) { continue; }
 					paintArtFace(layer, pose as ArtPose); positions(layer, prepared, pose as ArtPose);
-					texture(layer.image, Boolean(layer.part.eyes?.length));
+					texture(layer.image, Boolean(layer.part.eyes?.length || layer.part.effect || layer.part.display));
 					drawMesh(layer.positions, layer.uv, layer.indices, alpha);
 				}
 				canvas.dataset.outfit = prepared.definition.outfit ?? '';
@@ -114,12 +114,33 @@ function drawTriangle(context: CanvasRenderingContext2D, layer: ArtLayer, a: num
 	context.beginPath();
 	p.forEach(([x,y], index) => {
 		const length = Math.max(.001, Math.hypot(x-center[0], y-center[1]));
-		const xx = x + (x-center[0]) / length * .17, yy = y + (y-center[1]) / length * .17;
+		const xx = x + (x-center[0]) / length * .4, yy = y + (y-center[1]) / length * .4;
 		if (index) { context.lineTo(xx, yy); } else { context.moveTo(xx, yy); }
 	});
 	context.closePath(); context.clip();
 	context.setTransform(aa*3, bb*3, cc*3, dd*3, ee*3, ff*3); context.drawImage(layer.image, 0, 0);
 	context.restore();
+}
+
+/** A flat or rigid pose can be drawn once, avoiding triangle seams in pale artwork. */
+function drawAffineLayer(context: CanvasRenderingContext2D, layer: ArtLayer): boolean {
+	const right = layer.uv.findIndex((u, index) => index % 2 === 0 && u === 1 && layer.uv[index + 1] === 0);
+	const bottom = layer.uv.findIndex((u, index) => index % 2 === 0 && u === 0 && layer.uv[index + 1] === 1);
+	if (right < 0 || bottom < 0) { return false; }
+	const points = layer.positions, x = points[0], y = points[1];
+	const ux = points[right] - x, uy = points[right + 1] - y;
+	const vx = points[bottom] - x, vy = points[bottom + 1] - y;
+	for (let index = 0; index < points.length; index += 2) {
+		const u = layer.uv[index], v = layer.uv[index + 1];
+		if (Math.abs(points[index] - (x + u * ux + v * vx)) > .002
+			|| Math.abs(points[index + 1] - (y + u * uy + v * vy)) > .002) { return false; }
+	}
+	context.save();
+	context.setTransform(ux * 3 / layer.image.width, uy * 3 / layer.image.width,
+		vx * 3 / layer.image.height, vy * 3 / layer.image.height, x * 3, y * 3);
+	context.drawImage(layer.image, 0, 0);
+	context.restore();
+	return true;
 }
 
 export function createCanvasArt(canvas: HTMLCanvasElement, library: ArtLibrary): SmileyRenderer | undefined {
@@ -139,6 +160,7 @@ export function createCanvasArt(canvas: HTMLCanvasElement, library: ArtLibrary):
 				if (alpha <= .001) { continue; }
 				paintArtFace(layer, pose as ArtPose); positions(layer, prepared, pose as ArtPose);
 				context.globalAlpha = alpha;
+				if (drawAffineLayer(context, layer)) { continue; }
 				for (let index = 0; index < layer.indices.length; index += 3) {
 					drawTriangle(context, layer, layer.indices[index], layer.indices[index+1], layer.indices[index+2]);
 				}

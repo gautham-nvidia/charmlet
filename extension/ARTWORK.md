@@ -96,3 +96,15 @@ Eleven new illustrated companions depict Coast Redwood, Yosemite, Lake Tahoe, We
 Thirty-two prepared PNGs comprise seven outfit frames, two gesture references, eleven regional frames and twelve thumbnails. `website/live-art-assets.json` in the source repository records source, prompt and output hashes, dimensions, model and authoring timestamps. Original images and receipts remain in ignored authoring storage; normal builds never call a model. The images are generated illustrations, not documentary photographs or downloaded 3D models.
 
 The candidate contains 178 selectable charms. These new designs remain for the owner's visual review; licensing, final lineup and paid offerings remain undecided. Earlier Cali captures and original artwork are retained for comparison.
+
+## 2026-11-09 - Playful charms, spinners and puzzles
+
+The owner approved Cali and the eleven California designs on 2026-11-09. The 0.11.0 trial preserves those artwork files, adds four tap gestures and offers a saved choice of Cali's seven outfits. It adds six original code-authored SVG/canvas designs: Orbit Spinner, Pinwheel Spinner, Bar Spinner, Twisty Cube, Sliding Tiles and Lights Out. No generation service, stock image, external model or branded logo was used for these six toys. The colour cube is an original generic puzzle depiction; no affiliation or endorsement is implied. The trial now has 184 selectable charms. Artwork terms, public lineup and paid offerings remain separate decisions.
+
+## 2026-11-09 - Nimbus, Byte, Music and California expansion
+
+The same 0.11.0 candidate now contains 200 charms: 175 static PNG designs, Terminal, fifteen live companions and nine fidget/puzzle tools. Twelve instruments and controllers, four California landmarks, Diwali Diyas and Halloween Lantern are new Gemini 3 Pro Image illustrations. Four place designs and Black Friday/Cyber Monday are replaced, while the bundled Soldering Iron and Digital Caliper retire. The exact prompts and reference-edit variants are recorded in `website/art-collection-refresh.json`; source receipts and original images remain in ignored authoring storage.
+
+Nimbus and Byte replace their earlier procedural appearance with registered Gemini 3 Pro Image cloud and metal-body textures. Their live projection, weather effects, narrow cloud-fold eyes, jointed robot arms and binary/code display are application code. The same textures and geometry work in GPU and software rendering. `website/live-art-assets.json` now records 36 output hashes, including the two new source frames and two thumbnails. Sunny remains procedural; the approved Cali and eleven California companion artwork files are unchanged.
+
+These are generated illustrations, not documentary photographs or verified architectural models. The Cupertino design is inspired by the original Infinite Loop campus rather than Apple Park. New artwork remains available for owner review; public distribution terms and the free/paid lineup remain undecided. Separately prepared artist-inspired studies are local review material and are not bundled in this trial.

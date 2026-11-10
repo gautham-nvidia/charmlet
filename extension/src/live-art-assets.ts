@@ -2,6 +2,8 @@ import {
 	artBounds, artToStage, caliArt, isArtCharacter, type ArtBounds, type ArtDefinition, type ArtPart, type ArtPoint, type ArtPose,
 } from './live-art-core';
 import { regionalArt } from './california-companions';
+import { weatherCodeArt } from './weather-code-companions';
+import { paintBinaryDisplay, paintWeather } from './weather-code-effects';
 
 export interface ArtLayer {
 	part: ArtPart;
@@ -68,10 +70,18 @@ function cropPart(part: ArtPart, image: HTMLImageElement): ArtLayer {
 }
 
 export function paintArtFace(layer: ArtLayer, pose: ArtPose): void {
-	if (!layer.part.eyes?.length) { return; }
+	if (!layer.part.eyes?.length && !layer.part.effect && !layer.part.display) { return; }
 	const context = layer.context;
-	context.clearRect(0, 0, layer.image.width, layer.image.height); context.drawImage(layer.source, 0, 0);
-	for (const [index, eye] of layer.part.eyes.entries()) {
+	context.clearRect(0, 0, layer.image.width, layer.image.height);
+	if (!layer.part.effect) { context.drawImage(layer.source, 0, 0); }
+	if (layer.part.effect || layer.part.display) {
+		context.save();
+		context.setTransform(PIXEL_SCALE, 0, 0, PIXEL_SCALE, -layer.bounds.x * PIXEL_SCALE, -layer.bounds.y * PIXEL_SCALE);
+		if (layer.part.effect) { paintWeather(context, pose, layer.part.effect); }
+		if (layer.part.display) { paintBinaryDisplay(context, pose, layer.part.display); }
+		context.restore();
+	}
+	for (const [index, eye] of (layer.part.eyes ?? []).entries()) {
 		const x = (eye.x - layer.bounds.x) * PIXEL_SCALE, y = (eye.y - layer.bounds.y) * PIXEL_SCALE;
 		const rx = eye.rx * PIXEL_SCALE, ry = eye.ry * PIXEL_SCALE;
 		const closing = Math.max(pose.blink, pose.wink && index === 0 ? .98 : 0, pose.happy ? .16 : 0);
@@ -121,7 +131,8 @@ export function createArtLibrary(resource: (file: string) => string, invalidate:
 		get error() { return error; },
 		get(pose: ArtPose): PreparedArt | undefined {
 			if (!isArtCharacter(pose.character)) { return undefined; }
-			const definition = pose.character === 'cali' ? caliArt(pose.now ?? Date.now()) : regionalArt(pose.character);
+			const definition = pose.character === 'cali' ? caliArt(pose.now ?? Date.now(), pose.caliOutfit)
+				: weatherCodeArt(pose.character) ?? regionalArt(pose.character);
 			if (!definition) { return undefined; }
 			const key = `${definition.character}:${definition.outfit ?? ''}`;
 			if (requested === key) { return prepared; }

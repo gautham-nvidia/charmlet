@@ -172,7 +172,7 @@ export async function artworkJobs(repo) {
     'FINISH: clean readable shape at a small size, finely painted highlights and shadows, clear separated components, restrained pleasing colours. No typography, watermark, sponsor mark, company logo, official park badge, athlete likeness, copied character or proprietary chip floorplan.',
   ].join('\n') }));
   for (const key of Object.keys(revisions)) if (!jobs.some(job => job.key === key)) throw new Error(`Unknown artwork revision: ${key}`);
-  return jobs.map(job => {
+  const generated = jobs.map(job => {
     const update = revisions[job.key];
     if (!update) return { ...job, revision: 1, variant: job.key };
     if (!Number.isInteger(update.revision) || update.revision < 2 || update.revision > 20 || typeof update.correction !== 'string' || update.correction.length > 2000) throw new Error('Invalid bounded artwork revision.');
@@ -186,4 +186,28 @@ export async function artworkJobs(repo) {
       ...(update.greenSpillCleanup ? { greenSpillCleanup: true } : {}),
       prompt: example?.prompt ?? update.replacementPrompt ?? (update.realisticSubject ? realisticPrompt(update.realisticSubject, job.style) : `${job.prompt}\nIMPORTANT ART-DIRECTION CORRECTION: ${update.correction}`) };
   });
+  // These entries preserve the exact prompts and variants of the separately
+  // reviewed collection refresh, including reference edits and first drafts.
+  const collectionArt = JSON.parse(await readFile(join(repo, 'website/art-collection-refresh.json'), 'utf8'));
+  if (collectionArt.version !== 1 || !Array.isArray(collectionArt.entries) || collectionArt.entries.length > 32
+    || new Set(collectionArt.entries.map(item => item.key)).size !== collectionArt.entries.length) {
+    throw new Error('Invalid collection artwork inventory.');
+  }
+  const merged = new Map(generated.map(job => [job.key, job]));
+  for (const item of collectionArt.entries) {
+    const previous = merged.get(item.key);
+    if (!/^[a-z][a-z0-9-]{0,31}$/.test(item.id) || ![`new-${item.id}`, `extra-${item.id}`].includes(item.key)
+      || typeof item.name !== 'string' || item.name.length > 48 || typeof item.group !== 'string' || item.group.length > 48
+      || typeof item.description !== 'string' || item.description.length > 240 || !/^#[0-9a-f]{6}$/i.test(item.accent)
+      || !Number.isInteger(item.revision) || item.revision < 1 || item.revision > 20
+      || item.variant !== `${item.key}-r${item.revision}` || typeof item.prompt !== 'string'
+      || !item.prompt.trim() || item.prompt.length > 5000 || !['all', 'edges'].includes(item.greenDespill)
+      || previous && (item.id !== previous.id || item.revision < previous.revision || item.family !== previous.family)
+      || !previous && (item.key !== `new-${item.id}` || item.family !== 'new-worlds' || item.original !== null)) {
+      throw new Error(`Invalid collection artwork entry: ${item.key}`);
+    }
+    merged.set(item.key, { ...previous, ...item });
+  }
+  if (merged.size > 220) throw new Error('The artwork inventory exceeds its bounded limit.');
+  return [...merged.values()];
 }

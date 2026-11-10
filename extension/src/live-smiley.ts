@@ -2,8 +2,9 @@ import { createCanvasSmiley, createWebGLSmiley, type SmileyRenderer } from './sm
 import { followGaze, liveCharacter, type LiveCharacter } from './interactive-motion';
 import { createArtLibrary } from './live-art-assets';
 import { createCanvasArt, createWebGLArt } from './live-art-renderer';
-import { isArtCharacter } from './live-art-core';
+import { BYTE_GESTURES, CALI_TAP_GESTURES, NIMBUS_GESTURES, isArtCharacter, type ArtGesture } from './live-art-core';
 import { nextLocalMidnight } from './garden-core';
+import type { CaliOutfitChoice } from './cali-wardrobe';
 
 export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, resource: (file: string) => string) {
 	let canvas: HTMLCanvasElement | undefined;
@@ -16,10 +17,12 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, re
 	let disposed = false;
 	let frame: number | undefined;
 	let wake: number | undefined;
-	let reaction: 'hello' | 'wink' | 'happy' | undefined;
+	let reaction: 'hello' | 'happy' | ArtGesture | undefined;
+	let tapSequence = 0;
 	let reactionUntil = 0;
 	let reactionStartedAt = 0;
 	let nextOutfitAt = 0;
+	let outfit: CaliOutfitChoice = 'daily';
 	let artEngine = false;
 	let lastPointerAt = 0;
 	let lastPaintAt = 0;
@@ -97,9 +100,11 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, re
 		if (now >= reactionUntil) { reaction = undefined; }
 		const expression = pressed ? undefined : reaction;
 		const localNow = Date.now();
-		if (character === 'cali') { nextOutfitAt = nextLocalMidnight(localNow); }
+		if (character === 'cali') { nextOutfitAt = outfit === 'daily' ? nextLocalMidnight(localNow) : Infinity; }
 		renderer.draw({ character, gazeX, gazeY, blink, pressed,
-			happy: expression === 'happy', wink: expression === 'wink', greeting: expression === 'hello',
+			happy: expression === 'happy' || expression === 'shimmy', wink: expression === 'wink', greeting: expression === 'hello',
+			gesture: expression !== 'hello' && expression !== 'happy' ? expression : undefined,
+			caliOutfit: outfit,
 			now: localNow, reducedMotion: reduced,
 			reactionProgress: (now - reactionStartedAt) / Math.max(1, reactionUntil - reactionStartedAt) });
 		syncSurface();
@@ -111,7 +116,8 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, re
 		if (!active || disposed || document.hidden) { return; }
 		const now = performance.now();
 		const moving = gazeX !== targetX || gazeY !== targetY || (now >= nextBlinkAt && now < nextBlinkAt + 180)
-			|| artEngine && !lastPressed && (reaction === 'hello' || reaction === 'happy') && now < reactionUntil;
+			|| artEngine && !lastPressed && Boolean(reaction) && now < reactionUntil
+			|| character === 'cloud' && lastPressed;
 		if (!reduced && moving) {
 			frame = requestAnimationFrame(() => { frame = undefined; paint(); schedule(); });
 			return;
@@ -119,7 +125,7 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, re
 		// A deadline can pass while drawing. Keep it until a paint consumes it,
 		// otherwise a still face or yesterday's outfit can remain until new input.
 		const deadlines = [reaction ? reactionUntil : Infinity];
-		if (character === 'cali') {
+		if (character === 'cali' && outfit === 'daily') {
 			deadlines.push(now + Math.max(1, nextOutfitAt - Date.now()));
 		}
 		if (!reduced) {
@@ -132,7 +138,7 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, re
 		}
 	}
 	function refresh() { stop(); paint(); schedule(); }
-	function react(expression: 'hello' | 'wink' | 'happy', duration: number) {
+	function react(expression: 'hello' | 'happy' | ArtGesture, duration: number) {
 		if (!active) { return; }
 		reaction = expression; reactionStartedAt = performance.now(); reactionUntil = reactionStartedAt + duration;
 		refresh();
@@ -153,7 +159,9 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, re
 		if (targetX === 0 && targetY === 0 && gazeX === 0 && gazeY === 0) { return; }
 		targetX = 0; targetY = 0; refresh();
 	};
-	const greet = () => { if (!reduced && !lastPressed) { react('hello', 450); } };
+	const greet = () => {
+		if (!reduced && !lastPressed && performance.now() >= reactionUntil) { react('hello', 450); }
+	};
 	charm.addEventListener('pointerenter', greet);
 	window.addEventListener('pointermove', pointer, { passive: true });
 	window.addEventListener('blur', resetGaze);
@@ -165,11 +173,13 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, re
 		else { refresh(); }
 	});
 	press.observe(charm, { attributes: true, attributeFilter: ['class', 'data-keyboard-held'] });
-	function update(id: string, visible: boolean, reducedMotion: boolean) {
+	function update(id: string, visible: boolean, reducedMotion: boolean, choice: CaliOutfitChoice = outfit) {
 		const nextCharacter = liveCharacter(id);
+		if (character !== nextCharacter) { tapSequence = 0; }
 		const nextActive = Boolean(nextCharacter && visible && !document.hidden);
-		const changed = active !== nextActive || character !== nextCharacter || reduced !== reducedMotion;
-		const settleReaction = !nextActive || character !== nextCharacter || reducedMotion && !reduced;
+		const changed = active !== nextActive || character !== nextCharacter || reduced !== reducedMotion || choice !== outfit;
+		const settleReaction = !nextActive || character !== nextCharacter || choice !== outfit || reducedMotion && !reduced;
+		outfit = choice;
 		selected = id; character = nextCharacter; lastVisible = visible; active = nextActive; reduced = reducedMotion;
 		if (character) { initialize(); }
 		if (!active || reduced) { targetX = 0; targetY = 0; gazeX = 0; gazeY = 0; }
@@ -198,6 +208,15 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, re
 	});
 	return {
 		update,
+		playful() {
+			const gestures = character === 'cali' ? CALI_TAP_GESTURES
+				: character === 'cloud' ? NIMBUS_GESTURES : character === 'robot' ? BYTE_GESTURES : undefined;
+			if (!gestures) { return; }
+			if (reduced && character === 'cali') { react('happy', 1100); return; }
+			const gesture = gestures[tapSequence];
+			tapSequence = (tapSequence + 1) % gestures.length;
+			react(gesture, character === 'cali' ? 1150 : 1500);
+		},
 		celebrate() {
 			react('happy', 1100);
 		},

@@ -1,7 +1,19 @@
 import { isArtCharacter, type ArtCharacter } from './live-art-core';
+import { puzzleKind, type PuzzleKind } from './puzzle-core';
 
 export type LiveCharacter = 'sunny' | 'cloud' | 'robot' | ArtCharacter;
-export type FidgetKind = 'spinner' | 'bubbles' | 'stone';
+export type FidgetKind = 'spinner' | 'bubbles' | 'stone' | PuzzleKind;
+export type SpinnerDesign = 'classic' | 'orbit' | 'pinwheel' | 'bar';
+
+export function spinnerDesign(id: string): SpinnerDesign | undefined {
+	switch (id) {
+		case 'fidget:spinner': return 'classic';
+		case 'fidget:spinner-orbit': return 'orbit';
+		case 'fidget:spinner-pinwheel': return 'pinwheel';
+		case 'fidget:spinner-bar': return 'bar';
+		default: return undefined;
+	}
+}
 
 export function liveCharacter(id: string): LiveCharacter | undefined {
 	const character = id.startsWith('live:') ? id.slice(5) : undefined;
@@ -15,8 +27,10 @@ export function liveCharacter(id: string): LiveCharacter | undefined {
 }
 
 export function fidgetKind(id: string): FidgetKind | undefined {
+	if (spinnerDesign(id)) { return 'spinner'; }
+	const puzzle = puzzleKind(id);
+	if (puzzle) { return puzzle; }
 	switch (id) {
-		case 'fidget:spinner': return 'spinner';
 		case 'fidget:bubbles': return 'bubbles';
 		case 'fidget:stone': return 'stone';
 		default: return undefined;
@@ -28,6 +42,9 @@ export function fidgetAction(id: string): string | undefined {
 		case 'spinner': return 'Spin';
 		case 'bubbles': return 'Press bubbles on';
 		case 'stone': return 'Hold or rub';
+		case 'cube': return 'Turn';
+		case 'tiles': return 'Slide';
+		case 'lights': return 'Switch';
 		default: return undefined;
 	}
 }
@@ -45,6 +62,13 @@ export function stepSpinner(angle: number, velocity: number, elapsedMs: number) 
 	const nextAngle = (angle + velocity * (1 - decay) / 1.65) % (Math.PI * 2);
 	const nextVelocity = velocity * decay;
 	return { angle: nextAngle, velocity: Math.abs(nextVelocity) < .08 ? 0 : nextVelocity };
+}
+
+/** Cross the atan2 seam without reversing a drag; bound speed for a controlled release. */
+export function turnSpinner(angle: number, previousPointerAngle: number, pointerAngle: number, elapsedMs: number) {
+	const delta = Math.atan2(Math.sin(pointerAngle - previousPointerAngle), Math.cos(pointerAngle - previousPointerAngle));
+	return { angle: (angle + delta) % (Math.PI * 2),
+		velocity: Math.max(-34, Math.min(34, delta * 1000 / Math.max(8, elapsedMs))) };
 }
 
 export const BUBBLES = [

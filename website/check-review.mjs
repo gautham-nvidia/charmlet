@@ -92,7 +92,7 @@ try {
   await expect(original.locator('a')).toHaveCount(0);
   await expect(original).toContainText('Original kept');
   const actualSize = await original.locator('img').boundingBox();
-  assert.equal(actualSize.width, 72); assert.equal(actualSize.height, 84);
+  assert.ok(Math.abs(actualSize.width - 82.8) < .05); assert.ok(Math.abs(actualSize.height - 96.6) < .05);
   await page.locator('#review-search').fill('golden die');
   await expect(page.locator('.review-card')).toHaveCount(0);
   await page.locator('#review-search').fill('');
