@@ -2,6 +2,7 @@ import { test, expect, _electron as electron, type Frame, type Page } from '@pla
 import { copyFileSync, cpSync, existsSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { CHARMS, ORIGINAL_CHARMS } from '../charm-catalog';
 import { charmCollection } from '../charm-collections';
+import { getLayout } from '../charm-state';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { command, commandInput, endOfDocument, primaryModifier, readyFrame, reloadCharm } from './editor-helpers';
@@ -381,11 +382,26 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			const defaultCharmWidth = await frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width);
 			await frame.getByRole('slider', { name: 'Size', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Size', exact: true }).press('End');
-		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
 			await expect.poll(() => frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width)).toBeGreaterThan(defaultCharmWidth);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			const maximumCord = (await frame.getByRole('slider', { name: 'Cord', exact: true }).getAttribute('max'))!;
 			expect(Number(maximumCord)).toBeGreaterThan(48);
+			const expectVisibleCordFitsViewport = async () => {
+				// VS Code can reflow its chrome by a few pixels after a native resize.
+				// The preference stays exact; the visible cord must fit the current viewport.
+				await expect.poll(async () => {
+					const stage = await frame.locator('#stage').evaluate(node => {
+						const { width, height } = node.getBoundingClientRect();
+						return { width, height, cord: Number(node.dataset.cord) };
+					});
+					const attachment = CHARMS.find(charm => charm.id === 'terminal')!.attachment;
+					const layout = getLayout(stage.width, stage.height, Number(maximumCord), 200, 'hanging', attachment);
+					const scale = Math.max(.01, Math.min(1, stage.width / layout.minimumWidth, stage.height / layout.minimumHeight));
+					const fitted = getLayout(stage.width / scale, stage.height / scale, Number(maximumCord), 200, 'hanging', attachment);
+					return stage.cord - Math.round(fitted.cordLength);
+				}).toBe(0);
+			};
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('End');
 			await expect(frame.getByRole('slider', { name: 'Cord', exact: true })).toHaveValue(maximumCord);
 			expect(Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThanOrEqual(Number(maximumCord));
@@ -405,8 +421,8 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			expect(expandedCordAfterClose).toBeLessThanOrEqual(Number(maximumCord));
 			const expandedVisibleCord = (await frame.locator('#stage').getAttribute('data-cord'))!;
 			frame = await reloadCharm(window);
-		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', expandedVisibleCord);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
+			await expectVisibleCordFitsViewport();
 			await expect(frame.locator('#cord-length')).toHaveValue(maximumCord);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 500));
 			frame = await readyFrame(window);
@@ -420,8 +436,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThan(Number(expandedVisibleCord));
 			await expectBalancedSwingRoom(frame);
 			await window.screenshot({ path: testInfo.outputPath('phase-1-compact-large-charm.png') });
+			const compactHeight = await frame.locator('#stage').evaluate(node => node.clientHeight);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', expandedVisibleCord);
+			await expect.poll(() => frame.locator('#stage').evaluate(node => node.clientHeight)).toBeGreaterThan(compactHeight);
+			await expectVisibleCordFitsViewport();
+			await expect(frame.locator('#cord-length')).toHaveValue(maximumCord);
 			await openAppearance(frame);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Home');

@@ -34,6 +34,8 @@ Eleven new comparison sheets show the installed extension, extracted desktop, we
 
 Manual browser checks confirmed the Terminal default, the twelve-item Music filter and live WebGL mouse reactions: Nimbus cycled sunrise/rain/lightning, and Byte cycled binary/compile/cursor. Neither character reported an artwork loading error.
 
+The first hosted run passed both desktop jobs and all three VS Code 1.90 jobs. On VS Code 1.140, Linux and macOS restored the native window size with slightly different available content geometry; the former assertion expected an identical visible cord length. The test now checks the visible cord against the current viewport while preserving the exact saved preference, and still checks compact bounds and restoration. Windows recorded one missing activity-bar icon during editor startup, before the scenario began; its cause remains unconfirmed. Failed launches now retain their windows and editor logs before closing. Both affected scenarios passed locally on pinned VS Code 1.140.0.
+
 Ten artist-inspired concepts are separate local review material, including an optional validated ten-charm import pack. They are not part of the 200-charms core or an approved public/paid lineup.
 
 PR #30 remains a draft. Website launch, pricing, source/artwork terms, publisher and signing remain owner decisions. Native macOS interaction and mixed-display validation remain separate from automated archive checks.

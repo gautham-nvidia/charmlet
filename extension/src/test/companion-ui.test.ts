@@ -178,7 +178,26 @@ async function launchOwnedEditor(prefix: string, seed: (paths: Omit<OwnedEditor,
 		await expect(window.locator('.part.activitybar a.action-label[aria-label="Charmlet"]')).toBeVisible({ timeout: 30000 });
 		return { ...paths, app, window };
 	} catch (error) {
-		await app.close();
+		// A launch failure occurs before the caller owns the editor. Preserve its
+		// actual windows and logs here, before closing erases the failure context.
+		try {
+			const windows = app.windows();
+			writeFileSync(test.info().outputPath('editor-launch.json'), JSON.stringify({
+				profile,
+				windows: await Promise.all(windows.map(async window => ({
+					url: window.url(), title: await window.title(),
+					body: await window.locator('body').innerText({ timeout: 3000 }),
+				}))),
+			}, null, 2));
+			await Promise.all(windows.map((window, index) =>
+				window.screenshot({ path: test.info().outputPath(`editor-launch-${index}.png`), timeout: 3000 })));
+		} catch { /* Retain the original launch failure if capture is unavailable. */ }
+		try { await app.close(); } finally {
+			const logs = join(profile, 'user', 'logs');
+			if (existsSync(logs)) {
+				try { cpSync(logs, test.info().outputPath('editor-launch-logs'), { recursive: true }); } catch { /* Keep the launch failure. */ }
+			}
+		}
 		throw error;
 	}
 }
