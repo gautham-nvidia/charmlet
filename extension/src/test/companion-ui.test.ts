@@ -1,4 +1,4 @@
-import { test, expect, _electron as electron, type ElectronApplication, type Frame, type Page, type TestInfo } from '@playwright/test';
+import { test, expect, _electron as electron, type ElectronApplication, type Frame, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
 import { resolveCliPathFromVSCodeExecutablePath } from '@vscode/test-electron';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
@@ -26,12 +26,20 @@ interface OwnedEditor {
 	window: Page;
 }
 
-async function focusCharmForKeyboard(editor: OwnedEditor, frame: Frame): Promise<void> {
+async function focusWebviewControl(editor: OwnedEditor, frame: Frame, control: Locator): Promise<void> {
+	await editor.app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].focus());
 	await editor.window.bringToFront();
-	const charm = frame.locator('#charm');
-	await charm.focus();
-	await expect(charm).toBeFocused();
-	await expect.poll(() => frame.evaluate(() => document.hasFocus())).toBe(true);
+	// Native-window activation and VS Code's iframe focus can settle after a
+	// DOM focus call. Establish the input precondition before sending any action.
+	await expect(async () => {
+		await control.focus();
+		await expect(control).toBeFocused({ timeout: 250 });
+		expect(await frame.evaluate(() => document.hasFocus())).toBe(true);
+	}).toPass({ timeout: 5000, intervals: [100, 250, 500] });
+}
+
+async function focusCharmForKeyboard(editor: OwnedEditor, frame: Frame): Promise<void> {
+	await focusWebviewControl(editor, frame, frame.locator('#charm'));
 }
 
 async function alphaAtCordTip(frame: Frame): Promise<number> {
@@ -67,9 +75,11 @@ async function tracePointerInput(window: Page): Promise<Frame[]> {
 	const frames = window.frames();
 	for (const target of frames) {
 		await target.evaluate(() => {
+			if (document.documentElement.dataset.pointerTraceInstalled === 'true') { return; }
+			document.documentElement.dataset.pointerTraceInstalled = 'true';
 			const events: Record<string, unknown>[] = [];
 			for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel',
-				'gotpointercapture', 'lostpointercapture', 'mousedown', 'mouseup', 'focus', 'blur', 'keydown', 'keyup']) {
+				'gotpointercapture', 'lostpointercapture', 'mousedown', 'mouseup', 'click', 'focus', 'blur', 'focusin', 'focusout', 'keydown', 'keyup']) {
 				globalThis.window.addEventListener(type, event => {
 					const pointer = event as PointerEvent;
 					const target = event.target instanceof Element ? event.target : undefined;
@@ -99,6 +109,9 @@ async function savePointerTrace(editor: OwnedEditor, frames: Frame[], path: stri
 				keyboardHeld: document.getElementById('charm')?.dataset.keyboardHeld,
 				expression: document.getElementById('live-smiley')?.dataset.expression,
 				activeElement: document.activeElement?.id,
+				charmInert: Boolean(document.getElementById('charm')?.closest('[inert]')),
+				openPanels: ['settings', 'settings-menu', 'charm-picker', 'puzzle-editor', 'photo-editor']
+					.filter(id => { const panel = document.getElementById(id); return panel && !panel.hidden; }),
 				soft: document.getElementById('charm')?.dataset.soft,
 				phase: document.getElementById('phase')?.textContent,
 				events: JSON.parse(document.documentElement.dataset.pointerTrace ?? '[]'),
@@ -976,7 +989,10 @@ test(`${installedPersonalization ? 'installed VSIX' : 'puzzle collection'} keeps
 			await frame.locator('#settings-close').click();
 		};
 		const open = async () => {
-			await frame.getByRole('button', { name: 'Open puzzle', exact: true }).click();
+			await tracePointerInput(editor.window);
+			const play = frame.getByRole('button', { name: 'Open puzzle', exact: true });
+			await focusWebviewControl(editor, frame, play);
+			await play.click();
 			await expect(frame.locator('#puzzle-editor')).toBeVisible();
 			await expect(frame.locator('#puzzle-shuffle')).toBeFocused();
 		};
@@ -1035,7 +1051,10 @@ test(`${installedPersonalization ? 'installed VSIX' : 'puzzle collection'} keeps
 		await expect(frame.locator('.puzzle-lights [aria-pressed="true"]')).toHaveCount(5);
 		await editor.window.keyboard.press('Escape');
 		await expect(frame.locator('#puzzle-editor')).toBeHidden();
-	} finally { await closeOwnedEditor(editor, testInfo); }
+	} finally {
+		await savePointerTrace(editor, editor.window.frames(), testInfo.outputPath('puzzle-final-input.json'));
+		await closeOwnedEditor(editor, testInfo);
+	}
 });
 
 test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has responsive companions and working fidget tools`, async ({}, testInfo) => {
@@ -1051,17 +1070,18 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		let frame = await readyFrame(editor.window);
 		const holdTrace = await tracePointerInput(editor.window);
 		const choose = async (name: string, group: string) => {
+			await tracePointerInput(editor.window);
 			// Restore keyboard focus after reload/captures. The broader editor
 			// scenario separately exercises opening the picker with the mouse.
 			const browse = frame.getByRole('button', { name: 'Browse charms', exact: true });
-			await browse.focus();
-			await expect(browse).toBeFocused();
+			await focusWebviewControl(editor, frame, browse);
 			await editor.window.keyboard.press('Enter');
 			await expect(frame.locator('#charm-picker')).toBeVisible();
 			await expect.poll(async () => (await frame.locator('#charm-groups button').allTextContents()).slice(0, 3))
 				.toEqual(['All', 'Terminal', 'Live 3D']);
 			await frame.locator('#charm-groups').getByRole('button', { name: group, exact: true }).click();
 			await frame.getByRole('button', { name: `Select ${name}`, exact: true }).click();
+			await expect(frame.locator('#charm-picker')).toBeHidden();
 			await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
 		};
 		for (const [name, character] of [['Sunny - Live Smiley', 'sunny'], ['Nimbus - Live Cloud', 'cloud'], ['Byte - Live Robot', 'robot']]) {
@@ -1177,7 +1197,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 		frame = await reloadCharm(editor.window);
 		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'fidget:spinner');
 		await expect(frame.locator('#live-fidget')).toHaveAttribute('data-running', 'false');
-	await choose('Sunny - Live Smiley', 'Live 3D');
+		await choose('Sunny - Live Smiley', 'Live 3D');
 		await frame.evaluate(() => {
 			const face = document.getElementById('live-smiley')!;
 			window.addEventListener('pointermove', () => {
@@ -1204,7 +1224,10 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 			return await frame.locator('#live-smiley').getAttribute('data-frames') === rested;
 		}, { timeout: 5000, intervals: [100] }).toBe(true);
 		await expect(frame.locator('#live-smiley')).toBeVisible();
-	} finally { await closeOwnedEditor(editor, testInfo); }
+	} finally {
+		await savePointerTrace(editor, editor.window.frames(), testInfo.outputPath('live-final-input.json'));
+		await closeOwnedEditor(editor, testInfo);
+	}
 });
 
 test(`${installedPersonalization ? 'installed VSIX' : 'mascot companion'} keeps personal encouragement optional with daily outfits and the California family`, async ({}, testInfo) => {

@@ -36,6 +36,8 @@ Manual browser checks confirmed the Terminal default, the twelve-item Music filt
 
 The first hosted run passed both desktop jobs and all three VS Code 1.90 jobs. On VS Code 1.140, Linux and macOS restored the native window size with slightly different available content geometry; the former assertion expected an identical visible cord length. The test now checks the visible cord against the current viewport while preserving the exact saved preference, and still checks compact bounds and restoration. Windows recorded one missing activity-bar icon during editor startup, before the scenario began; its cause remains unconfirmed. Failed launches now retain their windows and editor logs before closing. Both affected scenarios passed locally on pinned VS Code 1.140.0.
 
+The next run passed every source scenario on all six editor configurations. Two installed scenarios then missed focus/input: Sunny was inactive on macOS before keyboard hold, and a puzzle-open click after Linux reload left the board hidden. Test setup now establishes native-window and iframe focus before input and checks that choosing a charm closes the picker; pointer, focus and open-panel state are retained on failure. It does not retry clicks or key actions. Both installed scenarios passed twice locally on pinned 1.140.0.
+
 Ten artist-inspired concepts are separate local review material, including an optional validated ten-charm import pack. They are not part of the 200-charms core or an approved public/paid lineup.
 
 PR #30 remains a draft. Website launch, pricing, source/artwork terms, publisher and signing remain owner decisions. Native macOS interaction and mixed-display validation remain separate from automated archive checks.
