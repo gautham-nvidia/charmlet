@@ -38,6 +38,8 @@ The first hosted run passed both desktop jobs and all three VS Code 1.90 jobs. O
 
 The next run passed every source scenario on all six editor configurations. Two installed scenarios then missed focus/input: Sunny was inactive on macOS before keyboard hold, and a puzzle-open click after Linux reload left the board hidden. Test setup now establishes native-window and iframe focus before input and checks that choosing a charm closes the picker; pointer, focus and open-panel state are retained on failure. It does not retry clicks or key actions. Both installed scenarios passed twice locally on pinned 1.140.0.
 
+Captured Linux1.140 input subsequently showed that the post-reload click reached VS Code's outer iframe rather than the puzzle document. Reload checks now open boards by keyboard, retaining mouse checks elsewhere. A Windows1.90 puzzle case remained pending beyond the five-second acknowledgement wait; its precise cause is unconfirmed. The bounded wait now accounts for several serial atomic writes and Windows retries, with exact saved-file/reload assertions and acknowledgement/file diagnostics retained. Five installed Windows1.90 puzzle runs passed locally.
+
 Ten artist-inspired concepts are separate local review material, including an optional validated ten-charm import pack. They are not part of the 200-charms core or an approved public/paid lineup.
 
 PR #30 remains a draft. Website launch, pricing, source/artwork terms, publisher and signing remain owner decisions. Native macOS interaction and mixed-display validation remain separate from automated archive checks.

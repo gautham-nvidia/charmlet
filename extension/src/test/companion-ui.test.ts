@@ -78,6 +78,14 @@ async function tracePointerInput(window: Page): Promise<Frame[]> {
 			if (document.documentElement.dataset.pointerTraceInstalled === 'true') { return; }
 			document.documentElement.dataset.pointerTraceInstalled = 'true';
 			const events: Record<string, unknown>[] = [];
+			const messages: Record<string, unknown>[] = [];
+			globalThis.window.addEventListener('message', event => {
+				const message = event.data;
+				if (message && ['saved', 'save-error', 'state'].includes(message.type)) {
+					messages.push({ type: message.type, revision: message.revision, time: performance.now() });
+					document.documentElement.dataset.saveTrace = JSON.stringify(messages.slice(-40));
+				}
+			});
 			for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel',
 				'gotpointercapture', 'lostpointercapture', 'mousedown', 'mouseup', 'click', 'focus', 'blur', 'focusin', 'focusout', 'keydown', 'keyup']) {
 				globalThis.window.addEventListener(type, event => {
@@ -114,6 +122,8 @@ async function savePointerTrace(editor: OwnedEditor, frames: Frame[], path: stri
 					.filter(id => { const panel = document.getElementById(id); return panel && !panel.hidden; }),
 				soft: document.getElementById('charm')?.dataset.soft,
 				phase: document.getElementById('phase')?.textContent,
+				stage: { ...document.getElementById('stage')?.dataset },
+				saveMessages: JSON.parse(document.documentElement.dataset.saveTrace ?? '[]'),
 				events: JSON.parse(document.documentElement.dataset.pointerTrace ?? '[]'),
 			})).catch(error => ({ error: String(error) })))),
 		}, null, 2));
@@ -988,11 +998,12 @@ test(`${installedPersonalization ? 'installed VSIX' : 'puzzle collection'} keeps
 			await frame.locator('#charm-select').selectOption(id);
 			await frame.locator('#settings-close').click();
 		};
-		const open = async () => {
+		const open = async (input: 'pointer' | 'keyboard' = 'pointer') => {
 			await tracePointerInput(editor.window);
 			const play = frame.getByRole('button', { name: 'Open puzzle', exact: true });
 			await focusWebviewControl(editor, frame, play);
-			await play.click();
+			if (input === 'keyboard') { await editor.window.keyboard.press('Enter'); }
+			else { await play.click(); }
 			await expect(frame.locator('#puzzle-editor')).toBeVisible();
 			await expect(frame.locator('#puzzle-shuffle')).toBeFocused();
 		};
@@ -1014,7 +1025,10 @@ test(`${installedPersonalization ? 'installed VSIX' : 'puzzle collection'} keeps
 		await expect(frame.locator('#puzzle-toggle')).toBeFocused();
 		frame = await reloadCharm(editor.window);
 		await expect(frame.locator('#live-fidget')).toHaveAttribute('data-board', savedCube.join(','));
-		await open();
+		// Newer Linux Chromium can route the first post-reload mouse click to
+		// VS Code's outer iframe (captured in the input trace), not this control.
+		// Check restored boards with keyboard input; other openings still use the mouse.
+		await open('keyboard');
 		await expect(frame.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'false');
 		await frame.locator('#puzzle-close').click();
 		await choose('fidget:tiles');
@@ -1040,20 +1054,28 @@ test(`${installedPersonalization ? 'installed VSIX' : 'puzzle collection'} keeps
 		await expect(frame.locator('.puzzle-lights [aria-pressed="true"]')).toHaveCount(5);
 		await frame.locator('#puzzle-editor').screenshot({ path: testInfo.outputPath('puzzle-lights.png') });
 		await frame.locator('#puzzle-close').click();
-		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		// This sequence queues several atomic writes, each with bounded Windows
+		// file-lock retries. Allow the queue to drain, then verify its exact contents.
+		const drainStarted = Date.now();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true', { timeout: 15000 });
+		await testInfo.attach('puzzle-save-drain', {
+			body: JSON.stringify({ waitMs: Date.now() - drainStarted }), contentType: 'application/json',
+		});
 		const saved = JSON.parse(readFileSync(editor.preferencesPath, 'utf8'));
 		expect(saved.puzzles.cube).toEqual(savedCube);
 		expect(saved.puzzles.tiles).not.toEqual(DEFAULT_PUZZLES.tiles);
 		expect(saved.puzzles.lights).toBe(186);
 		frame = await reloadCharm(editor.window);
 		await expect(frame.locator('#live-fidget')).toHaveAttribute('data-board', '186');
-		await open();
+		await open('keyboard');
 		await expect(frame.locator('.puzzle-lights [aria-pressed="true"]')).toHaveCount(5);
 		await editor.window.keyboard.press('Escape');
 		await expect(frame.locator('#puzzle-editor')).toBeHidden();
 	} finally {
 		await savePointerTrace(editor, editor.window.frames(), testInfo.outputPath('puzzle-final-input.json'));
+		try { cpSync(editor.preferencesPath, testInfo.outputPath('puzzle-preferences-before-close.json')); } catch { /* Keep test result. */ }
 		await closeOwnedEditor(editor, testInfo);
+		try { cpSync(editor.preferencesPath, testInfo.outputPath('puzzle-preferences-after-close.json')); } catch { /* Keep test result. */ }
 	}
 });
 
