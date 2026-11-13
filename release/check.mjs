@@ -38,8 +38,12 @@ export function validateCandidate({ manifest, packaged, identity, files, built, 
   assert.ok(files.get('extension/readme.md').toString('utf8').includes(manifest.version), 'Listing README has a stale version.');
   for (const [name, bytes] of built) assert.ok(files.get(name)?.equals(bytes), `VSIX differs from built file: ${name}`);
   assert.equal(catalogue.version, manifest.version, 'Website catalogue has a stale version.');
-  assert.equal(catalogue.extensionDownload, './downloads/charmlet.vsix');
-  assert.ok(siteVsix.equals(vsix), 'Website download differs from the reviewed VSIX.');
+  if (catalogue.extensionDownload === './download.html') {
+    assert.equal(siteVsix, null, 'The public website must not contain an installer that bypasses email verification.');
+  } else {
+    assert.equal(catalogue.extensionDownload, './downloads/charmlet.vsix');
+    assert.ok(siteVsix?.equals(vsix), 'Website download differs from the reviewed VSIX.');
+  }
   return { id: `${manifest.publisher}.${manifest.name}`, version: manifest.version, bytes: vsix.length, sha256: sha256(vsix), packagedFiles: files.size };
 }
 
@@ -75,7 +79,10 @@ export async function checkRelease({ root = repo, target = 'artifact', expectedV
   const [{ manifest: packaged, xmlManifest }, files, vsix, catalogue, siteVsix] = await Promise.all([
     readVSIXPackage(packagePath), readZip(packagePath, () => true), readFile(packagePath),
     readFile(join(root, 'website/dist/catalogue.json'), 'utf8').then(JSON.parse),
-    readFile(join(root, 'website/dist/downloads/charmlet.vsix')),
+    readFile(join(root, 'website/dist/downloads/charmlet.vsix')).catch(error => {
+      if (error.code === 'ENOENT') return null;
+      throw error;
+    }),
   ]);
   const built = new Map();
   for (const name of ['PRIVACY.md', 'ARTWORK.md', 'THIRD_PARTY_NOTICES.md']) {

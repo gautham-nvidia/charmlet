@@ -209,16 +209,17 @@ export function createLiveSmiley(charm: HTMLElement, image: HTMLImageElement, re
 	return {
 		update,
 		playful() {
-			const gestures = character === 'cali' ? CALI_TAP_GESTURES
-				: character === 'cloud' ? NIMBUS_GESTURES : character === 'robot' ? BYTE_GESTURES : undefined;
-			if (!gestures) { return; }
-			if (reduced && character === 'cali') { react('happy', 1100); return; }
+			if (!active || !character) { return; }
+			const gestures = character === 'cali' ? [...CALI_TAP_GESTURES, 'hello', 'happy'] as const
+				: character === 'cloud' ? NIMBUS_GESTURES : character === 'robot' ? BYTE_GESTURES
+					: ['hello', 'wink', 'happy'] as const;
 			const gesture = gestures[tapSequence];
 			tapSequence = (tapSequence + 1) % gestures.length;
-			react(gesture, character === 'cali' ? 1150 : 1500);
+			react(reduced && character === 'cali' ? 'happy' : gesture, 1600);
+			return gesture;
 		},
 		celebrate() {
-			react('happy', 1100);
+			react('happy', 1800);
 		},
 	};
 }

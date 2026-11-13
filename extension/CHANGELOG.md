@@ -3,6 +3,15 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.13.0 - Unreleased (Free starter, access and website candidate)
+
+- New profiles start with 31 fixed free charms. Existing beta profiles retain the frozen 234-design collection, and local photos, imports and earned flowers remain available.
+- Added signed, passwordless trial and purchase activation shared with desktop. Trial expiry preserves free and individually owned content; sandbox purchases cannot activate release apps.
+- Added more live click reactions and shared visible cheers/confetti, with Reduced Motion support.
+- Promoted the approved Terminal logo and website, with gallery themes, About, About Us, Press, a charm shop and an email-download portal.
+- Added an inactive-by-default email/payment service with durable trial records, server prices, verified webhooks and private delivery. Live accounts and publication review are still required.
+- Updated vulnerable development dependencies and added native/service security regression coverage.
+
 ## 0.12.0 - Unreleased (Music Icons trial)
 
 - Added all 34 approved artist studies under Music Icons, immediately after Music: the original ten, twelve legends and twelve current performers, including Travis Scott and twelve women.

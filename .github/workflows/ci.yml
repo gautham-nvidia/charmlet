@@ -15,6 +15,61 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  security:
+    name: Service security and website
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            extension/package-lock.json
+            desktop/package-lock.json
+            service/package-lock.json
+      - name: Install locked tools
+        run: |
+          npm ci --prefix extension
+          npm ci --prefix desktop --ignore-scripts
+          npm ci --prefix service
+      - name: Audit every dependency tree
+        run: |
+          npm audit --prefix extension --audit-level=moderate
+          npm audit --prefix desktop --audit-level=moderate
+          npm audit --prefix service --audit-level=moderate
+      - name: Check verification, ownership, checkout, refunds and sandbox isolation
+        run: node --test service/test/access.test.mjs release/check.test.mjs
+      - name: Bundle the Worker and apply the local D1 schema
+        run: |
+          npm run check:worker --prefix service
+          npm run db:local --prefix service
+      - name: Build the public website
+        run: node website/build.mjs
+      - name: Install the browser for website checks
+        run: node extension/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Check the website and its public download boundary
+        shell: bash
+        run: |
+          node website/server.mjs &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          node website/check.mjs
+      - name: Retain website evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: website-security-${{ github.sha }}
+          path: extension/test-results/website-check-*/
+          if-no-files-found: ignore
+          retention-days: 14
   validate:
     name: ${{ matrix.label }} VS Code ${{ matrix.vscode }}
     runs-on: ${{ matrix.os }}
@@ -38,8 +93,8 @@ jobs:
         shell: pwsh
         working-directory: extension
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
           cache: npm
@@ -75,28 +130,28 @@ jobs:
       - name: Verify every included trial image and its cord geometry
         working-directory: .
         run: node website/sync-trial-catalogue.mjs --check
-      - name: Verify release package and website download agree
+      - name: Verify release package and website delivery policy
         working-directory: .
         run: |
           node --test release/check.test.mjs
           node release/check.mjs
       - name: Retain test evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: test-evidence-${{ matrix.label }}-vscode-${{ matrix.vscode }}-${{ github.sha }}
           path: extension/test-results/
           if-no-files-found: ignore
           retention-days: 14
       - name: Retain installable prototype
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: charmlet-${{ matrix.label }}-vscode-${{ matrix.vscode }}-${{ github.sha }}
           path: extension/*.vsix
           if-no-files-found: error
           retention-days: 14
       - name: Retain companion gallery
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: charmlet-gallery-${{ matrix.label }}-vscode-${{ matrix.vscode }}-${{ github.sha }}
           path: website/dist/

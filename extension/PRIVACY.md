@@ -18,6 +18,12 @@ Storage is local, not a cross-device sync service. Your operating system, editor
 
 ## Network activity
 
+The free starter does not require an activation account. If you import a trial or purchase access file, Charmlet verifies its signature and stores the grant through the editor's secret storage (or the desktop app's encrypted access store). The grant contains a keyed account identifier, access rights and issuance/trial dates, not your email address. A local clock record helps detect a trial clock moving backwards.
+
+When an access service is configured, activated apps can send their signed grant to that service to refresh purchases, trial status and refunds. Photos, workspace files, focus notes, garden progress and Cali's optional name are not sent with that request. Signed purchases remain usable offline from their last confirmed access.
+
+The website's download flow separately verifies an email address using Cloudflare/Turnstile and Brevo. Optional offers require a separate choice. Checkout is handled by Lemon Squeezy; payment-card details do not pass through the app or Charmlet's access service. The service retains a keyed email identity, trial deadline and ownership/consent records; its website privacy page describes the flow. Live delivery and checkout are disabled in this candidate's checked-in settings.
+
 Choosing **Read source** opens the cited website in your normal browser. Downloading the extension or extra artwork visits the host or extension store you selected. Those services have their own privacy policies. Editor-provided update checks and telemetry are controlled by the editor, not by Charmlet.
 
 Store/detail pages and README screenshots may load images hosted on GitHub. The running Charmlet view uses its installed or imported artwork and does not need those listing images.
@@ -29,6 +35,8 @@ The optional website Photo Studio is separate and unavailable by default. Its pr
 Use **Charmlet: Remove Charm Pack** to remove an imported pack, or remove a keepsake in **Photo charms**. **Focus > Small wins > Clear history** removes saved win notes and counts. **Reset Charm** resets appearance; it does not erase garden progress.
 
 Clear Cali's optional name under **Focus > Cali's encouragement**, then save preferences to remove it from the current local state. The same panel turns encouragement and focus prompts off.
+
+Removing an app or its local preferences does not restart or erase the service's trial and purchase records. Use the contact on the published website's privacy page for requests about those records; do not post email links or activation files in a public issue.
 
 To remove all extension data, first back up any packs or progress you want to keep, close the editor, and remove only Charmlet's `gautham-nvidia.charmlet` directory from that editor profile's `User/globalStorage` folder. Editor profiles and forks can use different locations. Uninstalling an extension may leave its saved storage behind.
 

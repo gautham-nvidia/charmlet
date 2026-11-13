@@ -1,5 +1,7 @@
 # Charmlet website direction
 
+**Owner feedback, 2026-11-10:** the current website logo is not approved. Prepare three replacement concepts and a Light/Dark/Auto website treatment as described in the [Phase 14 plan](phase-14-product-and-pricing-plan.md). The approved Cali character remains the leading companion; the new logo direction has not been selected.
+
 **A little company for your big ideas.** Charmlet brings expressive digital companions, quiet focus tools and a personal collection to the places people already work.
 
 ## Brand

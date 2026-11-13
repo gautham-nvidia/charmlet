@@ -18,10 +18,11 @@ export function element(tag, className = '', text = '') {
 export function applyProductMetadata(data) {
   for (const node of document.querySelectorAll('[data-charm-count]')) node.textContent = String(data.charms.length);
   for (const node of document.querySelectorAll('[data-collection-count]')) node.textContent = String(data.collections.length);
-  for (const node of document.querySelectorAll('[data-release-label]')) node.textContent = `Trial ${data.version}`;
+  for (const node of document.querySelectorAll('[data-release-label]')) node.textContent = `Charmlet ${data.version} · Free starter, optional Pro`;
   for (const link of document.querySelectorAll('.extension-download')) {
     link.href = data.extensionDownload;
-    link.download = `charmlet-${data.version}.vsix`;
+    if (data.extensionDownload.endsWith('.vsix')) link.download = `charmlet-${data.version}.vsix`;
+    else link.removeAttribute('download');
   }
   const stores = document.querySelector('#store-links');
   if (stores) {

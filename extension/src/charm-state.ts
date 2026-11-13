@@ -12,6 +12,7 @@ const BASE_CHARM_SCALE = 1.15;
 
 export interface CharmState {
 	version: 1;
+	editionVersion: 1;
 	charmId: CharmId;
 	layoutMode: LayoutMode;
 	showMessages: boolean;
@@ -30,6 +31,7 @@ export interface CharmState {
 
 export const DEFAULT_STATE: Readonly<CharmState> = Object.freeze({
 	version: 1,
+	editionVersion: 1,
 	charmId: 'terminal',
 	layoutMode: 'hanging',
 	showMessages: true,
@@ -58,6 +60,7 @@ export function restoreState(value: unknown, charms: readonly CharmDefinition[] 
 	const selected = getCharm(candidate.charmId, charms);
 	return {
 		version: 1,
+		editionVersion: 1,
 		charmId: selected.id,
 		layoutMode: candidate.layoutMode === 'orbit' ? 'orbit' : 'hanging',
 		showMessages: typeof candidate.showMessages === 'boolean' ? candidate.showMessages : DEFAULT_STATE.showMessages,

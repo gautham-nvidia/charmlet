@@ -17,6 +17,10 @@ import { CALIFORNIA_COMPANIONS } from '../california-companions';
 import { DEFAULT_PUZZLES } from '../puzzle-core';
 import { command, readyFrame, reloadCharm } from './editor-helpers';
 
+// Pre-0.13 profiles had no edition marker. These fixtures exercise retained beta
+// artwork; the separate fresh-profile test exercises the real free starter.
+const LEGACY_BETA_STATE = { ...DEFAULT_STATE, editionVersion: undefined };
+
 interface OwnedEditor {
 	profile: string;
 	storage: string;
@@ -550,7 +554,7 @@ test('motivation has no category heading and reminder checkboxes remain compact'
 
 test(`${process.env.CHARMLET_TEST_PACKAGED === '1' ? 'installed VSIX' : 'navigation A'} searches installed charms and exposes quiet reminders and build identity`, async ({}, testInfo) => {
 	const editor = await launchOwnedEditor('charmlet-navigation-', ({ preferencesPath, companionPath }) => {
-		writeFileSync(preferencesPath, `${JSON.stringify({ ...DEFAULT_STATE, reducedMotion: true })}\n`);
+		writeFileSync(preferencesPath, `${JSON.stringify({ ...LEGACY_BETA_STATE, reducedMotion: true })}\n`);
 		const state = applyCompanionAction(defaultCompanionState(), { type: 'care-configure', kind: 'water', enabled: true, intervalMinutes: 15 }, Date.now() - 16 * 60000).state;
 		writeFileSync(companionPath, `${JSON.stringify(state)}\n`);
 	}, process.env.CHARMLET_TEST_PACKAGED === '1');
@@ -746,7 +750,7 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 
 test('soft charms squeeze at their attachment and festive defaults protect manual choices', async ({}, testInfo) => {
 	const editor = await launchOwnedEditor('charmlet-festive-soft-', ({ preferencesPath, companionPath }) => {
-		writeFileSync(preferencesPath, `${JSON.stringify({ ...DEFAULT_STATE, rotateMessages: false })}\n`);
+		writeFileSync(preferencesPath, `${JSON.stringify({ ...LEGACY_BETA_STATE, rotateMessages: false })}\n`);
 		writeFileSync(companionPath, `${JSON.stringify(defaultCompanionState())}\n`);
 	});
 	const { window, preferencesPath } = editor;
@@ -892,10 +896,36 @@ test('soft charms squeeze at their attachment and festive defaults protect manua
 });
 
 const installedPersonalization = process.env.CHARMLET_TEST_PACKAGED === '1';
+
+test(`${installedPersonalization ? 'installed VSIX' : 'free starter'} gives a new profile only its starter and keeps that boundary after reload`, async ({}, testInfo) => {
+	const editor = await launchOwnedEditor('charmlet-fresh-starter-', () => {}, installedPersonalization);
+	try {
+		if (installedPersonalization) {
+			await expect(editor.window.getByRole('button', { name: /^Restricted Mode/ })).toBeVisible();
+		}
+		await command(editor.window, 'Charmlet: Show Charm');
+		let frame = await readyFrame(editor.window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
+		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(31);
+		await expect(frame.getByRole('button', { name: 'Select Nimbus - Live Cloud', exact: true })).toHaveCount(0);
+		const cali = CHARMS.find(charm => charm.id === 'live:cali')!;
+		await frame.getByRole('button', { name: `Select ${cali.name}`, exact: true }).click();
+		await expect(frame.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+		expect(JSON.parse(readFileSync(editor.preferencesPath, 'utf8')).editionVersion).toBe(1);
+		await reloadCharm(editor.window);
+		frame = await readyFrame(editor.window);
+		await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'live:cali');
+		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(31);
+		await frame.locator('#app').screenshot({ path: testInfo.outputPath('free-starter-picker.png') });
+	} finally { await closeOwnedEditor(editor, testInfo); }
+});
+
 test(`${installedPersonalization ? 'installed VSIX' : 'playful charms'} reacts to taps and preserves 200 percent sizing`, async ({}, testInfo) => {
 	test.setTimeout(180000);
 	const editor = await launchOwnedEditor('charmlet-playful-ui-', ({ preferencesPath, companionPath }) => {
-		writeFileSync(preferencesPath, JSON.stringify({ ...DEFAULT_STATE, charmId: 'live:cali',
+		writeFileSync(preferencesPath, JSON.stringify({ ...LEGACY_BETA_STATE, charmId: 'live:cali',
 			charmPinned: true, showMessages: false, rotateMessages: false, reducedMotion: false }));
 		const companion = defaultCompanionState();
 		companion.mascot.enabled = false;
@@ -1000,7 +1030,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'playful charms'} reacts t
 test(`${installedPersonalization ? 'installed VSIX' : 'puzzle collection'} keeps playable boards and their progress across reloads`, async ({}, testInfo) => {
 	test.setTimeout(180000);
 	const editor = await launchOwnedEditor('charmlet-puzzle-ui-', ({ preferencesPath }) => {
-		writeFileSync(preferencesPath, JSON.stringify({ ...DEFAULT_STATE, charmId: 'fidget:cube',
+		writeFileSync(preferencesPath, JSON.stringify({ ...LEGACY_BETA_STATE, charmId: 'fidget:cube',
 			charmPinned: true, reducedMotion: true, showMessages: false }));
 	}, installedPersonalization);
 	try {
@@ -1098,7 +1128,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'live collection'} has res
 	test.setTimeout(180000);
 	const editor = await launchOwnedEditor('charmlet-live-tools-', ({ preferencesPath }) => {
 		writeFileSync(preferencesPath, JSON.stringify({
-			...DEFAULT_STATE, charmId: 'live:smiley', charmPinned: true, reducedMotion: true, rotateMessages: false,
+			...LEGACY_BETA_STATE, charmId: 'live:smiley', charmPinned: true, reducedMotion: true, rotateMessages: false,
 		}));
 	}, installedPersonalization);
 	try {
@@ -1271,7 +1301,7 @@ test(`${installedPersonalization ? 'installed VSIX' : 'mascot companion'} keeps 
 	test.setTimeout(180000);
 	const editor = await launchOwnedEditor('charmlet-mascot-', ({ preferencesPath }) => {
 		writeFileSync(preferencesPath, JSON.stringify({
-			...DEFAULT_STATE, charmId: 'live:cali', charmPinned: true, reducedMotion: true, rotateMessages: false,
+			...LEGACY_BETA_STATE, charmId: 'live:cali', charmPinned: true, reducedMotion: true, rotateMessages: false,
 		}));
 	}, installedPersonalization);
 	try {
@@ -1628,8 +1658,10 @@ test(`${installedPersonalization ? 'installed VSIX' : 'personalization'} keeps l
 });
 
 if (process.env.CHARMLET_TEST_PACKAGED === '1') {
-	test('installed VSIX runs in Restricted Mode and keeps garden progress', async ({}, testInfo) => {
-		const editor = await launchOwnedEditor('charmlet-installed-', () => {}, true);
+	test('installed VSIX retains the beta collection in Restricted Mode and keeps garden progress', async ({}, testInfo) => {
+		const editor = await launchOwnedEditor('charmlet-installed-', ({ preferencesPath }) => {
+			writeFileSync(preferencesPath, JSON.stringify(LEGACY_BETA_STATE));
+		}, true);
 		try {
 			const restricted = editor.window.getByRole('button', { name: /^Restricted Mode/ });
 			await expect(restricted).toBeVisible();

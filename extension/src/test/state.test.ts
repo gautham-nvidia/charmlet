@@ -13,6 +13,83 @@ import { StateStore } from '../state-store';
 import { StateWriter } from '../state-writer';
 import { displayedCharm, festiveCharm, festiveDay } from '../festive-charms';
 import { chainLinks, cordForCharm, cordPath } from '../cord-design';
+import { CordMotion } from '../cord-motion';
+import { AccessController } from '../access-controller';
+import { signAccessGrant, type AccessGrant } from '../access-grant';
+import { starterSelection, freeDownloadSelection } from '../catalogue-access';
+import { charmCollection } from '../charm-collections';
+import betaCatalogue from '../beta-catalogue.json';
+
+test('the starter remains fixed across gallery reordering and beta migration never grants future content', async context => {
+	const directory = mkdtempSync(join(tmpdir(), 'charmlet-access-migration-'));
+	context.after(() => rm(directory, { recursive: true, force: true }));
+	const secrets = { get: async () => undefined, set: async () => undefined };
+	const starter = starterSelection();
+	assert.equal(starter.length, 31);
+	assert.deepEqual(new Set(starterSelection([...CHARMS].reverse())), new Set(starter));
+	assert.equal(freeDownloadSelection().some(id => starter.includes(id)), false);
+	for (const group of new Set(CHARMS.map(charmCollection))) {
+		const count = CHARMS.filter(charm => starter.includes(charm.id) && charmCollection(charm) === group).length;
+		assert.equal(count, group === 'Terminal' ? 1 : 2, group);
+	}
+	const future = { ...CHARMS[0], id: 'trial:future-paid-design' };
+	const fresh = new AccessController({ directory: join(directory, 'fresh'), secrets });
+	await fresh.initialize(undefined);
+	assert.equal(fresh.catalogue([...CHARMS, future]).length, 31);
+	const reopen = new AccessController({ directory: join(directory, 'fresh'), secrets });
+	await reopen.initialize({ version: 1 }); // Existing metadata wins even if an old-looking preference is later supplied.
+	assert.equal(reopen.catalogue([...CHARMS, future]).length, 31);
+	const beta = new AccessController({ directory: join(directory, 'beta'), secrets });
+	await beta.initialize({ version: 1, charmId: 'live:robot' });
+	assert.equal(betaCatalogue.length, 234);
+	assert.equal(new Set(betaCatalogue).size, 234);
+	assert.deepEqual(new Set(beta.catalogue([...CHARMS, future]).map(charm => charm.id)), new Set(betaCatalogue));
+	const newPreferences = new AccessController({ directory: join(directory, 'new-preferences'), secrets });
+	await newPreferences.initialize(DEFAULT_STATE);
+	assert.equal(newPreferences.catalogue(CHARMS).length, 31);
+});
+
+test('native signed access expires without losing purchases, photos or earned flowers and rejects forged activation', async context => {
+	const directory = mkdtempSync(join(tmpdir(), 'charmlet-signed-access-'));
+	context.after(() => rm(directory, { recursive: true, force: true }));
+	let now = Date.UTC(2026, 10, 12, 12), stored: string | undefined;
+	const keys = await crypto.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']);
+	const publicKeys = { test: await crypto.subtle.exportKey('jwk', keys.publicKey) };
+	const options = { directory, keys: publicKeys, now: () => now,
+		secrets: { get: async () => stored, set: async (value: string) => { stored = value; } } };
+	const controller = new AccessController(options);
+	await controller.initialize(DEFAULT_STATE);
+	const base: AccessGrant = { iss: 'charmlet', aud: 'charmlet-apps', sub: 'a'.repeat(64),
+		iat: now / 1000, kind: 'trial', items: ['trial:new-electric-guitar'],
+		trialStartedAt: now / 1000, exp: now / 1000 + 30 * 86400 };
+	const token = await signAccessGrant(base, keys.privateKey, 'test');
+	const file = (value: string) => Buffer.from(JSON.stringify({ format: 'charmlet-access', version: 1, token: value }));
+	await controller.importDocument(file(token));
+	assert.equal(controller.catalogue(CHARMS).length, CHARMS.length);
+	const photo = { ...CHARMS[0], id: 'pack:photo-personal:portrait' };
+	const flower = { ...CHARMS[0], id: 'garden:hibiscus' };
+	now += 30 * 86400000;
+	await controller.observeClock();
+	const ids = controller.catalogue([...CHARMS, photo, flower]).map(charm => charm.id);
+	for (const id of ['terminal', 'live:cali', 'trial:new-electric-guitar', photo.id, flower.id]) {
+		assert(ids.includes(id));
+	}
+	assert.equal(ids.includes('live:robot'), false);
+	const reopened = new AccessController(options);
+	await reopened.initialize(DEFAULT_STATE);
+	assert.deepEqual(reopened.catalogue([...CHARMS, photo, flower]).map(charm => charm.id), ids);
+	const pieces = token.split('.');
+	pieces[1] = Buffer.from(JSON.stringify({ ...base, kind: 'pro', exp: undefined, trialStartedAt: undefined })).toString('base64url');
+	await assert.rejects(reopened.importDocument(file(pieces.join('.'))), /invalid|not recognized/);
+	assert.equal(reopened.catalogue(CHARMS).some(charm => charm.id === 'live:robot'), false);
+	const { exp: _expiry, trialStartedAt: _start, ...paid } = base;
+	await reopened.importDocument(file(await signAccessGrant({ ...paid, kind: 'pro', iat: now / 1000 }, keys.privateKey, 'test')));
+	assert.equal(reopened.catalogue(CHARMS).length, CHARMS.length);
+	now += 1000;
+	await reopened.importDocument(file(await signAccessGrant({ ...paid, kind: 'items', iat: now / 1000 }, keys.privateKey, 'test')));
+	assert.equal(reopened.catalogue(CHARMS).some(charm => charm.id === 'live:robot'), false);
+	await assert.rejects(reopened.importDocument(file(token)), /older/);
+});
 
 test('missing or invalid saved values restore a usable charm', () => {
 	assert.deepEqual(restoreState(undefined), DEFAULT_STATE);
@@ -26,7 +103,7 @@ test('missing or invalid saved values restore a usable charm', () => {
 
 test('hide and motion preferences survive a reload without trusting unknown fields', () => {
 	assert.deepEqual(restoreState({ cordLength: 180, hidden: true, reducedMotion: true, extra: 'ignored' }), {
-		version: 1, charmId: 'terminal', layoutMode: 'hanging', showMessages: true, rotateMessages: true, messageIndex: 0,
+		version: 1, editionVersion: 1, charmId: 'terminal', layoutMode: 'hanging', showMessages: true, rotateMessages: true, messageIndex: 0,
 		cordLength: 180, size: 100, hidden: true, reducedMotion: true,
 		festiveEnabled: true, charmPinned: false, cordChoices: {}, caliOutfit: 'daily', puzzles: DEFAULT_STATE.puzzles,
 	});
@@ -60,6 +137,44 @@ test('chain geometry remains finite and bounded during long pulls in every direc
 			assert.doesNotMatch(links, /NaN|Infinity/);
 			assert.ok((links.match(/M /g) ?? []).length < 180);
 		}
+	}
+});
+
+test('cord flex lags a pull, settles after release and resets without leftover motion', () => {
+	const motion = new CordMotion();
+	const anchor = { x: 0, y: 0 };
+	motion.reset({ x: 0, y: 180 });
+	motion.step(anchor, { x: 80, y: 180 });
+	assert.ok(motion.bend > 0, 'the middle trails a pull to the right');
+	assert.equal(motion.moving, true);
+	for (let frame = 0; frame < 240; frame++) {
+		motion.step(anchor, { x: 80, y: 180 });
+		assert.ok(Number.isFinite(motion.bend) && Math.abs(motion.bend) <= 64);
+	}
+	assert.equal(motion.bend, 0);
+	assert.equal(motion.moving, false);
+	motion.step(anchor, { x: -600, y: 40 });
+	assert.equal(motion.moving, true);
+	motion.reset();
+	assert.equal(motion.bend, 0);
+	assert.equal(motion.moving, false);
+	motion.step(anchor, { x: Number.NaN, y: 10 });
+	assert.equal(motion.moving, false);
+});
+
+test('flexible cords keep both attachment points and carry their metal links around the bend', () => {
+	const anchor = { x: 50, y: 0 }, hook = { x: 50, y: 200 };
+	assert.equal(cordPath(anchor, hook, 0), cordPath(anchor, hook));
+	assert.equal(chainLinks(anchor, hook, false, 0), chainLinks(anchor, hook));
+	const curve = cordPath(anchor, hook, 40);
+	assert.ok(curve.startsWith('M 50 0 Q '));
+	assert.ok(curve.endsWith(' 50 200'));
+	for (const balls of [true, false]) {
+		const links = chainLinks(anchor, hook, balls, 40);
+		const xs = [...links.matchAll(/M (-?[\d.]+)/g)].map(match => Number(match[1]));
+		assert.ok(Math.min(...xs) < 35, 'links follow the curved middle rather than the straight chord');
+		assert.ok(Math.max(...xs) < 53);
+		assert.doesNotMatch(links, /NaN|Infinity/);
 	}
 });
 

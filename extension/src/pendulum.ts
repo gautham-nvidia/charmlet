@@ -45,11 +45,15 @@ export class Pendulum {
 		return -Math.atan2(this.body.position.x - this.layout.anchorX, this.body.position.y - this.layout.anchorY);
 	}
 
-	resize(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode, attachment: CharmAttachment = DEFAULT_ATTACHMENT) {
+	resize(width: number, height: number, cordLength: number, size = DEFAULT_STATE.size, mode: LayoutMode = DEFAULT_STATE.layoutMode, attachment: CharmAttachment = DEFAULT_ATTACHMENT, anchorFraction = .5) {
 		this.returnMotion = undefined;
 		this.release();
 		const previousRadius = this.layout.bodyRadius;
 		this.layout = getLayout(width, height, cordLength, size, mode, attachment);
+		if (mode === 'hanging' && Number.isFinite(anchorFraction)) {
+			const inset = this.layout.visualRadius + this.layout.edgePadding;
+			this.layout.anchorX = clamp(this.layout.width * anchorFraction, inset, this.layout.width - inset);
+		}
 		const ratio = this.layout.bodyRadius / previousRadius;
 		Body.scale(this.body, ratio, ratio);
 		Body.setInertia(this.body, Infinity);

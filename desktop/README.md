@@ -2,7 +2,9 @@
 
 Charmlet Desktop is an unpublished Windows/macOS developer beta. It reuses the extension's charm renderer, physics, Focus/Learn/Garden controller, validated pack parser and confirmed JSON stores in one floating tray-managed window.
 
-The **0.9.0 candidate** starts with just the charm and cord. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
+The **0.10.0 candidate** starts with just the charm and cord. New profiles have 31 free starter charms; existing beta profiles keep their beta collection. Signed trial/purchase activation is shared with VS Code, with provider setup still required. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
+
+The packaged `dist/PRIVACY.md` explains local storage and optional activation refresh. The shared [privacy notice](../extension/PRIVACY.md) and [service setup guide](../service/README.md) cover email verification and purchases. Personal photos, focus notes and garden progress remain local.
 
 Drag **Move** to place the charm, or focus that button and use the arrow keys (Shift moves farther). Pulling the charm itself stretches the cord within the current display's available space, then releases into the shared bounce. The peg starts near the screen's top edge; compact controls no longer restrict the play area.
 

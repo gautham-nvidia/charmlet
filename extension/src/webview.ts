@@ -21,6 +21,7 @@ import { fidgetAction } from './interactive-motion';
 import { createTapWiggle } from './tap-wiggle';
 import { CALI_WEEK, restoreCaliOutfit } from './cali-wardrobe';
 import { createPuzzleView, type PuzzleView } from './puzzle-view';
+import type { AccessSnapshot } from './access-controller';
 
 declare function acquireVsCodeApi(): {
 	getState(): unknown;
@@ -86,6 +87,8 @@ const messageCard = element<HTMLDivElement>('message-card');
 const nextMessage = element<HTMLButtonElement>('next-message');
 const importPack = element<HTMLButtonElement>('import-pack');
 const removePack = element<HTMLButtonElement>('remove-pack');
+const browsePacks = element<HTMLButtonElement>('browse-packs');
+const activateAccess = element<HTMLButtonElement>('activate-access');
 const mediaRoot = new URL('.', charmImage.src);
 let charms: readonly CharmDefinition[] = CHARMS;
 let state = restoreState(api.getState(), charms);
@@ -95,6 +98,7 @@ let keyboardHeld = false;
 let saveRevision = 0;
 let visible = true;
 let ready = false;
+let celebrationsEnabled = false;
 let scale = 1;
 let frameId: number | undefined;
 let previousTime = 0;
@@ -138,7 +142,10 @@ const companionUI = createCompanionView({
 	onActivity: scheduleMessages,
 	onMilestone: () => { if (visible && !state.hidden && activeCharm.id !== MASCOT_CHARM) { winCelebration.show(); } },
 	onWin: () => liveSmiley.celebrate(),
-	onSnapshot: snapshot => mascotUI.receive(snapshot),
+	onSnapshot: snapshot => {
+		celebrationsEnabled = snapshot.state.wins.celebrate;
+		mascotUI.receive(snapshot);
+	},
 	selectMascot: () => selectCharm(MASCOT_CHARM),
 });
 navigationUI = createNavigationView({
@@ -472,7 +479,9 @@ function tap(direction = -1) {
 	if (state.hidden || popupOpen() || !ready || !visible || document.hidden) { return; }
 	nudge(direction * .45);
 	mascotUI.encourage();
-	liveSmiley.playful();
+	const reaction = liveSmiley.playful();
+	if (celebrationsEnabled && reaction === 'happy') { winCelebration.show('confetti'); }
+	else if (celebrationsEnabled && reaction === 'compile') { winCelebration.show(); }
 	puzzleUI?.tap();
 	tapWiggle.play();
 }
@@ -777,6 +786,8 @@ rotateMessages.addEventListener('change', () => {
 	scheduleMessages();
 });
 importPack.addEventListener('click', () => api.postMessage({ type: 'command', command: 'charmlet.importPack' }));
+activateAccess.addEventListener('click', () => api.postMessage({ type: 'command', command: 'charmlet.importPack' }));
+browsePacks.addEventListener('click', () => api.postMessage({ type: 'browse-packs' }));
 removePack.addEventListener('click', () => api.postMessage({ type: 'command', command: 'charmlet.removePack' }));
 sizeInput.addEventListener('input', () => {
 	state.size = Number(sizeInput.value);
@@ -827,6 +838,15 @@ window.addEventListener('message', event => {
 	const message: unknown = event.data;
 	if (!message || typeof message !== 'object' || !('type' in message)) {
 		return;
+	}
+	if ('access' in message && message.access && typeof message.access === 'object') {
+		const access = message.access as Partial<AccessSnapshot>;
+		if (typeof access.label === 'string' && typeof access.detail === 'string') {
+			element<HTMLElement>('access-label').textContent = access.label;
+			element<HTMLElement>('access-detail').textContent = access.detail;
+			browsePacks.disabled = access.canBrowse !== true;
+			activateAccess.disabled = access.canActivate !== true;
+		}
 	}
 	if (message.type === 'state' && 'state' in message) {
 		cancelDrag();

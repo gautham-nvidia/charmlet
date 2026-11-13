@@ -1,8 +1,8 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
-import { copyFileSync, cpSync, existsSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { CHARMS, ORIGINAL_CHARMS } from '../charm-catalog';
 import { charmCollection } from '../charm-collections';
-import { getLayout } from '../charm-state';
+import { DEFAULT_STATE, getLayout } from '../charm-state';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { command, commandInput, endOfDocument, primaryModifier, readyFrame, reloadCharm } from './editor-helpers';
@@ -87,11 +87,17 @@ async function dragCharm(window: Page, frame: Frame, deltaX: number, deltaY: num
 	await window.mouse.up();
 }
 
-test('real-editor charm supports docking, gestures, focus, persistence and reduced motion', async ({}, testInfo) => {
+test('existing beta editor supports docking, gestures, focus, persistence and reduced motion', async ({}, testInfo) => {
 	// Full desktop scenario includes host startup, reloads, gestures and evidence capture.
 	// Keep individual assertion and performance limits independent of this total budget.
 	test.setTimeout(420000);
 	const profile = mkdtempSync(join(tmpdir(), 'charmlet-ui-'));
+	const storage = join(profile, 'user', 'User', 'globalStorage', 'gautham-nvidia.charmlet');
+	mkdirSync(storage, { recursive: true });
+	// This comprehensive artwork scenario follows a pre-0.13 beta profile.
+	// The companion UI suite separately verifies an empty profile's starter.
+	writeFileSync(join(storage, 'preferences.json'),
+		JSON.stringify({ ...DEFAULT_STATE, editionVersion: undefined }));
 	const scratchFile = join(profile, 'charmlet-trial.ts');
 	writeFileSync(scratchFile, "export const greeting = 'Hello, Charmlet!';\n");
 	const environment: Record<string, string> = {};

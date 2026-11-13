@@ -81,17 +81,26 @@ export function cordForCharm(charm: CharmDefinition, choices: CordChoices = {}):
 export interface CordPoint { x: number; y: number; }
 const number = (value: number) => value.toFixed(2);
 
-export function cordPath(anchor: CordPoint, hook: CordPoint): string {
-	return `M ${anchor.x} ${anchor.y} Q ${anchor.x + (hook.x - anchor.x) * .45} ${(anchor.y + hook.y) / 2} ${hook.x} ${hook.y}`;
+function cordControl(anchor: CordPoint, hook: CordPoint, bend: number): CordPoint {
+	const dx = hook.x - anchor.x, dy = hook.y - anchor.y;
+	const distance = Math.hypot(dx, dy) || 1;
+	const limit = Math.min(64, distance * .3);
+	const offset = Number.isFinite(bend) ? Math.max(-limit, Math.min(limit, bend)) : 0;
+	return { x: anchor.x + dx * .45 - dy / distance * offset, y: (anchor.y + hook.y) / 2 + dx / distance * offset };
+}
+
+export function cordPath(anchor: CordPoint, hook: CordPoint, bend = 0): string {
+	const control = cordControl(anchor, hook, bend);
+	return `M ${anchor.x} ${anchor.y} Q ${control.x} ${control.y} ${hook.x} ${hook.y}`;
 }
 
 /** Bounded link geometry follows the same quadratic curve as the attachment path. */
-export function chainLinks(anchor: CordPoint, hook: CordPoint, balls = false): string {
+export function chainLinks(anchor: CordPoint, hook: CordPoint, balls = false, bend = 0): string {
 	const dx = hook.x - anchor.x, dy = hook.y - anchor.y;
 	const distance = Math.hypot(dx, dy);
 	if (!Number.isFinite(distance) || distance < 8) { return ''; }
 	const count = Math.min(180, Math.floor(distance / (balls ? 6 : 5)));
-	const controlX = anchor.x + dx * .45, controlY = (anchor.y + hook.y) / 2;
+	const { x: controlX, y: controlY } = cordControl(anchor, hook, bend);
 	const paths: string[] = [];
 	for (let index = 1; index < count; index++) {
 		const t = index / count, u = 1 - t;

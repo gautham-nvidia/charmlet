@@ -1,5 +1,7 @@
 # Host Charmlet on Vercel
 
+**Budget update, 2026-11-10:** the owner wants to avoid monthly platform charges at launch. The [Phase 14 plan](phase-14-product-and-pricing-plan.md) recommends evaluating Cloudflare Pages Free for the commercial static site, with protected paid files delivered by the commerce provider. This Vercel guide remains the alternative setup guide; its commercial-plan requirements still apply.
+
 **Use Vercel for the Charmlet website and free extension download. When paid packs are ready, connect a hosted shop for checkout and private delivery.** The current site needs no database, payment secret or image-generation service.
 
 | Item | Current value |

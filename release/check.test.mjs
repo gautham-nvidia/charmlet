@@ -26,6 +26,14 @@ test('a coherent candidate records identity and checksum without making it publi
   assert.match(result.sha256, /^[a-f0-9]{64}$/);
   assert.equal(publicationBlockers({ ...data, target: 'artifact' }).length, 2);
 });
+
+test('the public download portal must not ship a raw installer alongside its email gate', () => {
+  const data = fixture();
+  data.catalogue.extensionDownload = './download.html';
+  assert.throws(() => validateCandidate(data), /bypasses email verification/);
+  data.siteVsix = null;
+  assert.equal(validateCandidate(data).version, '0.5.0');
+});
 test('wrong version, publisher, XML identity and pricing cannot be released', () => {
   for (const change of [
     data => { data.expectedVersion = '0.5.1'; },

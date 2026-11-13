@@ -1,17 +1,21 @@
 # Charmlet website
 
-The homepage introduces Cali and the app; **`charms.html`** is the searchable **234-charm gallery**, with sixteen collections including all 34 Music Icons. Visitors can try live companions, fidgets and puzzle boards without leaving their gallery position. The app, installation and current included collection lead the site; no paid checkout or merchandise is advertised as available.
+The homepage shows where Charmlet hangs on Desktop and in VS Code, then demonstrates focus, encouragement, cheers and breaks. **`charms.html`** is the searchable **234-charm gallery**, with sixteen collections including 34 Music Icons. The free starter has 31 fixed picks; the shop shows additional free claims, small extras and the planned $7.49 launch / $17.49 regular Pro purchase. Email delivery and sales are off in the checked-in configuration.
 
-The site is static and uses the extension's locked build dependencies. It does not call an image-generation service. The [brand kit](../docs/charmlet-brand-kit.md) records the owner's video reference and visual direction. See [Vercel hosting](../docs/vercel-hosting.md) and [digital packs / future merchandise](../docs/monetization-and-payments.md) for account setup.
+The site is static and uses the extension's locked build dependencies. It does not call an image-generation service. The [brand kit](../docs/charmlet-brand-kit.md) records the visual direction. The [current hosting and payment guide](../service/README.md) covers Cloudflare, Brevo, Lemon Squeezy and protected file delivery. Earlier Vercel and merchant comparisons remain background; merchandise is deferred.
 
 ## Source and output
 
 | Files | Responsibility |
 |---|---|
-| `index.html`, `home.js` | Homepage, companion switching, collection cards, garden and installation tabs |
+| `index.html`, `next.js`, `next.css` | Approved Terminal identity, workspace placement, interactive moments, local locket prototype and email dialog |
+| `design-theme.js`, `gallery-theme.css` | Saved Auto / Light / Dark themes |
+| `about.html`, `about-us.html`, `press.html`, `information.*` | Product, California origin and press information |
+| `shop.*`, `download.*`, `access-client.js`, `store.css` | Basket, verified email, private downloads and signed app access |
+| `commerce.json`, generated `commerce-public.json` | Public service settings and server-derived prices; no private credentials |
 | `charms.html`, `app.js` | Search, collection filters, URL state, preview dialog and optional legacy downloads |
 | `site.css`, `site.js` | Shared styling, public product metadata and Reduced Motion-aware reveals |
-| `assets/fonts/` | Self-hosted Manrope and its SIL Open Font License |
+| `assets/fonts/` | Self-hosted Manrope and Bricolage Grotesque, with their font licences |
 | `demo.ts` | Shared app physics, live renderer and puzzle preview; bounded page-specific size/camera |
 | `trial-collections.mjs` | Sixteen current themed collections, ordered with the shared app helper |
 | `launch.json`, `launch.mjs` | Validated public desktop/shop links; null means hidden |
@@ -24,7 +28,7 @@ The site is static and uses the extension's locked build dependencies. It does n
 | `live-art-assets.json` | Hashes/provenance for 36 live textures and thumbnails |
 | `extras.json`, `collections.json`, `assets/previews/` | Preserved historical metadata, art studies and legacy downloads |
 | `styles.css`, `concepts.*`, `studio/` | Legacy review/concept styling and the disabled Studio route |
-| `build.mjs` | Validates inputs, copies assets/VSIX and emits `dist/` |
+| `build.mjs`, `security-headers.mjs` | Validates inputs and emits public previews, security headers and `dist/`; excludes raw installers/packs |
 
 Generated `dist/` is ignored by Git. Root `vercel.json` builds it from a clean checkout. `.vercelignore` excludes raw authoring output, credentials, local profiles, session notes, desktop archives and dependency directories.
 
@@ -38,7 +42,6 @@ The first install/build can take several minutes; the commands print progress. R
 Set-Location "C:\dev\Lucky-Charms"
 npm ci --prefix extension --include=dev
 npm --prefix extension run compile-tests
-npm --prefix extension run package:vsix
 node website/build.mjs
 node website/server.mjs
 ```
@@ -55,15 +58,14 @@ With the server running, open a separate terminal. The browser checks use instal
 Set-Location "C:\dev\Lucky-Charms"
 node website/sync-trial-catalogue.mjs --check
 node website/check.mjs
-node website/check-review.mjs
 node --test website/art-cutout.test.mjs website/studio/test/core.test.mjs website/studio/test/service.test.mjs
 ```
 
-For a different running port, set `CHARMLET_GALLERY_URL` to that server's URL before the two browser checks.
+For a different running port, set `CHARMLET_GALLERY_URL` to that server's URL before the browser check.
 
-`check.mjs` covers all collections, accent-insensitive search and URL restoration, gallery focus/scroll position, actual VSIX bytes, retained pack URLs, installation tabs, garden, drag/reset/close lifecycle, fifteen live companions, three puzzle boards, Reduced Motion and 320/390/768-pixel layouts. Store/download fixtures verify visibility without navigating to checkout or claiming those destinations are live.
+`check.mjs` covers all collections, accent-insensitive search and URL restoration, gallery focus/scroll position, placement, visible confetti, garden, locket controls, drag/reset/close lifecycle, fifteen live companions, three puzzle boards, Reduced Motion and 320/390/768-pixel layouts. It verifies that public builds exclude raw installers and packs. Isolated provider fixtures exercise email, activation, free claims, authenticated download, session restoration and checkout confirmation without sending mail or making a payment.
 
-`check-review.mjs` validates curation, all 253 PNG hashes/dimensions/transparency, 100% artwork sizing, families including Music Icons, original comparisons, browser downloads and mobile layout. Current 0.12.0 artist captures are distinct from historical 0.11.0 and earlier evidence.
+For local owner artwork review only, build with `node website/build.mjs --review-downloads` and run `node website/check-review.mjs`. That mode includes the review downloads and is **not a production deployment**. Rebuild without the flag before public-site checks or hosting. Version-labelled installed-app captures remain historical evidence; they are not silently relabelled as newer builds.
 
 ## Updating artwork
 
@@ -89,3 +91,18 @@ Changed payloads get new immutable pack identities; retain previously shared dow
 Shop and desktop links start hidden. The local Windows archive does not establish a public download URL. Marketplace/Open VSX links are independently validated by `distribution.json`. Future paid digital collections use hosted checkout/private delivery; merchandise can join that store later.
 
 The old `/studio/` URL remains unavailable. The public static `/api/studio/config` exposes disabled status only, and the refreshed navigation does not promote Studio. Local photo charms inside the apps remain free. Legacy Studio tests use fake licence/order responses and isolated local sessions.
+
+## Optional Phase 14 design review
+
+**On the Windows PC (PowerShell), from the repository root:**
+
+```powershell
+node website/build.mjs --design-preview
+node website/server.mjs --design-preview
+```
+
+The optional build adds `next.html`, the refined logo studies, email signup preview, privacy draft and post-email installation page. The server flag maps `/` to `next.html`; `/index.html` still serves the existing homepage. Set `PORT` if the default 4173 is occupied. A normal build excludes the unapproved design pages.
+
+`audience.json` contains only a provider, a public Brevo form URL and public contact email. Both destinations start null. Until configured, the signup dialog explicitly shows a disabled design preview and sends nothing. No API keys or subscriber records belong in this repository. The form service handles confirmation and email delivery; the free beta URL is public, not protected by this UI.
+
+See [the Phase 14 website and audience guide](../docs/phase-14-website-and-audience.md) for sender setup, optional offers, email templates and checks before enabling collection.

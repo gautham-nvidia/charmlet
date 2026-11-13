@@ -7,26 +7,29 @@
  <meta name="theme-color" content="#19362e">
  <title>Explore the collection — Charmlet</title>
  <link rel="icon" type="image/svg+xml" href="./assets/default/keycap.svg">
+ <script src="./design-theme.js"></script>
  <link rel="stylesheet" href="./site.css">
+ <link rel="stylesheet" href="./gallery-theme.css">
 </head>
 <body>
  <a class="skip-link" href="#catalogue">Skip to charms</a>
  <header class="site-header">
-  <a class="brand" href="./" aria-label="Charmlet home"><span class="brand-mark" aria-hidden="true">c.</span>charmlet</a>
-  <nav aria-label="Main navigation"><a href="./#companions">Meet Cali</a><a href="./charms.html" aria-current="page">Explore charms</a><a href="./#how-it-works">How it works</a><a data-shop-link hidden>Shop collections</a></nav>
-  <a class="button button-small button-primary" href="./#install">Get Charmlet <span aria-hidden="true">↗</span></a>
+  <a class="brand" href="./" aria-label="Charmlet home"><span class="brand-mark" aria-hidden="true"><img src="./assets/default/keycap.svg" alt="" width="36" height="42"></span>charmlet</a>
+  <nav aria-label="Main navigation"><a href="./#playground">Meet Cali</a><a href="./charms.html" aria-current="page">Explore charms</a><a href="./about.html">How it works</a><a href="./shop.html">Free &amp; paid picks</a></nav>
+  <div class="gallery-theme" aria-label="Website colour theme"><button data-theme-choice="light">Light</button><button data-theme-choice="dark">Dark</button><button data-theme-choice="auto">Auto</button></div>
+  <a class="button button-small button-primary" href="./#get">Get Charmlet <span aria-hidden="true">↗</span></a>
  </header>
  <main class="section-shell" id="catalogue">
-  <header class="library-header"><p class="eyebrow">LITTLE THINGS. YOUR KIND OF THINGS.</p><h1>Find a little<br><em>piece of you.</em></h1><p><span data-charm-count>234</span> digital charms, all included in the trial. Pick a collection, find a favourite and give it a little swing.</p></header>
+  <header class="library-header"><p class="eyebrow">LITTLE THINGS. YOUR KIND OF THINGS.</p><h1>Find a little<br><em>piece of you.</em></h1><p>Explore <span data-charm-count>234</span> companion designs. Pick a collection, find a favourite and give it a little swing. <a href="./shop.html">See the free picks and extras ↗</a></p></header>
   <div class="library-layout">
    <aside class="library-sidebar" aria-label="Filter the collection"><h2 class="filter-heading">THE COLLECTIONS</h2><div id="group-filters" class="group-filters" role="group" aria-label="Charm groups"></div></aside>
    <section class="library-results" aria-label="Charm collection">
     <div class="catalogue-controls"><label class="search-label"><span class="visually-hidden">Search charms</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"></circle><path d="m15 15 5 5"></path></svg><input id="search" type="search" placeholder="Find your little thing…" aria-label="Search charms" autocomplete="off"></label><button id="surprise-charm" class="button button-small button-secondary" type="button" disabled>Surprise me ↗</button></div>
     <section id="collection-story" class="collection-story" aria-label="Selected collection" hidden></section>
-    <div class="catalogue-tools"><p id="result-count" class="result-count" role="status" aria-live="polite">Loading the collection…</p><span class="library-included">ALREADY IN YOUR TRIAL</span></div>
+    <div class="catalogue-tools"><p id="result-count" class="result-count" role="status" aria-live="polite">Loading the collection…</p><span class="library-included">FIND YOUR LITTLE THING</span></div>
     <ul id="charm-grid" class="charm-grid" aria-label="Charms"></ul>
     <div id="empty-state" class="empty-state" hidden><h2>Nothing here just yet.</h2><p>Try another name or explore a different collection.</p><button id="reset-filters" class="button button-secondary" type="button">Reset filters</button></div>
-    <p class="library-bottom">Found your favourite? <a href="./#install">Install Charmlet</a>, open Charms and choose it. <a href="./#how-to">Using an older pack?</a></p>
+    <p class="library-bottom">Found your favourite? <a href="./download.html">Get Charmlet</a>, or <a href="./shop.html">choose your extras</a>. Artist studies remain subject to public-distribution review.</p>
    </section>
   </div>
   <p id="page-status" class="page-status" role="status" hidden></p>
@@ -35,11 +38,11 @@
   <div class="preview-heading"><span>YOUR LITTLE PLAYGROUND</span><button id="preview-close" class="quiet-button preview-close" type="button" aria-label="Close charm preview" autofocus>Close ×</button></div>
   <div class="hero-demo"><div class="demo-scene"><div id="demo-stage" data-charm-size="160" data-ready="false" data-running="false" data-dragging="false" data-frames="0" data-cord="126"><div id="demo-rig"><svg id="demo-cord" aria-hidden="true"><path id="demo-thread"></path></svg><span id="demo-anchor" aria-hidden="true"></span><button id="demo-charm" type="button" aria-label="Swing Terminal charm"><img id="demo-image" src="./assets/default/keycap.svg" alt="Terminal charm" width="72" height="84" draggable="false"></button></div></div></div><div class="demo-copy"><div class="demo-identity"><h2 id="demo-name">Terminal</h2><span>drag · tap · play</span></div><p id="demo-hint" aria-live="polite">Drag the charm, then let it settle.</p><div class="demo-actions"><button id="demo-nudge" class="button button-small button-secondary" type="button">Try a swing ↔</button><button id="demo-puzzle" class="button button-small button-secondary" type="button" aria-controls="puzzle-editor" aria-expanded="false" hidden>Play puzzle</button><button id="demo-reset" class="quiet-button" type="button">Reset</button></div></div></div>
   <p id="preview-description" class="preview-description"></p>
-  <div class="preview-downloads"><a class="text-link" href="./#install">Included in Charmlet. Get the app ↗</a><div id="optional-pack" hidden><p>Already included in the current trial. An optional image pack is available for older builds.</p><a id="preview-download" class="download-link">Download optional pack</a></div></div>
+  <div class="preview-downloads"><a class="text-link" href="./shop.html">See free picks &amp; extras ↗</a><div id="optional-pack" hidden><p>Optional owner-review image pack for older builds.</p><a id="preview-download" class="download-link">Download optional pack</a></div></div>
  </dialog>
  <dialog id="puzzle-editor" aria-labelledby="puzzle-title" hidden></dialog>
- <footer class="site-footer section-shell"><div><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">c.</span>charmlet</a><p>A little company for your big ideas.</p></div><nav aria-label="Footer navigation"><a href="./">Home</a><a href="./#install">Get the app</a><a href="https://github.com/gautham-nvidia/charmlet" target="_blank" rel="noopener noreferrer">Project & support ↗</a><a href="./review.html">Design review</a><a data-shop-link hidden>Shop collections</a></nav><small data-release-label>Free trial</small></footer>
- <noscript><p class="page-status">Enable JavaScript to search the collection and try the previews. <a href="./#install">Get Charmlet</a> to explore the included charms in the app.</p></noscript>
+ <footer class="site-footer section-shell"><div><a class="brand" href="./"><span class="brand-mark" aria-hidden="true"><img src="./assets/default/keycap.svg" alt="" width="36" height="42"></span>charmlet</a><p>Developed in Silicon Valley. Made in California.</p></div><nav aria-label="Footer navigation"><a href="./about.html">About Charmlet</a><a href="./about-us.html">About us</a><a href="./press.html">Press</a><a href="./shop.html">Free &amp; paid picks</a><a href="./privacy.html">Privacy</a></nav><small data-release-label>Free starter &amp; optional Pro</small></footer>
+ <noscript><p class="page-status">Enable JavaScript to search the collection and try the previews. <a href="./about.html">Read about Charmlet</a>.</p></noscript>
  <script src="./demo.js" defer></script>
  <script type="module" src="./app.js"></script>
 </body>

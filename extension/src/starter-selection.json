@@ -1,0 +1,25 @@
+{
+  "starter": [
+    "terminal", "live:cali", "live:smiley", "fidget:spinner", "fidget:cube",
+    "trial:new-midi-keyboard", "trial:new-acoustic-guitar",
+    "trial:artist-travis-scott", "trial:artist-whitney-houston",
+    "trial:extra-foggy-bay", "trial:extra-granite-dome",
+    "trial:new-red-panda", "trial:new-golden-retriever",
+    "trial:starter-chip", "trial:starter-wafer",
+    "trial:extra-desert-arch", "trial:extra-alpine-lake",
+    "trial:extra-night-sky", "trial:new-ringed-planet",
+    "trial:new-zodiac-aries", "trial:new-zodiac-libra",
+    "trial:new-diamond", "trial:new-sapphire",
+    "trial:starter-evil-eye", "trial:new-tamil-kolam",
+    "trial:new-basketball", "trial:new-football",
+    "trial:new-pumpkin-patch", "trial:new-diwali-diyas",
+    "trial:flower-sunflower", "trial:flower-marigold"
+  ],
+  "freeDownloads": [
+    "live:cloud", "fidget:tiles", "trial:new-grand-piano", "trial:artist-daft-punk",
+    "trial:extra-bridge-lights", "trial:new-curled-cat", "trial:starter-circuit",
+    "trial:extra-canyon-river", "trial:new-earth", "trial:new-zodiac-taurus",
+    "trial:new-rose-quartz", "trial:starter-drishti", "trial:new-cricket",
+    "trial:new-christmas-tree", "trial:flower-daisy"
+  ]
+}

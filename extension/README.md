@@ -1,11 +1,13 @@
 # Charmlet: Coding Charms
 
-184 offline trial charms with matched cords, fifteen live companions, interactive fidgets and puzzles, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders.
+Start with 31 free charms, interactive fidgets and puzzles, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders. The current catalogue contains 234 designs; existing beta profiles retain their beta collection.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Music Icons trial, version 0.12.0.** Charmlet lives in a dockable VS Code view, not over your code
+**Free starter / Pro candidate, version 0.13.0.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 It also works in Restricted Mode without asking you to trust workspace code.
+
+The email-only 30-day trial and optional Pro/individual purchases are implemented but not connected to live provider accounts. Pro is planned at **$7.49 launch / $17.49 regular, once**, across the current apps. Public activation keys and service addresses must be configured before those features open. [Setup and delivery details](https://github.com/gautham-nvidia/charmlet/blob/main/service/README.md).
 
 <img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/navigation.png" width="240" alt="Charmlet main view, motivation and direct navigation"> <img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/picker.png" width="240" alt="Search the included trial collection">
 

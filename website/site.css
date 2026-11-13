@@ -1,4 +1,5 @@
 @import url("./puzzle.css");
+@import url("./celebration.css");
 @font-face { font-family: Manrope; src: url("./assets/fonts/manrope-variable.ttf") format("truetype"); font-style: normal; font-weight: 200 800; font-display: swap; }
 :root {
   color-scheme: light;

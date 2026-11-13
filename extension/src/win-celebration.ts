@@ -16,15 +16,15 @@ export function createWinCelebration(charm: HTMLElement, reducedMotion: () => bo
 			burst.dataset.kind = kind;
 			burst.dataset.still = String(reducedMotion());
 			burst.setAttribute('aria-hidden', 'true');
-			const count = kind === 'confetti' ? 18 : 10;
+			const count = kind === 'confetti' ? 28 : 10;
 			for (let index = 0; index < count; index++) {
 				const particle = document.createElement('i');
 				const angle = index * Math.PI * 2 / count;
-				const distance = 52 + index % 3 * 12;
+				const distance = 64 + index % 4 * 14;
 				particle.style.setProperty('--win-x', `${Math.cos(angle) * distance}px`);
 				particle.style.setProperty('--win-y', `${Math.sin(angle) * distance}px`);
 				particle.style.setProperty('--win-delay', `${index % 3 * 80}ms`);
-				particle.style.backgroundColor = ['#f5d58f', '#b4e6d2', '#f3bba7'][index % 3];
+				particle.style.backgroundColor = ['#f5c85f', '#8dd8b6', '#ef9e87', '#8aaee8', '#c5a1df'][index % 5];
 				burst.append(particle);
 			}
 			charm.append(burst);

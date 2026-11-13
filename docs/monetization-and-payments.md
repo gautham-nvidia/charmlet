@@ -1,6 +1,8 @@
 # Digital packs now, merchandise later
 
-**Keep the useful app free. Use Shopify when the first paid original packs are ready, with the Vercel website as the product experience. Add physical merchandise to that same store later.** This gives paid downloads an established checkout and delivery path without building a payment backend.
+**Updated launch recommendation, 2026-11-10: use a provider with no monthly ecommerce subscription.** The owner does not want Shopify's $39/month cost yet. Prefer **Lemon Squeezy**, subject to seller/country approval, for hosted digital delivery and an optional cross-app Pro licence. **Payhip Free** is an alternative. Reconsider Shopify when physical merchandise is ready.
+
+The [Phase 14 product and pricing plan](phase-14-product-and-pricing-plan.md) proposes a free starter and a 30-day Pro preview without a card. The owner selected **$7.49 launch / $17.49 regular for a one-time Pro purchase** across the current apps on 2026-11-10. The plan also defines visual changes, requested collections, existing-user protection and required implementation. Checkout is not activated. Cloudflare Pages Free is the proposed commercial static host within its limits; the existing Vercel setup remains documented.
 
 The current **234-charm trial, including all 34 Music Icons, is free**. No merchant account, paid product, price, subscription or live checkout has been activated. The recommendations and USD prices below are proposals, checked against official sources on **2026-11-10**.
 
@@ -8,11 +10,13 @@ The current **234-charm trial, including all 34 Music Icons, is free**. No merch
 
 | Provider | Digital delivery | Future merchandise | Best use for Charmlet |
 |---|---|---|---|
-| **Shopify** | Free **Digital Products** app can email files automatically after successful payment | Products, variants, stock, shipping and fulfillment integrations in the same store | **Recommended when paid packs launch**, because merchandise is part of the plan |
+| **Lemon Squeezy** | Protected product files, purchase receipts and optional generated software licence keys | Focus on digital products; reevaluate the store for physical goods | **Recommended initial digital option**, subject to approval; no required monthly ecommerce fee |
+| **Payhip Free** | Immediate download page and email link after purchase; software keys documented | Physical products are supported; assess fulfillment needs later | Alternative with no monthly plan; 5% platform fee plus gateway fees |
+| **Shopify** | Free **Digital Products** app can email files automatically after successful payment | Products, variants, stock, shipping and fulfillment integrations in the same store | **Future merchandise option** once its subscription is justified |
 | **Stripe** | Payment Links/Checkout take payment; add a delivery partner or your own reliable fulfillment service | Flexible, but catalog, shipping, inventory and fulfillment need additional software | Good if you want a custom store and are willing to maintain it |
 | **Square** | Standard Square Online digital items require manual email delivery; its docs point to **SendOwl** for automation | Particularly useful if an existing Square/POS operation also sells in person | Reasonable if already using Square; extra delivery setup for digital packs |
 
-You do not need all three. For Shopify, start with **Shopify Payments if your country/business is eligible**, configured inside Shopify. A separate Stripe Payment Link does not automatically create a Shopify order or trigger Shopify file delivery. An external gateway can also incur Shopify's additional third-party transaction fee.
+Choose one initial checkout/delivery route. For the future Shopify option, start with **Shopify Payments if your country/business is eligible**, configured inside Shopify. A separate Stripe Payment Link does not automatically create a Shopify order or trigger Shopify file delivery. An external gateway can also incur Shopify's additional third-party transaction fee.
 
 Standard Shopify Payments, Stripe Payments and Square processing do not automatically make the provider the merchant of record. You remain responsible for the applicable business, refund and tax obligations. Tax calculation is not the same as registration, filing or remittance. Stripe Managed Payments is a separate merchant-of-record offering with its own eligibility and additional fees; evaluate it separately if choosing that route.
 
@@ -21,7 +25,8 @@ Standard Shopify Payments, Stripe Payments and Square processing do not automati
 | Offer | Proposed USD price | Clear promise |
 |---|---:|---|
 | Current app and trial collection | $0 | Existing offline features and included artwork |
-| New original themed pack | $4.99 once | 5–8 clearly listed new artworks, with import instructions |
+| Proposed new Pro edition | $7.49 launch / $17.49 regular, once | Owner-selected prices; new Pro features and explicitly listed original content across the current apps; requires implementation |
+| New original themed pack | $4.99 once | 8–12 clearly listed new artworks, with import instructions |
 | Three-pack bundle | $12.99 once | Three named packs, delivered as separate importable files |
 | Optional support payment | Around $5 once | Support for the project; no exclusive content or all-future-products promise |
 
@@ -37,6 +42,8 @@ The business country has not been selected. These are published US standard exam
 
 | Route | Published example |
 |---|---|
+| [Lemon Squeezy](https://www.lemonsqueezy.com/pricing) | No monthly ecommerce fee; 5% + $0.50 base, including payment processing. [Fee docs](https://docs.lemonsqueezy.com/help/getting-started/fees) add 1.5% international, 1.5% PayPal and 0.5% subscription fees where applicable; regional payout fees can also apply |
+| [Payhip Free](https://payhip.com/pricing) | $0/month; 5% Payhip transaction fee plus payment-gateway fees. Official pricing/help search results verified this; direct pricing-page browser access was blocked |
 | [Stripe standard](https://stripe.com/pricing) | 2.9% + $0.30 per successful domestic-card transaction; Payment Links are included in standard Payments pricing |
 | [Square Payment Links](https://squareup.com/us/en/payment-links) | No monthly Payment Links fee; 3.3% + $0.30 per online transaction for new Square customers, with different rates for some methods |
 | [Shopify Basic](https://www.shopify.com/pricing) | $39/month paid monthly, or $29/month billed annually; standard online card rate from 2.9% + $0.30 through Shopify Payments |
@@ -44,9 +51,23 @@ The business country has not been selected. These are published US standard exam
 
 At **$4.99**, approximate proceeds after only the stated standard card fee are **$4.55 with Stripe or Shopify Payments**, or **$4.53 with Square Payment Links**. These are not profit. Shopify's subscription and any delivery-service charges are additional.
 
+At the base Lemon Squeezy rate, $4.99 leaves about **$4.24**. Payhip Free plus the example US Stripe card rate leaves about **$4.30**. A hypothetical $0.99 monthly Lemon Squeezy subscription payment leaves about **$0.44**, including its subscription surcharge but before other additions. This is why the revised plan prefers a one-time app purchase and substantial packs.
+
+## Initial digital delivery: no monthly platform plan
+
+1. Verify the business country and seller eligibility before opening a live store.
+2. For an artwork product, upload the validated `.charmlet.json` or a ZIP containing importable files and instructions to the provider's protected file area.
+3. For the proposed Pro product, enable a perpetual software key and the agreed personal-install allowance. The apps still need activation and entitlement code; generating a key alone does not unlock them.
+4. Link the website to hosted checkout. Following confirmed payment, the buyer receives access to the download page and an emailed receipt/link. Lemon Squeezy documents showing generated keys in the receipt and order page.
+5. Test purchase, delivery, import/activation, purchase restoration and refunds before enabling a live public offer.
+
+The current pack format adds static PNGs, not new executable behaviour. New live fidget and hinged-locket features belong in the app. Keep private service credentials out of clients, validate the correct purchased product and preserve offline access after activation.
+
+Lemon Squeezy acts as merchant of record for transaction-tax collection/remittance; that does not settle the owner's income taxes or all business obligations. Its [2026 update](https://www.lemonsqueezy.com/blog/2026-update) describes a direction toward Stripe Managed Payments. Recheck onboarding and feature availability when activating a store; do not assume the two products have interchangeable APIs or fees. Payhip's gateway eligibility and tax coverage also need to be checked for the actual business.
+
 For illustration, Shopify Basic paid monthly plus one US$20 Vercel Pro base totals **$59/month before usage and other costs**. Roughly thirteen $4.99 sales at $4.55 net card proceeds cover only those two base charges. There is no reason to start paying for a store before products and delivery are ready.
 
-## Shopify: recommended setup
+## Shopify: future merchandise setup
 
 1. **Create the store and payment account yourself.** Choose the correct business country/currency, complete the business and payout checks, and configure Shopify Payments or a supported alternative. Verify costs and eligibility in that account.
 2. **Install Shopify's free [Digital Products app](https://apps.shopify.com/digital-downloads).** The older URL still contains `digital-downloads`; the current app/documentation name is Digital Products.
@@ -113,3 +134,13 @@ With Shopify, Digital Products can still deliver digital portions after payment 
 The owner still needs to choose the business country/currency, provider/plan, first cleared premium artwork, prices, customer support address, refund terms and tax setup. Then verify payment, private delivery and both-app imports before enabling the public shop link.
 
 For now, `website/launch.json` leaves `shop` null. The site offers the free trial and gallery, with merchandise described only as a later plan. See [Vercel hosting](vercel-hosting.md) for deployment.
+
+## Phase 14 follow-up: Coda and the email list
+
+The Coda the owner linked is **coda.co's payment service**, not the unrelated document/workspace product. Its [published pricing](https://www.coda.co/pricing/) lists Codapay/Coda Links **from 1%**, Coda Webstore **5%**, and distribution **15%**, with no setup fee. The $100K/month threshold concerns custom pricing; it is not a stated minimum for the standard offer.
+
+Those headlines are not a complete Charmlet transaction quote. The [Coda Webstore getting-started guide](https://docs.coda.co/coda-webstore/getting-started) describes integrating account validation and fulfillment APIs. Ready-made protected downloads and software licence delivery for this product have not been verified. Keep Lemon Squeezy as the better-documented initial option until Coda confirms the complete costs, eligibility and fulfillment path. No account with either provider is needed just to review the website.
+
+The owner-selected Pro prices remain **$7.49 launch / $17.49 regular, once across the current apps**. Checkout and purchase activation remain inactive.
+
+A dedicated Gmail contact inbox and Brevo Free mailing setup are separate from checkout. The proposed website flow confirms the requested download email and keeps offer subscriptions optional. Brevo's daily allowance is 300 sends after approval, including confirmation/delivery messages. It may replace a Gmail sender with a provider-domain address; use an authenticated domain for public campaigns. See the [website and audience setup](phase-14-website-and-audience.md) for the exact form, email copy and live-delivery checks. The current prototype does not collect subscribers, and no offers have been sent.
