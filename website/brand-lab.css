@@ -1,3 +1,4 @@
+@import url("./theme-control.css");
 @font-face { font-family: Bricolage; src: url("./assets/fonts/bricolage-grotesque-variable.ttf") format("truetype"); font-weight: 200 800; font-display: swap; }
 @font-face { font-family: Manrope; src: url("./assets/fonts/manrope-variable.ttf") format("truetype"); font-weight: 200 800; font-display: swap; }
 :root { color-scheme: light; --bg: #f5f1e8; --fg: #19271e; --muted: #5e655c; --line: #cbd0bf; --accent: #dcff84; font-family: Manrope, sans-serif; }

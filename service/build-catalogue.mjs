@@ -35,9 +35,10 @@ export async function buildCommerceCatalogue({ privateAssets = false } = {}) {
   for (const charm of CHARMS) {
     const collection = charmCollection(charm), slug = charm.id.replaceAll(':', '-');
     const review = ['Music Icons', 'Sports Icons'].includes(collection);
+    const proOnly = collection === 'Sports Icons';
     const product = {
       sku: charm.id, name: charm.name, description: charm.description, collection, kind: 'item',
-      priceCents: charmPriceCents(charm), items: [charm.id], starter: starter.has(charm.id),
+      priceCents: proOnly ? 0 : charmPriceCents(charm), proOnly, items: [charm.id], starter: starter.has(charm.id),
       freeDownload: free.has(charm.id), available: !review, review,
       delivery: charm.file.endsWith('.png') && !charm.id.startsWith('live:') ? 'pack' : 'activation',
       preview: `./assets/default/${charm.file}`,

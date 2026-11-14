@@ -1,3 +1,4 @@
+@import url("./theme-control.css");
 :root[data-theme="dark"] {
   color-scheme: dark;
   --paper: #13241b; --white: #203329; --ink: #e6f0dd; --muted: #b7c5b7;

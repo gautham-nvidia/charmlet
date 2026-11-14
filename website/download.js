@@ -20,7 +20,7 @@ function showError(error) { message.textContent = error.message ?? 'That request
 async function downloadProduct(product, button) {
   button.disabled = true;
   try {
-    if (product.kind === 'item' && product.priceCents === 0 && !owns(product)) {
+    if (product.kind === 'item' && !product.proOnly && product.priceCents === 0 && !owns(product)) {
       library = await serviceRequest('claim', { auth: true, body: { sku: product.sku } });
     }
     if (product.delivery === 'activation') {
@@ -39,7 +39,7 @@ function downloadCard(product) {
   const card = element('article', 'download-card');
   card.append(element('h3', '', product.name));
   card.append(element('p', '', product.kind === 'installer' ? 'Free starter edition'
-    : product.priceCents === 0 ? 'Free to keep' : 'Included in your purchases'));
+    : product.proOnly ? 'Included with Charmlet Pro' : product.priceCents === 0 ? 'Free to keep' : 'Included in your purchases'));
   const button = element('button', 'pill pill-dark', product.delivery === 'activation' ? 'Save access file ↓' : 'Download ↓');
   button.type = 'button'; button.addEventListener('click', () => downloadProduct(product, button));
   card.append(button);
@@ -52,9 +52,10 @@ function downloadCard(product) {
 }
 
 function renderCheckout() {
-  const selected = readCart().map(sku => settings.products.find(item => item.sku === sku)).filter(Boolean);
+  const stored = readCart();
+  const selected = stored.map(sku => settings.products.find(item => item.sku === sku)).filter(product => product && !product.proOnly);
   const cart = selected.filter(product => !owns(product));
-  if (cart.length !== selected.length) saveCart(cart.map(product => product.sku));
+  if (cart.length !== stored.length) saveCart(cart.map(product => product.sku));
   if (selected.length && !cart.length) {
     message.textContent = 'Your purchase is ready. Save the updated access file to activate it in your apps.';
     clearTimeout(pollTimer); checkoutPending = false;
@@ -95,7 +96,7 @@ function renderLibrary() {
   }
   const extras = document.querySelector('#owned-downloads');
   const products = settings.products.filter(product => product.kind === 'item' && product.available && !product.starter
-    && (product.priceCents === 0 || owns(product)));
+    && (!product.proOnly && product.priceCents === 0 || owns(product)));
   extras.replaceChildren(...products.map(downloadCard));
   if (!products.length) extras.append(element('p', '', 'Your extras will appear here. Your starter companions are already in the app.'));
   renderCheckout();
@@ -110,8 +111,12 @@ async function confirmEmail(token) {
   message.textContent = 'Confirming your email…';
   const result = await serviceRequest('email/verify', { body: { token } });
   rememberSession(result.session); library = result;
-  message.textContent = 'Email confirmed. Choose your app and save your access file below.';
   renderLibrary();
+  message.textContent = result.offersSubscribed
+    ? 'Email confirmed. You are subscribed to Charmlet news and Pro offers. App downloads below are optional.'
+    : result.offersRequested
+      ? 'Email confirmed, but the offers subscription could not be completed. Your downloads still work; please try subscribing again later.'
+      : 'Email confirmed. Choose your app and save your access file below.';
 }
 
 function watchCheckoutReturn() {

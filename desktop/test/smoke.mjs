@@ -26,6 +26,7 @@ if (nativeInput && (process.platform !== 'win32' || process.env.GITHUB_ACTIONS !
 }
 const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const trial = JSON.parse(readFileSync(join(repo, 'extension', 'src', 'trial-charms.json'), 'utf8'));
+const beta = JSON.parse(readFileSync(join(repo, 'extension', 'src', 'beta-catalogue.json'), 'utf8'));
 const bundleRoot = process.env.CHARMLET_DESKTOP_BUNDLE_ROOT
   ? resolve(process.env.CHARMLET_DESKTOP_BUNDLE_ROOT) : join(root, 'release', manifest.version);
 const mode = packaged ? process.env.CHARMLET_DESKTOP_BUNDLE_ROOT ? 'archive' : 'packaged' : 'dev';
@@ -384,8 +385,10 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   assert.deepEqual(savedDisplay, { background: true, toolbarPinned: true, messagesPinned: true });
 
   const gardenBeforeTrial = JSON.parse(readFileSync(companionPath, 'utf8')).garden;
-  await expect(window.locator('#charm-select option[value^="trial:"]')).toHaveCount(trial.length);
-  for (const key of ['starter-drishti', 'new-smiley-happy', 'new-drishti-guardian', 'new-earth']) {
+  await expect(window.locator('#charm-select option[value^="trial:"]')).toHaveCount(beta.filter(id => id.startsWith('trial:')).length);
+  await expect(window.locator('#charm-select option[value^="trial:athlete-"]')).toHaveCount(0);
+  for (const key of ['starter-drishti', 'new-smiley-happy', 'new-drishti-guardian',
+    'new-us-san-francisco-skyline', 'new-cupertino-loop', 'new-earth']) {
     const entry = trial.find(charm => charm.artworkKey === key);
     assert.ok(entry);
     await window.getByRole('button', { name: 'Browse charms', exact: true }).click();

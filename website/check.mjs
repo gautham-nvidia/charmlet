@@ -19,10 +19,10 @@ const output = join(repo, 'extension/test-results', `website-check-${manifest.ve
 await mkdir(output, { recursive: true });
 const base = process.env.CHARMLET_GALLERY_URL || 'http://127.0.0.1:4173/';
 const gallery = new URL('charms.html', base).href;
-const counts = { coding: 1, live: 15, stress: 18, music: 12, 'music-icons': 34, california: 12,
-  animals: 13, silicon: 15, parks: 7, space: 15, zodiac: 12, gemstones: 8, culture: 25,
+const counts = { coding: 1, live: 15, stress: 18, music: 12, 'music-icons': 34, 'sports-icons': 14,
+  california: 12, 'us-cities': 13, animals: 13, silicon: 15, parks: 6, space: 13, zodiac: 12, gemstones: 8, culture: 25,
   sports: 5, seasonal: 24, flowers: 18 };
-assert.equal(data.charms.length, 234);
+assert.equal(data.charms.length, 258);
 assert.equal(data.version, manifest.version);
 assert.deepEqual(Object.fromEntries(data.collections.map(item => [item.id, item.charmIds.length])), counts);
 const marketplace = `https://marketplace.visualstudio.com/items?itemName=${manifest.publisher}.${manifest.name}`;
@@ -92,6 +92,12 @@ async function revealPage() {
   }
   await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
 }
+async function chooseTheme(mode) {
+  for (let step = 0; step < 3 && await page.locator('html').getAttribute('data-theme-mode') !== mode; step++) {
+    await page.locator('[data-theme-toggle]').click();
+  }
+  await expect(page.locator('html')).toHaveAttribute('data-theme-mode', mode);
+}
 try {
   console.log('Checking the approved homepage, placement, reactions, email gate and garden.');
   const homepage = await page.goto(base, { waitUntil: 'networkidle' });
@@ -100,9 +106,33 @@ try {
   assert.equal(homepage.headers()['referrer-policy'], 'no-referrer');
   assert.ok(homepage.headers()['content-security-policy'].includes("script-src 'self'"));
   await expect(page.locator('html')).toHaveAttribute('data-design-ready', 'true');
+  const offers = page.locator('#offers-popup');
+  await expect(offers).toBeVisible();
+  await expect(offers.locator('[type=submit]')).toBeDisabled();
+  await expect(offers.locator('[data-signup-message]')).toContainText('does not send or collect email');
+  await page.screenshot({ path: join(output, 'offers-desktop.png') });
+  await page.keyboard.press('Escape');
+  await expect(offers).toBeHidden();
+  await expect(page.locator('.header-get')).toBeFocused();
+  await expect(page.locator('html')).toHaveAttribute('data-theme-mode', 'auto');
+  for (const mode of ['light', 'dark', 'auto']) {
+    await page.locator('[data-theme-toggle]').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme-mode', mode);
+  }
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await chooseTheme('light');
+  await page.reload({ waitUntil: 'networkidle' });
+  await expect(offers).toBeHidden();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  const themeBounds = await page.locator('[data-theme-toggle]').boundingBox();
+  assert.equal(themeBounds.width, 44); assert.equal(themeBounds.height, 44);
+  await chooseTheme('auto');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page.locator('#demo-name')).toHaveText('Cali');
   await expect(page.locator('#live-smiley')).toHaveAttribute('data-art-ready', /^cali:/);
-  await expect(page.locator('.shelf-item')).toHaveCount(6);
+  await expect(page.locator('.shelf-item')).toHaveCount(8);
   assert.equal(await page.locator('a[href="./studio/"]').count(), 0);
   for (const name of ['Sunny', 'Nimbus', 'Byte', 'Cali']) {
     await page.getByRole('button', { name: `Try ${name}`, exact: true }).click();
@@ -119,9 +149,9 @@ try {
   await page.getByRole('button', { name: '✦ Cheer', exact: true }).click();
   await expect(page.locator('#demo-charm .win-sparkles')).toHaveAttribute('data-still', 'true');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.getByRole('button', { name: 'Dark', exact: true }).click();
+  await chooseTheme('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.getByRole('button', { name: 'Light', exact: true }).click();
+  await chooseTheme('light');
   await page.locator('#email-download').click();
   await expect(page.locator('#signup-preview')).toBeVisible();
   await expect(page.locator('#download-signup button[type="submit"]')).toBeDisabled();
@@ -140,7 +170,7 @@ try {
 
   console.log('Checking collection filters, search, preview focus and protected download boundaries.');
   await page.goto(gallery, { waitUntil: 'networkidle' });
-  await expect(page.locator('.charm-card')).toHaveCount(234);
+  await expect(page.locator('.charm-card')).toHaveCount(258);
   await expect(page.locator('.charm-card').nth(0)).toHaveAttribute('data-charm-id', 'terminal');
   await expect(page.locator('.charm-card').nth(1)).toHaveAttribute('data-charm-id', 'live:cali');
   for (const collection of data.collections) {
@@ -159,7 +189,7 @@ try {
   await expect(page.locator('#empty-state')).toBeVisible();
   await page.locator('#reset-filters').click();
   await expect(page.locator('#search')).toBeFocused();
-  await expect(page.locator('.charm-card')).toHaveCount(234);
+  await expect(page.locator('.charm-card')).toHaveCount(258);
   const artistButton = page.locator('.charm-card[data-charm-id="artist-travis-scott"] .card-art');
   await artistButton.click();
   await expect(page.locator('#preview-dialog')).toBeVisible();
@@ -168,7 +198,8 @@ try {
   await page.keyboard.press('Escape');
   await expect(artistButton).toBeFocused();
   assert.ok(Math.abs(await page.evaluate(() => scrollY) - scrollBeforeClose) < 2);
-  const oldPacks = ['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review'];
+  const oldPacks = ['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review',
+    'sports-icons-pro-preview-1', 'sports-icons-pro-preview-2'];
   for (const id of oldPacks) {
     const response = await page.request.get(new URL(`packs/review/${id}.charmlet.json`, base).href);
     assert.equal(response.status(), 404);
@@ -271,6 +302,13 @@ try {
   }
   await expect(page.locator('#portal-signup button[type="submit"]')).toBeDisabled();
   await page.goto(new URL('shop.html', base).href, { waitUntil: 'networkidle' });
+  await page.locator('#store-collection').selectOption('Sports Icons');
+  await expect(page.locator('.store-card')).toHaveCount(14);
+  await expect(page.locator('.store-price')).toHaveText(Array(14).fill('Included with Charmlet Pro'));
+  await expect(page.locator('.store-card button')).toHaveCount(0);
+  await page.locator('#store-price').selectOption('0');
+  await expect(page.locator('.store-card')).toHaveCount(0);
+  await page.locator('#store-price').selectOption('');
   await expect(page.locator('#choose-pro')).toBeEnabled();
   await page.locator('#choose-pro').click();
   await expect(page.locator('#basket-total')).toContainText('7.49');
@@ -281,6 +319,12 @@ try {
   for (const width of [390, 320, 768]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto(base, { waitUntil: 'networkidle' });
+    await page.locator('#open-offers').click();
+    await expect(offers).toBeVisible();
+    assert.equal(await offers.evaluate(dialog => dialog.scrollWidth > dialog.clientWidth), false);
+    if (width === 320) await page.screenshot({ path: join(output, 'offers-mobile.png') });
+    await offers.getByRole('button', { name: /Maybe later/ }).click();
+    await expect(page.locator('#open-offers')).toBeFocused();
     await decodeImages(); await revealPage();
     assert.equal(await overflow(), false, `Homepage overflow at ${width}`);
     if (width === 390) await page.screenshot({ path: join(output, 'home-mobile.png'), fullPage: true });
@@ -303,7 +347,7 @@ try {
   const fixtureCommerce = { ...publicCommerce, apiOrigin, salesEnabled: true, turnstileSiteKey: 'fixture-site-key',
     products: publicCommerce.products.map(product => product.kind === 'installer' ? { ...product, available: false } : product) };
   const calls = [], session = 'b'.repeat(64), proof = 'a'.repeat(64);
-  let paid = false;
+  let paid = false, offersRequested = false;
   let access = { edition: 'items', license: 'fixture-signature', items: [], trial: { used: false } };
   const apiHeaders = { 'access-control-allow-origin': new URL(base).origin,
     'access-control-allow-headers': 'content-type,authorization', 'access-control-allow-methods': 'GET,POST,OPTIONS' };
@@ -311,7 +355,8 @@ try {
   await page.route('**/commerce-public.json', route => route.fulfill({ json: fixtureCommerce }));
   // Apply exactly the policy that the production build generates when an API
   // origin is configured. Keep CSP enabled throughout the browser checks.
-  await page.route('**/download.html*', async route => {
+  await page.route(url => url.origin === new URL(base).origin
+    && (url.pathname === '/' || url.pathname.endsWith('.html')), async route => {
     const response = await route.fetch(), headers = response.headers();
     for (const [name, value] of Object.entries(securityHeaders(apiOrigin))) headers[name.toLowerCase()] = value;
     await route.fulfill({ response, headers });
@@ -330,13 +375,15 @@ try {
     if (path === 'status') return respond({ configured: true, checkout: true, marketing: true, testMode: true,
       installers: [{ sku: installer.sku, available: true, filename: installer.filename }] });
     if (path === 'email/start') {
-      assert.deepEqual(body, { email: 'review@charmlet.test', purpose: 'download', offers: false,
+      offersRequested = body.email === 'offers@charmlet.test';
+      assert.deepEqual(body, { email: offersRequested ? 'offers@charmlet.test' : 'review@charmlet.test',
+        purpose: 'download', offers: offersRequested,
         humanToken: 'fixture-human-response' });
       return respond({ message: 'Check your inbox for a confirmation link.' });
     }
     if (path === 'email/verify') {
       assert.equal(body.token, proof);
-      return respond({ ...access, session, offersRequested: false, offersSubscribed: false });
+      return respond({ ...access, session, offersRequested, offersSubscribed: offersRequested });
     }
     assert.equal(request.headers().authorization, `Bearer ${session}`);
     if (path === 'library') {
@@ -366,6 +413,19 @@ try {
     contentType: 'text/html', body: '<title>Isolated checkout fixture</title><p>Test checkout</p>',
   }));
   await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(base, { waitUntil: 'networkidle' });
+  await page.locator('#open-offers').click();
+  await expect(offers.locator('[type=submit]')).toBeEnabled();
+  await offers.locator('[name=email]').fill('offers@charmlet.test');
+  await offers.locator('[type=submit]').click();
+  await expect(offers.locator('[data-signup-message]')).toContainText('Check your inbox');
+  await expect(offers.locator('[name=email]')).toHaveValue('');
+  assert.equal(await page.evaluate(() => JSON.stringify(localStorage).includes('offers@charmlet.test')), false);
+  assert.equal(calls.some(call => call.path === 'trial/start'), false);
+  await page.goto(new URL(`download.html#verify=${proof}`, base).href, { waitUntil: 'networkidle' });
+  await expect(page.locator('#download-status')).toContainText('subscribed to Charmlet');
+  await expect(page.locator('#edition-detail')).toContainText('trial has not started');
+  await page.locator('#close-downloads').click();
   await page.goto(new URL('download.html?checkout=1', base).href, { waitUntil: 'networkidle' });
   await expect(page.locator('#portal-signup [name=offers]')).not.toBeChecked();
   await page.locator('#portal-signup [name=email]').fill('review@charmlet.test');
@@ -412,10 +472,11 @@ try {
   await expect(page.locator('#confirm-email')).toBeVisible();
   assert.equal(await page.evaluate(() => sessionStorage.getItem('charmlet-download-session-v1')), null);
   assert.deepEqual(errors, []);
-  const result = { version: manifest.version, charms: 234, artists: 34, collections: 16,
+  const result = { version: manifest.version, charms: 258, artists: 34, athletes: 14, skylines: 13, collections: 18,
     desktop: true, mobileWidths: [390, 320, 768], liveCompanions: 15, puzzleBoards: 3,
     publicDownloadsGated: true, rawPackUrlsExcluded: true, reducedMotion: true,
-    checkoutDisabledByDefault: true, connectedPortalFixture: true, consoleErrors: errors };
+    checkoutDisabledByDefault: true, connectedPortalFixture: true, offersVerifiedWithoutTrial: true,
+    popupDismissal: true, compactAutoTheme: true, consoleErrors: errors };
   await writeFile(join(output, 'result.json'), `${JSON.stringify(result, null, 2)}\n`);
   console.log(JSON.stringify(result));
 } finally { await browser.close(); }

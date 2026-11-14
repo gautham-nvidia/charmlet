@@ -8,6 +8,7 @@ import { PNG } from 'pngjs';
 import { applyCompanionAction, defaultCompanionState } from '../companion-core';
 import { DEFAULT_STATE } from '../charm-state';
 import { CHARMS, TRIAL_CHARMS } from '../charm-catalog';
+import betaCatalogue from '../beta-catalogue.json';
 import { learningCard } from '../learning-cards';
 import { MESSAGES } from '../messages';
 import { localDayKey, type GardenState } from '../garden-core';
@@ -574,7 +575,7 @@ test(`${process.env.CHARMLET_TEST_PACKAGED === '1' ? 'installed VSIX' : 'navigat
 		await expect(frame.locator('#care-cue')).toBeHidden();
 		await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
 		await expect(frame.locator('#charm-search')).toBeFocused();
-		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(CHARMS.length);
+		await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(betaCatalogue.length);
 		await expect(frame.locator('#charm-grid .charm-tile').nth(0)).toHaveAttribute('aria-label', 'Select Terminal');
 		await expect(frame.locator('#charm-grid .charm-tile').nth(1)).toHaveAttribute('aria-label', /^Select Cali /);
 		await frame.locator('#app').screenshot({ path: testInfo.outputPath('navigation-picker.png') });
@@ -742,6 +743,28 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-frames', framesBefore!);
 		expect(Number(await frame.locator('#charm').getAttribute('data-position-y'))).toBeCloseTo(restingY, 1);
+		for (const id of ['sports-icons-pro-preview-1', 'sports-icons-pro-preview-2',
+			'review-us-tech-hubs-skylines-1', 'review-us-tech-hubs-skylines-2']) {
+			const path = resolve('..', 'website', 'packs', 'review', `${id}.charmlet.json`);
+			const imported = JSON.parse(readFileSync(path, 'utf8'));
+			await editor.app.evaluate(({ dialog }, file) => {
+				dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [file] });
+			}, path);
+			await command(window, 'Charmlet: Import Charm Pack');
+			await expect(window.getByText(`Imported ${imported.name}.`, { exact: true })).toBeVisible();
+		}
+		for (const [group, count, name] of [
+			['Sports Icons', 14, 'MS Dhoni inspired'],
+			['US Tech Hubs & Skylines', 13, 'San Francisco Skyline'],
+		] as const) {
+			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
+			await frame.locator('#charm-groups').getByRole('button', { name: group, exact: true }).click();
+			await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(count);
+			await frame.getByRole('button', { name: `Select ${name}`, exact: true }).click();
+			await frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).decode());
+			await frame.locator('#app').screenshot({ path: testInfo.outputPath(`${group === 'Sports Icons' ? 'sports' : 'skyline'}-import.png`) });
+			expect(await alphaAtCordTip(frame), `${name}: the cord must meet the visible silhouette`).toBeGreaterThanOrEqual(128);
+		}
 	} finally {
 		await savePointerTrace(editor, pointerFrames, testInfo.outputPath('bounce-pointer-events.json'));
 		await closeOwnedEditor(editor, testInfo);
@@ -1677,7 +1700,7 @@ if (process.env.CHARMLET_TEST_PACKAGED === '1') {
 			const version = JSON.parse(readFileSync(resolve('package.json'), 'utf8')).version;
 			await expect(frame.locator('#app-version')).toHaveText(`v${version}`);
 			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
-			await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(CHARMS.length);
+			await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(betaCatalogue.length);
 			await frame.locator('#picker-close').click();
 			await expect(frame.locator('#festive-enabled')).toBeChecked();
 			await expect(frame.locator('#charm-pinned')).not.toBeChecked();

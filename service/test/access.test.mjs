@@ -17,6 +17,8 @@ const catalogue = { currency: 'USD', products: [
   { sku: 'small-b', kind: 'item', priceCents: 49, items: ['trial:small-b'], available: true },
   { sku: 'paid', kind: 'item', priceCents: 99, items: ['trial:paid'], available: true, objectKey: 'paid.json', filename: 'paid.charmlet.json' },
   { sku: 'review', kind: 'item', priceCents: 199, items: ['trial:review'], available: false },
+  { sku: 'pro-included', kind: 'item', priceCents: 0, proOnly: true, items: ['trial:athlete-sample'],
+    available: true, objectKey: 'sports.json', filename: 'sports.charmlet.json' },
   { sku: 'pro', kind: 'pro', priceCents: 749, items: [], available: true },
   { sku: 'app-vscode', kind: 'installer', priceCents: 0, items: [], available: true,
     objectKey: 'apps/test.vsix', filename: 'charmlet-test.vsix', sha256: 'a'.repeat(64), bytes: 512 },
@@ -128,7 +130,10 @@ test('email links are single-use, expire, and optional offers require confirmed 
   assert.equal(app.database().prepare('SELECT email FROM email_challenges').get().email, null);
   const replay = await app.request('email/verify', { method: 'POST', body: { token: app.emails[0].token } });
   assert.equal(replay.status, 400);
-  await app.verify('offers@charmlet.test', 'download', true);
+  const offers = await app.verify('offers@charmlet.test', 'download', true);
+  assert.equal(offers.offersSubscribed, true);
+  assert.equal(offers.trial.used, false, 'Joining the offers list must not consume the Pro trial.');
+  assert.equal(offers.edition, 'items', 'Marketing consent must not grant Pro access.');
   assert.deepEqual(app.subscriptions, ['offers@charmlet.test']);
   await app.request('email/start', { method: 'POST', body: { email: 'late@charmlet.test', purpose: 'trial', offers: false } });
   app.advance(15 * 60000);
@@ -172,12 +177,17 @@ test('checkout prices come from the server, tiny items bundle, and review/duplic
   assert.equal((await send({ skus: ['small-a'] })).status, 400);
   assert.equal((await send({ skus: ['paid', 'paid'] })).status, 400);
   assert.equal((await send({ skus: ['review'] })).status, 400);
+  assert.equal((await send({ skus: ['pro-included'] })).status, 400);
+  assert.equal((await app.request('claim', { method: 'POST', session: identity.session,
+    body: { sku: 'pro-included' } })).status, 400);
+  assert.equal((await app.request('download/pro-included', { session: identity.session })).status, 403);
   assert.equal((await send({ skus: ['pro', 'paid'] })).status, 400);
   assert.equal((await send({ skus: ['small-a', 'small-b'], amount: 1, custom_price: 1 })).status, 200);
   assert.equal(app.carts.at(-1).amount, 98);
   assert.equal((await send({ skus: ['pro'], amount: 1 })).status, 200);
   assert.equal(app.carts.at(-1).amount, 749);
   assert.equal((await app.payment(app.carts.at(-1))).status, 200);
+  assert.equal((await app.request('download/pro-included', { session: identity.session })).status, 200);
   assert.equal((await send({ skus: ['paid'] })).status, 409);
 });
 
@@ -196,6 +206,12 @@ test('only verified, matching payments grant access; duplicates do not duplicate
   const after = await (await app.request('library', { session: identity.session })).json();
   assert.deepEqual(after.items, ['trial:paid']);
   assert.equal(app.database().prepare('SELECT COUNT(*) AS count FROM orders').get().count, 1);
+  await app.request('checkout', { method: 'POST', session: identity.session, body: { skus: ['pro'] } });
+  const pro = app.carts.at(-1);
+  assert.equal((await app.payment(pro, { orderId: '43', changes: { subtotal: 674, discount_total: 75 } })).status, 400);
+  assert.equal((await app.payment(pro, { orderId: '43', changes: { discount_total: 750 } })).status, 400);
+  assert.equal((await app.payment(pro, { orderId: '43', changes: { discount_total: 75, total: 674 } })).status, 200);
+  assert.equal((await (await app.request('library', { session: identity.session })).json()).edition, 'pro');
 });
 
 test('private downloads enforce buyer ownership and refund-before-paid cannot restore access', async t => {
@@ -284,7 +300,7 @@ test('provider configuration cannot charge a subscription, variable amount or di
     { is_subscription: false, pay_what_you_want: false, currency: 'EUR' },
     { is_subscription: false, pay_what_you_want: false, currency: 'USD' },
   ]) {
-    let charges = 0;
+    let charges = 0, expectedKind = 'pro';
     const providers = createProviders(env, async (url, options) => {
       if (url.endsWith('/variants/10')) return Response.json({ data: { type: 'variants', id: '10', attributes: setup } });
       if (url.endsWith('/stores/1')) return Response.json({ data: { type: 'stores', id: '1', attributes: setup } });
@@ -292,6 +308,7 @@ test('provider configuration cannot charge a subscription, variable amount or di
       const checkout = JSON.parse(options.body).data.attributes;
       assert.equal(checkout.custom_price, 749);
       assert.equal(checkout.test_mode, true);
+      assert.equal(checkout.checkout_options.discount, expectedKind === 'pro');
       assert.equal(checkout.product_options.redirect_url, `${ORIGIN}/download.html?checkout=complete`);
       charges++;
       return Response.json({ data: { attributes: { url: 'https://demo.lemonsqueezy.com/checkout/test' } } });
@@ -302,6 +319,9 @@ test('provider configuration cannot charge a subscription, variable amount or di
     } else {
       assert.equal(await providers.checkout(cart), 'https://demo.lemonsqueezy.com/checkout/test');
       assert.equal(charges, 1);
+      expectedKind = 'items';
+      await providers.checkout({ ...cart, kind: 'items', items: ['trial:paid'] });
+      assert.equal(charges, 2);
     }
   }
 });

@@ -34,8 +34,8 @@ for (const item of review.items) {
   const bytes = await readFile(join(root, item.image));
   assert.equal(createHash('sha256').update(bytes).digest('hex'), item.pngSha256);
   const png = PNG.sync.read(bytes);
-  assert.equal(png.width, 216); assert.equal(png.height, 252);
-  assert.equal(png.data[3], 0); assert.equal(png.data[(216 * 252 - 1) * 4 + 3], 0);
+  assert.ok([216, 432].includes(png.width)); assert.equal(png.height, png.width * 7 / 6);
+  assert.equal(png.data[3], 0); assert.equal(png.data[(png.width * png.height - 1) * 4 + 3], 0);
   assert.ok(bytes.length <= 256 * 1024);
   if (!item.featured || item.decision === 'original' || item.family === 'flowers') assert.equal(item.download, null);
   else {

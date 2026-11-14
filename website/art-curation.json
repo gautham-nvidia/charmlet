@@ -1,14 +1,14 @@
 {
-  "reviewedAt": "2026-11-03",
+  "reviewedAt": "2026-11-13",
   "original": ["terminal"],
   "retain": [
     "wafer", "hamsa", "lemon-chilies", "lotus", "sunrise", "gpu-tile", "cpu-tile",
     "foggy-bay", "bridge-lights", "city-tram",
     "redwood-grove", "desert-arch", "canyon-river",
-    "alpine-lake", "pine-ridge", "coastal-trail", "night-sky",
+    "pine-ridge", "coastal-trail",
     "sunflower", "marigold", "hibiscus", "bluebell", "iris", "poppy",
     "orchid", "daisy", "lavender", "cosmos", "sakura", "wild-rose",
-    "red-panda", "curled-cat", "loyal-dog", "bonsai-tree", "ringed-planet",
+    "red-panda", "curled-cat", "loyal-dog", "bonsai-tree",
     "spiral-galaxy", "filter-coffee", "tamil-kolam", "city-auto",
     "basketball", "football", "gridiron-ball", "baseball-glove"
   ],
@@ -37,12 +37,15 @@
     "token-train", "attention-lens", "embedding-stars", "gradient-trail",
     "inference-engine", "vector-index", "language-tile", "merge-branch",
     "passing-build", "stack-frame", "regex-knot", "async-loop", "recursion-shell",
-    "soldering-iron", "digital-caliper"
+    "soldering-iron", "digital-caliper", "alpine-lake", "night-sky", "ringed-planet"
   ],
   "names": {
     "tamil-kolam": "Kolam",
     "circuit": "Circuit Board",
-    "memory-stack": "RAM"
+    "memory-stack": "RAM",
+    "campus-path": "Santa Clara Office",
+    "salesforce-tower": "San Francisco Tower",
+    "cupertino-loop": "Cupertino Ring Campus"
   },
   "groups": {
     "terminal": "Coding",

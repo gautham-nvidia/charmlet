@@ -65,6 +65,7 @@ if (command === 'plan') {
     }
     if (job.reference) throw new Error(`Use the explicit reference-edit workflow for ${job.key}; its reference must accompany the prompt.`);
     await preservePrompt();
+    console.log(JSON.stringify({ at: new Date().toISOString(), key: job.key, status: 'generating', completed, total: selected.length }));
     const response = await fetch(endpoint, {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(240000),
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Accept: 'application/json', 'x-nv-application': 'charmlet-art-review' },

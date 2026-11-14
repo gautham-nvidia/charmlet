@@ -2,6 +2,7 @@ import { applyProductMetadata, element, loadCatalogue, showLoadError } from './s
 import { cropRectangle, inspectPhotoHeader, MAX_PHOTO_BYTES } from './studio/photo-core.mjs';
 import { feedDeck } from '../extension/src/learning-cards.ts';
 import { availability, loadCommerce, setupSignup } from './access-client.js';
+import { setupOffersPopup } from './offers-popup.js';
 
 const mark = new URLSearchParams(location.search).get('mark');
 const selectedMark = ['terminal', 'cali', 'hybrid'].includes(mark) ? mark : 'terminal';
@@ -71,7 +72,8 @@ function setupPlayground(data) {
 }
 
 function setupShelf(data) {
-  const patterns = [/Acoustic Guitar/i, /Goldendoodle/i, /Granite Dome/i, /Saxophone/i, /Giant Panda/i, /Painted Ladies/i];
+  const patterns = [/Acoustic Guitar/i, /Goldendoodle/i, /Granite Dome/i, /MS Dhoni inspired/i,
+    /San Francisco Skyline/i, /Saxophone/i, /Giant Panda/i, /Painted Ladies/i];
   const shelf = document.querySelector('#collection-shelf');
   for (const pattern of patterns) {
     const charm = data.charms.find(item => pattern.test(item.name));
@@ -318,6 +320,7 @@ try {
       : 'Email signup is not open yet. This preview does not collect or send email.';
   }
   document.documentElement.dataset.designReady = 'true';
+  setupOffersPopup();
 } catch (error) {
   showLoadError(error);
 }

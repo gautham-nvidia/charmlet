@@ -239,9 +239,9 @@
   },
   {
     "id": "trial:extra-campus-path",
-    "name": "NVIDIA Campus",
+    "name": "Santa Clara Office",
     "file": "trial-extra-campus-path-r2-p3.png",
-    "description": "Folded triangular roofs and glass walls inspired by NVIDIA’s Santa Clara campus.",
+    "description": "A Santa Clara office miniature, with folded triangular roofs, skylights and glass walls.",
     "accent": "#8db7a6",
     "group": "California",
     "artworkKey": "extra-campus-path",
@@ -336,20 +336,6 @@
     }
   },
   {
-    "id": "trial:extra-alpine-lake",
-    "name": "Alpine Lake",
-    "file": "trial-extra-alpine-lake-r1-p2.png",
-    "description": "Alpine Lake, included in the complete trial collection.",
-    "accent": "#8cb7d7",
-    "group": "National Parks",
-    "artworkKey": "extra-alpine-lake",
-    "artworkHash": "09399d46224131ba2a7c800441ef356453018398206bf9bcf6529d0ad602fe1c",
-    "attachment": {
-      "x": 0.4976851851851852,
-      "y": 0.05952380952380952
-    }
-  },
-  {
     "id": "trial:extra-pine-ridge",
     "name": "Pine Ridge",
     "file": "trial-extra-pine-ridge-r1-p2.png",
@@ -375,20 +361,6 @@
     "attachment": {
       "x": 0.5,
       "y": 0.08333333333333333
-    }
-  },
-  {
-    "id": "trial:extra-night-sky",
-    "name": "Night Sky",
-    "file": "trial-extra-night-sky-r1-p2.png",
-    "description": "Night Sky, included in the complete trial collection.",
-    "accent": "#c6a3df",
-    "group": "Stars & Galaxies",
-    "artworkKey": "extra-night-sky",
-    "artworkHash": "db223956ca241c158394bf1b39f97ed97b97e115ae4fa5f1822b7221906fa2bc",
-    "attachment": {
-      "x": 0.5,
-      "y": 0.05952380952380952
     }
   },
   {
@@ -697,20 +669,6 @@
     "attachment": {
       "x": 0.5,
       "y": 0.05952380952380952
-    }
-  },
-  {
-    "id": "trial:new-ringed-planet",
-    "name": "Ringed Planet",
-    "file": "trial-new-ringed-planet-r2-p2.png",
-    "description": "Ringed Planet, included in the complete trial collection.",
-    "accent": "#b4a4dc",
-    "group": "Stars & Galaxies",
-    "artworkKey": "new-ringed-planet",
-    "artworkHash": "49161c83d25eb21e84e07edaac2f3d2737b4a45eed6d3a749cbabdfa8948dfa1",
-    "attachment": {
-      "x": 0.5,
-      "y": 0.1388888888888889
     }
   },
   {
@@ -2227,7 +2185,7 @@
   },
   {
     "id": "trial:new-salesforce-tower",
-    "name": "Salesforce Tower",
+    "name": "San Francisco Tower",
     "file": "trial-new-salesforce-tower-r1-p3.png",
     "description": "San Francisco’s tapered glass tower, with curved sides and its rounded louvered crown.",
     "accent": "#7faea0",
@@ -2241,16 +2199,16 @@
   },
   {
     "id": "trial:new-cupertino-loop",
-    "name": "Cupertino Loop",
-    "file": "trial-new-cupertino-loop-r1-p3.png",
-    "description": "A miniature inspired by Apple’s original Infinite Loop campus, with separate buildings around a courtyard.",
+    "name": "Cupertino Ring Campus",
+    "file": "trial-new-cupertino-loop-r2-p3.png",
+    "description": "A modern circular campus in Cupertino, with a silver roof, curved glass walls and a green central courtyard.",
     "accent": "#7faea0",
     "group": "California",
     "artworkKey": "new-cupertino-loop",
-    "artworkHash": "e227dab04a3be99e21d1986d096446a3c54069faa25eeb063c5e9db30fb6737f",
+    "artworkHash": "9435da236dc8b52d1103e7d96e2cf9ab0f93a17bd12e37dce24692c6c0f57064",
     "attachment": {
       "x": 0.5,
-      "y": 0.07142857142857142
+      "y": 0.05952380952380952
     }
   },
   {
@@ -2334,7 +2292,7 @@
     "artworkHash": "a3174482e6901b4432184bcba7d56dbf5a3ec70e9d33014d28059d3c89cdf874",
     "attachment": {
       "x": 0.5671296296296297,
-      "y": 0.1746031746031746
+      "y": 0.16865079365079366
     }
   },
   {
@@ -2432,7 +2390,7 @@
     "artworkHash": "a9e4df6d6dada1567abc516a3e646121f808a2c436f521ca7e9490d1637011ba",
     "attachment": {
       "x": 0.5486111111111112,
-      "y": 0.15476190476190477
+      "y": 0.1527777777777778
     }
   },
   {
@@ -2447,6 +2405,188 @@
     "attachment": {
       "x": 0.5,
       "y": 0.11904761904761904
+    }
+  },
+  {
+    "id": "trial:new-us-silicon-valley-skyline",
+    "name": "Bay Area / Silicon Valley",
+    "file": "trial-new-us-silicon-valley-skyline-r2-p3.png",
+    "description": "Bay Area / Silicon Valley: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-silicon-valley-skyline",
+    "artworkHash": "e0e1be04d8cb756cda565f96bca32ce55bb8d158568ef0350710f78af98cb16c",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:new-us-san-francisco-skyline",
+    "name": "San Francisco Skyline",
+    "file": "trial-new-us-san-francisco-skyline-r2-p3.png",
+    "description": "San Francisco Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-san-francisco-skyline",
+    "artworkHash": "1c647d8521bb1e172450bab038e818047bc5d270c29b83a69b1c4380b7aa83ce",
+    "attachment": {
+      "x": 0.48842592592592593,
+      "y": 0.23214285714285715
+    }
+  },
+  {
+    "id": "trial:new-us-san-diego-skyline",
+    "name": "San Diego Skyline",
+    "file": "trial-new-us-san-diego-skyline-r1-p3.png",
+    "description": "San Diego Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-san-diego-skyline",
+    "artworkHash": "954d85beed6d4be1b7f50844e94217c270a9ed1dfc6c85b5195a49669951e959",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.3333333333333333
+    }
+  },
+  {
+    "id": "trial:new-us-austin-skyline",
+    "name": "Austin Skyline",
+    "file": "trial-new-us-austin-skyline-r2-p3.png",
+    "description": "Austin Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-austin-skyline",
+    "artworkHash": "dc4335cf2b1df17aa55e4a3efddacc4e806d6ae9505f6421716d5c44c93d43c6",
+    "attachment": {
+      "x": 0.5949074074074074,
+      "y": 0.07142857142857142
+    }
+  },
+  {
+    "id": "trial:new-us-research-triangle-skyline",
+    "name": "Raleigh–Durham / Research Triangle",
+    "file": "trial-new-us-research-triangle-skyline-r1-p3.png",
+    "description": "Raleigh–Durham / Research Triangle: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-research-triangle-skyline",
+    "artworkHash": "bec05120d785a117464b871c055412f1615952d77864432357a6f6f3b7104197",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.10714285714285714
+    }
+  },
+  {
+    "id": "trial:new-us-dallas-skyline",
+    "name": "Dallas Skyline",
+    "file": "trial-new-us-dallas-skyline-r2-p3.png",
+    "description": "Dallas Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-dallas-skyline",
+    "artworkHash": "3d9e3b2bfdd4afe719e7282f131fcdc4f250344f770cebfe5cf9a561789e622f",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.1388888888888889
+    }
+  },
+  {
+    "id": "trial:new-us-miami-skyline",
+    "name": "Miami Skyline",
+    "file": "trial-new-us-miami-skyline-r1-p3.png",
+    "description": "Miami Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-miami-skyline",
+    "artworkHash": "67c72ffe5778a4b5520df33ec19d83cf02b2cb792324c122117a5fd143d68e03",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-us-boston-skyline",
+    "name": "Boston Skyline",
+    "file": "trial-new-us-boston-skyline-r1-p3.png",
+    "description": "Boston Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-boston-skyline",
+    "artworkHash": "81abdc3e4cb5f3fb2968cf8862afe36fc953a32d7d642d267a731250ad0dac57",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.12698412698412698
+    }
+  },
+  {
+    "id": "trial:new-us-atlanta-skyline",
+    "name": "Atlanta Skyline",
+    "file": "trial-new-us-atlanta-skyline-r1-p3.png",
+    "description": "Atlanta Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-atlanta-skyline",
+    "artworkHash": "580196ddf32fb667c1e9462fd671f8875faabe4af1bd278726672cf9d7f2d3a3",
+    "attachment": {
+      "x": 0.5023148148148148,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:new-us-denver-skyline",
+    "name": "Denver Skyline",
+    "file": "trial-new-us-denver-skyline-r2-p3.png",
+    "description": "Denver Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-denver-skyline",
+    "artworkHash": "24d5fd2792520b7915c656a3b0680e0bc0f849aa526a74baf6063908a6622821",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:new-us-new-york-skyline",
+    "name": "New York Skyline",
+    "file": "trial-new-us-new-york-skyline-r1-p3.png",
+    "description": "New York Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-new-york-skyline",
+    "artworkHash": "4c95a88a343d7dfecd20d85dc33c681e0238b3cb41b03153fc7593ad0e82a9fe",
+    "attachment": {
+      "x": 0.5300925925925926,
+      "y": 0.1984126984126984
+    }
+  },
+  {
+    "id": "trial:new-us-chicago-skyline",
+    "name": "Chicago Skyline",
+    "file": "trial-new-us-chicago-skyline-r1-p3.png",
+    "description": "Chicago Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-chicago-skyline",
+    "artworkHash": "48b5b6aedc5aecd8d07039650d2dc6d18b97c35007f7ecd6e2356d6d2f9378b5",
+    "attachment": {
+      "x": 0.5439814814814815,
+      "y": 0.09523809523809523
+    }
+  },
+  {
+    "id": "trial:new-us-seattle-skyline",
+    "name": "Seattle Skyline",
+    "file": "trial-new-us-seattle-skyline-r1-p3.png",
+    "description": "Seattle Skyline: a detailed architectural miniature from the US Tech Hubs & Skylines collection.",
+    "accent": "#8ab7bb",
+    "group": "US Tech Hubs & Skylines",
+    "artworkKey": "new-us-seattle-skyline",
+    "artworkHash": "f50767f6c1da58daa188f26c65e373d0b5b9e928292f04ef1f11db026107d991",
+    "attachment": {
+      "x": 0.5254629629629629,
+      "y": 0.06349206349206349
     }
   },
   {
@@ -2656,7 +2796,7 @@
     "artworkHash": "204e0efa264a258d85fd9dd22d843a4ca6532e4845115e9313fe7108dde4a720",
     "attachment": {
       "x": 0.5,
-      "y": 0.21428571428571427
+      "y": 0.2123015873015873
     }
   },
   {
@@ -2923,6 +3063,202 @@
     "attachment": {
       "x": 0.4699074074074074,
       "y": 0.10317460317460317
+    }
+  },
+  {
+    "id": "trial:athlete-lionel-messi",
+    "name": "Lionel Messi inspired",
+    "file": "trial-athlete-lionel-messi-r2-p4.png",
+    "description": "Lionel Messi-inspired soccer study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-lionel-messi",
+    "artworkHash": "d5650a8e5ec8f6abcc018c6e3f97089c8f339ea5d737c231241693e60700d180",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06547619047619048
+    }
+  },
+  {
+    "id": "trial:athlete-cristiano-ronaldo",
+    "name": "Cristiano Ronaldo inspired",
+    "file": "trial-athlete-cristiano-ronaldo-r1-p4.png",
+    "description": "Cristiano Ronaldo-inspired soccer study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-cristiano-ronaldo",
+    "artworkHash": "932506f773149bf1a27a282e8e9f423ce6bc25890c8d7ef914846d41e96784af",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06349206349206349
+    }
+  },
+  {
+    "id": "trial:athlete-ms-dhoni",
+    "name": "MS Dhoni inspired",
+    "file": "trial-athlete-ms-dhoni-r1-p4.png",
+    "description": "MS Dhoni-inspired cricket study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-ms-dhoni",
+    "artworkHash": "aa945c6a1972f3c3cebbcc3f27a5a988f3f6574f8f133eaf2cffab96fa2b97c3",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.061507936507936505
+    }
+  },
+  {
+    "id": "trial:athlete-sachin-tendulkar",
+    "name": "Sachin Tendulkar inspired",
+    "file": "trial-athlete-sachin-tendulkar-r1-p4.png",
+    "description": "Sachin Tendulkar-inspired cricket study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-sachin-tendulkar",
+    "artworkHash": "3a51b182486e12e54015cb1d1c988f19cac6a7318683a61cf7af49b84d758e7f",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06944444444444445
+    }
+  },
+  {
+    "id": "trial:athlete-michael-jordan",
+    "name": "Michael Jordan inspired",
+    "file": "trial-athlete-michael-jordan-r2-p4.png",
+    "description": "Michael Jordan-inspired basketball study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-michael-jordan",
+    "artworkHash": "4bacbf3ec14803b0e035c25435738a8045334680611f83c88dcba983780ee243",
+    "attachment": {
+      "x": 0.5011574074074074,
+      "y": 0.07539682539682539
+    }
+  },
+  {
+    "id": "trial:athlete-kobe-bryant",
+    "name": "Kobe Bryant inspired",
+    "file": "trial-athlete-kobe-bryant-r1-p4.png",
+    "description": "Kobe Bryant-inspired basketball study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-kobe-bryant",
+    "artworkHash": "a84161a63a508a2aaf3bdea38db1f9d5ea2d0836d430fc39e67f2ab543b5b197",
+    "attachment": {
+      "x": 0.5011574074074074,
+      "y": 0.05952380952380952
+    }
+  },
+  {
+    "id": "trial:athlete-lebron-james",
+    "name": "LeBron James inspired",
+    "file": "trial-athlete-lebron-james-r3-p4.png",
+    "description": "LeBron James-inspired basketball study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-lebron-james",
+    "artworkHash": "54f7b382f1f577b87b1760ba86f8c86be537ba6daea7e231639d2bea6a00b991",
+    "attachment": {
+      "x": 0.5034722222222222,
+      "y": 0.07738095238095238
+    }
+  },
+  {
+    "id": "trial:athlete-stephen-curry",
+    "name": "Stephen Curry inspired",
+    "file": "trial-athlete-stephen-curry-r1-p4.png",
+    "description": "Stephen Curry-inspired basketball study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-stephen-curry",
+    "artworkHash": "62c0f7f559d2ca1f697a403b218cd4f79997ce0397f287c5534bbd2587462590",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.061507936507936505
+    }
+  },
+  {
+    "id": "trial:athlete-tom-brady",
+    "name": "Tom Brady inspired",
+    "file": "trial-athlete-tom-brady-r1-p4.png",
+    "description": "Tom Brady-inspired american football study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-tom-brady",
+    "artworkHash": "eef327abc54d7ccd42f5697b526f212ab567c601739c4040f6c5513f6bd29692",
+    "attachment": {
+      "x": 0.4988425925925926,
+      "y": 0.061507936507936505
+    }
+  },
+  {
+    "id": "trial:athlete-patrick-mahomes",
+    "name": "Patrick Mahomes inspired",
+    "file": "trial-athlete-patrick-mahomes-r3-p4.png",
+    "description": "Patrick Mahomes-inspired american football study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-patrick-mahomes",
+    "artworkHash": "d7badbc8667d5f768aa6a63d9ca06d11e8b1ae008876bff29c75080b78fadb00",
+    "attachment": {
+      "x": 0.5,
+      "y": 0.06547619047619048
+    }
+  },
+  {
+    "id": "trial:athlete-serena-williams",
+    "name": "Serena Williams inspired",
+    "file": "trial-athlete-serena-williams-r1-p4.png",
+    "description": "Serena Williams-inspired tennis study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-serena-williams",
+    "artworkHash": "59a691634c715d1d6a27ee031bf2a98301f3788de06b191fdae6c41686052a30",
+    "attachment": {
+      "x": 0.5011574074074074,
+      "y": 0.11904761904761904
+    }
+  },
+  {
+    "id": "trial:athlete-usain-bolt",
+    "name": "Usain Bolt inspired",
+    "file": "trial-athlete-usain-bolt-r1-p4.png",
+    "description": "Usain Bolt-inspired track study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-usain-bolt",
+    "artworkHash": "211cc3f52a56757b0931c11322e22983edb62113686ac2648edbcf0e72cc525b",
+    "attachment": {
+      "x": 0.5011574074074074,
+      "y": 0.06746031746031746
+    }
+  },
+  {
+    "id": "trial:athlete-simone-biles",
+    "name": "Simone Biles inspired",
+    "file": "trial-athlete-simone-biles-r1-p4.png",
+    "description": "Simone Biles-inspired gymnastics study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-simone-biles",
+    "artworkHash": "ae00d50e2552ed547d7b156f8c278e797167a20c79cedafa26776a0548557e34",
+    "attachment": {
+      "x": 0.4988425925925926,
+      "y": 0.16666666666666666
+    }
+  },
+  {
+    "id": "trial:athlete-lewis-hamilton",
+    "name": "Lewis Hamilton inspired",
+    "file": "trial-athlete-lewis-hamilton-r1-p4.png",
+    "description": "Lewis Hamilton-inspired motor racing study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-lewis-hamilton",
+    "artworkHash": "8a84b47c3f53281905805df2b14a3ee42782aeacd5f2606901eb3fdf1994ac45",
+    "attachment": {
+      "x": 0.5081018518518519,
+      "y": 0.07738095238095238
     }
   }
 ]

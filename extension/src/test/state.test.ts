@@ -30,7 +30,10 @@ test('the starter remains fixed across gallery reordering and beta migration nev
 	assert.equal(freeDownloadSelection().some(id => starter.includes(id)), false);
 	for (const group of new Set(CHARMS.map(charmCollection))) {
 		const count = CHARMS.filter(charm => starter.includes(charm.id) && charmCollection(charm) === group).length;
-		assert.equal(count, group === 'Terminal' ? 1 : 2, group);
+		const exceptions: Record<string, number> = {
+			Terminal: 1, 'Nature & Places': 1, 'Space & Stars': 0, 'Sports Icons': 0, 'US Tech Hubs & Skylines': 3,
+		};
+		assert.equal(count, exceptions[group] ?? 2, group);
 	}
 	const future = { ...CHARMS[0], id: 'trial:future-paid-design' };
 	const fresh = new AccessController({ directory: join(directory, 'fresh'), secrets });
@@ -43,7 +46,9 @@ test('the starter remains fixed across gallery reordering and beta migration nev
 	await beta.initialize({ version: 1, charmId: 'live:robot' });
 	assert.equal(betaCatalogue.length, 234);
 	assert.equal(new Set(betaCatalogue).size, 234);
-	assert.deepEqual(new Set(beta.catalogue([...CHARMS, future]).map(charm => charm.id)), new Set(betaCatalogue));
+	assert.deepEqual(new Set(beta.catalogue([...CHARMS, future]).map(charm => charm.id)),
+		new Set([...betaCatalogue, ...starter].filter(id => CHARMS.some(charm => charm.id === id))));
+	assert.equal(beta.catalogue(CHARMS).some(charm => charm.group === 'Sports Icons'), false);
 	const newPreferences = new AccessController({ directory: join(directory, 'new-preferences'), secrets });
 	await newPreferences.initialize(DEFAULT_STATE);
 	assert.equal(newPreferences.catalogue(CHARMS).length, 31);
@@ -211,6 +216,12 @@ test('every bundled selection survives saved-state restoration', () => {
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Garden Flowers').length, 18);
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Music').length, 12);
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Music Icons').length, 34);
+	assert.deepEqual(new Set(TRIAL_CHARMS.filter(charm => charm.group === 'Sports Icons').map(charm => charm.artworkKey)),
+		new Set(['lionel-messi', 'cristiano-ronaldo', 'ms-dhoni', 'sachin-tendulkar', 'michael-jordan',
+			'kobe-bryant', 'lebron-james', 'stephen-curry', 'tom-brady', 'patrick-mahomes',
+			'serena-williams', 'usain-bolt', 'simone-biles', 'lewis-hamilton'].map(id => `athlete-${id}`)));
+	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'US Tech Hubs & Skylines').length, 13);
+	assert.ok(TRIAL_CHARMS.every(charm => !/NVIDIA|Salesforce|Apple|Alpine Lake|Night Sky|Ringed Planet/.test(`${charm.name} ${charm.description}`)));
 	for (const artist of ['travis-scott', 'whitney-houston', 'beyonce', 'prince']) {
 		assert.ok(TRIAL_CHARMS.some(charm => charm.id === `trial:artist-${artist}`));
 	}

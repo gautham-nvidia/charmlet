@@ -600,3 +600,11 @@ The Cloudflare service uses durable D1 trial/ownership records, one-use email li
 Local evidence includes 100 app models, 14 source-editor scenarios, installed-package starter/beta/Restricted Mode checks, 13 desktop models and the extracted Windows archive. The 13 service and six release tests pass. Browser tests cover the 234-design gallery, 15 live companions, three puzzle boards, Reduced Motion, mobile layouts and isolated signup/checkout/delivery fixtures. All three dependency audits report zero known findings. CI adds service/website security checks, pinned Actions and weekly dependency updates; final hosted results belong in the release handoff.
 
 The [current setup guide](service/README.md) supersedes the earlier Shopify-first recommendation: Cloudflare, Brevo and Lemon Squeezy serve the digital launch; merchandise is deferred. [Security findings and limits](docs/phase-15-security-and-launch.md) record the references used and the pages this network could not fully retrieve. Live accounts, checkout, public distribution, artwork/source licensing and desktop signing remain launch prerequisites; no real customer email or payment was sent during these checks.
+
+## 2026-11-13 — Sports, US skylines and optional Pro offers
+
+The 0.14.0 / desktop 0.11.0 candidate adds 14 Sports Icons included with Pro and 13 US tech-hub skylines. Dhoni, Tendulkar, Curry and Hamilton replace Hamm and Clark in the sports lineup. Generic office/tower names and the current circular Cupertino campus replace the earlier labels/design. Three retired starter choices migrate to free San Francisco, Austin and Seattle replacements while preserving selection details and existing imports.
+
+The approved website now has a single Auto/Light/Dark control and a dismissible, confirmed-email offers popup. Subscription remains separate from trial access. Pro checkout supports provider coupon codes, with signed discounted-order checks and no individual sports sale route. Account setup is still disabled in the checked-in configuration.
+
+Local testing found and corrected a thin-silhouette attachment issue. The review inventory remains bounded at 300 records, with 280 prepared and 234 featured. [Phase 16 scope and checks](docs/phase-16-collections-and-offers.md) tracks validation, final packaging and remaining public-launch requirements.

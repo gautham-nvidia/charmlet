@@ -22,6 +22,7 @@ function configuration(env, catalogue) {
       || !products.size || [...products.values()].some(product => !/^[a-z0-9][a-z0-9:-]{0,99}$/.test(product.sku)
         || !Number.isSafeInteger(product.priceCents) || ![0, 49, 99, 199, 749, 1749].includes(product.priceCents)
         || !['item', 'installer', 'pro'].includes(product.kind)
+        || product.proOnly !== undefined && (typeof product.proOnly !== 'boolean' || product.proOnly && product.kind !== 'item')
         || !Array.isArray(product.items) || product.items.length > 512
         || product.kind === 'item' && !product.items.length
         || product.items.some(item => typeof item !== 'string' || !/^[a-z0-9][a-z0-9:-]{0,99}$/.test(item)))) return null;
@@ -122,7 +123,7 @@ export function createAccessService(env, catalogue, dependencies = {}) {
       throw new HttpError(400, 'Choose up to 20 different available items.');
     }
     const products = skus.map(sku => config.products.get(sku));
-    if (products.some(product => product.priceCents === 0 || product.available !== true)
+    if (products.some(product => product.proOnly || product.priceCents === 0 || product.available !== true)
       || products.some(product => product.kind === 'pro') && products.length !== 1) {
       throw new HttpError(400, 'Choose Pro on its own, or choose available individual items.');
     }
@@ -160,6 +161,10 @@ export function createAccessService(env, catalogue, dependencies = {}) {
       || attributes.test_mode !== (env.TEST_MODE === 'true') || attributes.currency !== 'USD'
       || attributes.subtotal !== cart.amount || String(attributes.first_order_item?.variant_id) !== cart.variant_id
       || attributes.first_order_item?.quantity !== 1) throw new HttpError(400, 'Payment does not match this checkout.');
+    const discount = attributes.discount_total ?? 0;
+    if (!Number.isSafeInteger(discount) || discount < 0 || discount > cart.amount) {
+      throw new HttpError(400, 'Payment discount does not match this checkout.');
+    }
     if (name === 'order_created' && (attributes.status !== 'paid' || attributes.refunded !== false)) {
       return { data: { received: true } };
     }
@@ -225,7 +230,7 @@ export function createAccessService(env, catalogue, dependencies = {}) {
     if (path === '/v1/checkout' && request.method === 'POST') return checkout(request, subject);
     if (path === '/v1/claim' && request.method === 'POST') {
       const { sku } = await readJson(request), product = config.products.get(sku);
-      if (!product || product.priceCents !== 0 || product.kind !== 'item' || product.available !== true) {
+      if (!product || product.proOnly || product.priceCents !== 0 || product.kind !== 'item' || product.available !== true) {
         throw new HttpError(400, 'Choose an available free item.');
       }
       for (const item of product.items) await ledger.claim(subject, item, now());

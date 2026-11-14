@@ -44,7 +44,7 @@ function renderBasket() {
 function render() {
   const query = normalized(search.value.trim());
   const visible = products.filter(product => (!collection.value || product.collection === collection.value)
-    && (price.value === '' || product.priceCents === Number(price.value))
+    && (price.value === '' || !product.proOnly && product.priceCents === Number(price.value))
     && (!query || normalized(`${product.name} ${product.collection} ${product.description}`).includes(query)));
   document.querySelector('#store-count').textContent = `${visible.length} charm${visible.length === 1 ? '' : 's'}`;
   grid.replaceChildren();
@@ -52,10 +52,14 @@ function render() {
     const card = element('article', 'store-card'), image = element('img');
     image.src = product.preview; image.alt = ''; image.width = 144; image.height = 168; image.loading = 'lazy';
     card.append(image, element('span', 'store-category', product.collection), element('h3', '', product.name));
-    const label = product.review ? 'Artwork study' : product.starter ? 'In your free starter' : formatPrice(product.priceCents);
+    const label = product.proOnly ? 'Included with Charmlet Pro' : product.review ? 'Artwork study'
+      : product.starter ? 'In your free starter' : formatPrice(product.priceCents);
     card.append(element('p', 'store-price', label));
     if (product.review) card.append(element('p', 'store-caption', 'A concept study. Public distribution and sale are not open.'));
-    else if (product.priceCents === 0) {
+    else if (product.proOnly) {
+      const link = element('a', 'store-action', 'Explore Pro ↗');
+      link.href = './index.html#pro'; card.append(link);
+    } else if (product.priceCents === 0) {
       const link = element('a', 'store-action', product.starter ? 'Get the starter ↗' : 'Get this free pick ↗');
       link.href = './download.html'; card.append(link);
     } else {
@@ -77,7 +81,8 @@ search.addEventListener('input', render); collection.addEventListener('change', 
 try {
   settings = await loadCommerce(); service = await availability();
   products = settings.products.filter(product => product.kind === 'item');
-  cart = readCart().filter(sku => settings.products.some(product => product.sku === sku && product.available && product.priceCents > 0));
+  cart = readCart().filter(sku => settings.products.some(product => product.sku === sku && product.available
+    && !product.proOnly && product.priceCents > 0));
   if (cart.includes('pro') || new URLSearchParams(location.search).get('pick') === 'pro') cart = ['pro'];
   saveCart(cart);
   for (const name of [...new Set(products.map(product => product.collection))]) {

@@ -11,6 +11,7 @@ import {
 import { restoreState } from '../charm-state';
 import { attachmentFromPixels, DEFAULT_ATTACHMENT } from '../charm-attachment';
 import { isPhotoPack, photoPackInput } from '../photo-packs';
+import { accessibleCatalogue } from '../catalogue-access';
 
 const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAEgAAABUCAYAAAAh+XGnAAAAp0lEQVR4Ae3BAQGAQACEMLxqdrKGkf0EkoDtut/nI79G1IgaUSNqRI2oETWiRtSIGlEjakSNqBE1okbUiBpRI2pEjagRNaJG1IgaUSNqRI2oETWiRtSIGlEjakSNqBE1okbUiBpRI2pEjagRNaJG1IgaUSNqRI2oETWiRtSIGlEjakSNqBE1okbUiBpRI2pEjagRNaJG1IgaUSNqRI2oETWiRtSIGlEHeOoC77RBk0cAAAAASUVORK5CYII=';
 
@@ -85,14 +86,28 @@ test('attachment decoding handles all PNG filters without changing pack bytes or
 	}
 });
 
-test('approved artist packs preserve every imported selection without duplicate bundled figures', async () => {
-	const packs = await Promise.all(['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review']
+test('cord attachment stays on a slanted silhouette when the downward inset crosses a transparent edge', () => {
+	const width = 72, height = 84;
+	const pixels = new Uint8Array(width * height * 4);
+	for (const [x, y] of [[35, 20], [36, 20], [35, 21]]) {
+		pixels[(y * width + x) * 4 + 3] = 255;
+	}
+	const point = attachmentFromPixels(width, height, pixels);
+	const x = Math.floor(point.x * width), y = Math.floor(point.y * height);
+	assert.equal(pixels[(y * width + x) * 4 + 3], 255);
+});
+
+test('artist and sports packs preserve imported selection and free ownership without duplicate bundled figures', async () => {
+	const packs = await Promise.all(['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review',
+		'sports-icons-pro-preview-1', 'sports-icons-pro-preview-2']
 		.map(async id => parseCharmPack(await readFile(join(__dirname, '../../../website/packs/review', `${id}.charmlet.json`)))));
 	const imported = packCharms(packs);
 	const catalogue = buildCatalogue(imported);
-	assert.equal(imported.length, 34);
+	assert.equal(imported.length, 48);
 	assert.equal(catalogue.length, CHARMS.length);
 	for (const charm of imported) {
+		assert.ok(accessibleCatalogue(catalogue, {}).some(item => item.id === charm.id),
+			'An existing personal import must remain usable without Pro.');
 		const bundled = TRIAL_CHARMS.find(item => item.artworkKey === charm.artworkKey)!;
 		assert.ok(bundled, charm.name);
 		assert.equal(charm.artworkHash, bundled.artworkHash, `Keep the approved PNG bytes for ${charm.name}.`);

@@ -97,7 +97,7 @@ for (const name of ['manrope-variable.ttf', 'OFL.txt']) {
 }
 {
   await mkdir(join(dist, 'assets/brand'), { recursive: true });
-  for (const name of ['brand-lab.html', 'brand-lab.css', 'design-theme.js', 'next.css', 'download.html', 'download.js', 'privacy.html',
+  for (const name of ['brand-lab.html', 'brand-lab.css', 'theme-control.css', 'design-theme.js', 'next.css', 'download.html', 'download.js', 'privacy.html',
     'about.html', 'about-us.html', 'press.html', 'information.css', 'information.js', 'access-client.js',
     'shop.html', 'shop.js', 'store.css', 'gallery-theme.css', '404.html']) {
     await copyFile(join(root, name), join(dist, name));
@@ -193,7 +193,7 @@ const review = await readFile(join(root, 'art-review.json'), 'utf8').then(JSON.p
   throw error;
 });
 if (review) {
-  if (review.status !== 'review-only' || !Array.isArray(review.items) || review.items.length > 256
+  if (review.status !== 'review-only' || !Array.isArray(review.items) || review.items.length > 300
     || new Set(review.items.map(item => item.key)).size !== review.items.length) throw new Error('Invalid bounded art review.');
   validateCuration(curation, review.items);
   await mkdir(join(dist, 'assets/review'), { recursive: true });

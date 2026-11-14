@@ -1,7 +1,7 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
 import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { CHARMS, ORIGINAL_CHARMS } from '../charm-catalog';
-import { charmCollection } from '../charm-collections';
+import betaCatalogue from '../beta-catalogue.json';
 import { DEFAULT_STATE, getLayout } from '../charm-state';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -248,8 +248,8 @@ test('existing beta editor supports docking, gestures, focus, persistence and re
 			frame = await readyFrame(window);
 			await openAppearance(frame);
 			let picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
-			await expect(picker.locator('option')).toHaveCount(CHARMS.length);
-			await expect(picker.locator('optgroup')).toHaveCount(new Set(CHARMS.map(charmCollection)).size);
+			await expect(picker.locator('option')).toHaveCount(betaCatalogue.length);
+			await expect(picker.locator('optgroup')).toHaveCount(17);
 			await expect(picker.locator('optgroup[label="Space & Stars"]')).toHaveCount(1);
 			await expect(picker.locator('option[value="terminal"]')).toHaveText('Terminal');
 			// Category grouping can place a newly appended charm inside an earlier group.
@@ -830,7 +830,7 @@ test('existing beta editor supports docking, gestures, focus, persistence and re
 			await openAppearance(frame);
 			const importedPicker = frame.getByRole('combobox', { name: 'Charm', exact: true });
 			await expect(importedPicker).toHaveValue('pack:probe-card:probe-card');
-			await expect(importedPicker.locator('option')).toHaveCount(CHARMS.length + 1);
+			await expect(importedPicker.locator('option')).toHaveCount(betaCatalogue.length + 1);
 			await importedPicker.press('Escape');
 			await expect(frame.locator('#settings')).toBeHidden();
 			await expect(frame.locator('#charm-name')).toHaveText('Probe Card');
@@ -858,7 +858,7 @@ test('existing beta editor supports docking, gestures, focus, persistence and re
 			await window.screenshot({ path: testInfo.outputPath('imported-probe-card.png') });
 			await command(window, 'Charmlet: Remove Charm Pack');
 			await window.locator('.quick-input-list').getByText('Probe Card', { exact: true }).click();
-			await expect(frame.locator('#charm-select option')).toHaveCount(CHARMS.length);
+			await expect(frame.locator('#charm-select option')).toHaveCount(betaCatalogue.length);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
 			await expect(frame.locator('#charm-name')).toHaveText('Terminal');
 		});

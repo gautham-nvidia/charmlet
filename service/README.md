@@ -32,10 +32,22 @@ Use your own browser for login, recovery details and merchant verification. Do n
 
 1. Create a Cloudflare Pages project for the website, a Workers subdomain and a Turnstile widget for the exact website hostname. Start on the free tiers; R2 activation may require a billing method and usage beyond allowances can cost money.
 2. Create a Brevo account and verify the sender. A dedicated Gmail address can be your contact address; an authenticated domain is preferable for reliable transactional delivery. Create a separate list for **confirmed, optional offers**. Free-plan sending limits apply to all email, not just campaigns.
-3. Create a Lemon Squeezy store when ready for payment testing. Confirm your business country is supported and complete merchant approval. Use USD and create **two fixed-price, one-time variants**: Charmlet Pro and a digital-items basket. Do not enable a subscription, quantity changes or pay-what-you-want. Coupon entry is currently disabled.
+3. Create a Lemon Squeezy store when ready for payment testing. Confirm your business country is supported and complete merchant approval. Use USD and create **two fixed-price, one-time variants**: Charmlet Pro and a digital-items basket. Do not enable a subscription, quantity changes or pay-what-you-want. Hosted coupon entry is enabled for Pro; individual-item checkout keeps it off.
 4. Configure the payment webhook for `/v1/webhooks/lemon`, with `order_created` and `order_refunded`, and keep its signing secret private.
 
 No physical products, shipping fields or merchandise preorders are needed. Keep future merchandise separate from digital access.
+
+### Gmail, subscriptions and Pro offers
+
+Start with a **regular Gmail account dedicated to Charmlet** for account administration and support. A Google Workspace mailbox is optional; do not buy it just to manage a subscriber list. Before public email delivery, use an authenticated domain you own for Brevo sending and test how replies reach your support inbox. Domain authentication does not require a paid Google Workspace mailbox.
+
+The homepage offers popup asks only for an email and explicit subscription consent. It closes with Escape, the close button, the backdrop or “Maybe later”; dismissal lasts seven days on that browser, and the footer can reopen it. The separate download form keeps its offers checkbox unchecked. Only a confirmed email joins the Brevo offers list. Joining does not start a trial, charge a card or unlock Pro. No email is saved in browser storage.
+
+The popup is disabled until the service, Turnstile and Brevo offers list are configured. `website/audience.json` is legacy contact/form metadata; its form URL alone does not connect the popup. Use the configuration helper below and the Worker secrets/list ID. Keep customer records in the configured services.
+
+Create the offer code and amount in Lemon Squeezy when ready. Restrict it to the Pro variant, choose an expiry and redemption limit, then test a discounted purchase and refund before mailing it to confirmed Brevo subscribers. The website does not invent codes or promise a particular discount. The signed webhook checks the original cart subtotal and a bounded provider discount; a browser-supplied lower price cannot grant access.
+
+Sports Icons are included with Pro and cannot be purchased individually or claimed as free extras, even if their public-release flag later changes. Artwork and likeness review remains separate from this access rule.
 
 ## 2. Prepare Cloudflare and public app configuration
 

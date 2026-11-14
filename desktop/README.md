@@ -2,7 +2,7 @@
 
 Charmlet Desktop is an unpublished Windows/macOS developer beta. It reuses the extension's charm renderer, physics, Focus/Learn/Garden controller, validated pack parser and confirmed JSON stores in one floating tray-managed window.
 
-The **0.10.0 candidate** starts with just the charm and cord. New profiles have 31 free starter charms; existing beta profiles keep their beta collection. Signed trial/purchase activation is shared with VS Code, with provider setup still required. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
+The **0.11.0 candidate** starts with just the charm and cord. New profiles have 31 free starter charms; existing beta profiles keep their beta access. Signed trial/purchase activation is shared with VS Code, with provider setup still required. Hover over the charm to reveal **Move**, **Tools** and hide-to-tray controls. **Tools** opens Charms, Focus, Garden, Messages or Settings on demand; closing the selected panel returns to the minimal view.
 
 The packaged `dist/PRIVACY.md` explains local storage and optional activation refresh. The shared [privacy notice](../extension/PRIVACY.md) and [service setup guide](../service/README.md) cover email verification and purchases. Personal photos, focus notes and garden progress remain local.
 
@@ -10,7 +10,9 @@ Drag **Move** to place the charm, or focus that button and use the arrow keys (S
 
 Under **Tools > Settings**, **Background**, **Keep toolbar visible** and **Keep messages visible** are separate saved preferences, all off by default. The tray's **Open Controls** and **Reset Window Position** remain available.
 
-The trial shares the extension's **234 offline charms**: 209 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools. Terminal leads the picker, followed by **Live 3D**, **Stress Busters**, **Music** and **Music Icons**. Nimbus has sunrise, rain and lightning reactions; Byte has a metal body and animated binary/code display. Music includes twelve instruments and controllers; Music Icons adds all 34 approved artist studies, including Travis Scott, legends and twelve women. Previously imported artist packs retain their selections and exact artwork without duplicate bundled tiles.
+The trial shares the extension's **258 offline charms**: 233 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools. Terminal leads the picker, followed by **Live 3D**, **Stress Busters**, **Music** and **Music Icons**. Nimbus has sunrise, rain and lightning reactions; Byte has a metal body and animated binary/code display. Music includes twelve instruments and controllers; Music Icons adds 34 artist studies. Previously imported packs retain their selections and exact artwork without duplicate bundled tiles.
+
+**Sports Icons** adds 14 athlete-inspired studies included with Pro, without a separate sports charge. **US Tech Hubs & Skylines** adds 13 cities. Three retired starter choices migrate to San Francisco, Austin and Seattle; generic office names and the circular Cupertino Ring Campus carry forward saved IDs. Existing personal imports remain usable. Public artwork and likeness review remains required.
 
 **Live 3D** also includes Cali, Sunny and eleven California companions. **Stress Busters** brings four spinners, Bubble Pop, Worry Stone and three puzzles together with the smiley balls and squishies. Giant Panda, seven dog breeds including Goldendoodle and Husky, and two cats remain under **Pets & Wildlife**. The eighteen-flower garden, imports, photos, saved cords and pins carry forward. Final public lineup and pricing remain undecided.
 

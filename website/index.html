@@ -108,7 +108,22 @@
     </section>
     <p id="page-status" role="status" hidden></p>
   </main>
-  <footer class="concept-footer section-width"><a class="concept-brand" href="#main"><span class="mark mark-terminal chosen-mark" aria-hidden="true"></span><span class="wordmark">charmlet</span></a><span>Developed in Silicon Valley. Made in California.</span><nav aria-label="Footer"><a href="./about.html">About Charmlet</a><a href="./about-us.html">About us</a><a href="./press.html">Press</a><a href="./shop.html">Free &amp; paid charms</a><a href="./privacy.html">Privacy</a></nav></footer>
+  <footer class="concept-footer section-width"><a class="concept-brand" href="#main"><span class="mark mark-terminal chosen-mark" aria-hidden="true"></span><span class="wordmark">charmlet</span></a><span>Developed in Silicon Valley. Made in California.</span><nav aria-label="Footer"><a href="./about.html">About Charmlet</a><a href="./about-us.html">About us</a><a href="./press.html">Press</a><a href="./shop.html">Free &amp; paid charms</a><button id="open-offers" class="text-button" type="button">Pro offers</button><a href="./privacy.html">Privacy</a></nav></footer>
+  <dialog id="offers-popup" class="signup-dialog offers-dialog" aria-labelledby="offers-title" aria-describedby="offers-description">
+    <button class="dialog-close" type="button" data-close-offers aria-label="Close Pro offers">×</button>
+    <p class="overline">A LITTLE SOMETHING EXTRA</p>
+    <h2 id="offers-title">Good company.<br>A little less.</h2>
+    <p id="offers-description">Join the Charmlet list for Pro offers, occasional coupon codes and new companions worth meeting.</p>
+    <form class="email-form" data-subscribe-offers>
+      <label>Email address<input type="email" name="email" placeholder="you@example.com" autocomplete="email" maxlength="254" required></label>
+      <p class="offer-consent">By subscribing, you ask for occasional Charmlet news and Pro offers. Confirm your email to join. Unsubscribe any time.</p>
+      <div data-human-check></div>
+      <button class="pill pill-dark" type="submit" disabled>Subscribe for Pro offers ↗</button>
+      <p data-signup-message role="status" aria-live="polite">Checking email availability…</p>
+    </form>
+    <button class="text-button offers-later" type="button" data-close-offers>Maybe later — let me explore</button>
+    <p class="release-note">No purchase required. Coupon availability and terms will be included with each offer. <a href="./privacy.html">Privacy</a></p>
+  </dialog>
   <dialog id="puzzle-editor" aria-labelledby="puzzle-title" hidden></dialog>
   <dialog id="signup-preview" class="signup-dialog" aria-labelledby="signup-title">
     <button id="close-signup" class="dialog-close" type="button" aria-label="Close signup">×</button>

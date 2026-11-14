@@ -3,6 +3,14 @@
 User-visible changes, newest first. Dates use YYYY-MM-DD. Development versions are not
 Marketplace releases. See the repository PROJECT_LOG.md for commit and verification evidence.
 
+## 0.14.0 - Unreleased (Sports Icons and tech-city collection)
+
+- Added 14 Sports Icons to the Pro collection, including Dhoni, Tendulkar, Curry and Hamilton. Sports Icons are not sold individually; artwork remains subject to publication review.
+- Added 13 US tech-hub skylines. San Francisco, Austin and Seattle replace three retired starter designs; saved choices and cord preferences migrate.
+- Renamed two office landmarks and redrew Cupertino as the current circular campus.
+- Added a compact Auto-default website theme control and a dismissible, verified email signup for Pro offers. Subscribing does not start a trial.
+- Enabled merchant-created Pro coupon entry at hosted checkout while retaining server price and signed-payment validation.
+
 ## 0.13.0 - Unreleased (Free starter, access and website candidate)
 
 - New profiles start with 31 fixed free charms. Existing beta profiles retain the frozen 234-design collection, and local photos, imports and earned flowers remain available.

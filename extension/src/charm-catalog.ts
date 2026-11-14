@@ -29,6 +29,9 @@ export const RETIRED_CHARMS: Readonly<Record<string, string>> = Object.freeze({
 	'lemon-chilies': 'trial:starter-lemon-chilies',
 	'trial:new-soldering-iron': 'terminal',
 	'trial:new-digital-caliper': 'terminal',
+	'trial:extra-alpine-lake': 'trial:new-us-san-francisco-skyline',
+	'trial:extra-night-sky': 'trial:new-us-austin-skyline',
+	'trial:new-ringed-planet': 'trial:new-us-seattle-skyline',
 });
 export const TRIAL_CHARMS: readonly CharmDefinition[] = trialCharms.filter(charm => !Object.hasOwn(RETIRED_CHARMS, charm.id));
 export const LIVE_CHARMS: readonly CharmDefinition[] = [{

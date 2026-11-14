@@ -1,7 +1,8 @@
 import type { CharmDefinition } from './charm-catalog';
 
 export const COLLECTION_ORDER: readonly string[] = [
-	'Terminal', 'Live 3D', 'Stress Busters', 'Music', 'Music Icons', 'California', 'Pets & Wildlife',
+	'Terminal', 'Live 3D', 'Stress Busters', 'Music', 'Music Icons', 'Sports Icons',
+	'California', 'US Tech Hubs & Skylines', 'Pets & Wildlife',
 	'Tech & Lab', 'Nature & Places', 'Space & Stars', 'Zodiac', 'Gemstones',
 	'Culture & Traditions', 'Sports', 'Celebrations', 'Flowers', 'Grown by you',
 ];

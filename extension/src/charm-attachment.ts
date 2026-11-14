@@ -37,9 +37,18 @@ export function attachmentFromPixels(width: number, height: number, rgba: Uint8A
 		}
 	}
 	if (!count) { return { ...DEFAULT_ATTACHMENT }; }
+	const x = (sumX / count + 0.5) / width;
+	let y = Math.min(0.5, (sumY / count + height / 84) / height);
+	if (!opaque(Math.floor(x * width), Math.floor(y * height))) {
+		// A slanted roof, cable or instrument neck can leave the column below
+		// its top edge. Keep the inset on the silhouette rather than in a gap.
+		let row = Math.floor(y * height);
+		while (row > sumY / count && !opaque(Math.floor(x * width), row)) { row--; }
+		y = (row + 0.5) / height;
+	}
 	return {
-		x: (sumX / count + 0.5) / width,
+		x,
 		// Let the line enter the silhouette by one logical pixel; the image covers it.
-		y: Math.min(0.5, (sumY / count + height / 84) / height),
+		y,
 	};
 }

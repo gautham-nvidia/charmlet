@@ -189,7 +189,7 @@ export async function artworkJobs(repo) {
   // These entries preserve the exact prompts and variants of the separately
   // reviewed collection refresh, including reference edits and first drafts.
   const collectionArt = JSON.parse(await readFile(join(repo, 'website/art-collection-refresh.json'), 'utf8'));
-  if (collectionArt.version !== 1 || !Array.isArray(collectionArt.entries) || collectionArt.entries.length > 32
+  if (collectionArt.version !== 1 || !Array.isArray(collectionArt.entries) || collectionArt.entries.length > 48
     || new Set(collectionArt.entries.map(item => item.key)).size !== collectionArt.entries.length) {
     throw new Error('Invalid collection artwork inventory.');
   }
@@ -208,25 +208,32 @@ export async function artworkJobs(repo) {
     }
     merged.set(item.key, { ...previous, ...item });
   }
-  const artists = JSON.parse(await readFile(join(repo, 'website/artist-artwork.json'), 'utf8'));
-  if (artists.version !== 1 || !Array.isArray(artists.entries) || artists.entries.length > 40) {
-    throw new Error('Invalid artist artwork inventory.');
-  }
-  for (const item of artists.entries) {
-    if (!/^artist-[a-z0-9-]{1,40}$/.test(item.key) || item.id !== item.key || merged.has(item.key)
-      || typeof item.name !== 'string' || !item.name.trim() || item.name.length > 48
-      || item.group !== 'Music Icons' || item.family !== 'artists' || item.original !== null
-      || typeof item.description !== 'string' || item.description.length > 160
-      || !/^#[0-9a-f]{6}$/i.test(item.accent) || !Number.isInteger(item.revision) || item.revision < 1
-      || item.revision > 20 || item.variant !== `${item.key}-r${item.revision}`
-      || typeof item.prompt !== 'string' || !item.prompt.trim() || item.prompt.length > 5000
-      || !['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review'].includes(item.approvedPack)
-      || !/^[a-f0-9]{64}$/.test(item.approvedPngSha256)
-      || item.greenDespill !== undefined && !['all', 'edges'].includes(item.greenDespill)) {
-      throw new Error(`Invalid artist artwork entry: ${item.key}`);
+  for (const inventory of [
+    { file: 'artist-artwork.json', prefix: 'artist', family: 'artists', group: 'Music Icons', maximum: 40,
+      packs: ['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review'] },
+    { file: 'sports-artwork.json', prefix: 'athlete', family: 'athletes', group: 'Sports Icons', maximum: 24,
+      packs: ['sports-icons-pro-preview-1', 'sports-icons-pro-preview-2'] },
+  ]) {
+    const people = JSON.parse(await readFile(join(repo, 'website', inventory.file), 'utf8'));
+    if (people.version !== 1 || !Array.isArray(people.entries) || people.entries.length > inventory.maximum) {
+      throw new Error(`Invalid ${inventory.group} artwork inventory.`);
     }
-    merged.set(item.key, item);
+    for (const item of people.entries) {
+      if (!new RegExp(`^${inventory.prefix}-[a-z0-9-]{1,40}$`).test(item.key) || item.id !== item.key || merged.has(item.key)
+        || typeof item.name !== 'string' || !item.name.trim() || item.name.length > 48
+        || item.group !== inventory.group || item.family !== inventory.family || item.original !== null
+        || typeof item.description !== 'string' || item.description.length > 160
+        || !/^#[0-9a-f]{6}$/i.test(item.accent) || !Number.isInteger(item.revision) || item.revision < 1
+        || item.revision > 20 || item.variant !== `${item.key}-r${item.revision}`
+        || typeof item.prompt !== 'string' || !item.prompt.trim() || item.prompt.length > 5000
+        || !inventory.packs.includes(item.approvedPack)
+        || !/^[a-f0-9]{64}$/.test(item.approvedPngSha256)
+        || item.greenDespill !== undefined && !['all', 'edges'].includes(item.greenDespill)) {
+        throw new Error(`Invalid ${inventory.group} artwork entry: ${item.key}`);
+      }
+      merged.set(item.key, item);
+    }
   }
-  if (merged.size > 256) throw new Error('The artwork inventory exceeds its bounded limit.');
+  if (merged.size > 300) throw new Error('The artwork inventory exceeds its bounded limit.');
   return [...merged.values()];
 }
