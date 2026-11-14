@@ -123,6 +123,8 @@ Seventeen athlete-inspired studies are included in the Pro catalogue without a s
 
 Nadal's prepared illustration is horizontally mirrored to put the racquet in his left hand. The registry records this transform; the original generated image, prompt and receipt remain unchanged.
 
+On 2026-11-13 the owner approved sharing the completed candidate, including the seventeen sports studies, in the public GitHub draft PR for review. This records permission to share the review material; it does not establish third-party likeness rights or approve a commercial release.
+
 Thirteen new miniature skylines depict the Bay Area/Silicon Valley, San Francisco, San Diego, Austin, Raleigh-Durham, Dallas, Miami, Seattle, Boston, New York, Chicago, Atlanta and Denver. The Cupertino design now depicts the current circular campus with its green courtyard; it replaces the older Infinite Loop interpretation described above. Santa Clara Office and San Francisco Tower use generic names. The illustrations omit company names and logos, and are not verified architectural models. Prompts, revisions and hashes are recorded in `website/art-collection-refresh.json` and `website/art-review.json`; original images and receipts remain in ignored authoring storage.
 
 Alpine Lake, Night Sky and Ringed Planet retire from the current catalogue. Their built-in selections migrate to the free San Francisco, Austin and Seattle skylines without losing pins or cord choices. Existing personal imports remain intact. The 261-design candidate contains 236 static designs, Terminal, fifteen live companions and nine fidget/puzzle tools; garden rewards remain separate from flower-art previews.
