@@ -12,6 +12,7 @@ import { learningCard } from './learning-cards';
 import { StateStore, type LoadedState } from './state-store';
 import { StateWriter } from './state-writer';
 import { isPhotoPack, photoPackInput } from './photo-packs';
+import { AccessController } from './access-controller';
 
 let deactivateExtension: (() => Promise<void>) | undefined;
 
@@ -37,7 +38,16 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (loadedState.error) {
 		void vscode.window.showWarningMessage('Charmlet could not read its saved preferences. Review your charm settings.');
 	}
-	const baseCatalogue = buildCatalogue(packCharms(packs));
+	const access = new AccessController({
+		directory: context.globalStorageUri.fsPath,
+		secrets: {
+			get: async () => context.secrets.get('charmlet.access.tokens'),
+			set: async value => context.secrets.store('charmlet.access.tokens', value),
+		},
+	});
+	await access.initialize(loadedState.value);
+	if (access.notice) { void vscode.window.showWarningMessage(access.notice); }
+	const baseCatalogue = access.catalogue(buildCatalogue(packCharms(packs)));
 	const legacyMessageIndex = restoreState(loadedState.value, baseCatalogue).messageIndex;
 	const companionStore = new StateStore<CompanionState>(context.globalStorageUri.fsPath, 'companion.json');
 	const loadedCompanion = await companionStore.load(undefined);
@@ -90,12 +100,19 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (selected) { await removePack(packDirectory, value); packs = packs.filter(pack => pack.id !== value); }
 			await refreshCatalogue();
 		}
-	});
+	}, access);
 	const refreshCatalogue = async (selectedId?: string) => {
-		await provider.setCatalogue(buildCatalogue([
+		await provider.setCatalogue(access.catalogue(buildCatalogue([
 			...packCharms(packs), ...gardenCharms(companion.snapshot().state.garden),
-		]), selectedId);
+		])), selectedId);
 	};
+	access.watch(async () => {
+		const next = access.catalogue(buildCatalogue([...packCharms(packs), ...gardenCharms(companion.snapshot().state.garden)]));
+		if (next.map(charm => charm.id).join('|') !== provider.catalogue.map(charm => charm.id).join('|')) {
+			await provider.setCatalogue(next);
+		}
+		provider.postAccess();
+	}, () => console.warn('Charmlet could not refresh access settings.'));
 	let gardenKey = gardenCharms(latestCompanion.state.garden).map(charm => charm.id).join('|');
 	let failedGardenKey: string | undefined;
 	let gardenRefresh: Promise<void> | undefined;
@@ -118,6 +135,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	let disposePromise: Promise<void> | undefined;
 	const disposeCompanion = () => disposePromise ??= (async () => {
+		access.dispose();
 		unsubscribeCompanion();
 		await companion.dispose();
 		await provider.flush();
@@ -138,6 +156,11 @@ export async function activate(context: vscode.ExtensionContext) {
 				throw new Error('Choose a bounded Charmlet pack JSON file (maximum 2 MiB).');
 			}
 			const input = await vscode.workspace.fs.readFile(selected[0]);
+			if (await access.importDocument(input)) {
+				await refreshCatalogue();
+				void vscode.window.showInformationMessage(`${access.snapshot.label}. ${access.snapshot.detail}`);
+				return;
+			}
 			const installed = await installPack(packDirectory, input);
 			if (!installed.added) {
 				void vscode.window.showInformationMessage(`${installed.pack.name} is already installed.`);
@@ -233,6 +256,7 @@ class CharmletView implements vscode.WebviewViewProvider {
 		loadedState: LoadedState,
 		private readonly companion: CompanionController,
 		private readonly photoAction: (action: 'save' | 'remove', value: unknown) => Promise<void>,
+		private readonly access: AccessController,
 	) {
 		this.stateWriter = new StateWriter(
 			async value => {
@@ -290,13 +314,15 @@ class CharmletView implements vscode.WebviewViewProvider {
 			if (!message || typeof message !== 'object' || !('type' in message)) {
 				return;
 			}
+			const allowed = this.access.catalogue(this.catalogue);
+			if (allowed.length !== this.catalogue.length) { await this.setCatalogue(allowed); }
 			if (message.type === 'ready') {
 				await this.flush();
 				this.trace('ready-state', { generation });
 				const includedTab = this.pendingCompanionTab;
 				await view.webview.postMessage({
 					type: 'state', state: this.state, catalogue: this.catalogue, drop: this.dropOnReady, visible: view.visible,
-					companion: this.companion.snapshot(),
+					companion: this.companion.snapshot(), access: this.access.snapshot,
 					...(includedTab ? { companionTab: includedTab } : {}),
 				});
 				if (this.view !== view) { return; }
@@ -365,6 +391,9 @@ class CharmletView implements vscode.WebviewViewProvider {
 			} else if (message.type === 'learning-source' && 'cardId' in message) {
 				const card = typeof message.cardId === 'string' ? learningCard(message.cardId) : undefined;
 				if (card?.source) { await vscode.env.openExternal(vscode.Uri.parse(card.source.url)); }
+			} else if (message.type === 'browse-packs') {
+				const url = this.access.website();
+				if (url) { await vscode.env.openExternal(vscode.Uri.parse(url)); }
 			} else if (message.type === 'command' && 'command' in message
 				&& (message.command === 'charmlet.importPack' || message.command === 'charmlet.removePack')) {
 				await vscode.commands.executeCommand(message.command);
@@ -405,13 +434,17 @@ class CharmletView implements vscode.WebviewViewProvider {
 	}
 
 	async setCatalogue(catalogue: readonly CharmDefinition[], selectedId?: string) {
-		this.catalogue = catalogue;
+		this.catalogue = this.access.catalogue(catalogue);
 		this.state = restoreState({ ...this.state, charmId: selectedId ?? this.state.charmId,
-			charmPinned: selectedId !== undefined ? true : this.state.charmPinned }, catalogue);
+			charmPinned: selectedId !== undefined ? true : this.state.charmPinned }, this.catalogue);
 		this.trace('catalogue-state');
 		this.changed(this.state);
 		await this.persist({ ...this.state });
-		await this.view?.webview.postMessage({ type: 'catalogue', catalogue: this.catalogue, state: this.state });
+		await this.view?.webview.postMessage({ type: 'catalogue', catalogue: this.catalogue, state: this.state, access: this.access.snapshot });
+	}
+
+	postAccess() {
+		void this.view?.webview.postMessage({ type: 'access', access: this.access.snapshot });
 	}
 
 	async update(state: CharmState, drop = false) {

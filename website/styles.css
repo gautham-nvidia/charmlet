@@ -1,3 +1,6 @@
+@import url("./puzzle.css");
+@import url("./celebration.css");
+
 :root {
   color-scheme: light;
   --paper: #fcf8f0;

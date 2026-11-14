@@ -12,6 +12,11 @@ export const CORD_STYLES = {
 } as const;
 export type CordStyle = keyof typeof CORD_STYLES;
 export type CordChoices = Readonly<Record<string, CordStyle>>;
+const CALIFORNIA_CORDS: Readonly<Record<string, CordStyle>> = {
+	'live:cali': 'braid', 'live:redwood': 'leather', 'live:yosemite': 'leather', 'live:tahoe': 'silver-chain',
+	'live:gull': 'soft', 'live:seal': 'soft', 'live:golden-gate': 'ball-chain', 'live:santa-cruz': 'braid',
+	'live:whale': 'soft', 'live:dolphin': 'soft', 'live:condor': 'leather', 'live:eagle': 'leather',
+};
 
 export function isCordStyle(value: unknown): value is CordStyle {
 	return typeof value === 'string' && Object.hasOwn(CORD_STYLES, value);
@@ -24,8 +29,8 @@ export function restoreCordChoices(value: unknown, charms: readonly CharmDefinit
 	for (const charm of charms) {
 		if (entries.length >= 512) { break; }
 		const artworkId = charm.artworkKey ? `trial:${charm.artworkKey}` : charm.id;
-		const retired = Object.entries(RETIRED_CHARMS).find(([, current]) => current === artworkId)?.[0];
-		const key = [charm.id, artworkId, retired].find(id => id && Object.hasOwn(raw, id) && isCordStyle(raw[id]));
+		const retired = Object.entries(RETIRED_CHARMS).filter(([, current]) => current === artworkId).map(([id]) => id);
+		const key = [charm.id, artworkId, ...retired].find(id => Object.hasOwn(raw, id) && isCordStyle(raw[id]));
 		if (key) { entries.push([charm.id, raw[key] as CordStyle]); }
 	}
 	return Object.fromEntries(entries);
@@ -33,9 +38,10 @@ export function restoreCordChoices(value: unknown, charms: readonly CharmDefinit
 
 export function cordForCharm(charm: CharmDefinition, choices: CordChoices = {}): CordStyle {
 	if (Object.hasOwn(choices, charm.id) && isCordStyle(choices[charm.id])) { return choices[charm.id]; }
+	if (Object.hasOwn(CALIFORNIA_CORDS, charm.id)) { return CALIFORNIA_CORDS[charm.id]; }
 	if (isSoftCharm(charm.id) || charm.group === 'Stress Busters') { return 'soft'; }
 	switch (charm.group) {
-		case 'Live 3D':
+		case 'Live Companions':
 			return 'silver-chain';
 		case 'Gemstones':
 		case 'Personal Keepsakes':
@@ -52,7 +58,12 @@ export function cordForCharm(charm: CharmDefinition, choices: CordChoices = {}):
 		case 'Garden Flowers':
 		case 'Grown by you':
 		case 'Seasonal':
+		case 'Celebrations':
 			return 'ribbon';
+		case 'Music':
+			return /acoustic|ukulele|violin/.test(charm.id) ? 'leather' : 'silver-chain';
+		case 'California':
+			return /granite|mountain|cypress/.test(charm.id) ? 'leather' : 'silver-chain';
 		case 'Solar System':
 		case 'Stars & Galaxies':
 		case 'Zodiac':
@@ -70,17 +81,26 @@ export function cordForCharm(charm: CharmDefinition, choices: CordChoices = {}):
 export interface CordPoint { x: number; y: number; }
 const number = (value: number) => value.toFixed(2);
 
-export function cordPath(anchor: CordPoint, hook: CordPoint): string {
-	return `M ${anchor.x} ${anchor.y} Q ${anchor.x + (hook.x - anchor.x) * .45} ${(anchor.y + hook.y) / 2} ${hook.x} ${hook.y}`;
+function cordControl(anchor: CordPoint, hook: CordPoint, bend: number): CordPoint {
+	const dx = hook.x - anchor.x, dy = hook.y - anchor.y;
+	const distance = Math.hypot(dx, dy) || 1;
+	const limit = Math.min(64, distance * .3);
+	const offset = Number.isFinite(bend) ? Math.max(-limit, Math.min(limit, bend)) : 0;
+	return { x: anchor.x + dx * .45 - dy / distance * offset, y: (anchor.y + hook.y) / 2 + dx / distance * offset };
+}
+
+export function cordPath(anchor: CordPoint, hook: CordPoint, bend = 0): string {
+	const control = cordControl(anchor, hook, bend);
+	return `M ${anchor.x} ${anchor.y} Q ${control.x} ${control.y} ${hook.x} ${hook.y}`;
 }
 
 /** Bounded link geometry follows the same quadratic curve as the attachment path. */
-export function chainLinks(anchor: CordPoint, hook: CordPoint, balls = false): string {
+export function chainLinks(anchor: CordPoint, hook: CordPoint, balls = false, bend = 0): string {
 	const dx = hook.x - anchor.x, dy = hook.y - anchor.y;
 	const distance = Math.hypot(dx, dy);
 	if (!Number.isFinite(distance) || distance < 8) { return ''; }
 	const count = Math.min(180, Math.floor(distance / (balls ? 6 : 5)));
-	const controlX = anchor.x + dx * .45, controlY = (anchor.y + hook.y) / 2;
+	const { x: controlX, y: controlY } = cordControl(anchor, hook, bend);
 	const paths: string[] = [];
 	for (let index = 1; index < count; index++) {
 		const t = index / count, u = 1 - t;

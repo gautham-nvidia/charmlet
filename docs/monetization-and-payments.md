@@ -1,112 +1,146 @@
-# Monetizing Charmlet
+# Digital packs now, merchandise later
 
-**Recommendation: keep the useful app free and start with optional one-time artwork packs.** Use a provider that delivers the download and handles transaction taxes for the first release. Avoid charging a subscription for the current offline features.
+**Updated launch recommendation, 2026-11-10: use a provider with no monthly ecommerce subscription.** The owner does not want Shopify's $39/month cost yet. Prefer **Lemon Squeezy**, subject to seller/country approval, for hosted digital delivery and an optional cross-app Pro licence. **Payhip Free** is an alternative. Reconsider Shopify when physical merchandise is ready.
 
-This is a proposal requested by the owner on 2026-11-05. No price, paid product, merchant account, checkout or charge has been activated.
+The [Phase 14 product and pricing plan](phase-14-product-and-pricing-plan.md) proposes a free starter and a 30-day Pro preview without a card. The owner selected **$7.49 launch / $17.49 regular for a one-time Pro purchase** across the current apps on 2026-11-10. The plan also defines visual changes, requested collections, existing-user protection and required implementation. Checkout is not activated. Cloudflare Pages Free is the proposed commercial static host within its limits; the existing Vercel setup remains documented.
 
-## A practical first offer
+The current **234-charm trial, including all 34 Music Icons, is free**. No merchant account, paid product, price, subscription or live checkout has been activated. The recommendations and USD prices below are proposals, checked against official sources on **2026-11-10**.
 
-| Offer | Proposed price (USD) | What the buyer gets |
+## Which provider fits?
+
+| Provider | Digital delivery | Future merchandise | Best use for Charmlet |
+|---|---|---|---|
+| **Lemon Squeezy** | Protected product files, purchase receipts and optional generated software licence keys | Focus on digital products; reevaluate the store for physical goods | **Recommended initial digital option**, subject to approval; no required monthly ecommerce fee |
+| **Payhip Free** | Immediate download page and email link after purchase; software keys documented | Physical products are supported; assess fulfillment needs later | Alternative with no monthly plan; 5% platform fee plus gateway fees |
+| **Shopify** | Free **Digital Products** app can email files automatically after successful payment | Products, variants, stock, shipping and fulfillment integrations in the same store | **Future merchandise option** once its subscription is justified |
+| **Stripe** | Payment Links/Checkout take payment; add a delivery partner or your own reliable fulfillment service | Flexible, but catalog, shipping, inventory and fulfillment need additional software | Good if you want a custom store and are willing to maintain it |
+| **Square** | Standard Square Online digital items require manual email delivery; its docs point to **SendOwl** for automation | Particularly useful if an existing Square/POS operation also sells in person | Reasonable if already using Square; extra delivery setup for digital packs |
+
+Choose one initial checkout/delivery route. For the future Shopify option, start with **Shopify Payments if your country/business is eligible**, configured inside Shopify. A separate Stripe Payment Link does not automatically create a Shopify order or trigger Shopify file delivery. An external gateway can also incur Shopify's additional third-party transaction fee.
+
+Standard Shopify Payments, Stripe Payments and Square processing do not automatically make the provider the merchant of record. You remain responsible for the applicable business, refund and tax obligations. Tax calculation is not the same as registration, filing or remittance. Stripe Managed Payments is a separate merchant-of-record offering with its own eligibility and additional fees; evaluate it separately if choosing that route.
+
+## What to charge
+
+| Offer | Proposed USD price | Clear promise |
 |---|---:|---|
-| Free app | $0 | Focus, garden, small wins, local photo charms, importer, basic cords, Cali and the basic live companions/fidgets, plus a selected starter collection |
-| Optional themed pack | $4.99 once | 5-8 new, approved original artworks and future fixes to that pack |
+| Current app and trial collection | $0 | Existing offline features and included artwork |
+| Proposed new Pro edition | $7.49 launch / $17.49 regular, once | Owner-selected prices; new Pro features and explicitly listed original content across the current apps; requires implementation |
+| New original themed pack | $4.99 once | 8–12 clearly listed new artworks, with import instructions |
 | Three-pack bundle | $12.99 once | Three named packs, delivered as separate importable files |
-| Optional support | Around $5 once | Support for the project, clearly described without implying exclusive content or all future products |
+| Optional support payment | Around $5 once | Support for the project; no exclusive content or all-future-products promise |
 
-Choose one or two distinctive themes first, such as original South Indian everyday objects or a recognizable lab collection. Quality and a clear theme are more useful than a very large catalogue. The current trial keeps all 167 charms available; the public bundle and any future paid additions still need the owner's selection.
+Start with one or two strong new collections. Avoid a subscription for the current offline app; recurring billing should fund a continuing benefit that has been designed and costed.
 
-Do not remove already promised free functionality to manufacture a paid tier. Local photos are already free. The older paid website Photo Studio proposal is poor launch value now that the apps can make photo charms locally; leave it disabled unless it gains a separate useful service.
+**Do not charge for repackaging the existing public trial files.** Current code and artwork are in the repository/build. Use new premium artwork, keep the full deliverables outside the public repo, app and website, and publish only previews. Downloaded offline files can be shared; do not promise DRM.
 
-Subscriptions could make sense later for a regularly delivered art club or an AI-generation allowance with measured recurring costs. Do not promise unlimited generation or lifetime access to every future paid pack.
+Start paid packs and merchandise with original Cali/Charmlet work and other artwork cleared for that use. Approval of the artist studies' designs is not a commercial likeness, trademark or merchandise licence. The public release lineup, source/artwork terms and paid rights remain owner decisions.
 
-## What the current app can deliver
+## Fees: US examples, not an account quote
 
-The importer accepts **data-only PNG charm packs**, with **at most 12 charms per file**. A paid five-charm pack therefore works with the existing app; a large bundle can contain several files.
+The business country has not been selected. These are published US standard examples, before taxes, international cards, currency conversion, refunds, delivery services, hosting or artwork costs.
 
-The live companions are code built into the app. The existing pack format cannot deliver a new live 3D behavior. Selling live companions would first require a designed, validated delivery/entitlement mechanism. Do not advertise a paid live-character download as working today.
+| Route | Published example |
+|---|---|
+| [Lemon Squeezy](https://www.lemonsqueezy.com/pricing) | No monthly ecommerce fee; 5% + $0.50 base, including payment processing. [Fee docs](https://docs.lemonsqueezy.com/help/getting-started/fees) add 1.5% international, 1.5% PayPal and 0.5% subscription fees where applicable; regional payout fees can also apply |
+| [Payhip Free](https://payhip.com/pricing) | $0/month; 5% Payhip transaction fee plus payment-gateway fees. Official pricing/help search results verified this; direct pricing-page browser access was blocked |
+| [Stripe standard](https://stripe.com/pricing) | 2.9% + $0.30 per successful domestic-card transaction; Payment Links are included in standard Payments pricing |
+| [Square Payment Links](https://squareup.com/us/en/payment-links) | No monthly Payment Links fee; 3.3% + $0.30 per online transaction for new Square customers, with different rates for some methods |
+| [Shopify Basic](https://www.shopify.com/pricing) | $39/month paid monthly, or $29/month billed annually; standard online card rate from 2.9% + $0.30 through Shopify Payments |
+| Shopify qualifications | Premium online card rates shown as 3.5% + $0.30; Basic lists a 2% third-party transaction fee when an external gateway is used. Confirm exemptions and account terms |
 
-All current trial artwork and code are in a public repository/build. A payment link cannot make those existing files exclusive. Create genuinely new premium artwork, keep the full deliverables out of the public repository/site/app, and show separate previews. Offline files can still be shared; do not promise DRM.
+At **$4.99**, approximate proceeds after only the stated standard card fee are **$4.55 with Stripe or Shopify Payments**, or **$4.53 with Square Payment Links**. These are not profit. Shopify's subscription and any delivery-service charges are additional.
 
-## Stripe or a hosted merchant?
+At the base Lemon Squeezy rate, $4.99 leaves about **$4.24**. Payhip Free plus the example US Stripe card rate leaves about **$4.30**. A hypothetical $0.99 monthly Lemon Squeezy subscription payment leaves about **$0.44**, including its subscription surcharge but before other additions. This is why the revised plan prefers a one-time app purchase and substantial packs.
 
-A **merchant of record** is the seller for the transaction and handles the covered sales-tax/VAT/GST obligations. A payment processor handles the payment; standard processing does not automatically take over those obligations.
+## Initial digital delivery: no monthly platform plan
 
-| Route | Why choose it | Work still needed |
-|---|---|---|
-| **Lemon Squeezy** | Hosted checkout, private digital downloads, receipts and merchant-of-record tax handling in one service | Store approval, product/rights approval, files, price, terms and a tested purchase |
-| **Stripe Payment Links / Checkout** | Familiar Stripe account, flexible checkout, lower standard domestic-card fee | Reliable private delivery plus tax setup appropriate to the business |
-| **Stripe Managed Payments** | Stripe's merchant-of-record option for eligible digital products | Eligibility/activation, covered-market review, additional fee and private delivery |
+1. Verify the business country and seller eligibility before opening a live store.
+2. For an artwork product, upload the validated `.charmlet.json` or a ZIP containing importable files and instructions to the provider's protected file area.
+3. For the proposed Pro product, enable a perpetual software key and the agreed personal-install allowance. The apps still need activation and entitlement code; generating a key alone does not unlock them.
+4. Link the website to hosted checkout. Following confirmed payment, the buyer receives access to the download page and an emailed receipt/link. Lemon Squeezy documents showing generated keys in the receipt and order page.
+5. Test purchase, delivery, import/activation, purchase restoration and refunds before enabling a live public offer.
 
-For Charmlet's first optional artwork packs, **Lemon Squeezy is the simplest implementation**. The existing repository also has a disabled Lemon Squeezy Studio integration, although selling downloadable packs does not require enabling that Studio.
+The current pack format adds static PNGs, not new executable behaviour. New live fidget and hinged-locket features belong in the app. Keep private service credentials out of clients, validate the correct purchased product and preserve offline access after activation.
 
-If staying entirely in Stripe is preferred, investigate **Managed Payments eligibility** before committing to standard processing. Stripe's documentation now supports a merchant-of-record route; the blanket statement "Stripe never handles merchant-of-record obligations" would be incorrect.
+Lemon Squeezy acts as merchant of record for transaction-tax collection/remittance; that does not settle the owner's income taxes or all business obligations. Its [2026 update](https://www.lemonsqueezy.com/blog/2026-update) describes a direction toward Stripe Managed Payments. Recheck onboarding and feature availability when activating a store; do not assume the two products have interchangeable APIs or fees. Payhip's gateway eligibility and tax coverage also need to be checked for the actual business.
 
-## Fee examples
+For illustration, Shopify Basic paid monthly plus one US$20 Vercel Pro base totals **$59/month before usage and other costs**. Roughly thirteen $4.99 sales at $4.55 net card proceeds cover only those two base charges. There is no reason to start paying for a store before products and delivery are ready.
 
-Official public US standard rates checked on 2026-11-05:
+## Shopify: future merchandise setup
 
-- [Stripe](https://stripe.com/pricing): **2.9% + $0.30** for a successful domestic-card transaction. Payment Links are included with standard Payments pricing. International cards, currency conversion, tax services and other options can add fees.
-- [Lemon Squeezy](https://www.lemonsqueezy.com/pricing): **5% + $0.50** base transaction fee. Its [fee documentation](https://docs.lemonsqueezy.com/help/getting-started/fees) lists additional fees including international transactions, PayPal and subscriptions; percentages can apply to the tax-inclusive total.
-- [Stripe Managed Payments](https://docs.stripe.com/payments/managed-payments): its fee is **additional to Payments fees**. Check the account's current quoted rate and eligibility before comparing a live offer.
+1. **Create the store and payment account yourself.** Choose the correct business country/currency, complete the business and payout checks, and configure Shopify Payments or a supported alternative. Verify costs and eligibility in that account.
+2. **Install Shopify's free [Digital Products app](https://apps.shopify.com/digital-downloads).** The older URL still contains `digital-downloads`; the current app/documentation name is Digital Products.
+3. **Prepare a private deliverable.** A ZIP can contain one or more `.charmlet.json` files plus a short installation guide. The current importer accepts data-only PNG packs with at most **12 charms per pack file**. It does not install new live-character behavior.
+4. **Create the product and attach its files.** In **Apps → Digital Products**, use **Add assets → File**, upload the deliverable and associate it with the correct product/variant. Edit the product's title, price, status and sales channels under **Products**. Purely digital products must not require shipping.
+5. **Set delivery to Send automatically.** The app emails the buyer an asset link after successful payment. Choose any access limit deliberately; the documented default is unlimited. Add the product to a **Digital collections** collection.
+6. **Add the buyer-facing essentials.** Describe every included charm, supported apps, how to import, support contact, refund terms and the applicable tax treatment. Do not imply the pack adds live behaviors.
+7. **Test the entire purchase path.** Use Shopify Payments test mode or the supported test gateway. Check approved/declined payments, receipt email, delivery email, reopening the download, and importing into both apps. Check how refunds and access revocation behave; a refund cannot erase an already downloaded file. See [test orders](https://help.shopify.com/en/manual/checkout-settings/test-orders).
+8. **Activate only after review.** Switch the account/product to the intended live settings and verify the live product URL. Set `website/launch.json`'s `shop.provider` to `shopify` and `shop.url` to that verified store/collection URL, then deploy a tested site update.
 
-Illustrative domestic card sale, with no buyer tax, currency conversion, refunds or extra services:
+The [official Digital Products guide](https://help.shopify.com/en/manual/products/digital-service-product/digital-downloads) confirms ZIP support, automatic delivery after payment and support for orders combining physical and digital products. Use private uploaded files for purchases, rather than putting full packs in Vercel's public assets.
 
-| Price | Stripe standard: approximate proceeds | Lemon Squeezy base: approximate proceeds |
-|---|---:|---:|
-| $4.99 | $4.55 | $4.24 |
-| $12.99 | $12.31 | $11.84 |
+Buyer instructions should say:
 
-These are payment proceeds, not profit. They exclude hosting, artwork, support and the owner's income/business taxes. The higher hosted-merchant fee may be worthwhile to avoid building and maintaining digital delivery and cross-border tax handling. Confirm rates for the actual merchant country.
+- Download and extract the ZIP.
+- **VS Code:** Command Palette → **Charmlet: Import Charm Pack**, then choose the `.charmlet.json` file.
+- **Desktop:** tray menu → **Import Pack…**, then choose the same file.
+- Open **Charms**, find the new collection and select a design.
 
-Vercel's Hobby plan is for non-commercial use. Published Pro pricing starts at **$20/month**, with possible usage charges. At the illustrative $4.24 proceeds, five $4.99 sales cover only that $20 hosting base. No paid hosting upgrade is authorized by this recommendation.
+## Stripe: how charging and delivery fit together
 
-## Fastest launch: hosted digital delivery
+1. In Stripe's Dashboard, finish the business/payout setup and work in a **sandbox/test environment** first.
+2. Create a **Product** describing the pack, then a **one-time Price** for the agreed amount/currency. A Product says what is sold; a Price says how much and whether it repeats.
+3. Create a **Payment Link**, collect the customer's email, and show the refund/support terms. A public Payment Link can be linked from a static website without exposing a secret key.
+4. Choose fulfillment before selling. Use a compatible delivery partner from Stripe's [post-payment options](https://docs.stripe.com/payment-links/post-payment), or build the server flow below.
+5. Test successful and declined payments, delayed methods if enabled, delivery/retry, repeat download and import in both apps. Move to live settings only when those steps work.
 
-1. The owner creates/activates the merchant account, completes identity and payout details, and obtains store approval.
-2. Approve one new collection, its redistribution terms, price, currency, support contact and refund policy.
-3. Build a validated `.charmlet.json` pack. Keep the full paid file private and upload it to the product's **Files** area, not public website assets.
-4. Create a one-time digital product, add previews and describe exactly which files are included. Keep subscriptions and licence keys off for a simple offline art pack.
-5. Test checkout, receipt delivery, repeat download and import into both apps. Test a refund and verify how download access changes.
-6. Add the provider's verified checkout link to a separate optional-pack card after approval. The provider's receipt/account supplies the file; the website never needs to hold card details.
+For a custom integration, a **webhook** is Stripe's signed server notification that an order changed. The server must:
 
-Lemon Squeezy [documents product files and delivery](https://docs.lemonsqueezy.com/help/products/adding-products). Its [API file links](https://docs.lemonsqueezy.com/api/files/the-file-object) are signed and expire. Keep checkout links separate from private download URLs.
+- Verify the signature using the **raw request body** and server-held webhook secret.
+- Retrieve the Checkout Session/line items; check paid status, currency, test/live mode and an approved Price. Never trust a browser-supplied amount or `?paid=true`.
+- Save the order durably, using the Checkout Session ID as a unique key so repeated/concurrent events do not create duplicate fulfillment.
+- Generate an expiring link from private storage and email it. Record delivery status and retry failed email without charging again.
+- Handle delayed-payment success/failure when enabled, refunds and purchase recovery. A buyer may close the browser before reaching the success page.
 
-## If you choose Stripe
+Stripe's [fulfillment guide](https://docs.stripe.com/checkout/fulfillment) explains these guarantees. **This repository does not currently implement that Stripe webhook, order database or paid-file service.** A success-page redirect alone would not be sufficient.
 
-### 1. Account and a test product
+After testing and approval, `shop.provider: stripe` and a verified public Payment Link can reveal the site link. This configuration does not implement fulfillment or activate a merchant account.
 
-In the Stripe Dashboard, complete the business/payout setup yourself and work in a **sandbox/test environment first**. Select the correct business country rather than using US rates as an assumption.
+## Square: what to set up
 
-Create a **Product**, for example "Charmlet: Lab Days - 6 original charms", and a **one-time Price** in the agreed currency. A Product describes what is sold; a Price defines how much is charged and whether it repeats. Use an accurate product tax code.
+1. Create/verify the Square business account, location, currency and payouts.
+2. Create a digital item in Square Online or the appropriate payment link, with an accurate price and buyer email.
+3. Add automatic delivery before unattended sales. Square's [non-physical-item guide](https://squareup.com/help/us/en/article/6873-sell-non-physical-items-in-square-online-store) says digital files are sent manually and points to the **SendOwl integration** for automation. Check that integration's current plan, capabilities and test flow.
+4. Test the actual payment-to-delivery connection, repeat downloads, refunds and app imports. If integrating Square's API, use its [Sandbox](https://developer.squareup.com/docs/devtools/sandbox/overview); do not assume a live Dashboard payment link is a sandbox link.
+5. Configure a verified public storefront/link with `shop.provider: square` only after delivery and the live offer are approved.
 
-Create a **Payment Link** for that Price. Collect the customer's email, show the refund/support terms, and configure a confirmation page. A public Payment Link can be placed on the site; it does not require a secret key in browser code.
+Square is useful if the business later sells in person. It is not the simplest first digital-pack store when no Square operation already exists.
 
-If using Managed Payments, confirm [eligibility](https://docs.stripe.com/payments/managed-payments/eligibility) and follow [its setup instructions](https://docs.stripe.com/payments/managed-payments/set-up). Standard Stripe and Managed Payments are different choices, even though both can use Payment Links.
+## Merchandise later
 
-### 2. Deliver the purchase reliably
+Keep digital packs and physical products as separate collections within the chosen store. When merchandise is ready:
 
-**Payment Links do not by themselves build Charmlet's private download delivery.** Either choose a compatible delivery service or implement a small server-side fulfillment service.
+- Make print-quality source artwork and order samples. The app's **216×252 PNGs are not print masters**.
+- Add physical SKUs/variants, sizes, stock, package weights and shipping profiles. Physical items require shipping; digital-only packs should not ask for it.
+- Choose stock handling or a print-on-demand fulfillment partner, and test a physical order, tracking, delivery and return.
+- Write physical shipping/return terms separately from the digital refund policy.
+- Add a merchandise navigation/category on Charmlet only when real products and fulfillment exist.
 
-The custom flow would be:
+With Shopify, Digital Products can still deliver digital portions after payment while physical items follow their shipping/fulfillment settings. Test mixed carts before offering a combined bundle.
 
-1. Stripe sends a signed payment event to `/api/stripe/webhook`.
-2. The server verifies the signature against the **raw request body**, retrieves the Checkout Session and its line items, confirms paid status, test/live mode and an allowlisted Price.
-3. Store the paid order in a durable database with a unique Checkout Session ID. Stripe can retry events or send concurrent deliveries; fulfillment must be idempotent.
-4. Create a short-lived download link from **private** file storage and send it to the buyer. Store fulfillment/email status so a delivery failure can be retried without another charge.
-5. Provide a way to retrieve a purchase again. Never treat `?paid=true`, a success-page visit or a browser-supplied amount as proof of payment.
+## Decisions before the first charge
 
-Handle `checkout.session.completed` only when payment is actually paid. If delayed payment methods are enabled, also handle `checkout.session.async_payment_succeeded` and failure events. A buyer can pay and close the browser before returning, so the webhook must work independently of the success page.
+The owner still needs to choose the business country/currency, provider/plan, first cleared premium artwork, prices, customer support address, refund terms and tax setup. Then verify payment, private delivery and both-app imports before enabling the public shop link.
 
-Stripe's [fulfillment guide](https://docs.stripe.com/checkout/fulfillment) explains these guarantees. [Payment Link post-payment options](https://docs.stripe.com/payment-links/post-payment) also describe partner-based delivery.
+For now, `website/launch.json` leaves `shop` null. The site offers the free trial and gallery, with merchandise described only as a later plan. See [Vercel hosting](vercel-hosting.md) for deployment.
 
-### 3. Secrets and testing
+## Phase 14 follow-up: Coda and the email list
 
-For a custom integration, Vercel project environment variables would include `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`, plus private storage/database/email credentials. Configure separate preview/test and production/live values. Keep them out of HTML, the extension, Git and chat. This static website currently has **no Stripe webhook, order database or paid delivery**.
+The Coda the owner linked is **coda.co's payment service**, not the unrelated document/workspace product. Its [published pricing](https://www.coda.co/pricing/) lists Codapay/Coda Links **from 1%**, Coda Webstore **5%**, and distribution **15%**, with no setup fee. The $100K/month threshold concerns custom pricing; it is not a stated minimum for the standard offer.
 
-Test successful payment, decline, cancelled checkout, delayed success if enabled, duplicate webhook, wrong signature, wrong Price, failed email, expired download and refund behavior. Verify the resulting pack imports in both apps.
+Those headlines are not a complete Charmlet transaction quote. The [Coda Webstore getting-started guide](https://docs.coda.co/coda-webstore/getting-started) describes integrating account validation and fulfillment APIs. Ready-made protected downloads and software licence delivery for this product have not been verified. Keep Lemon Squeezy as the better-documented initial option until Coda confirms the complete costs, eligibility and fulfillment path. No account with either provider is needed just to review the website.
 
-Then create the live product/Price/Payment Link and live webhook using the approved final terms. Test and live IDs/secrets are different. The owner reviews the actual checkout before the first real sale.
+The owner-selected Pro prices remain **$7.49 launch / $17.49 regular, once across the current apps**. Checkout and purchase activation remain inactive.
 
-## Decisions to finish
-
-Choose the first new paid collection and its terms, one-time prices/currency, provider and merchant country, support/refund policy, and a commercial hosting plan. A free public launch can happen before paid packs are ready; payment setup should not hold up the free app once its independent release gates are met.
+A dedicated Gmail contact inbox and Brevo Free mailing setup are separate from checkout. The proposed website flow confirms the requested download email and keeps offer subscriptions optional. Brevo's daily allowance is 300 sends after approval, including confirmation/delivery messages. It may replace a Gmail sender with a provider-domain address; use an authenticated domain for public campaigns. See the [website and audience setup](phase-14-website-and-audience.md) for the exact form, email copy and live-delivery checks. The current prototype does not collect subscribers, and no offers have been sent.

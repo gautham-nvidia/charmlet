@@ -29,8 +29,8 @@ export function createCordView(svg: SVGElement, thread: SVGPathElement) {
 	const shine = path('cord-shine');
 	let previous = '';
 	return {
-		render(style: CordStyle, anchor: CordPoint, hook: CordPoint) {
-			const curve = cordPath(anchor, hook);
+		render(style: CordStyle, anchor: CordPoint, hook: CordPoint, bend = 0) {
+			const curve = cordPath(anchor, hook, bend);
 			const key = `${style}:${curve}`;
 			if (key === previous) { return; }
 			previous = key;
@@ -45,7 +45,7 @@ export function createCordView(svg: SVGElement, thread: SVGPathElement) {
 			highlight.setAttribute('stroke', profile.light);
 			highlight.setAttribute('stroke-width', String(metal ? .45 : style === 'ribbon' ? 2.6 : profile.width * .38));
 			highlight.setAttribute('stroke-dasharray', profile.dash ?? 'none');
-			const geometry = metal ? chainLinks(anchor, hook, style === 'ball-chain') : '';
+			const geometry = metal ? chainLinks(anchor, hook, style === 'ball-chain', bend) : '';
 			links.setAttribute('d', geometry);
 			links.setAttribute('stroke', profile.base);
 			links.setAttribute('stroke-width', '1.8');

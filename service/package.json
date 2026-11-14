@@ -1,0 +1,16 @@
+{
+  "name": "charmlet-access-service",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "build": "node ../extension/node_modules/typescript/bin/tsc -p ../extension --outDir ../extension/out && node build-catalogue.mjs",
+    "stage": "npm run build && node build-catalogue.mjs --assets",
+    "test": "node --test test/*.test.mjs",
+    "check:worker": "npm run build && wrangler deploy --dry-run --outdir .wrangler/build",
+    "dev": "npm run build && wrangler dev --local",
+    "db:local": "wrangler d1 execute DB --local --file schema.sql"
+  },
+  "devDependencies": { "wrangler": "4.161.0" }
+}

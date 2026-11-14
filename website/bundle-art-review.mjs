@@ -7,6 +7,7 @@ import { curateArtwork, validateCuration } from './art-curation.mjs';
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(join(repo, 'extension/package.json'));
 const { parseCharmPack } = require('./out/charm-packs.js');
+const { charmCollection } = require('./out/charm-collections.js');
 const root = join(repo, 'website');
 const path = join(root, 'art-review.json');
 const review = JSON.parse(await readFile(path, 'utf8'));
@@ -48,11 +49,11 @@ for (const item of review.items) {
   const bytes = await readFile(join(root, item.image));
   if (createHash('sha256').update(bytes).digest('hex') !== item.pngSha256) throw new Error(`Prepared image changed: ${item.key}`);
   const charm = { id: item.key, name: item.name, group: item.group,
-    description: `${item.name}: illustrated art-review candidate.`, accent: item.accent, png: bytes.toString('base64') };
+    description: item.description ?? `${item.name}: illustrated art-review candidate.`, accent: item.accent, png: bytes.toString('base64') };
   const id = `art-${item.key}-r${item.revision}-p${item.profile}`;
   const pack = await saveImmutablePack(parseCharmPack(JSON.stringify({ format: 'charmlet-pack', version: 1, id, name: `Review: ${item.name}`, author: 'Charmlet art review', charms: [charm] })));
   item.download = `./packs/review/${pack.id}.charmlet.json`;
-  const group = item.family === 'starters' ? 'Starter Redraws' : item.group;
+  const group = charmCollection(charm);
   byKey.set(item.key, charm);
   if (!grouped.has(group)) grouped.set(group, []);
   grouped.get(group).push(charm);

@@ -23,6 +23,20 @@ function neutralizeGreen(cutout, mode) {
   }
 }
 
+async function previewFromPng(page, encoded) {
+  return page.evaluate(async png => {
+    const image = new Image();
+    image.src = `data:image/png;base64,${png}`;
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = 432; canvas.height = 504;
+    const context = canvas.getContext('2d');
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/webp', .9).split(',')[1];
+  }, encoded);
+}
+
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(join(repo, 'extension/package.json'));
 const { PNG } = require('pngjs');
@@ -42,6 +56,15 @@ const existing = await readFile(manifestPath, 'utf8').then(JSON.parse, error => 
   throw error;
 });
 const items = new Map(existing.items.map(item => [item.key, item]));
+async function saveManifest() {
+  const ordered = allJobs.flatMap(job => {
+    const item = items.get(job.key);
+    return [2, 3, 4].includes(item?.profile) && item.revision <= job.revision ? [item] : [];
+  });
+  await writeFile(manifestPath, `${JSON.stringify({ ...existing, status: 'review-only', expected: allJobs.length, prepared: ordered.length,
+    note: 'Illustrated Gemini artwork candidates. Publication and commercial rights require review. Flowers remain earned rewards.',
+    items: ordered }, null, 2)}\n`);
+}
 await mkdir(imageRoot, { recursive: true });
 await mkdir(packRoot, { recursive: true });
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
@@ -49,7 +72,7 @@ const failures = [];
 try {
   const page = await browser.newPage();
   for (const job of jobs) {
-    const profile = job.greenDespill ? 3 : 2;
+    const profile = job.approvedPack ? 4 : job.greenDespill ? 3 : 2;
     const renderId = `${job.variant}-p${profile}`;
     let raw, receipt;
     try {
@@ -65,8 +88,19 @@ try {
     const previous = items.get(job.key);
     if (previous?.profile === profile && previous.revision === job.revision && previous.greenDespill === job.greenDespill) {
       if (previous.rawSha256 !== receipt.sha256) throw new Error(`Use a new revision instead of replacing ${job.key}.`);
+      if (job.approvedPack && (previous.approvedPack !== job.approvedPack || previous.pngSha256 !== job.approvedPngSha256)) {
+        throw new Error(`Use a new revision instead of replacing approved artwork: ${job.key}`);
+      }
       const image = await readFile(join(imageRoot, `${renderId}.png`));
       if (digest(image) !== previous.pngSha256) throw new Error(`Prepared artwork changed unexpectedly: ${job.key}`);
+      if (job.approvedPack) {
+        const preview = await previewFromPng(page, image.toString('base64'));
+        await writeFile(join(imageRoot, `${renderId}.webp`), Buffer.from(preview, 'base64'));
+      }
+      // Preserve legacy fallback descriptions so unchanged packs keep their identity.
+      items.set(job.key, { ...previous, name: job.name, group: job.group,
+        description: previous.description === undefined ? undefined : job.description ?? previous.description,
+        accent: job.accent });
       console.log(JSON.stringify({ key: job.key, status: 'reused' }));
       continue;
     }
@@ -101,6 +135,19 @@ try {
         };
         return { png: render(216, 252, 'image/png'), preview: render(432, 504, 'image/webp') };
       }, { encoded: clean.toString('base64'), bounds: cutout.bounds });
+      // Keep the exact approved import pixels and encoding. A new rasterization
+      // of the same source can change the hash and create duplicate trial tiles.
+      if (job.approvedPack) {
+        if (!/^[a-z0-9-]+$/.test(job.approvedPack)) throw new Error('Invalid approved artwork pack.');
+        const approved = parseCharmPack(await readFile(join(packRoot, `${job.approvedPack}.charmlet.json`)));
+        const charm = approved.charms.find(charm => charm.id === job.key);
+        if (!charm || digest(Buffer.from(charm.png, 'base64')) !== job.approvedPngSha256) {
+          throw new Error(`Approved import changed: ${job.key}`);
+        }
+        rendered.png = charm.png;
+        // Preview the same canonical pixels, including recorded preparation transforms.
+        rendered.preview = await previewFromPng(page, charm.png);
+      }
       const png = Buffer.from(rendered.png, 'base64');
       if (png.length > MAX_PNG_BYTES) throw new Error('Cutout exceeds the existing PNG cap.');
       const packId = `review-${renderId}`;
@@ -113,14 +160,17 @@ try {
       if (job.family !== 'flowers') await writeFile(join(packRoot, `${packId}.charmlet.json`), `${JSON.stringify(pack)}\n`, { flag: 'wx' });
       const item = {
         key: job.key, id: job.id, name: job.name, group: job.group, family: job.family, accent: job.accent,
+        description: job.description,
         original: job.original, preview: `./assets/review/${renderId}.webp`, image: `./assets/review/${renderId}.png`,
         revision: job.revision, profile,
         ...(job.sourceVariant ? { sourceVariant: job.sourceVariant } : {}),
+        ...(job.sourceTransform ? { sourceTransform: job.sourceTransform } : {}),
         ...(job.greenSpillCleanup ? { greenSpillCleanup: true } : {}),
         ...(job.greenDespill ? { greenDespill: job.greenDespill } : {}),
+        ...(job.approvedPack ? { approvedPack: job.approvedPack, approvedPngSha256: job.approvedPngSha256 } : {}),
         download: job.family === 'flowers' ? null : `./packs/review/${packId}.charmlet.json`,
         pngBytes: png.length, pngSha256: digest(png), rawSha256: receipt.sha256, promptHash: receipt.promptHash,
-        model: 'Gemini 3 Pro Image', status: 'review-candidate', width: 216, height: 252,
+        model: 'Gemini 3 Pro Image', status: 'review-candidate', width: png.readUInt32BE(16), height: png.readUInt32BE(20),
       };
       items.set(job.key, item);
       console.log(JSON.stringify({ key: job.key, pngBytes: png.length, status: 'prepared-transparent-review' }));
@@ -128,15 +178,9 @@ try {
       failures.push({ key: job.key, error: error.message });
       console.error(`${job.key}: ${error.message}`);
     }
-    const ordered = allJobs.flatMap(job => {
-      const item = items.get(job.key);
-      // Keep earlier candidates as archive entries while a requested redraw is
-      // still being prepared. Curation excludes them from the visible lineup.
-      return (item?.profile === 2 || item?.profile === 3) && item.revision <= job.revision ? [item] : [];
-    });
-    await writeFile(manifestPath, `${JSON.stringify({ ...existing, status: 'review-only', expected: allJobs.length, prepared: ordered.length,
-      note: 'Illustrated Gemini redraw candidates. No final bundled/free/paid decisions are implied. Flowers remain earned rewards.', items: ordered }, null, 2)}\n`);
+    await saveManifest();
   }
+  await saveManifest();
 } finally { await browser.close(); }
 console.log(JSON.stringify({ prepared: items.size, expected: allJobs.length, failures }));
 if (failures.length) process.exitCode = 1;

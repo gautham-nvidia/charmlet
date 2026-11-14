@@ -1,99 +1,143 @@
 <!doctype html>
 <html lang="en">
 <head>
- <meta charset="utf-8">
- <meta name="viewport" content="width=device-width, initial-scale=1">
- <meta name="description" content="A little play in your every day. Discover Charmlet's art worlds, free focus tools and your own tiny garden.">
- <title>Charmlet — make room for a little play</title>
- <link rel="stylesheet" href="./styles.css">
- <link rel="icon" type="image/svg+xml" href="./assets/default/keycap.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="A little companion for your desktop and VS Code. Focus on one thing, celebrate small wins, and take a playful break with Charmlet.">
+  <title>Charmlet — a little company for your workday</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/default/keycap.svg">
+  <script src="./design-theme.js"></script>
+  <link rel="preload" href="./assets/fonts/bricolage-grotesque-variable.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="./next.css">
 </head>
-<body>
- <a class="skip-link" href="#catalogue">Skip to charms</a>
- <header class="site-header">
-  <a class="brand" href="./" aria-label="Charmlet home"><span class="brand-mark" aria-hidden="true">c.</span>charmlet<span class="brand-dot" aria-hidden="true"></span></a>
-  <nav aria-label="Main navigation"><a href="#worlds">Explore worlds</a><a href="./review.html">Art review</a><a href="#garden">Grow a little</a><a href="#catalogue" data-select-kind="included">Originals</a><a href="./studio/">Photo Studio</a><a href="#install">Install</a></nav>
-  <a class="button button-primary" href="#install">Get Charmlet <span aria-hidden="true">↗</span></a>
- </header>
- <main>
-  <section class="hero" aria-labelledby="hero-title">
-   <div class="hero-copy">
-    <p class="eyebrow"><span class="little-dot" aria-hidden="true"></span>FOR CURIOUS MINDS & HAPPY DESKS</p>
-    <h1 id="hero-title">A little <span class="marker-word">play<span class="doodle-star" aria-hidden="true">*</span></span><br>in your every day.</h1>
-    <p class="hero-description">Charms worth collecting. A little encouragement from Cali.<br>A quieter way to focus, and a garden that's yours.</p>
-    <div class="hero-actions"><a class="button button-primary" href="#worlds">Find your kind of charm <span aria-hidden="true">↘</span></a><a class="button button-secondary" href="#garden">Plant your first seed</a></div>
-    <p class="hero-note">The complete trial collection is included in the app. No account or separate charm downloads needed.</p>
-    <div class="hero-caption"><span class="caption-line" aria-hidden="true"></span><span>Less ordinary.<br>More <strong>you.</strong></span></div>
-   </div>
-   <div class="hero-playground">
-    <span class="playground-note">Go on. Give it a little swing.</span>
-    <div class="hero-photo photo-panda" aria-hidden="true"><img src="./assets/review/new-giant-panda-p3.webp" alt="" width="432" height="504"><span>good company</span></div>
-    <div class="hero-photo photo-planet" aria-hidden="true"><img src="./assets/previews/ringed-planet.webp" alt="" width="512" height="512"><span>a little wonder</span></div>
-    <div class="hero-demo" aria-label="Live Charmlet swing preview">
-     <div class="demo-window-bar"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>your little corner</span><span aria-hidden="true">+</span></div>
-     <div id="demo-stage" data-ready="false" data-running="false" data-dragging="false" data-frames="0" data-cord="126"><div id="demo-rig"><svg id="demo-cord" aria-hidden="true"><path id="demo-thread"></path></svg><span id="demo-anchor" aria-hidden="true"></span><button id="demo-charm" type="button" aria-label="Swing Terminal charm"><img id="demo-image" src="./assets/default/keycap.svg" alt="Terminal charm" width="72" height="84" draggable="false"></button></div></div>
-     <div class="demo-copy"><p class="eyebrow">LIVE SWING PLAYGROUND</p><h2 id="demo-name">Terminal</h2><p id="demo-hint">Drag the charm, then let it settle.</p><div class="demo-actions"><button id="demo-nudge" class="button button-secondary" type="button">Try a swing</button><button id="demo-reset" class="quiet-button" type="button">Reset demo</button><button id="surprise-charm" class="quiet-button" type="button" disabled>Surprise me</button></div></div>
-    </div>
-    <span class="playground-stamp">small thing.<br><strong>good feeling.</strong></span>
-   </div>
-  </section>
-  <div class="joy-ribbon" aria-hidden="true"><span>FOCUS A LITTLE</span><b>+</b><span>LEARN SOMETHING</span><b>+</b><span>GROW AT YOUR PACE</span><b>+</b><span>COLLECT WHAT YOU LOVE</span></div>
-  <section class="art-workshop" id="new-art" aria-labelledby="art-title">
-   <div class="section-heading"><div><p class="eyebrow">FRESH FROM THE SKETCHBOOK</p><h2 id="art-title">More life.<br><span class="serif-note">More personality.</span></h2></div><div class="section-intro"><p>Photographic detail meets playful colour. Different subjects, different silhouettes—no one-size-fits-all badge.</p><span class="status-pill">New art direction · previews</span></div></div>
-   <div id="art-studies" class="art-studies"></div>
-   <p class="small-note">These are the earlier style studies. Browse the selected collection below, or open the <a href="./review.html"><strong>artwork refresh review</strong></a> to compare originals and inspect designs at default app size.</p>
-  </section>
-  <section class="worlds-section" id="worlds" aria-labelledby="worlds-title">
-   <div class="section-heading"><div><p class="eyebrow">WHAT'S YOUR LITTLE WORLD?</p><h2 id="worlds-title">Follow your curiosity.</h2></div><p>From silicon to the stars.<br>And a few favourites closer to home.</p></div>
-   <div id="collection-worlds" class="world-grid" aria-label="Explore charm collections"></div>
-  </section>
-  <section class="garden-section" id="garden" aria-labelledby="garden-title">
-   <div class="garden-copy"><p class="eyebrow">GROWN BY YOU. KEPT FOREVER.</p><h2 id="garden-title">Your very own<br><span class="serif-note">little patch of green.</span></h2><p>Plant a surprise seed. Water it once a day. On the eleventh watering day, a flower joins your collection.</p><p class="garden-kindness">Miss a day? Nothing dies. Nothing resets.<br>There's no wrong pace to grow.</p><a class="button garden-button" href="#garden-help">Where do I plant my seed? <span aria-hidden="true">↗</span></a><span class="garden-free">Always free. Saved locally in your app.</span></div>
-   <div class="garden-preview"><span class="preview-tag">Growth preview</span><div class="garden-scene"><span class="garden-sun" aria-hidden="true"></span><img id="garden-demo-image" src="./assets/garden/seed.png" alt="Seed growth preview" width="144" height="168"><span class="garden-ground" aria-hidden="true"></span></div><h3 id="garden-demo-title">One small beginning.</h3><p id="garden-demo-copy">Plant a surprise seed in the app.</p><div class="growth-steps" role="group" aria-label="Preview garden stages"><button type="button" data-garden-stage="0" aria-pressed="true">Seed</button><button type="button" data-garden-stage="1" aria-pressed="false">Sprout</button><button type="button" data-garden-stage="2" aria-pressed="false">Leaves</button><button type="button" data-garden-stage="3" aria-pressed="false">Bud</button><button type="button" data-garden-stage="4" aria-pressed="false">Bloom</button></div><p class="small-note">This previews the stages. It does not water or change your real garden.</p></div>
-  </section>
-  <section class="garden-help" id="garden-help" aria-labelledby="garden-help-title"><div><p class="eyebrow">NO MORE HUNTING FOR THE SEED</p><h2 id="garden-help-title">Open. Plant. Grow.</h2></div><ol><li><strong>Open Charmlet in your editor.</strong><span>Use the current extension file, reload, then run <b>Charmlet: Show Charm</b>.</span></li><li><strong>Click “Garden” in the main toolbar.</strong><span>Or run <b>Charmlet: Open Garden</b> from the Command Palette. Choose <b>Plant a seed</b> inside the Garden panel.</span></li><li><strong>Plant once, then water daily.</strong><span>Eleven different watering days earn a flower. Your seed and progress survive reloads.</span></li></ol></section>
-  <section class="collection" id="catalogue" aria-labelledby="collection-title">
-   <div class="section-heading"><div><p class="eyebrow">THE SELECTED COLLECTION</p><h2 id="collection-title">A little something<br><span class="serif-note">that feels like you.</span></h2></div><p>Recognizable objects. Believable materials.<br>Try the review artwork and help choose what stays.</p></div>
-   <div class="catalogue-controls"><div class="kind-switch" role="group" aria-label="Collection type"><button type="button" data-kind="extra" aria-pressed="true">Trial collection <span id="extra-count"></span></button><button type="button" data-kind="included" aria-pressed="false">Originals <span id="included-count"></span></button></div><label class="search-label"><span class="visually-hidden">Search charms</span><input id="search" type="search" placeholder="Find a little something…" aria-label="Search charms"></label></div>
-   <div id="group-filters" class="group-filters" role="group" aria-label="Charm groups"></div>
-   <section id="collection-story" class="collection-story" aria-label="Selected collection" hidden></section>
-   <p id="result-count" class="result-count" role="status" aria-live="polite"></p>
-   <ul id="charm-grid" class="charm-grid" aria-label="Charm collection"></ul>
-   <div id="empty-state" class="empty-state" hidden><p>No charms match that search. Try another word.</p><button id="reset-filters" type="button">Reset filters</button></div>
-  </section>
-  <section class="installation" id="install" aria-labelledby="install-title">
-   <div class="section-heading"><div><p class="eyebrow">YOUR DESK, BUT A LITTLE HAPPIER</p><h2 id="install-title">Install once.<br>Make yourself at home.</h2></div><p>The extension is free.<br>Choose the installation method available now.</p></div>
-   <div class="install-grid">
-    <article class="install-card" aria-labelledby="manual-title"><span class="availability available">Available now</span><h3 id="manual-title">Install the extension file</h3><p>A <strong>.vsix</strong> file installs Charmlet in your editor.</p><a class="button button-primary extension-download" href="./downloads/charmlet.vsix" download>Download Charmlet .vsix <span aria-hidden="true">↓</span></a><ol><li>Download the free extension file above.</li><li>In desktop VS Code, open the Command Palette: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> on Windows/Linux, or <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> on macOS.</li><li>Run <strong>Extensions: Install from VSIX…</strong>, choose the downloaded <strong>.vsix</strong> file and follow your editor's confirmation prompts.</li><li>Reload the editor window, then run <strong>Charmlet: Show Charm</strong>.</li></ol></article>
-    <article class="install-card" aria-labelledby="stores-title"><span id="store-availability" class="availability upcoming">After publication</span><h3 id="stores-title">Install from an extension store</h3><p id="store-status">Store listings are being prepared. Until the official links appear here, use the extension file.</p><div id="store-links" class="store-links" hidden></div><ol><li>Once published, use the official store link for your editor.</li><li>Open the editor's Extensions view, find the verified Charmlet listing and choose <strong>Install</strong>.</li><li>Run <strong>Charmlet: Show Charm</strong>. Store installation then provides the editor's normal extension update flow.</li></ol><p class="install-note">Planned routes: Visual Studio Marketplace for VS Code; Open VSX for editors that support it. Cursor and Devin Desktop compatibility is still being verified.</p></article>
-   </div>
-   <p class="install-note">These steps use desktop VS Code. <a href="https://github.com/gautham-nvidia/charmlet/blob/main/docs/phase-3-readiness.md">See current editor and platform checks</a>.</p>
-  </section>
-  <section class="how-to" id="how-to" aria-labelledby="how-title"><div><p class="eyebrow">FOUND YOUR FAVOURITE?</p><h2 id="how-title">It's already there.</h2><p>The complete trial collection comes with the app. Optional .charmlet.json packs remain available for older builds and existing collections.</p></div><ol><li><span>01</span><div><h3>Install the trial</h3><p>Download the current extension file and install it in VS Code.</p></div></li><li><span>02</span><div><h3>Open Charms</h3><p>Search by name or choose a collection. Select any design to try it immediately.</p></div></li><li><span>03</span><div><h3>Make it yours</h3><p>Adjust size and motion in Settings. Pin a favourite or follow the holiday collection.</p></div></li></ol></section>
-  <section class="quote-strip" aria-label="Motivation"><p>Small steps.<br>Real <span>progress.</span></p><span>Focus. Practice. Finish.<br>Turn today's effort into tomorrow's progress.</span></section>
-  <section class="faq" aria-labelledby="faq-title"><p class="eyebrow">A FEW SMALL ANSWERS</p><h2 id="faq-title">Good to know.</h2>
-   <details><summary>Is Charmlet free?</summary><p>Yes. The trial includes every charm, focus tools, small wins and local photo keepsakes. Optional paid collections and the separate website Photo Studio remain undecided and unavailable for purchase.</p></details>
-   <details><summary>Can I use my own photo?</summary><p>Yes. Open <strong>Charms &gt; Make a photo charm</strong> or <strong>Settings &gt; Photo charms</strong>. Choose a PNG, JPEG or WebP, adjust the crop, pick a frame and save. Everything happens on your device. Only the finished keepsake is stored; nothing is uploaded. You can remove it from the same panel.</p></details>
-   <details><summary>What do the live companions do?</summary><p><strong>Cali</strong> is a California-inspired golden bear, alongside <strong>Sunny</strong> the yellow smiley, <strong>Nimbus</strong> the soft cloud and <strong>Byte</strong> the little robot. They look toward a nearby pointer, blink and react promptly to holds, releases and small wins. In the app, Cali adds short encouragement bubbles, gentle focus prompts and optional win confetti. Choose <strong>Charms &gt; Live 3D</strong>, then personalize or quiet Cali under <strong>Focus</strong>. Everything is silent; Reduced Motion keeps celebrations still.</p></details>
-   <details><summary>Are there more dogs and a giant panda?</summary><p>Yes. The new pets include a black-and-white <strong>Giant Panda</strong>, <strong>Golden Retriever</strong>, <strong>Labrador</strong>, <strong>German Shepherd</strong>, <strong>Husky</strong>, <strong>Corgi</strong>, <strong>Beagle</strong> and <strong>Goldendoodle</strong>. Just two new cats join them: Silver Tabby and Tuxedo Cat. Find them in <strong>Animals</strong>; all are included in the trial.</p></details>
-   <details><summary>Where are the fidget toys?</summary><p>Open <strong>Charms &gt; Stress Busters</strong>. Tap or flick <strong>Fidget Spinner</strong> to spin its rotor, press the six reusable <strong>Bubble Pop</strong> bubbles, or hold and rub <strong>Worry Stone</strong>. Space and Enter work too. Smiley balls and squishies are in the same collection. Everything is silent, with no scores or streaks.</p></details>
-   <details><summary>Can I change the cord?</summary><p>Yes. Charms choose a matching cord, such as a chain for a gemstone or a soft cord for a stress ball. Choose a different material in <strong>Settings &gt; Appearance</strong>; each charm remembers its own choice.</p></details>
-   <details><summary>How do small wins work?</summary><p>Open <strong>Focus &gt; Small wins</strong>, write a short achievement and add it. You can undo an entry or clear the history. A focus session that finishes while the app is running earns one win. Brief milestone celebrations are optional and off by default; Reduced Motion uses a still star.</p></details>
-   <details><summary>Can I try the refreshed artwork in the app?</summary><p>Yes. Install the current trial and open Charms. The complete selected collection is already there, including the new lab tools, all eight planets, gemstones, zodiac and sacred-tradition artwork. Existing imports and garden progress stay intact. The final release lineup and free or paid downloads will be chosen later.</p></details>
-   <details><summary>What about athlete and league collections?</summary><p>Sports has separate football, basketball, American football and baseball ideas. Named athlete and league editions are a wishlist, not current downloads or an endorsement. Their image and branding rights need a separate review.</p></details>
-   <details><summary>What do Focus and Learn include?</summary><p>Focus provides saved focus/break sessions with pause and resume. Motivation is the default: 80 original messages about effort, discipline, progress and success. Learn also offers 60 sourced facts and 30 trivia questions.</p></details>
-   <details><summary>How do festive defaults work?</summary><p>New profiles follow 21 US celebration dates automatically, with a changing Christmas collection through December. Updates preserve existing opt-outs and pins. Choose <strong>Settings → Appearance → Follow holiday defaults</strong> to enable and unpin in one click. Picking a charm pins it; you can switch festive defaults off at any time. The usual saved charm returns on other days.</p></details>
-   <details><summary>How does the garden work?</summary><p>Click Garden in the toolbar, then Plant a seed, or run Charmlet: Open Garden. Plant one unknown seed and water once per local day. Missing days do not hurt progress. The eleventh valid watering adds its original flower to Grown by you. Water and move reminders are optional and off by default.</p></details>
-   <details><summary>Do I need an account or an internet connection?</summary><p>No account is needed for the app. Once installed or imported, your charms, focus tools and garden work offline. AI is used to prepare the new artwork, not to run the extension.</p></details>
-   <details><summary>How do I install this preview?</summary><p>Use the current <a href="#install">manual installation steps</a>. Official extension-store links will appear there only after publication.</p></details>
-   <details><summary>Will imported charms survive updates?</summary><p>Yes. Imported packs are stored separately from the extension. You can remove them using <strong>Charmlet: Remove Charm Pack</strong>.</p></details>
-   <details><summary>What is Photo Studio?</summary><p>Photo Studio is a prepared optional service for turning a personal photo into a data-only Charmlet pack. Photo processing stays in the browser, and importing remains free. It is Coming Soon by default; no price or live purchase is offered here.</p></details>
-   <details><summary>Will there be paid packs?</summary><p>Optional artwork collections remain a proposal. The extension, its functionality, importing, starter charms and current review packs stay free. No paid pack is on sale in this preview.</p></details>
-  </section>
- </main>
- <dialog id="art-dialog" aria-labelledby="art-dialog-title"><button id="art-dialog-close" class="quiet-button" type="button" aria-label="Close art preview">Close ×</button><span class="preview-tag">Art-direction preview</span><h2 id="art-dialog-title"></h2><img id="art-dialog-image" alt="" width="512" height="512"><p id="art-dialog-note"></p><p class="small-note">AI-generated concept. Not a published charm pack.</p></dialog>
- <footer class="site-footer"><a class="brand" href="./">charmlet<span class="brand-dot" aria-hidden="true"></span></a><p>Small companions.<br>A little more you.</p><div><a href="https://github.com/gautham-nvidia/charmlet">Source & artwork</a><a href="https://github.com/gautham-nvidia/charmlet/issues">Help & feedback</a><span id="release-label">Development preview</span></div></footer>
- <script defer src="./demo.js"></script>
- <script type="module" defer src="./app.js"></script>
+<body class="concept-page">
+  <a class="skip" href="#main">Skip to the playground</a>
+  <header class="concept-header">
+    <a class="concept-brand" href="#main" aria-label="Charmlet home"><span class="mark mark-terminal chosen-mark" aria-hidden="true"></span><span class="wordmark">charmlet</span></a>
+    <nav aria-label="Main navigation"><a href="#playground">See it in action</a><a href="#collection">Find your companion</a><a href="#pro">Free &amp; Pro</a></nav>
+    <div class="header-actions"><div class="theme-switch" aria-label="Website colour theme"><button type="button" data-theme-choice="light">Light</button><button type="button" data-theme-choice="dark">Dark</button><button type="button" data-theme-choice="auto">Auto</button></div><a class="pill pill-dark header-get" href="#get">Get Charmlet <span aria-hidden="true">↗</span></a></div>
+  </header>
+  <main id="main">
+    <section class="poster product-hero" id="playground" data-workspace="desktop" aria-labelledby="poster-title">
+      <div class="hero-copy">
+        <p class="overline"><span class="tiny-dot" aria-hidden="true"></span> DESKTOP + VS CODE COMPANIONS</p>
+        <h1 id="poster-title">A little company.<br><em>For your workday.</em></h1>
+        <p class="hero-description">Hang a little character above your desktop apps or in your VS Code sidebar. Focus on one thing, find a little encouragement, and celebrate the small wins.</p>
+        <ul class="hero-benefits"><li>A friend for your focus sessions</li><li>Cheers when the small wins happen</li><li>Fidgets, puzzles and a little breathing room</li></ul>
+        <div class="hero-actions"><a class="pill pill-dark" href="#get">Start for free <span aria-hidden="true">↗</span></a><a class="inline-link" href="#try-a-moment">Try a little moment ↓</a></div>
+        <p class="hero-platforms">Windows · Mac · VS Code<br><span>Free starter. Optional Pro. Public signup is being connected.</span></p>
+      </div>
+      <div class="workspace-scene" id="workspace-scene">
+        <div class="workspace-top"><span class="overline">SEE WHERE YOUR COMPANION LIVES</span><div class="workspace-switch" aria-label="Preview app placement"><button type="button" data-workspace="desktop" aria-pressed="true">Desktop</button><button type="button" data-workspace="vscode" aria-pressed="false">VS Code</button></div></div>
+        <div class="workspace-screen">
+          <div class="workspace-backdrop" aria-hidden="true">
+            <div class="workspace-menubar"><span class="screen-dots">● ● ●</span><span id="workspace-title">Your desktop</span><span>09:41</span></div>
+            <div class="work-window"><div class="work-window-bar"><span class="screen-dots">● ● ●</span><span class="desktop-only">today.md</span><span class="vscode-only">Visual Studio Code</span><span>↗</span></div>
+              <div class="work-document desktop-only"><small>ONE THING AT A TIME</small><strong>Today, a little<br>progress.</strong><p><span>✓</span> Make a fresh start</p><p><span>○</span> Finish the first draft</p><p><span>○</span> Take a real break</p><span class="document-signoff">you've got this.</span></div>
+              <div class="work-editor vscode-only"><div class="editor-tab">workday.js</div><code><span class="code-comment">// one small thing</span><br><span class="code-keyword">const</span> today = {<br>&nbsp; intention: <span class="code-string">'make progress'</span>,<br>&nbsp; pace: <span class="code-string">'my own'</span><br>};<br><br><span class="code-keyword">function</span> nextStep() {<br>&nbsp; <span class="code-keyword">return</span> today.intention;<br>}</code></div>
+              <div class="workspace-sidebar" id="workspace-sidebar"><span>CHARMLET</span><div class="sidebar-tools"><span>Charms</span><span>Focus</span><span>Garden</span></div></div>
+            </div>
+            <div class="workspace-taskbar desktop-only"><span>▦</span><span>⌘</span><span>&lt;/&gt;</span><span>▤</span><i></i></div>
+          </div>
+          <span id="workspace-hanger" aria-hidden="true"></span>
+          <div class="focus-preview" id="focus-preview" hidden><span>FOCUS / 10-SECOND PREVIEW</span><strong id="focus-clock" role="timer" aria-live="off">00:10</strong><span>One small thing at a time.</span></div>
+        </div>
+        <p class="placement-copy" id="placement-copy">A floating charm above your other apps. Drag it to the spot that feels right.</p>
+        <div class="moment-controls" id="try-a-moment"><span class="overline">TRY A MOMENT</span><button type="button" id="try-focus">◷ Focus</button><button type="button" id="try-cheer">✦ Cheer</button><button type="button" id="try-encourage">↗ Encourage</button><button type="button" id="try-trivia">&lt;/&gt; Coding trivia</button></div>
+        <div class="demo-message" id="moment-message"><span id="moment-speaker">Cali says</span><p id="moment-text" role="status">One clear goal. One focused step. You've got this.</p><button id="reveal-trivia" class="text-button" type="button" aria-expanded="false" aria-controls="trivia-answer" hidden>Reveal answer ↗</button><p id="trivia-answer" hidden></p><a id="trivia-source" target="_blank" rel="noopener noreferrer" hidden>Source ↗</a></div>
+        <p class="moment-caption" id="moment-caption">A quick taste of the app: focus sessions, encouragement and small-win celebrations.</p>
+      </div>
+      <div class="poster-stage">
+        <div id="demo-stage" data-charm-size="200" data-view-scale="1.5" data-cord-length="80" data-flex-cord="true" data-anchor-target="workspace-hanger" data-ready="false" data-running="false" data-dragging="false" data-frames="0" data-cord="80">
+          <div id="demo-rig"><svg id="demo-cord" aria-hidden="true"><path id="demo-thread"></path></svg><span id="demo-anchor" aria-hidden="true"></span><button id="demo-charm" type="button" aria-label="Swing Cali charm"><img id="demo-image" src="./assets/default/live-cali.png" alt="Cali, the California grizzly companion" width="216" height="252" draggable="false"></button></div>
+        </div>
+      </div>
+    </section>
+    <section class="dock-section" aria-label="Choose your live companion">
+      <span class="overline dock-label">WHO'S ON YOUR DESK TODAY?</span>
+      <div class="companion-dock" id="companion-dock"></div>
+      <div class="companion-caption"><span class="overline" id="companion-role">CALIFORNIA CODING COMPANION</span><h2 id="demo-name">Cali</h2><p id="companion-description">Big bear energy. Very small coworker.</p><button id="react-charm" class="text-button" type="button">Say hello <span aria-hidden="true">↗</span></button><button class="text-button" id="demo-nudge" type="button">Give it a swing ↔</button></div>
+      <div class="playground-feedback"><p id="demo-hint" aria-live="polite">Loading your little company…</p><button id="demo-reset" class="text-button" type="button">Reset</button><button id="demo-puzzle" class="text-button" type="button" aria-controls="puzzle-editor" aria-expanded="false" hidden>Play puzzle</button></div>
+    </section>
+    <section class="collection-section section-width" id="collection" aria-labelledby="collection-title">
+      <div class="editorial-heading"><div><p class="overline">YOUR KIND OF LITTLE THINGS</p><h2 id="collection-title">Follow your<br><em>curiosity.</em></h2></div><div class="editorial-copy"><p>That guitar. That dog. That place you keep going back to.</p><p>Find something that feels like you.</p><a class="inline-link" href="./charms.html">Explore <span data-charm-count>234</span> charm studies <span aria-hidden="true">↗</span></a></div></div>
+      <div class="collection-shelf" id="collection-shelf" aria-label="Selected charm collections"></div>
+      <div class="collection-foot"><span class="overline">LITTLE OBJECTS. PERSONAL CONNECTIONS.</span><span>Drag, tap, collect. Make yourself at home.</span></div>
+    </section>
+    <section class="memory-section" id="memories" aria-labelledby="memory-title">
+      <div class="memory-inner section-width">
+        <div class="memory-copy"><span class="section-number">02 / KEEP SOMETHING CLOSE</span><h2 id="memory-title">Some company<br>is <em>personal.</em></h2><p>A favourite face. A place that feels like home.<br>A little memory, hanging right here.</p><span class="development-label">OPENING LOCKET / PRO CONCEPT</span><p class="memory-small">Try the opening cover, or choose a photo from this device. This live style is a website prototype for the planned Pro release.</p><div class="photo-controls"><label class="pill pill-light" for="memory-file">Choose your photo <span aria-hidden="true">↗</span></label><input class="file-input" id="memory-file" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="photo-limits"><button class="text-button" id="photo-reset" type="button">Reset photo</button></div><p class="privacy-note" id="photo-limits">PNG, JPEG or WebP · Up to 8 MiB / 16 million pixels.<br>Your photo stays in this tab. Nothing is uploaded or saved.</p><p id="photo-status" class="photo-status" role="status"></p></div>
+        <div class="locket-scene">
+          <span class="locket-note">go on, open it ↘</span>
+          <div class="locket-rig">
+          <svg class="locket-chain" aria-hidden="true"><defs><pattern id="locket-metal-links" width="10" height="12" patternUnits="userSpaceOnUse"><ellipse cx="5" cy="6" rx="3" ry="5" fill="none" stroke="#92713a" stroke-width="2.4"/><ellipse cx="4.7" cy="5.7" rx="2.8" ry="4.8" fill="none" stroke="#f0d18a" stroke-width="1"/></pattern></defs><rect width="10" height="100%" fill="url(#locket-metal-links)"/></svg>
+          <button class="locket" id="memory-locket" type="button" aria-label="Open locket concept" aria-pressed="false">
+            <span class="locket-ring" aria-hidden="true"></span>
+            <span class="locket-inside"><span class="photo-mat"><img id="locket-photo" src="./assets/garden/sunflower.png" alt="Example sunflower artwork inside the locket" width="216" height="252"></span></span>
+            <span class="locket-cover" aria-hidden="true"><span class="cover-front"><span class="mark mark-terminal chosen-mark"></span><span class="cover-engraving">keep a little close</span></span><span class="cover-back"></span></span>
+          </button>
+          </div>
+          <span class="locket-shadow" aria-hidden="true"></span>
+          <p class="locket-caption" id="locket-caption">A little sunshine, kept close.</p>
+        </div>
+      </div>
+    </section>
+    <section class="ritual-section section-width" aria-labelledby="ritual-title">
+      <div class="ritual-copy"><p class="overline">MAKE A SMALL DAILY RITUAL</p><h2 id="ritual-title">One small thing.<br>Then <em>another.</em></h2><p>Take a breath. Make a little progress. Come back to something growing.</p><p class="muted">In the app, eleven watering days earn a flower. Miss a day? Your progress stays.</p></div>
+      <div class="garden-postcard"><div class="postcard-top"><span>NOTES FROM YOUR LITTLE GARDEN</span><span>01 — 11</span></div><img id="growth-image" src="./assets/garden/sprout.png" alt="A small growing sprout" width="432" height="504" loading="lazy"><div class="growth-controls" aria-label="Preview garden growth"><button type="button" data-growth="seed" aria-pressed="false">Seed</button><button type="button" data-growth="sprout" aria-pressed="true">Sprout</button><button type="button" data-growth="bud" aria-pressed="false">Bud</button><button type="button" data-growth="sunflower" aria-pressed="false">Bloom</button></div><p id="growth-caption" aria-live="polite">Good things take a little care.</p></div>
+    </section>
+    <section class="pro-section section-width" id="pro" aria-labelledby="pro-title">
+      <div class="pro-copy"><p class="overline">TRY THE COMPANY. CHOOSE THE EXTRAS LATER.</p><h2 id="pro-title">Good company.<br><em>Your choice.</em></h2><p>Start with one or two companions from each collection. Keep the free edition, pick a few extras, or make the whole in-app collection yours.</p><div class="edition-comparison"><div><h3>Free, for keeps</h3><p><span data-starter-count>31</span> starter charms, focus, encouragement, small wins, garden, basic photo frames and imports. More free picks are available online.</p></div><div><h3>Charmlet Pro</h3><p>Every in-app charm, including the live companions and fidgets. One permanent purchase covers VS Code, Windows desktop and Mac desktop.</p></div></div><p class="muted">Try the full collection for 30 days, once per verified email. No card, no automatic charge. When the trial ends, your free charms, purchases, photos and progress remain.</p><a class="inline-link" href="./shop.html">Browse free picks and $0.49 / $0.99 / $1.99 extras ↗</a></div>
+      <article class="pro-ticket" aria-label="Planned Pro launch pricing">
+        <div class="ticket-top"><span class="mark mark-terminal chosen-mark" aria-hidden="true"></span><span>CHARMLET PRO<br><small>PLANNED RELEASE</small></span><span class="ticket-number">01</span></div>
+        <div class="ticket-main"><span class="overline">ONE-TIME LAUNCH PRICE</span><p class="ticket-price"><span>$</span>7.49</p><p class="regular-price">Planned regular price <strong>$17.49 once</strong></p><div class="ticket-platforms"><span>VS CODE</span><span>WINDOWS</span><span>MAC</span></div></div>
+        <div class="ticket-tear" aria-hidden="true"></div>
+        <div class="ticket-bottom"><p>One purchase. Your current apps.<br>No monthly subscription.</p><a class="pill pill-dark" href="./shop.html?pick=pro">Explore Charmlet Pro <span aria-hidden="true">↗</span></a></div>
+      </article>
+    </section>
+    <section class="get-section section-width" id="get" aria-labelledby="get-title">
+      <p class="overline">YOUR DESK IS EXPECTING COMPANY</p><h2 id="get-title">Shall we hang?</h2>
+      <p>Just your email. No username or password.<br>Confirm your address, download the app, and choose your little company.</p>
+      <div class="get-actions"><button class="pill pill-dark" id="email-download" type="button">Get the free starter <span aria-hidden="true">↗</span></button><a class="inline-link" href="./download.html?trial=1">Try everything for 30 days ↗</a></div>
+      <p class="signup-availability" data-audience-status>Email signup is not open yet. This preview does not collect or send email.</p>
+      <p class="release-note">Email is for delivery. News and offer codes are a separate, optional choice.</p>
+      <p class="release-note" data-release-label>VS Code, Windows desktop and Mac desktop</p>
+      <details class="install-explained"><summary>How do I install it?</summary><p>After confirming your download email, open the installation link. Download the VS Code <code>.vsix</code>, then choose <strong>Extensions: Install from VSIX…</strong> in its Command Palette. Open the Charmlet sidebar and choose a companion.</p></details>
+      <p class="release-note">Early beta users keep their existing collection. <a href="./about.html">How Free, trial and Pro work ↗</a></p>
+    </section>
+    <p id="page-status" role="status" hidden></p>
+  </main>
+  <footer class="concept-footer section-width"><a class="concept-brand" href="#main"><span class="mark mark-terminal chosen-mark" aria-hidden="true"></span><span class="wordmark">charmlet</span></a><span>Developed in Silicon Valley. Made in California.</span><nav aria-label="Footer"><a href="./about.html">About Charmlet</a><a href="./about-us.html">About us</a><a href="./press.html">Press</a><a href="./shop.html">Free &amp; paid charms</a><button id="open-offers" class="text-button" type="button">Pro offers</button><a href="mailto:getcharmlet@gmail.com">Contact</a><a href="./privacy.html">Privacy</a></nav></footer>
+  <dialog id="offers-popup" class="signup-dialog offers-dialog" aria-labelledby="offers-title" aria-describedby="offers-description">
+    <button class="dialog-close" type="button" data-close-offers aria-label="Close Pro offers">×</button>
+    <p class="overline">A LITTLE SOMETHING EXTRA</p>
+    <h2 id="offers-title">Good company.<br>A little less.</h2>
+    <p id="offers-description">Join the Charmlet list for Pro offers, occasional coupon codes and new companions worth meeting.</p>
+    <form class="email-form" data-subscribe-offers>
+      <label>Email address<input type="email" name="email" placeholder="you@example.com" autocomplete="email" maxlength="254" required></label>
+      <p class="offer-consent">By subscribing, you ask for occasional Charmlet news and Pro offers. Confirm your email to join. Unsubscribe any time.</p>
+      <div data-human-check></div>
+      <button class="pill pill-dark" type="submit" disabled>Subscribe for Pro offers ↗</button>
+      <p data-signup-message role="status" aria-live="polite">Checking email availability…</p>
+    </form>
+    <button class="text-button offers-later" type="button" data-close-offers>Maybe later — let me explore</button>
+    <p class="release-note">No purchase required. Coupon availability and terms will be included with each offer. <a href="./privacy.html">Privacy</a></p>
+  </dialog>
+  <dialog id="puzzle-editor" aria-labelledby="puzzle-title" hidden></dialog>
+  <dialog id="signup-preview" class="signup-dialog" aria-labelledby="signup-title">
+    <button id="close-signup" class="dialog-close" type="button" aria-label="Close signup">×</button>
+    <p class="overline">MAKE YOURSELF AT HOME</p><h2 id="signup-title">A little company,<br>in your inbox.</h2>
+    <form id="download-signup" class="email-form">
+      <label>Email address<input type="email" name="email" placeholder="you@example.com" autocomplete="email" maxlength="254" required></label>
+      <label class="offer-choice"><input name="offers" type="checkbox"><span>Yes, send me launch news, new packs and occasional offer codes. I can unsubscribe any time.</span></label>
+      <div data-human-check></div><button class="pill pill-dark" type="submit" disabled>Email my download link ↗</button>
+      <p data-signup-message role="status" aria-live="polite">Checking email availability…</p>
+    </form>
+    <p class="release-note">Downloading does not sign you up for offers. <a href="./privacy.html">Privacy &amp; email choices</a></p>
+  </dialog>
+  <noscript><p class="noscript-note">The live playground and verified email downloads need JavaScript. You can still read <a href="./about.html">about Charmlet</a>.</p></noscript>
+  <script src="./demo.js" defer></script>
+  <script type="module" src="./next.js"></script>
 </body>
 </html>

@@ -1,0 +1,26 @@
+.theme-switch.theme-switch, .gallery-theme.gallery-theme {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  padding: 0;
+  gap: 0;
+  border: 0;
+  background: transparent;
+}
+.theme-switch > [data-theme-choice], .gallery-theme > [data-theme-choice] { display: none; }
+.theme-switch .theme-toggle, .gallery-theme .theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.theme-toggle svg { width: 19px; height: 19px; }
+.theme-switch .theme-toggle:hover, .gallery-theme .theme-toggle:hover { border-color: var(--line); }
+.theme-toggle:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }

@@ -1,4 +1,6 @@
 import type { LiveCharacter } from './interactive-motion';
+import type { ArtGesture } from './live-art-core';
+import type { CaliOutfitChoice } from './cali-wardrobe';
 
 export interface SmileyPose {
 	character: LiveCharacter;
@@ -9,9 +11,15 @@ export interface SmileyPose {
 	happy: boolean;
 	wink: boolean;
 	greeting: boolean;
+	now?: number;
+	reactionProgress?: number;
+	reducedMotion?: boolean;
+	gesture?: ArtGesture;
+	caliOutfit?: CaliOutfitChoice;
 }
 export interface SmileyRenderer {
 	kind: 'webgl' | 'canvas';
+	readonly ready?: boolean;
 	draw(pose: SmileyPose): void;
 	dispose(): void;
 }

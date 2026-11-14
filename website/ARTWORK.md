@@ -47,3 +47,29 @@ There are 105 archive/current records, of which 64 are featured: 51 importable c
 Ten new Gemini 3 Pro Image candidates add a giant panda, seven dog breeds and two cats. Their raw images and receipts remain unchanged in the ignored authoring output. Preparation profile 3 explicitly neutralizes green backdrop spill in the neutral-fur subjects; the cats use an edge-only correction to retain their natural green irises. Alpha is preserved, previous profile-2 exports remain archived, and the existing importer validates every final 216x252 PNG.
 
 Cali is an original California-inspired golden bear drawn by the application's live WebGL and Canvas renderers, with a source SVG thumbnail. Its geometry and reactions are code, like Sunny, Nimbus and Byte. The static art review contains 160 selected designs; the four live companions and three fidgets bring the app trial to 167. These additions do not settle the owner's final public lineup, artwork terms or paid-pack decisions.
+
+## 2026-11-06 - California companions candidate
+
+The 0.10.0 candidate redraws Cali as a detailed grizzly with seven registered outfits, while eleven California characters join the live collection. These new characters use Gemini 3 Pro Image illustrations on curved surfaces; Cali also has separately animated head, arms and paws. The same geometry and textures drive the GPU and software renderers. Sunny, Nimbus and Byte retain their procedural geometry. This describes the new candidate; the preceding entry records the original 0.9.0 Cali.
+
+`live-art-assets.json` records 32 output hashes, dimensions, model/source/prompt hashes and authoring timestamps: seven daily outfit frames, two gesture references, eleven California frames and twelve thumbnails. Original images, edit references and receipts are retained in the ignored authoring directories. Chroma removal, spill correction, framing and native-size reviews precede export. Normal builds copy and hash-check the prepared files and never call the generation service.
+
+New app comparison sheets use isolated installed-extension and desktop development profiles at the 100% charm setting, retaining native screenshot pixels. Wardrobe/detail sheets are separately labelled as shared-renderer studies. The owner has not approved the final new artwork or its public/paid lineup; these are review candidates. Source and artwork licensing remain release decisions.
+
+## 2026-11-09 - Approved California artwork and playful follow-up
+
+The owner approved Cali and the California family on 2026-11-09. Their artwork files remain unchanged in 0.11.0. Orbit, Pinwheel and Bar spinners, Twisty Cube, Sliding Tiles and Lights Out are new original SVG/canvas designs authored in code, with no generation service, stock art or branded logo. The complete trial now has 184 charms; comparisons for 0.10.0 and earlier retain their historical size and source labels. Public lineup, paid offerings and licensing remain separate decisions.
+
+## 2026-11-09 - Weather, code, California and Music expansion
+
+The same trial candidate now contains 200 charms. Twenty-four new/replaced static designs add twelve instruments, four California landmarks and two celebrations, while replacing four place designs and the Black Friday/Cyber Monday artwork. Two built-in bench tools retire. `art-collection-refresh.json` preserves the exact prompts and variants, including reference edits. The canonical review has 219 records and 176 featured designs, including Terminal; 175 PNGs are bundled.
+
+Nimbus and Byte now use registered Gemini 3 Pro Image textures with code-rendered weather and screen effects. Nimbus retains narrow eyes shaped like cloud folds; Byte's visor displays bits, a compile check and a prompt instead of smiley eyes. Articulation, projection, rain, the sun, the single local lightning bolt and display updates are application code. GPU and software modes share the same sources and poses. The live manifest now records 36 texture/poster hashes. Original sources and receipts remain in ignored authoring storage; ordinary builds make no generation requests.
+
+The owner's approved Cali and eleven California companion textures remain unchanged. Dated earlier entries describe their respective trial stages. New replacement artwork and artist-inspired studies remain subject to owner review; this work does not settle public distribution, pricing or artwork terms.
+
+## Artist integration and website refresh (2026-11-10)
+
+All 34 artist designs are now approved for inclusion in the trial. `artist-artwork.json` preserves their prompts and references; profile4 retains the exact approved review-pack PNGs so existing imports are not duplicated. The review has 253 records and 210 featured designs; the complete app has 234 selectable charms. Design selection and commercial rights are separate: no artist endorsement, merchandising licence or paid product is implied.
+
+The refreshed homepage and separate collection browser reuse the approved Charmlet artwork and live renderer. No new image or video generation was requested. Typography uses self-hosted Manrope from Google Fonts, under the SIL Open Font License included at `assets/fonts/OFL.txt`. Brand direction and the owner's video reference are documented in `../docs/charmlet-brand-kit.md`.

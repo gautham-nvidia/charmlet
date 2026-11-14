@@ -1,5 +1,6 @@
 import { ChevronDown, createElement, Search, X } from 'lucide';
 import type { CharmDefinition } from './charm-catalog';
+import { charmCollection, orderByCollection } from './charm-collections';
 
 export type NavigationAction = 'appearance' | 'messages' | 'reminders' | 'photos' | 'close';
 interface NavigationOptions {
@@ -59,9 +60,7 @@ export function createNavigationView(options: NavigationOptions): NavigationView
 	}
 	function render() {
 		const focusedGroup = groups.contains(document.activeElement) ? (document.activeElement as HTMLElement).dataset.group : undefined;
-		const available = new Set(catalogue.map(charm => charm.group));
-		const featured = ['Live 3D', 'Stress Busters'].filter(name => available.has(name));
-		const names = ['All', ...featured, ...[...available].filter(name => !featured.includes(name))];
+		const names = ['All', ...new Set(catalogue.map(charmCollection))];
 		if (!names.includes(group)) { group = 'All'; }
 		groups.replaceChildren();
 		for (const name of names) {
@@ -75,10 +74,19 @@ export function createNavigationView(options: NavigationOptions): NavigationView
 			if (focusedGroup === name) { button.focus({ preventScroll: true }); }
 		}
 		const query = search.value.trim().toLowerCase();
-		const matches = catalogue.filter(charm => (group === 'All' || group === charm.group)
-			&& `${charm.name} ${charm.group} ${charm.description}`.toLowerCase().includes(query));
+		const matches = catalogue.filter(charm => (group === 'All' || group === charmCollection(charm))
+			&& `${charm.name} ${charm.group} ${charmCollection(charm)} ${charm.description}`.toLowerCase().includes(query));
 		grid.replaceChildren();
+		let previousCollection = '';
 		for (const charm of matches) {
+			const collection = charmCollection(charm);
+			if (group === 'All' && collection !== previousCollection) {
+				const heading = document.createElement('h3');
+				heading.className = 'charm-pack-heading';
+				heading.textContent = collection;
+				grid.append(heading);
+				previousCollection = collection;
+			}
 			const button = document.createElement('button');
 			button.type = 'button';
 			button.className = 'charm-tile';
@@ -149,7 +157,7 @@ export function createNavigationView(options: NavigationOptions): NavigationView
 		});
 	}
 	return {
-		setCatalogue: (charms, id) => { catalogue = charms; selected = id; if (!picker.hidden) { render(); } },
+		setCatalogue: (charms, id) => { catalogue = orderByCollection(charms); selected = id; if (!picker.hidden) { render(); } },
 		setReady: value => { ready = value; charmToggle.disabled = !ready; settingsToggle.disabled = !ready; },
 		close, isOpen,
 	};

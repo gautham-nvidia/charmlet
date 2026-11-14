@@ -1,0 +1,36 @@
+.concept-page main.information-main { width: min(1120px, calc(100% - 80px)); margin: 70px auto 90px; }
+.information-hero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 60px; align-items: center; margin-bottom: 70px; }
+.information-main h1 { font: 650 clamp(42px, 5vw, 72px)/1.03 var(--display); letter-spacing: -.055em; margin: 18px 0 30px; }
+.information-main h1 em { font-style: normal; color: var(--orange); }
+.information-main .lead { font-size: clamp(16px, 1.7vw, 20px); max-width: 650px; }
+.information-main h2 { font: 650 clamp(25px, 3vw, 38px)/1.15 var(--display); letter-spacing: -.035em; }
+.information-main h3 { font: 650 21px/1.2 var(--display); }
+.information-main p { max-width: 760px; color: var(--muted); }
+.information-section { border-top: 1px solid var(--line); padding: 44px 0; }
+.information-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 65px; }
+.brand-object { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; min-height: 380px; border-radius: 50% 50% 18px 18px; background: var(--stage); padding: 30px; }
+.brand-object img { width: min(240px, 75%); height: 270px; transform: rotate(-8deg); filter: drop-shadow(12px 20px 15px #17251a24); }
+.brand-object span, .california-note > span { font: 11px/1.6 var(--mono); }
+.california-note { background: var(--stage); padding: 36px; border-radius: 5px 80px 5px 5px; display: grid; gap: 25px; }
+.california-note strong { font: 650 clamp(32px, 4vw, 52px)/1.15 var(--display); letter-spacing: -.04em; }
+.edition-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 30px 0; }
+.edition-cards article { background: var(--card); padding: 25px; border-radius: 14px; }
+.edition-number { font: 650 35px/1 var(--display); letter-spacing: -.04em; color: var(--orange); }
+.fact-sheet { margin: 30px 0; }
+.fact-sheet > div { display: grid; grid-template-columns: 180px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.fact-sheet dt { font-weight: 750; }.fact-sheet dd { margin: 0; color: var(--muted); }
+.press-description { font: 500 clamp(20px, 2.6vw, 30px)/1.5 var(--display); margin: 30px 0; padding-left: 25px; border-left: 3px solid var(--orange); }
+.asset-card { background: var(--card); border-radius: 16px; padding: 30px; }.asset-card img { width: 100px; height: 120px; }
+.service-note, .contact-note { padding: 18px; background: var(--card); border-radius: 10px; font-size: 13px; }
+.concept-footer { flex-wrap: wrap; }.concept-footer nav { display: flex; flex-wrap: wrap; gap: 12px 22px; }
+.email-form { display: grid; gap: 18px; }.email-form > label { display: grid; gap: 7px; }
+.email-form input[type=email] { width: 100%; min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; color: var(--fg); background: var(--bg); }
+.email-form .offer-choice { display: flex; align-items: flex-start; gap: 12px; font-size: 13px; }.email-form .offer-choice input { flex: 0 0 auto; margin-top: 5px; }
+.email-form [data-signup-message] { font-size: 13px; margin: 0; }
+button:disabled { cursor: default; opacity: .55; }.pill:disabled:hover { transform: none; }
+@media (max-width: 760px) {
+  .concept-page main.information-main { width: calc(100% - 40px); margin: 40px auto; }
+  .information-hero { grid-template-columns: 1fr; gap: 25px; margin-bottom: 35px; }.brand-object { min-height: 260px; }.brand-object img { height: 180px; }
+  .information-grid, .edition-cards { grid-template-columns: 1fr; gap: 24px; }.information-section { padding: 30px 0; }
+  .fact-sheet > div { grid-template-columns: 1fr; gap: 5px; }.california-note { padding: 28px; }
+}

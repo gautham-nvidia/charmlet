@@ -21,3 +21,8 @@ Thumbs.db
 /session/
 /output/
 **/.vercel/
+service/.wrangler/
+service/.dev.vars
+service/private-assets/
+service/catalogue.json
+service/publisher-secrets/

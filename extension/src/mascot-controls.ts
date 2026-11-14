@@ -6,7 +6,7 @@ export function createMascotControls(parent: HTMLElement, send: (action: Compani
 	const details = document.createElement('details'); details.id = 'mascot-settings';
 	const summary = document.createElement('summary'); summary.textContent = "Cali's encouragement";
 	const hint = document.createElement('p'); hint.className = 'companion-hint';
-	hint.textContent = 'A California-inspired golden bear, cheering for your next small step. Click Cali for a little encouragement.';
+	hint.textContent = 'A California grizzly with a new outfit each day, including a relaxed Friday look. Click Cali for a little encouragement.';
 	const nameLabel = document.createElement('label'); nameLabel.className = 'focus-intent-label';
 	nameLabel.textContent = 'Your name (optional)';
 	const name = document.createElement('input'); name.id = 'mascot-name'; name.type = 'text'; name.maxLength = 32;

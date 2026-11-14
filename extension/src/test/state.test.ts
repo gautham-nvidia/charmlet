@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, promises as filesystem } from 'node:fs';
 import { readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -13,6 +13,88 @@ import { StateStore } from '../state-store';
 import { StateWriter } from '../state-writer';
 import { displayedCharm, festiveCharm, festiveDay } from '../festive-charms';
 import { chainLinks, cordForCharm, cordPath } from '../cord-design';
+import { CordMotion } from '../cord-motion';
+import { AccessController } from '../access-controller';
+import { signAccessGrant, type AccessGrant } from '../access-grant';
+import { starterSelection, freeDownloadSelection } from '../catalogue-access';
+import { charmCollection } from '../charm-collections';
+import betaCatalogue from '../beta-catalogue.json';
+
+test('the starter remains fixed across gallery reordering and beta migration never grants future content', async context => {
+	const directory = mkdtempSync(join(tmpdir(), 'charmlet-access-migration-'));
+	context.after(() => rm(directory, { recursive: true, force: true }));
+	const secrets = { get: async () => undefined, set: async () => undefined };
+	const starter = starterSelection();
+	assert.equal(starter.length, 31);
+	assert.deepEqual(new Set(starterSelection([...CHARMS].reverse())), new Set(starter));
+	assert.equal(freeDownloadSelection().some(id => starter.includes(id)), false);
+	for (const group of new Set(CHARMS.map(charmCollection))) {
+		const count = CHARMS.filter(charm => starter.includes(charm.id) && charmCollection(charm) === group).length;
+		const exceptions: Record<string, number> = {
+			Terminal: 1, 'Nature & Places': 1, 'Space & Stars': 0, 'Sports Icons': 0, 'US Tech Hubs & Skylines': 3,
+		};
+		assert.equal(count, exceptions[group] ?? 2, group);
+	}
+	const future = { ...CHARMS[0], id: 'trial:future-paid-design' };
+	const fresh = new AccessController({ directory: join(directory, 'fresh'), secrets });
+	await fresh.initialize(undefined);
+	assert.equal(fresh.catalogue([...CHARMS, future]).length, 31);
+	const reopen = new AccessController({ directory: join(directory, 'fresh'), secrets });
+	await reopen.initialize({ version: 1 }); // Existing metadata wins even if an old-looking preference is later supplied.
+	assert.equal(reopen.catalogue([...CHARMS, future]).length, 31);
+	const beta = new AccessController({ directory: join(directory, 'beta'), secrets });
+	await beta.initialize({ version: 1, charmId: 'live:robot' });
+	assert.equal(betaCatalogue.length, 234);
+	assert.equal(new Set(betaCatalogue).size, 234);
+	assert.deepEqual(new Set(beta.catalogue([...CHARMS, future]).map(charm => charm.id)),
+		new Set([...betaCatalogue, ...starter].filter(id => CHARMS.some(charm => charm.id === id))));
+	assert.equal(beta.catalogue(CHARMS).some(charm => charm.group === 'Sports Icons'), false);
+	const newPreferences = new AccessController({ directory: join(directory, 'new-preferences'), secrets });
+	await newPreferences.initialize(DEFAULT_STATE);
+	assert.equal(newPreferences.catalogue(CHARMS).length, 31);
+});
+
+test('native signed access expires without losing purchases, photos or earned flowers and rejects forged activation', async context => {
+	const directory = mkdtempSync(join(tmpdir(), 'charmlet-signed-access-'));
+	context.after(() => rm(directory, { recursive: true, force: true }));
+	let now = Date.UTC(2026, 10, 12, 12), stored: string | undefined;
+	const keys = await crypto.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']);
+	const publicKeys = { test: await crypto.subtle.exportKey('jwk', keys.publicKey) };
+	const options = { directory, keys: publicKeys, now: () => now,
+		secrets: { get: async () => stored, set: async (value: string) => { stored = value; } } };
+	const controller = new AccessController(options);
+	await controller.initialize(DEFAULT_STATE);
+	const base: AccessGrant = { iss: 'charmlet', aud: 'charmlet-apps', sub: 'a'.repeat(64),
+		iat: now / 1000, kind: 'trial', items: ['trial:new-electric-guitar'],
+		trialStartedAt: now / 1000, exp: now / 1000 + 30 * 86400 };
+	const token = await signAccessGrant(base, keys.privateKey, 'test');
+	const file = (value: string) => Buffer.from(JSON.stringify({ format: 'charmlet-access', version: 1, token: value }));
+	await controller.importDocument(file(token));
+	assert.equal(controller.catalogue(CHARMS).length, CHARMS.length);
+	const photo = { ...CHARMS[0], id: 'pack:photo-personal:portrait' };
+	const flower = { ...CHARMS[0], id: 'garden:hibiscus' };
+	now += 30 * 86400000;
+	await controller.observeClock();
+	const ids = controller.catalogue([...CHARMS, photo, flower]).map(charm => charm.id);
+	for (const id of ['terminal', 'live:cali', 'trial:new-electric-guitar', photo.id, flower.id]) {
+		assert(ids.includes(id));
+	}
+	assert.equal(ids.includes('live:robot'), false);
+	const reopened = new AccessController(options);
+	await reopened.initialize(DEFAULT_STATE);
+	assert.deepEqual(reopened.catalogue([...CHARMS, photo, flower]).map(charm => charm.id), ids);
+	const pieces = token.split('.');
+	pieces[1] = Buffer.from(JSON.stringify({ ...base, kind: 'pro', exp: undefined, trialStartedAt: undefined })).toString('base64url');
+	await assert.rejects(reopened.importDocument(file(pieces.join('.'))), /invalid|not recognized/);
+	assert.equal(reopened.catalogue(CHARMS).some(charm => charm.id === 'live:robot'), false);
+	const { exp: _expiry, trialStartedAt: _start, ...paid } = base;
+	await reopened.importDocument(file(await signAccessGrant({ ...paid, kind: 'pro', iat: now / 1000 }, keys.privateKey, 'test')));
+	assert.equal(reopened.catalogue(CHARMS).length, CHARMS.length);
+	now += 1000;
+	await reopened.importDocument(file(await signAccessGrant({ ...paid, kind: 'items', iat: now / 1000 }, keys.privateKey, 'test')));
+	assert.equal(reopened.catalogue(CHARMS).some(charm => charm.id === 'live:robot'), false);
+	await assert.rejects(reopened.importDocument(file(token)), /older/);
+});
 
 test('missing or invalid saved values restore a usable charm', () => {
 	assert.deepEqual(restoreState(undefined), DEFAULT_STATE);
@@ -26,9 +108,9 @@ test('missing or invalid saved values restore a usable charm', () => {
 
 test('hide and motion preferences survive a reload without trusting unknown fields', () => {
 	assert.deepEqual(restoreState({ cordLength: 180, hidden: true, reducedMotion: true, extra: 'ignored' }), {
-		version: 1, charmId: 'terminal', layoutMode: 'hanging', showMessages: true, rotateMessages: true, messageIndex: 0,
+		version: 1, editionVersion: 1, charmId: 'terminal', layoutMode: 'hanging', showMessages: true, rotateMessages: true, messageIndex: 0,
 		cordLength: 180, size: 100, hidden: true, reducedMotion: true,
-		festiveEnabled: true, charmPinned: false, cordChoices: {},
+		festiveEnabled: true, charmPinned: false, cordChoices: {}, caliOutfit: 'daily', puzzles: DEFAULT_STATE.puzzles,
 	});
 });
 
@@ -63,6 +145,44 @@ test('chain geometry remains finite and bounded during long pulls in every direc
 	}
 });
 
+test('cord flex lags a pull, settles after release and resets without leftover motion', () => {
+	const motion = new CordMotion();
+	const anchor = { x: 0, y: 0 };
+	motion.reset({ x: 0, y: 180 });
+	motion.step(anchor, { x: 80, y: 180 });
+	assert.ok(motion.bend > 0, 'the middle trails a pull to the right');
+	assert.equal(motion.moving, true);
+	for (let frame = 0; frame < 240; frame++) {
+		motion.step(anchor, { x: 80, y: 180 });
+		assert.ok(Number.isFinite(motion.bend) && Math.abs(motion.bend) <= 64);
+	}
+	assert.equal(motion.bend, 0);
+	assert.equal(motion.moving, false);
+	motion.step(anchor, { x: -600, y: 40 });
+	assert.equal(motion.moving, true);
+	motion.reset();
+	assert.equal(motion.bend, 0);
+	assert.equal(motion.moving, false);
+	motion.step(anchor, { x: Number.NaN, y: 10 });
+	assert.equal(motion.moving, false);
+});
+
+test('flexible cords keep both attachment points and carry their metal links around the bend', () => {
+	const anchor = { x: 50, y: 0 }, hook = { x: 50, y: 200 };
+	assert.equal(cordPath(anchor, hook, 0), cordPath(anchor, hook));
+	assert.equal(chainLinks(anchor, hook, false, 0), chainLinks(anchor, hook));
+	const curve = cordPath(anchor, hook, 40);
+	assert.ok(curve.startsWith('M 50 0 Q '));
+	assert.ok(curve.endsWith(' 50 200'));
+	for (const balls of [true, false]) {
+		const links = chainLinks(anchor, hook, balls, 40);
+		const xs = [...links.matchAll(/M (-?[\d.]+)/g)].map(match => Number(match[1]));
+		assert.ok(Math.min(...xs) < 35, 'links follow the curved middle rather than the straight chord');
+		assert.ok(Math.max(...xs) < 53);
+		assert.doesNotMatch(links, /NaN|Infinity/);
+	}
+});
+
 test('legacy and unknown charm selections retain the other preferences', () => {
 	for (const charmId of [undefined, 'missing', '../outside.svg', null]) {
 		const state = restoreState({ charmId, layoutMode: 'orbit', showMessages: false, rotateMessages: false, messageIndex: MESSAGES.length - 1, cordLength: 210, size: 80, hidden: true, reducedMotion: true });
@@ -82,8 +202,11 @@ test('every bundled selection survives saved-state restoration', () => {
 	assert.deepEqual(ORIGINAL_CHARMS.map(charm => charm.id), ['terminal']);
 	assert.equal(CHARMS.length, ORIGINAL_CHARMS.length + TRIAL_CHARMS.length + LIVE_CHARMS.length + FIDGET_CHARMS.length);
 	assert.equal(new Set(CHARMS.map(charm => charm.id)).size, CHARMS.length);
+	assert.equal(CHARMS[0].id, 'terminal');
+	assert.equal(CHARMS[1].id, 'live:cali');
+	assert.ok(CHARMS.slice(1, 1 + LIVE_CHARMS.length).every(charm => charm.id.startsWith('live:')));
 	assert.ok(TRIAL_CHARMS.length > 100, 'The complete curated trial must be bundled, not require imports.');
-	for (const group of ['Solar System', 'Gemstones', 'Zodiac', 'Test Bench', 'Sacred Traditions', 'Seasonal']) {
+	for (const group of ['Solar System', 'Gemstones', 'Zodiac', 'Test Bench', 'Sacred Traditions', 'Seasonal', 'California', 'Celebrations', 'Music']) {
 		assert.ok(TRIAL_CHARMS.some(charm => charm.group === group), `Missing trial collection: ${group}`);
 	}
 	for (const planet of ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune']) {
@@ -91,6 +214,18 @@ test('every bundled selection survives saved-state restoration', () => {
 	}
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Zodiac').length, 12);
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Garden Flowers').length, 18);
+	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Music').length, 12);
+	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'Music Icons').length, 34);
+	assert.deepEqual(new Set(TRIAL_CHARMS.filter(charm => charm.group === 'Sports Icons').map(charm => charm.artworkKey)),
+		new Set(['lionel-messi', 'cristiano-ronaldo', 'ms-dhoni', 'sachin-tendulkar', 'michael-jordan',
+			'kobe-bryant', 'lebron-james', 'stephen-curry', 'tom-brady', 'patrick-mahomes',
+			'serena-williams', 'roger-federer', 'rafael-nadal', 'michael-phelps', 'usain-bolt', 'simone-biles',
+			'lewis-hamilton'].map(id => `athlete-${id}`)));
+	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'US Tech Hubs & Skylines').length, 13);
+	assert.ok(TRIAL_CHARMS.every(charm => !/NVIDIA|Salesforce|Apple|Alpine Lake|Night Sky|Ringed Planet/.test(`${charm.name} ${charm.description}`)));
+	for (const artist of ['travis-scott', 'whitney-houston', 'beyonce', 'prince']) {
+		assert.ok(TRIAL_CHARMS.some(charm => charm.id === `trial:artist-${artist}`));
+	}
 	assert.ok(TRIAL_CHARMS.every(charm => !charm.source && /^trial-[a-z0-9-]+\.png$/.test(charm.file)));
 	assert.equal(MESSAGES.length, 80);
 	assert.equal(new Set(MESSAGES).size, MESSAGES.length);
@@ -317,6 +452,33 @@ test('unreadable preference JSON reports the problem and leaves the legacy fallb
 	assert.equal(await readFile(store.path, 'utf8'), '{broken');
 });
 
+test('Windows file replacement retries temporary locks, bounds failures and preserves the prior save',
+	{ skip: process.platform !== 'win32' }, async context => {
+		const directory = mkdtempSync(join(tmpdir(), 'charmlet-state-'));
+		context.after(() => rm(directory, { recursive: true, force: true }));
+		const store = new StateStore(directory);
+		await store.write({ ...DEFAULT_STATE });
+		const originalRename = filesystem.rename;
+		let busyAttempts = 2, calls = 0;
+		const locked = Object.assign(new Error('File temporarily locked'), { code: 'EPERM' });
+		context.mock.method(filesystem, 'rename', async (...args: Parameters<typeof filesystem.rename>) => {
+			calls++;
+			if (busyAttempts-- > 0) { throw locked; }
+			return originalRename(...args);
+		});
+		const selected = { ...DEFAULT_STATE, charmId: 'fidget:cube' };
+		await store.write(selected);
+		assert.equal(calls, 3);
+		assert.deepEqual(await store.read(), selected);
+		assert.deepEqual(await readdir(directory), ['preferences.json']);
+
+		busyAttempts = Infinity; calls = 0;
+		await assert.rejects(store.write({ ...DEFAULT_STATE }), error => error === locked);
+		assert.equal(calls, 6);
+		assert.deepEqual(await store.read(), selected);
+		assert.deepEqual(await readdir(directory), ['preferences.json']);
+	});
+
 test('preference file errors reject saves and allow a later successful write', async context => {
 	const root = mkdtempSync(join(tmpdir(), 'charmlet-state-'));
 	context.after(() => rm(root, { recursive: true, force: true }));
@@ -403,14 +565,16 @@ test('size persists and Phase 0 states gain the default without losing their par
 	assert.equal(restoreState({ cordLength: 210 }).size, 100);
 	assert.equal(restoreState({ cordLength: 210 }).cordLength, 210);
 	assert.equal(restoreState({ size: 140 }).size, 140);
-	assert.equal(restoreState({ size: 999 }).size, 140);
+	assert.equal(restoreState({ size: 175 }).size, 175);
+	assert.equal(restoreState({ size: 200 }).size, 200);
+	assert.equal(restoreState({ size: 999 }).size, 200);
 	assert.equal(restoreState({ size: -1 }).size, 60);
 	assert.equal(restoreState({ size: Number.NaN }).size, 100);
 });
 
 test('every supported size fits the logical view without overwriting requested preferences', () => {
 	for (const mode of ['hanging', 'orbit'] as LayoutMode[]) {
-		for (const size of [60, 100, 140]) {
+		for (const size of [60, 100, 140, 175, 200]) {
 			for (const height of [80, 144, 240, 500]) {
 				const state = restoreState({ cordLength: 320, size });
 				const layout = getLayout(96, height, state.cordLength, state.size, mode);
@@ -443,7 +607,7 @@ test('resizing clamps the parked cord to keep the charm in the view', () => {
 });
 
 test('compact panels keep downward pull room and return to the visible rest', () => {
-	for (const size of [60, 100, 140]) {
+	for (const size of [60, 100, 140, 200]) {
 		for (const mode of ['hanging', 'orbit'] as LayoutMode[]) {
 			const requestedPreference = 126;
 			const pendulum = new Pendulum(180, 120, requestedPreference, size, mode);
@@ -492,7 +656,7 @@ test('a click impulse moves the charm, then the pendulum sleeps', () => {
 });
 
 test('opposite nudges have balanced travel in a narrow dock', () => {
-	for (const size of [60, 100, 140]) {
+	for (const size of [60, 100, 140, 200]) {
 		const left = new Pendulum(180, 500, 320, size);
 		const right = new Pendulum(180, 500, 320, size);
 		try {
@@ -631,7 +795,7 @@ test('release before the next physics frame does not jump to an unrendered point
 test('imported attachment geometry scales with the image and remains bounded during a rebound', () => {
 	for (const mode of ['hanging', 'orbit'] as const) {
 		for (const attachment of [{ x: 0.5, y: 0 }, { x: 0.45, y: 14 / 84 }, { x: 0.55, y: 0.5 }]) {
-			const p = new Pendulum(180, 140, 48, 140, mode, attachment);
+			const p = new Pendulum(180, 140, 48, 200, mode, attachment);
 			try {
 				const rest = p.position;
 				assert.ok(Math.abs(p.layout.attachmentX - (attachment.x - 0.5) * p.layout.charmWidth) < 0.001);
@@ -718,12 +882,14 @@ test('a downward pull returns to rest without a stuck drag constraint', () => {
 
 test('size changes scale the body and attachment without accumulating walls or constraints', () => {
 	const pendulum = new Pendulum(280, 400, 126);
-	for (const size of [140, 60, 100]) {
+	for (const size of [140, 200, 60, 100]) {
 		pendulum.grab(pendulum.position);
 		pendulum.resize(280, 400, 126, size);
 		const radius = pendulum.body.circleRadius;
 		assert.ok(typeof radius === 'number');
-		assert.ok(Math.abs(radius - 34 * size / 100) < 0.001);
+		assert.ok(Math.abs(radius - 34 * 1.15 * size / 100) < 0.001);
+		assert.ok(Math.abs(pendulum.layout.charmWidth - 82.8 * size / 100) < 0.001);
+		assert.ok(Math.abs(pendulum.layout.charmHeight - 96.6 * size / 100) < 0.001);
 		assert.equal(pendulum.tether.length, pendulum.layout.cordLength + pendulum.layout.attachmentOffset);
 		assert.equal(pendulum.engine.world.constraints.length, 1);
 		assert.equal(pendulum.engine.world.bodies.length, 4);
@@ -733,7 +899,7 @@ test('size changes scale the body and attachment without accumulating walls or c
 });
 
 test('complete peg orbits stay visible in both directions and return from above', () => {
-	for (const size of [60, 100, 140]) {
+	for (const size of [60, 100, 140, 200]) {
 		for (const immediate of [false, true]) {
 			for (const direction of [-1, 1]) {
 				const p = new Pendulum(340, 800, 126, size, 'orbit');

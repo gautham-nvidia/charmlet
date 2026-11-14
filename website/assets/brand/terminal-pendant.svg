@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 84" role="img" aria-labelledby="title">
+  <title id="title">Original Terminal, Charmlet logo concept A</title>
+  <g fill="#18221c">
+    <path d="M31 15V8a5 5 0 0 1 10 0v7" fill="none" stroke="#18221c" stroke-width="2.8"/>
+    <path fill-rule="evenodd" d="m9 22 11-8h32l11 8 4 42-11 14H17L5 64ZM20 31h32l1 29H19ZM14 23l7-5h30l7 5-3 2-5-4H22l-5 4ZM9 32l5 30v10l-5-9ZM21 68h14v3H21Zm29 3a2 2 0 1 0 4 0 2 2 0 1 0-4 0Z"/>
+    <path d="m24 39 7 6-7 6m14 1h10" fill="none" stroke="#18221c" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

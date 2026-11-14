@@ -6,7 +6,9 @@ type Layout = ReturnType<typeof sharedLayout>;
 /** Keep the shared bounce and collision behavior, with the monitor as the desktop play area. */
 export function placeDesktopAnchor(layout: Layout, anchor: { x: number; y: number }): Layout {
 	const anchorX = clamp(anchor.x, layout.visualRadius + layout.edgePadding, layout.width - layout.visualRadius - layout.edgePadding);
-	const anchorY = clamp(anchor.y, layout.mode === 'orbit' ? layout.anchorY : 3, layout.height - 200);
+	const restingSpace = Math.max(200, layout.minimumCord + layout.attachmentOffset
+		+ layout.visualRadius + layout.edgePadding + layout.pullAllowance);
+	const anchorY = clamp(anchor.y, layout.mode === 'orbit' ? layout.anchorY : 3, layout.height - restingSpace);
 	const maximumDragCord = Math.max(layout.minimumCord, layout.height - anchorY - layout.attachmentOffset - layout.visualRadius - layout.edgePadding);
 	const maximumCord = Math.max(layout.minimumCord, maximumDragCord - layout.pullAllowance);
 	return { ...layout, anchorX, anchorY, maximumDragCord, maximumCord,

@@ -26,6 +26,7 @@ if (nativeInput && (process.platform !== 'win32' || process.env.GITHUB_ACTIONS !
 }
 const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const trial = JSON.parse(readFileSync(join(repo, 'extension', 'src', 'trial-charms.json'), 'utf8'));
+const beta = JSON.parse(readFileSync(join(repo, 'extension', 'src', 'beta-catalogue.json'), 'utf8'));
 const bundleRoot = process.env.CHARMLET_DESKTOP_BUNDLE_ROOT
   ? resolve(process.env.CHARMLET_DESKTOP_BUNDLE_ROOT) : join(root, 'release', manifest.version);
 const mode = packaged ? process.env.CHARMLET_DESKTOP_BUNDLE_ROOT ? 'archive' : 'packaged' : 'dev';
@@ -86,6 +87,8 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     try {
       const window = await application.firstWindow({ timeout: 45000 });
       await window.locator('#stage[data-ready="true"][data-companion-ready="true"]').waitFor({ timeout: 30000 });
+      const startup = await diagnostic(application);
+      assert.equal(startup.measuredWindowState.alwaysOnTop, true, 'Every fresh desktop launch must be topmost.');
       await window.evaluate(() => {
         globalThis.__charmletTestEvents = [];
         const record = value => {
@@ -272,7 +275,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   const { application, window } = first;
   const start = await diagnostic(application);
   await expect(window.locator('#app-version')).toHaveText(`v${manifest.version}`);
-  await expect(window.locator('#primary-nav > button')).toHaveCount(5);
+  await expect(window.locator('#primary-nav > button:not([hidden])')).toHaveCount(5);
   await expect(window.locator('#primary-nav')).toBeHidden();
   await expect(window.locator('#message-card')).toBeHidden();
   await expect(window.locator('.app-footer')).toBeHidden();
@@ -382,8 +385,10 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   assert.deepEqual(savedDisplay, { background: true, toolbarPinned: true, messagesPinned: true });
 
   const gardenBeforeTrial = JSON.parse(readFileSync(companionPath, 'utf8')).garden;
-  await expect(window.locator('#charm-select option[value^="trial:"]')).toHaveCount(trial.length);
-  for (const key of ['starter-drishti', 'new-smiley-happy', 'new-drishti-guardian', 'new-earth']) {
+  await expect(window.locator('#charm-select option[value^="trial:"]')).toHaveCount(beta.filter(id => id.startsWith('trial:')).length);
+  await expect(window.locator('#charm-select option[value^="trial:athlete-"]')).toHaveCount(0);
+  for (const key of ['starter-drishti', 'new-smiley-happy', 'new-drishti-guardian',
+    'new-us-san-francisco-skyline', 'new-cupertino-loop', 'new-earth']) {
     const entry = trial.find(charm => charm.artworkKey === key);
     assert.ok(entry);
     await window.getByRole('button', { name: 'Browse charms', exact: true }).click();
@@ -654,6 +659,8 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   for (const [id, character] of [['live:cloud', 'cloud'], ['live:robot', 'robot']]) {
     await selectInteractive(id);
     await expect(face).toHaveAttribute('data-character', character);
+    await expect(face).toHaveAttribute('data-art-ready', `${character}:`);
+    await expect(face).toHaveAttribute('data-art-error', '');
     await expect(face).toBeVisible();
     await third.window.locator('#charm').focus();
     await third.window.keyboard.down('Space');
@@ -664,6 +671,19 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     finally { await third.window.keyboard.up('Space'); }
     await expect(face).toHaveAttribute('data-expression', 'smile');
     await third.window.locator('#charm').screenshot({ path: join(output, `live-${character}.png`) });
+    const reactions = new Set(), pictures = new Set();
+    for (let index = 0; index < 3; index++) {
+      await third.window.locator('#charm').focus();
+      await third.window.keyboard.press('Enter');
+      await expect(face).toHaveAttribute('data-expression', character === 'cloud'
+        ? /^(sunrise|rain|lightning)$/ : /^(binary|compile|cursor)$/);
+      const expression = await face.getAttribute('data-expression');
+      reactions.add(expression); pictures.add(await face.evaluate(canvas => canvas.toDataURL()));
+      await third.window.locator('#charm').screenshot({ path: join(output, `live-${character}-${expression}.png`) });
+    }
+    assert.deepEqual([...reactions].sort(), character === 'cloud'
+      ? ['lightning', 'rain', 'sunrise'] : ['binary', 'compile', 'cursor']);
+    assert.equal(pictures.size, 3);
   }
   await selectInteractive('fidget:bubbles');
   const toy = third.window.locator('#live-fidget');
@@ -702,6 +722,7 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
   console.log('Desktop Cali: optional personal encouragement, confetti, pets and saved quiet preferences.');
   await selectInteractive('live:cali');
   await expect(face).toHaveAttribute('data-character', 'cali');
+  await expect(face).toHaveAttribute('data-art-ready', /^cali:/);
   await expect(face).toBeVisible();
   await third.window.locator('#charm').click();
   await expect(third.window.locator('#mascot-bubble')).toBeVisible();
@@ -744,10 +765,85 @@ test(`desktop ${mode} host keeps shared state in its owned profile`, { timeout: 
     await expect(face).toBeHidden();
     await third.window.locator('#charm').screenshot({ path: join(output, `pet-${id}.png`) });
   }
+  console.log('Desktop California family: eleven rendered companions and saved selections.');
+  for (const character of ['redwood', 'yosemite', 'tahoe', 'gull', 'seal', 'golden-gate', 'santa-cruz',
+    'whale', 'dolphin', 'condor', 'eagle']) {
+    await selectInteractive(`live:${character}`);
+    await expect(face).toHaveAttribute('data-art-ready', `${character}:`);
+    await expect(face).toBeVisible();
+    await expect(third.window.locator('#mascot-bubble')).toBeHidden();
+    await third.window.locator('#charm').screenshot({ path: join(output, `california-${character}.png`) });
+  }
+  await selectInteractive('live:cali');
+  await expect(face).toHaveAttribute('data-art-ready', /^cali:/);
+  console.log('Desktop playful Cali: tap gestures, attached wiggle, and saved 200 percent size.');
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+  await third.window.locator('#cali-outfit').selectOption('friday-coast');
+  await third.window.locator('#size').focus();
+  await third.window.keyboard.press('End');
+  await expect(third.window.locator('#size')).toHaveValue('200');
+  await third.window.locator('#motion').click();
+  await third.window.locator('#settings-close').click();
+  await expect(face).toHaveAttribute('data-outfit', 'friday-coast');
+  // Returning from the California family starts Cali's own tap sequence again.
+  for (const gesture of ['curious', 'wink', 'double-take', 'shimmy']) {
+    await third.window.locator('#charm').focus();
+    await third.window.keyboard.press('Enter');
+    await expect(face).toHaveAttribute('data-expression', gesture);
+    await expect(third.window.locator('#charm')).toHaveAttribute('data-tap-motion', 'playing');
+    await expect(face).toHaveAttribute('data-expression', 'smile');
+  }
+  await openTools(third.window);
+  await third.window.getByRole('button', { name: 'Charm settings', exact: true }).click();
+  await third.window.getByRole('menuitem', { name: 'Appearance', exact: true }).click();
+  await third.window.locator('#motion').click();
+  await third.window.locator('#settings-close').click();
+  await expect(third.window.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+  await expect(face).toHaveAttribute('data-motion', 'still');
+  assert.ok(await third.window.locator('#charm').evaluate(node => {
+    const bounds = node.getBoundingClientRect();
+    return bounds.left >= 0 && bounds.top >= 0 && bounds.right <= innerWidth && bounds.bottom <= innerHeight;
+  }), 'The 200 percent charm must remain inside the desktop.');
+  await third.window.locator('#charm').screenshot({ path: join(output, 'cali-200-percent.png') });
+  console.log('Desktop puzzles: cube turns, legal tiles, lights, optional panels and saved boards.');
+  for (const kind of ['cube', 'tiles', 'lights']) {
+    await selectInteractive(`fidget:${kind}`);
+    await expect(toy).toHaveAttribute('data-kind', kind);
+    await openTools(third.window);
+    await third.window.getByRole('button', { name: 'Open puzzle', exact: true }).click();
+    await expect(third.window.locator('#puzzle-editor')).toBeVisible();
+    await expect(third.window.locator('body')).toHaveAttribute('data-desktop-panel', 'true');
+    if (kind === 'cube') {
+      await expect(third.window.locator('.cube-net')).toHaveCSS('display', 'grid');
+      await third.window.getByRole('button', { name: 'Turn front clockwise', exact: true }).click();
+      await expect(third.window.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'false');
+      await third.window.locator('#puzzle-undo').click();
+      await expect(third.window.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'true');
+      await third.window.locator('#puzzle-shuffle').click();
+    } else if (kind === 'tiles') {
+      await third.window.getByRole('button', { name: 'Move tile 8', exact: true }).click();
+      await expect(third.window.locator('#puzzle-editor')).toHaveAttribute('data-solved', 'false');
+    } else {
+      await third.window.getByRole('button', { name: 'Light row 2, column 2', exact: true }).click();
+      await expect(third.window.locator('.puzzle-lights [aria-pressed="true"]')).toHaveCount(5);
+    }
+    await third.window.locator('#puzzle-editor').screenshot({ path: join(output, `puzzle-${kind}.png`) });
+    await third.window.locator('#puzzle-close').click();
+    await expect(third.window.locator('#puzzle-editor')).toBeHidden();
+    await expect(third.window.locator('#stage')).toHaveAttribute('data-persisted', 'true');
+  }
+  const savedPuzzles = JSON.parse(readFileSync(preferencesPath, 'utf8')).puzzles;
+  assert.equal(savedPuzzles.lights, 186);
   await selectInteractive('live:cali');
   await quit(third.application);
   const fourth = await launch();
   await expect(fourth.window.locator('#stage')).toHaveAttribute('data-charm', 'live:cali');
+  await expect(fourth.window.locator('#stage')).toHaveAttribute('data-size', '200');
+  assert.equal(JSON.parse(readFileSync(preferencesPath, 'utf8')).size, 200);
+  assert.deepEqual(JSON.parse(readFileSync(preferencesPath, 'utf8')).puzzles, savedPuzzles);
+  await expect(fourth.window.locator('#live-smiley')).toHaveAttribute('data-outfit', 'friday-coast');
   await expect(fourth.window.locator('#mascot-bubble')).toBeHidden();
   await expect(fourth.window.locator('.win-sparkles')).toHaveCount(0);
   // Native click-through checks explicitly unpin the earlier saved controls.

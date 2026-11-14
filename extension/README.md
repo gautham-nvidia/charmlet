@@ -1,11 +1,13 @@
 # Charmlet: Coding Charms
 
-167 offline trial charms with matched cords, four live 3D companions, interactive fidgets, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders.
+Start with 31 free charms, interactive fidgets and puzzles, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders. The current catalogue contains 261 designs; existing beta profiles retain their beta access with free replacements for three retired designs.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
-**Cali and pets trial, version 0.9.0.** Charmlet lives in a dockable VS Code view, not over your code
+**Free starter / Pro candidate, version 0.14.0.** Charmlet lives in a dockable VS Code view, not over your code
 or desktop. It uses supported APIs and does not modify your VS Code installation.
 It also works in Restricted Mode without asking you to trust workspace code.
+
+The email-only 30-day trial and optional Pro/individual purchases are implemented but not connected to live provider accounts. Pro is planned at **$7.49 launch / $17.49 regular, once**, across the current apps. Public activation keys and service addresses must be configured before those features open. [Setup and delivery details](https://github.com/gautham-nvidia/charmlet/blob/main/service/README.md).
 
 <img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/navigation.png" width="240" alt="Charmlet main view, motivation and direct navigation"> <img src="https://raw.githubusercontent.com/gautham-nvidia/charmlet/main/docs/store-assets/picker.png" width="240" alt="Search the included trial collection">
 
@@ -18,27 +20,37 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 
 1. Open the Command Palette and run **Charmlet: Show Charm**.
 2. For a right-side dock, run **View: Move View**, select **Charmlet**, then **New Secondary Side Bar Entry**.
-3. Click a charm to nudge it. Pull downward and release for a rebound and smaller settling bounces; Reduced Motion returns directly to rest. Pull straight upward toward the peg to retract, then use the restore arrow to bring it back.
-4. Click **Charms** to open the visual picker, search by name and filter installed collections. Choose **Settings → Appearance** for size, resting cord, visibility, motion and layout.
+3. Click any charm for a brief wiggle, or use Space/Enter. Cali adds a head tilt, wink, double take or victory shimmy. Pull downward and release for a rebound and smaller settling bounces; Reduced Motion returns directly to rest. Pull straight upward toward the peg to retract, then use the restore arrow to bring it back.
+4. Click **Charms** to open the visual picker, search by name and filter installed collections. Choose **Settings → Appearance** for size, resting cord, visibility, motion and layout. The default 100% is 15% larger than earlier trials; adjust from 60% to 200% in 5% steps. Narrow views fit the charm to the available space.
 5. Switch to **Orbit layout** for a full loop around the fixed peg; Hanging layout keeps a compact top peg and pull room.
 6. Click **Focus** or run **Charmlet: Focus Session** for a focus/break timer with presets, custom minutes, pause/resume/stop and an optional intention.
 7. Motivation is the fresh-state default, without a category heading. **Settings → Messages** offers Motivation, Facts + trivia, Facts or Trivia. Existing saved feed choices are preserved.
 8. Click **Garden**, then **Plant a seed**, or run **Charmlet: Open Garden**. Water once per local day and earn an original flower after eleven valid waterings. Optional water/move schedules live under **Settings → Reminders**.
 9. Run **Charmlet: Import Charm Pack** for a free downloaded `.charmlet.json`; remove imported packs with **Charmlet: Remove Charm Pack**.
 
-The trial includes 159 rendered designs: recognizable components and lab instruments, animals, trees, cities and parks, local culture and sports, Stress Busters, all eight planets plus Sun and Moon, galaxies, eight gemstones, twelve zodiac signs, 22 seasonal designs, fifteen sacred-tradition designs and eighteen flower illustrations. Terminal, four live companions and three fidget tools bring the total to 167. Open **Charms** to search and filter them; no separate imports are needed.
+The trial includes 236 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools: **261 charms** in all. Open **Charms** to search the themed packs. Terminal is first, followed by Live 3D, Stress Busters, Music and Music Icons; no separate imports are needed. Music Icons includes all 34 artist studies, with Travis Scott, legends and twelve women. Existing imports keep their saved IDs and exact artwork without duplicate bundled figures.
 
-New in **Animals**: Giant Panda, Golden Retriever, Labrador, German Shepherd, Husky, Corgi, Beagle and Goldendoodle, plus Silver Tabby and Tuxedo Cat.
+**Music** has twelve instruments and controllers. **Sports Icons** includes 17 athlete-inspired studies with Pro, including Dhoni, Tendulkar, Curry, Hamilton, Federer, Nadal and Phelps. **US Tech Hubs & Skylines** includes 13 cities from the Bay Area to Boston and New York. Public artwork and likeness review remains required.
+
+**California** includes Palace of Fine Arts, Painted Ladies, Pebble Beach, Coastal Cypress, San Francisco Tower, Granite Dome, Santa Clara Office and the current circular Cupertino Ring Campus. **Celebrations** adds Diwali Diyas and Halloween Lantern. Saved Alpine Lake, Night Sky and Ringed Planet selections move to the free San Francisco, Austin and Seattle skylines, preserving pins and cord choices. Existing personal imports remain usable.
+
+**Pets & Wildlife** includes Giant Panda, Golden Retriever, Labrador, German Shepherd, Husky, Corgi, Beagle and Goldendoodle, plus Silver Tabby and Tuxedo Cat.
 
 Grow red, pink, white and yellow roses, jasmine and lily alongside the original twelve garden flowers. Each seed still blooms after eleven daily waterings. Existing plants and collected flowers are preserved, and seeds choose flowers you have not collected before returning to familiar varieties.
 
 The nine early designs have retired from the picker. Saved choices, pins and cord materials move to the matching newer artwork. The garden now shows natural soil, terracotta and foliage; earned flowers use the current rendered artwork while keeping their saved IDs, dates and bloom counts.
 
-**Charms > Live 3D** offers Cali the golden bear, Sunny, Nimbus the cloud and Byte the robot. They glance promptly toward a nearby pointer, greet you, blink and react to holds, releases and wins. They rest between interactions. Reduced Motion stops idle animation; unavailable graphics support falls back to a canvas rendering. Painted colour figures replace the bronze deity artwork, with seated Shiva available separately from Nataraja.
+**Charms > Live 3D** offers Cali the California grizzly, Sunny, Nimbus the cloud and Byte the robot, plus Coast Redwood, Yosemite, Lake Tahoe, Western Gull, Harbor Seal, Golden Gate, Santa Cruz Otter, Pacific Gray Whale, Pacific Dolphin, California Condor and Golden Eagle. Tap Nimbus for sunrise, rain and lightning, or hold for a small shower. Byte's taps show flowing binary, a compile check and a terminal prompt. They react promptly and rest between interactions. Reduced Motion keeps feedback still; software rendering preserves the detailed artwork when graphics support is unavailable.
+
+Cali wears denim on Monday, a hoodie on Tuesday, a vest on Wednesday, flannel on Thursday, a relaxed coastal shirt on Friday, trail fleece on Saturday and a soft knit on Sunday. The local date chooses the outfit. His face stays consistent, with live glances, waves and thumbs-up celebrations. Painted colour figures remain available under Culture & Traditions, including seated Shiva and Nataraja.
 
 **Cali** is an original California-inspired mascot. Click or press Enter for a short encouragement bubble; focus sessions add start, halfway and completion cues. Under **Focus > Cali's encouragement**, add an optional name, turn bubbles off or disable focus prompts. Escape dismisses a bubble. Text stays local and never takes keyboard focus. Enable celebrations under Small wins for confetti when you record a new win or complete a live focus session; everything stays silent, and Reduced Motion keeps celebrations still.
 
-**Charms > Stress Busters** puts the smiley balls, squishies and three new tools together. Tap or flick **Fidget Spinner** and watch its rotor coast to a stop; press any **Bubble Pop** bubble to turn it in or out; hold and rub **Worry Stone** to rock it gently. Space/Enter operate each tool too. Everything is silent, with no scores or streaks.
+**Settings > Appearance > Cali's outfit** offers automatic daily outfits or a saved choice of any of his seven looks. Select Cali to see this control.
+
+**Charms > Stress Busters** offers four spinners: the original three-lobed design, **Orbit**, **Pinwheel** and **Bar**. Drag a rotor to turn it, then release to coast. Pull the centre to stretch the cord. Space/Enter spin; Shift+Space reverses. **Bubble Pop** and **Worry Stone** remain alongside the smiley balls and squishies.
+
+Choose **Twisty Cube**, **Sliding Tiles** or **Lights Out**, then click **Play** for the larger board. The cube has real quarter-turn moves on all six faces; tiles slide only into the neighbouring gap; light switches flip their neighbours. Shuffle, undo and reset are available, and progress saves locally. Tapping the hanging charm makes a small move. Everything stays silent, with no timers, scores or streaks.
 
 **Settings > Appearance > Cord material** matches the selected charm or remembers your manual choice. Eight materials are available, including gold/silver chains, braid, soft cord and the original thread.
 

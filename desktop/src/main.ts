@@ -1,5 +1,5 @@
 import {
-	app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, net, powerMonitor, protocol, screen, shell, Tray,
+	app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, net, powerMonitor, protocol, safeStorage, screen, shell, Tray,
 	type IpcMainEvent, type WebContents,
 } from 'electron';
 import { randomBytes } from 'node:crypto';
@@ -18,6 +18,7 @@ import { StateStore } from '../../extension/src/state-store';
 import { StateWriter } from '../../extension/src/state-writer';
 import { isPhotoPack, photoPackInput } from '../../extension/src/photo-packs';
 import { pauseForAway } from './power-behavior';
+import { AccessController } from '../../extension/src/access-controller';
 import {
 	DEFAULT_DESKTOP_SIZE, desktopGeometry, fitDesktopAnchor, legacyDesktopAnchor, matchesDesktopAnchor,
 	type DesktopAnchor, type DesktopBounds,
@@ -38,6 +39,7 @@ const profile = app.getPath('userData');
 let mainWindow: BrowserWindow | undefined;
 let tray: Tray | undefined;
 let companion: CompanionController | undefined;
+let access: AccessController | undefined;
 let preferenceWriter: StateWriter<CharmState> | undefined;
 let placementWriter: StateWriter<DesktopAnchor> | undefined;
 let desktopViewWriter: StateWriter<DesktopView> | undefined;
@@ -227,7 +229,9 @@ async function registerResources() {
 			}
 			const fixed = new Map([
 				['/renderer.js', join(root, 'renderer.js')], ['/overlay.js', join(root, 'overlay.js')],
-				['/view.css', join(root, 'view.css')], ['/desktop.css', join(root, 'desktop.css')],
+		['/view.css', join(root, 'view.css')], ['/desktop.css', join(root, 'desktop.css')],
+		['/puzzle.css', join(root, 'puzzle.css')],
+		['/celebration.css', join(root, 'celebration.css')],
 			]);
 			let file = fixed.get(path);
 			if (!file && path.startsWith('/media/')) {
@@ -242,14 +246,14 @@ async function registerResources() {
 }
 
 function fullCatalogue() {
-	return buildCatalogue([...packCharms(packs), ...gardenCharms(companion!.snapshot().state.garden)]);
+	return access!.catalogue(buildCatalogue([...packCharms(packs), ...gardenCharms(companion!.snapshot().state.garden)]));
 }
 async function saveCatalogue(selectedId?: string, generation = rendererGeneration) {
 	catalogue = fullCatalogue();
 	state = restoreState({ ...state, charmId: selectedId ?? state.charmId,
 		charmPinned: selectedId !== undefined ? true : state.charmPinned }, catalogue);
 	await preferenceWriter!.save({ ...state });
-	sendForGeneration(generation, { type: 'catalogue', catalogue, state });
+	sendForGeneration(generation, { type: 'catalogue', catalogue, state, access: access!.snapshot });
 }
 function refreshGardenCatalogue() {
 	const nextKey = gardenCharms(latestCompanion!.state.garden).map(charm => charm.id).join('|');
@@ -271,7 +275,13 @@ async function importPack() {
 	if (!selection.filePaths[0]) { return; }
 	const info = await lstat(selection.filePaths[0]);
 	if (!info.isFile() || info.isSymbolicLink() || info.size > MAX_PACK_BYTES) { throw new Error('Choose a bounded regular Charmlet pack file.'); }
-	const installed = await installPack(join(profile, 'packs'), await readFile(selection.filePaths[0]));
+	const bytes = await readFile(selection.filePaths[0]);
+	if (await access!.importDocument(bytes)) {
+		await saveCatalogue();
+		await dialog.showMessageBox(mainWindow, { type: 'info', title: access!.snapshot.label, message: access!.snapshot.detail });
+		return;
+	}
+	const installed = await installPack(join(profile, 'packs'), bytes);
 	if (installed.added) {
 		packs = [...packs, installed.pack];
 		await saveCatalogue(`pack:${installed.pack.id}:${installed.pack.charms[0].id}`);
@@ -297,6 +307,7 @@ async function handleAction(event: IpcMainEvent, message: unknown) {
 	if (!isSender(event) || !message || typeof message !== 'object' || !('type' in message)) { return; }
 	const generation = rendererGeneration;
 	const value = message as Record<string, unknown>;
+	if (access!.catalogue(catalogue).length !== catalogue.length) { await saveCatalogue(); }
 	if (value.type === 'ready') {
 		await Promise.all([preferenceWriter!.flush(), companion!.flush(), placementWriter!.flush(), desktopViewWriter!.flush()]);
 		if (generation !== rendererGeneration) { return; }
@@ -304,7 +315,8 @@ async function handleAction(event: IpcMainEvent, message: unknown) {
 		const tab = pendingTab;
 		applyWindowSize();
 		send({ type: 'desktop-view', value: desktopView });
-		send({ type: 'state', state, catalogue, companion: companion!.snapshot(), visible: mainWindow!.isVisible(), ...(tab ? { companionTab: tab } : {}) });
+		send({ type: 'state', state, catalogue, companion: companion!.snapshot(), access: access!.snapshot,
+			visible: mainWindow!.isVisible(), ...(tab ? { companionTab: tab } : {}) });
 		if (pendingTools) { send({ type: 'desktop-tools-open' }); pendingTools = false; }
 		if (pendingTab === tab) { pendingTab = undefined; }
 	} else if (value.type === 'save' && 'state' in value) {
@@ -359,6 +371,9 @@ async function handleAction(event: IpcMainEvent, message: unknown) {
 	} else if (value.type === 'learning-source' && typeof value.cardId === 'string') {
 		const card = learningCard(value.cardId);
 		if (card?.source) { await shell.openExternal(card.source.url); }
+	} else if (value.type === 'browse-packs') {
+		const url = access!.website();
+		if (url) { await shell.openExternal(url); }
 	} else if (value.type === 'command' && value.command === 'charmlet.importPack') {
 		runExplicitAction('Import failed', importPack);
 	} else if (value.type === 'command' && value.command === 'charmlet.removePack') {
@@ -409,6 +424,7 @@ function createTray() {
 		{ label: 'Garden', click: () => openControls('garden') },
 		{ type: 'separator' },
 		{ label: 'Import Pack…', click: () => runExplicitAction('Import failed', importPack) },
+		{ label: 'Activate Trial or Pro…', enabled: access!.snapshot.canActivate, click: () => runExplicitAction('Activation failed', importPack) },
 		{ label: 'Remove Pack…', click: showRemovePackMenu },
 		{ label: 'Reset Window Position', click: resetWindowPosition },
 		{ label: 'Always on top', type: 'checkbox', checked: true, click: item => mainWindow?.setAlwaysOnTop(item.checked) },
@@ -431,6 +447,7 @@ function createTray() {
 async function shutdown() {
 	if (quitting) { return; }
 	quitting = true;
+	access?.dispose();
 	if (placementTimer) { clearTimeout(placementTimer); placementTimer = undefined; }
 	unsubscribeCompanion?.();
 	const tasks: Promise<unknown>[] = [];
@@ -462,7 +479,28 @@ async function initialize() {
 	packs = loadedPacks.packs;
 	const preferenceStore = new StateStore<CharmState>(profile);
 	const loadedPreference = await preferenceStore.load(undefined);
-	const baseCatalogue = buildCatalogue(packCharms(packs));
+	const vault = new StateStore<{ encryptedTokens: string }>(join(profile, 'license-vault'));
+	const secureStorage = () => safeStorage.isEncryptionAvailable()
+		&& !(process.platform === 'linux' && safeStorage.getSelectedStorageBackend() === 'basic_text');
+	access = new AccessController({ directory: profile, secrets: {
+		get: async () => {
+			const saved = await vault.load(undefined);
+			if (saved.error) { throw new Error('Saved activation could not be read.'); }
+			if (!saved.value) { return undefined; }
+			const value = saved.value as { encryptedTokens?: unknown };
+			if (!secureStorage() || typeof value.encryptedTokens !== 'string' || value.encryptedTokens.length > 300000) {
+				throw new Error('Secure activation storage is unavailable.');
+			}
+			return safeStorage.decryptString(Buffer.from(value.encryptedTokens, 'base64'));
+		},
+		set: async value => {
+			if (!secureStorage()) { throw new Error('Enable your operating system keyring before saving an activation.'); }
+			await vault.write({ encryptedTokens: safeStorage.encryptString(value).toString('base64') });
+		},
+	} });
+	await access.initialize(loadedPreference.value);
+	if (access.notice) { latchBackgroundNotice(access.notice); }
+	const baseCatalogue = access.catalogue(buildCatalogue(packCharms(packs)));
 	const legacyIndex = restoreState(loadedPreference.value, baseCatalogue).messageIndex;
 	const companionStore = new StateStore<CompanionState>(profile, 'companion.json');
 	const loadedCompanion = await companionStore.load(undefined);
@@ -495,6 +533,9 @@ async function initialize() {
 		webPreferences: { preload: join(root, 'preload.cjs'), ...securityPreferences },
 	});
 	mainWindow.setIgnoreMouseEvents(true, { forward: true });
+	mainWindow.webContents.session.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
+	mainWindow.webContents.session.setPermissionCheckHandler(() => false);
+	mainWindow.webContents.session.on('will-download', event => event.preventDefault());
 	mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
 	mainWindow.webContents.on('will-navigate', event => event.preventDefault());
 	mainWindow.webContents.on('did-start-navigation', (_event, _url, isInPlace, isMainFrame) => {
@@ -509,7 +550,15 @@ async function initialize() {
 	mainWindow.webContents.on('did-finish-load', showInactive);
 	applyWindowSize();
 	await mainWindow.loadURL('charmlet://app/');
+	// A Windows first show can lose the constructor's topmost flag.
+	// Apply the initial preference after the native window has finished loading.
+	if (process.platform === 'win32') { mainWindow.setAlwaysOnTop(true); }
 	createTray();
+	access.watch(async () => {
+		if (quitting) { return; }
+		if (fullCatalogue().map(charm => charm.id).join('|') !== catalogue.map(charm => charm.id).join('|')) { await saveCatalogue(); }
+		send({ type: 'access', access: access!.snapshot });
+	}, () => latchBackgroundNotice('Access settings could not be refreshed.'));
 	unsubscribeCompanion = companion.subscribe(snapshot => {
 		latestCompanion = snapshot;
 		updateTrayStatus();

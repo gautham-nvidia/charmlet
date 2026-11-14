@@ -1,4 +1,6 @@
-import { BUBBLES, type FidgetKind } from './interactive-motion';
+import { BUBBLES, type FidgetKind, type SpinnerDesign } from './interactive-motion';
+import { DEFAULT_PUZZLES, type PuzzleState } from './puzzle-core';
+import { drawPuzzle } from './puzzle-renderer';
 
 export interface FidgetPose {
 	kind: FidgetKind;
@@ -6,6 +8,8 @@ export interface FidgetPose {
 	rock: number;
 	pressed: boolean;
 	bubbles: readonly boolean[];
+	design?: SpinnerDesign;
+	puzzles?: PuzzleState;
 }
 
 function circle(context: CanvasRenderingContext2D, x: number, y: number, radius: number, fill: string | CanvasGradient) {
@@ -13,12 +17,24 @@ function circle(context: CanvasRenderingContext2D, x: number, y: number, radius:
 	context.beginPath(); context.arc(x, y, radius, 0, Math.PI * 2); context.fill();
 }
 
-function drawSpinner(context: CanvasRenderingContext2D, angle: number) {
+function drawSpinner(context: CanvasRenderingContext2D, angle: number, design: SpinnerDesign = 'classic') {
 	context.strokeStyle = '#9aadb6'; context.lineWidth = 2.2;
 	context.beginPath(); context.moveTo(36, 15); context.lineTo(36, 46); context.stroke();
 	context.save(); context.translate(36, 46); context.rotate(angle);
 	const metal = context.createLinearGradient(-26, -25, 25, 25);
 	metal.addColorStop(0, '#b0f5ee'); metal.addColorStop(.4, '#51bfc4'); metal.addColorStop(1, '#216d7e');
+	if (design === 'classic') { drawClassicRotor(context, metal); }
+	if (design === 'orbit') { drawOrbitRotor(context); }
+	if (design === 'pinwheel') { drawPinwheelRotor(context); }
+	if (design === 'bar') { drawBarRotor(context); }
+	context.restore();
+	const hub = context.createRadialGradient(33, 42, 1, 36, 46, 9);
+	hub.addColorStop(0, '#f8ffff'); hub.addColorStop(.6, '#b5c9d1'); hub.addColorStop(1, '#617e8b');
+	circle(context, 36, 46, 9, '#306a75'); circle(context, 36, 46, 7.2, hub);
+	circle(context, 36, 46, 1.8, '#6e909b');
+}
+
+function drawClassicRotor(context: CanvasRenderingContext2D, metal: CanvasGradient) {
 	for (let index = 0; index < 3; index++) {
 		context.save(); context.rotate(index * Math.PI * 2 / 3);
 		context.lineWidth = 13; context.strokeStyle = '#347f8c';
@@ -32,11 +48,43 @@ function drawSpinner(context: CanvasRenderingContext2D, angle: number) {
 		context.beginPath(); context.arc(0, -19, 9.3, Math.PI, Math.PI * 1.65); context.stroke();
 		context.restore();
 	}
-	context.restore();
-	const hub = context.createRadialGradient(33, 42, 1, 36, 46, 9);
-	hub.addColorStop(0, '#f8ffff'); hub.addColorStop(.6, '#b5c9d1'); hub.addColorStop(1, '#617e8b');
-	circle(context, 36, 46, 9, '#306a75'); circle(context, 36, 46, 7.2, hub);
-	circle(context, 36, 46, 1.8, '#6e909b');
+}
+
+function drawOrbitRotor(context: CanvasRenderingContext2D) {
+	const metal = context.createLinearGradient(-26, -26, 26, 26);
+	metal.addColorStop(0, '#ede7ff'); metal.addColorStop(.5, '#8b84d5'); metal.addColorStop(1, '#41366f');
+	context.strokeStyle = metal; context.lineWidth = 6;
+	context.beginPath(); context.arc(0, 0, 25, 0, Math.PI * 2); context.stroke();
+	for (let index = 0; index < 3; index++) {
+		context.save(); context.rotate(index * Math.PI * 2 / 3);
+		context.lineWidth = 3; context.beginPath(); context.moveTo(0, 0); context.lineTo(0, -25); context.stroke();
+		circle(context, 0, -25, 5, ['#f8ca74', '#9ee9e0', '#d4bafa'][index]);
+		circle(context, -1, -27, 1.3, '#fff9');
+		context.restore();
+	}
+}
+
+function drawPinwheelRotor(context: CanvasRenderingContext2D) {
+	for (const color of ['#ffb66e', '#ed829c', '#b7a3f4', '#7bcbdf', '#b5d989']) {
+		const foil = context.createLinearGradient(-3, -24, 22, 2);
+		foil.addColorStop(0, '#fff3dc'); foil.addColorStop(.35, color); foil.addColorStop(1, '#465b65');
+		context.fillStyle = foil; context.strokeStyle = '#ffffff77'; context.lineWidth = .7;
+		context.beginPath(); context.moveTo(0, -4); context.quadraticCurveTo(12, -28, 24, -12);
+		context.quadraticCurveTo(5, -14, 4, 0); context.closePath(); context.fill(); context.stroke();
+		context.rotate(Math.PI * 2 / 5);
+	}
+}
+
+function drawBarRotor(context: CanvasRenderingContext2D) {
+	const brass = context.createLinearGradient(-22, -10, 22, 10);
+	brass.addColorStop(0, '#fff0c5'); brass.addColorStop(.4, '#d2b071'); brass.addColorStop(1, '#7c5b45');
+	context.fillStyle = brass;
+	context.beginPath(); context.roundRect(-29, -10, 58, 20, 10); context.fill();
+	context.strokeStyle = '#fff7d9'; context.lineWidth = .8; context.stroke();
+	for (const x of [-20, 20]) {
+		circle(context, x, 0, 7.6, '#4b535e'); circle(context, x, 0, 5.8, '#bdd0d8');
+		circle(context, x, 0, 3.8, '#657985'); circle(context, x - 1, -2, 1.1, '#f1f7ec');
+	}
 }
 
 function drawBubbles(context: CanvasRenderingContext2D, bubbles: readonly boolean[]) {
@@ -92,9 +140,10 @@ export function createFidgetRenderer(canvas: HTMLCanvasElement) {
 		context.strokeStyle = '#aab9c4'; context.lineWidth = 1.8;
 		context.beginPath(); context.ellipse(36, 9, 5, 6, 0, 0, Math.PI * 2); context.stroke();
 		switch (pose.kind) {
-			case 'spinner': drawSpinner(context, pose.angle); break;
+			case 'spinner': drawSpinner(context, pose.angle, pose.design); break;
 			case 'bubbles': drawBubbles(context, pose.bubbles); break;
 			case 'stone': drawStone(context, pose); break;
+			case 'cube': case 'tiles': case 'lights': drawPuzzle(context, pose.kind, pose.puzzles ?? DEFAULT_PUZZLES); break;
 		}
 	};
 }

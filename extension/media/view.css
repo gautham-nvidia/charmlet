@@ -1,3 +1,11 @@
+@import url("./puzzle.css");
+@import url("./celebration.css");
+
+.access-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 14px; border-bottom: 1px solid var(--vscode-widget-border, #8884); font-size: 11px; }
+.access-strip strong { margin-right: auto; }
+.access-strip button { font: inherit; padding: 5px 8px; }
+.access-strip button:disabled { opacity: .55; cursor: default; }
+
 :root {
   color-scheme: light dark;
   --surface: var(--vscode-sideBar-background, #202020);
@@ -36,7 +44,6 @@ button:disabled { opacity: 0.5; cursor: default; }
 #hanging { position: absolute; inset: 0; }
 #cord { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 #thread { fill: none; stroke: #d3927b; stroke-width: 2; stroke-linecap: round; }
-.win-sparkles { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
 .mascot-bubble {
   position: absolute; z-index: 3; pointer-events: none; padding: 10px 13px;
   border: 1px solid var(--vscode-widget-border, #bda36e66); border-radius: 15px;
@@ -50,25 +57,6 @@ button:disabled { opacity: 0.5; cursor: default; }
 #mascot-settings { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--quiet); }
 #mascot-settings summary { cursor: pointer; font-weight: 600; }
 #mascot-settings .care-choice { margin-block: 8px; }
-.win-sparkles i {
-  position: absolute; width: 9px; height: 9px; margin: -4px;
-  clip-path: polygon(50% 0, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0 50%, 35% 35%);
-  opacity: 0; animation: win-burst 1.8s ease-out var(--win-delay) both;
-}
-@keyframes win-burst {
-  0% { transform: translate(0, 0) scale(.3); opacity: 0; }
-  15% { opacity: 1; }
-  100% { transform: translate(var(--win-x), var(--win-y)) scale(.7); opacity: 0; }
-}
-.win-sparkles[data-kind="confetti"] i { width: 5px; height: 8px; border-radius: 1px; clip-path: none; animation-name: win-confetti; }
-@keyframes win-confetti {
-  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-  15% { opacity: 1; }
-  55% { transform: translate(var(--win-x), calc(var(--win-y) - 20px)) rotate(160deg); opacity: 1; }
-  100% { transform: translate(var(--win-x), calc(var(--win-y) + 48px)) rotate(320deg); opacity: 0; }
-}
-.win-sparkles[data-still="true"] i { display: none; animation: none; }
-.win-sparkles[data-still="true"] i:first-child { display: block; opacity: 1; transform: translate(30px, -35px); }
 #small-wins { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--quiet); }
 #small-wins summary { cursor: pointer; font-weight: 600; }
 #small-wins #win-count { float: right; color: var(--quiet); font-weight: normal; }
@@ -131,7 +119,7 @@ button:disabled { opacity: 0.5; cursor: default; }
 #settings { display: grid; grid-template-columns: auto minmax(36px, 1fr) 48px; align-items: center; gap: 8px; padding: 4px 14px 12px; max-height: min(42vh, 220px); overflow-y: auto; }
 #settings label { color: var(--quiet); font-size: 11px; }
 #settings output { text-align: right; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-#charm-select, #cord-style { grid-column: 2 / -1; width: 100%; min-width: 0; padding: 4px 6px; color: var(--vscode-dropdown-foreground, var(--ink)); background: var(--vscode-dropdown-background, var(--surface)); border: 1px solid var(--vscode-dropdown-border, #88888880); border-radius: 3px; font: inherit; }
+#charm-select, #cord-style, #cali-outfit { grid-column: 2 / -1; width: 100%; min-width: 0; padding: 4px 6px; color: var(--vscode-dropdown-foreground, var(--ink)); background: var(--vscode-dropdown-background, var(--surface)); border: 1px solid var(--vscode-dropdown-border, #88888880); border-radius: 3px; font: inherit; }
 #charm-description { grid-column: 1 / -1; margin: 0 0 2px; color: var(--quiet); font-size: 11px; line-height: 1.4; }
 .message-choice { grid-column: 1 / -1; display: flex; align-items: center; gap: 7px; }
 .message-choice input { margin: 0; accent-color: var(--focus); }
@@ -212,7 +200,8 @@ body.vscode-high-contrast #charm:focus-visible { outline-width: 2px; }
 #app-version { margin-left: 5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 #tools-backdrop { position: absolute; inset: 0 0 var(--popup-bottom); z-index: 4; background: var(--vscode-editorWidget-background, #20202055); opacity: .35; }
 #app.has-popup #hanging { pointer-events: none; }
-#settings.tool-popup, #companion-tools.tool-popup, #charm-picker.tool-popup, #photo-editor.tool-popup { position: absolute; inset: 8px 8px var(--popup-bottom); z-index: 5; display: flex; flex-direction: column; min-height: 70px; max-height: none; padding: 0; overflow: hidden; border: 1px solid var(--vscode-widget-border, #88888860); border-radius: 9px; color: var(--ink); background: var(--surface); box-shadow: 0 8px 24px #00000030; }
+#settings.tool-popup, #companion-tools.tool-popup, #charm-picker.tool-popup, #photo-editor.tool-popup, #puzzle-editor.tool-popup { position: absolute; inset: 8px 8px var(--popup-bottom); z-index: 5; display: flex; flex-direction: column; min-height: 70px; max-height: none; padding: 0; overflow: hidden; border: 1px solid var(--vscode-widget-border, #88888860); border-radius: 9px; color: var(--ink); background: var(--surface); box-shadow: 0 8px 24px #00000030; }
+#primary-nav.has-puzzle { grid-template-columns: 1fr .8fr 1fr .8fr 1.1fr; }
 .popup-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: 0 0 auto; padding: 10px 11px; border-bottom: 1px solid var(--vscode-widget-border, #88888825); }
 .popup-heading h2 { margin: 0; font: 600 12px/1.4 var(--vscode-font-family, system-ui, sans-serif); }
 .popup-heading p { margin: 3px 0 0; font-size: 10px; color: var(--quiet); }
@@ -228,6 +217,7 @@ body.vscode-high-contrast #charm:focus-visible { outline-width: 2px; }
 #charm-groups button[aria-pressed="true"] { color: var(--ink); border-color: var(--focus); background: var(--hover); }
 #charm-results { margin: 6px 0 9px; color: var(--quiet); font-size: 10px; }
 #charm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 7px; }
+.charm-pack-heading { grid-column: 1 / -1; margin: 7px 0 0; padding: 5px 0; border-bottom: 1px solid var(--vscode-widget-border, #88888835); color: var(--quiet); font-size: 11px; font-weight: 600; }
 .charm-tile { min-width: 0; padding: 8px 4px 6px; border: 1px solid var(--vscode-widget-border, #88888835); border-radius: 7px; background: var(--vscode-editorWidget-background, #88888808); font: inherit; font-size: 10px; }
 .charm-tile:hover, .charm-tile[aria-pressed="true"] { border-color: var(--focus); background: var(--hover); }
 .charm-tile img { width: 54px; height: 63px; object-fit: contain; margin-bottom: 5px; }

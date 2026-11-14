@@ -1,10 +1,11 @@
 import { strict as assert } from 'node:assert';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync } from 'node:fs';
 import { readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { execFileSync } from 'node:child_process';
+import { PNG } from 'pngjs';
 import {
 	applyCompanionAction, companionSnapshot, currentLearningCard, defaultCompanionState, formatFocusTime,
 	matchesCompanionState, MINUTE_MS, COMPANION_STATE_VERSION, parseCompanionAction, reconcileCompanion, remainingFocusMs,
@@ -18,11 +19,122 @@ import * as garden from '../garden-core';
 import * as care from '../care-core';
 import { winsToday } from '../small-wins';
 import { gardenArtwork, gardenCharms } from '../garden-catalog';
-import { buildCatalogue } from '../charm-catalog';
-import { restoreState } from '../charm-state';
+import { buildCatalogue, LIVE_CHARMS, isSoftCharm } from '../charm-catalog';
+import { matchesSavedState, resetState, restoreState } from '../charm-state';
+import { CUBE_FACES, DEFAULT_PUZZLES, neighboringTiles, puzzleSolved, restorePuzzles, shufflePuzzle, slideTile, toggleLight, turnCube } from '../puzzle-core';
 import { cordForCharm } from '../cord-design';
-import { followGaze, nearestBubble, stepSpinner } from '../interactive-motion';
+import { followGaze, liveCharacter, nearestBubble, stepSpinner, turnSpinner } from '../interactive-motion';
 import { mascotEncouragement, mascotTransition } from '../mascot-core';
+import { CALI_WEEK, caliOutfitAt } from '../cali-wardrobe';
+import { artPoint, artToStage, BYTE_GESTURES, CALI_TAP_GESTURES, caliArt, isArtCharacter, NIMBUS_GESTURES, partOpacity, type ArtPose } from '../live-art-core';
+import { CALIFORNIA_COMPANIONS, regionalArt } from '../california-companions';
+import { BYTE_ART, NIMBUS_ART } from '../weather-code-companions';
+
+test('Cali wears distinct local weekday outfits and changes at local midnight', () => {
+	const output = execFileSync(process.execPath, ['-e', `
+		const wardrobe = require(process.argv[1]), garden = require(process.argv[2]);
+		const week = Array.from({length:7}, (_, index) => wardrobe.caliOutfitAt(new Date(2026,10,2+index,12).getTime()));
+		const friday = Date.parse('2026-11-06T23:59:59-08:00');
+		const midnight = garden.nextLocalMidnight(friday);
+		console.log(JSON.stringify({week, before:wardrobe.caliOutfitAt(friday).id,
+			after:wardrobe.caliOutfitAt(midnight).id, wait:midnight-friday}));
+	`, require.resolve('../cali-wardrobe'), require.resolve('../garden-core')],
+	{ env: { ...process.env, TZ: 'America/Los_Angeles' }, encoding: 'utf8' });
+	const observed = JSON.parse(output);
+	assert.deepEqual(observed.week.map((outfit: { id: string }) => outfit.id), [
+		'monday-denim', 'tuesday-hoodie', 'wednesday-vest', 'thursday-flannel',
+		'friday-coast', 'saturday-trail', 'sunday-knit',
+	]);
+	assert.equal(new Set(observed.week.map((outfit: { file: string }) => outfit.file)).size, 7);
+	assert.equal(observed.before, 'friday-coast');
+	assert.equal(observed.after, 'saturday-trail');
+	assert.equal(observed.wait, 1000);
+});
+
+test('live illustrated characters have complete bundled frames and cords touching their hooks', () => {
+	const definitions = [
+		...CALI_WEEK.map((_, day) => caliArt(new Date(2026, 10, 1 + day, 12).getTime())),
+		...CALIFORNIA_COMPANIONS.map(companion => regionalArt(companion.character)!),
+		NIMBUS_ART, BYTE_ART,
+	];
+	const files = new Set(definitions.flatMap(definition => definition.parts.map(part => part.file)));
+	assert.equal(files.size, 22, 'Seven outfits, two donor gestures, eleven regional figures and two weather/code figures are bundled.');
+	for (const file of files) {
+		assert.match(file, /^live-art-[a-z0-9-]+\.png$/);
+		const frame = PNG.sync.read(readFileSync(join(__dirname, '../../media', file)));
+		assert.equal(frame.width, 512);
+		assert.equal(frame.height, 512);
+		assert.equal(frame.data[3], 0, `${file} must have a transparent background.`);
+	}
+	for (const charm of LIVE_CHARMS) {
+		if (!isArtCharacter(liveCharacter(charm.id))) { continue; }
+		const image = PNG.sync.read(readFileSync(join(__dirname, '../../media', charm.file)));
+		const x = Math.round(charm.attachment!.x * image.width);
+		const y = Math.round(charm.attachment!.y * image.height);
+		assert.ok(image.data[(y * image.width + x) * 4 + 3] > 80, `${charm.id} cord must touch its visible hook.`);
+		assert.equal(isSoftCharm(charm.id), charm.id === 'live:cloud', 'Nimbus keeps its soft squeeze; solid figures do not squash.');
+		assert.equal(cordForCharm(charm, { [charm.id]: 'ribbon' }), 'ribbon', 'A saved manual cord choice takes precedence.');
+	}
+	for (const definition of [NIMBUS_ART, BYTE_ART]) {
+		for (const gesture of definition === NIMBUS_ART ? NIMBUS_GESTURES : BYTE_GESTURES) {
+			for (const progress of [0, .2, .5, .8, 1]) {
+				for (const gazeX of [-1, 0, 1]) {
+					const pose: ArtPose = { character: definition.character, gesture, reactionProgress: progress,
+						gazeX, gazeY: -gazeX, blink: 0, pressed: false, happy: false, wink: false, greeting: false };
+					for (const part of definition.parts) {
+						for (const point of part.polygon) {
+							const [x, y] = artToStage(definition, artPoint(part, point, pose));
+							assert.ok(x >= 0 && x <= 72 && y >= 0 && y <= 84, `${definition.character} ${gesture} ${part.id}: ${x},${y}`);
+						}
+					}
+				}
+			}
+		}
+	}
+});
+
+test('a chosen Cali outfit survives a day change and restoring automatic follows the local day', () => {
+	const monday = new Date(2026, 10, 9, 12).getTime();
+	const tuesday = new Date(2026, 10, 10, 12).getTime();
+	const state = restoreState({ caliOutfit: 'friday-coast' });
+	assert.equal(caliOutfitAt(monday, state.caliOutfit).id, 'friday-coast');
+	assert.equal(caliArt(tuesday, state.caliOutfit).outfit, 'friday-coast');
+	assert.equal(restoreState(JSON.parse(JSON.stringify(state))).caliOutfit, 'friday-coast');
+	assert.equal(caliOutfitAt(monday, 'daily').id, 'monday-denim');
+	assert.equal(caliOutfitAt(tuesday, 'daily').id, 'tuesday-hoodie');
+	assert.equal(restoreState({ caliOutfit: '../not-an-outfit.png' }).caliOutfit, 'daily');
+	assert.equal(restoreState({}).caliOutfit, 'daily');
+});
+
+test('Cali tap gestures are distinct, stay framed and return to the same resting geometry', () => {
+	const definition = caliArt(new Date(2026, 10, 6, 12).getTime());
+	const resting: ArtPose = { character: 'cali', gazeX: 0, gazeY: 0, blink: 0, pressed: false,
+		happy: false, wink: false, greeting: false };
+	const head = definition.parts.find(part => part.role === 'head')!;
+	const signatures = new Set<string>();
+	for (const gesture of CALI_TAP_GESTURES) {
+		const samples: number[] = [];
+		for (const progress of [0, .1, .25, .45, .65, .9, 1]) {
+			const pose = { ...resting, gesture, happy: gesture === 'shimmy', wink: gesture === 'wink', reactionProgress: progress };
+			samples.push(...artPoint(head, head.polygon[0], pose));
+			for (const part of definition.parts) {
+				if (partOpacity(part, pose) <= .001) { continue; }
+				for (const point of part.polygon) {
+					const projected = artPoint(part, point, pose);
+					const [x, y] = artToStage(definition, projected);
+					assert.ok(Number.isFinite(x) && Number.isFinite(y));
+					assert.ok(x >= 0 && x <= 72 && y >= 0 && y <= 84, `${gesture} ${part.id}: ${x},${y}`);
+					if (progress === 0 || progress === 1) { assert.deepEqual(projected, artPoint(part, point, resting)); }
+				}
+			}
+		}
+		signatures.add(JSON.stringify(samples));
+		const quiet = { ...resting, gesture, reducedMotion: true };
+		assert.deepEqual(artPoint(head, head.polygon[0], { ...quiet, reactionProgress: .2 }),
+			artPoint(head, head.polygon[0], { ...quiet, reactionProgress: .6 }), 'Reduced Motion must not animate a gesture.');
+	}
+	assert.equal(signatures.size, CALI_TAP_GESTURES.length);
+});
 
 test('live gaze responds within 84ms independently of refresh rate', () => {
 	for (const hz of [30, 60, 120]) {
@@ -50,6 +162,80 @@ test('spinner conserves direction, slows smoothly and rests at different refresh
 	assert.ok(Math.max(...results) - Math.min(...results) < .003, 'Refresh rate must not change the final rotation perceptibly.');
 	assert.equal(nearestBubble(22, 33), 0);
 	assert.equal(nearestBubble(50, 67), 5);
+});
+
+test('rotor dragging crosses the angle seam in either direction without a jump', () => {
+	const clockwise = turnSpinner(0, Math.PI - .05, -Math.PI + .05, 16);
+	const counterclockwise = turnSpinner(0, -Math.PI + .05, Math.PI - .05, 16);
+	assert.ok(Math.abs(clockwise.angle - .1) < 1e-10);
+	assert.ok(Math.abs(counterclockwise.angle + .1) < 1e-10);
+	assert.ok(clockwise.velocity > 0 && counterclockwise.velocity < 0);
+	assert.ok(Math.abs(turnSpinner(0, 0, Math.PI, 0).velocity) <= 34);
+	assert.ok(stepSpinner(clockwise.angle, clockwise.velocity, 16).angle > clockwise.angle);
+});
+
+test('cube face turns move the expected adjacent strips and invert without losing pieces', () => {
+	const solved = DEFAULT_PUZZLES.cube;
+	const front = turnCube(solved, 'F');
+	assert.deepEqual(front.slice(6, 9), [4, 4, 4]);
+	assert.deepEqual([front[9], front[12], front[15]], [0, 0, 0]);
+	assert.deepEqual(front.slice(27, 30), [1, 1, 1]);
+	assert.deepEqual([front[38], front[41], front[44]], [3, 3, 3]);
+	assert.deepEqual(front.slice(45), solved.slice(45));
+	for (const face of CUBE_FACES) {
+		assert.deepEqual(turnCube(turnCube(solved, face), face, -1), solved);
+		let cube = solved;
+		for (let count = 0; count < 4; count++) { cube = turnCube(cube, face); }
+		assert.deepEqual(cube, solved);
+	}
+	const moves = ['R', 'U', 'F', 'L', 'D', 'B', 'U', 'R'] as const;
+	let mixed = solved;
+	for (const face of moves) { mixed = turnCube(mixed, face); }
+	assert.ok(!puzzleSolved('cube', { ...DEFAULT_PUZZLES, cube: mixed }));
+	assert.deepEqual(restorePuzzles({ ...DEFAULT_PUZZLES, cube: mixed }).cube, mixed);
+	for (const face of [...moves].reverse()) { mixed = turnCube(mixed, face, -1); }
+	assert.deepEqual(mixed, solved);
+});
+
+test('sliding and light moves obey their board rules and shuffles stay solvable', () => {
+	assert.deepEqual(neighboringTiles(DEFAULT_PUZZLES.tiles), [5, 7]);
+	assert.equal(slideTile(DEFAULT_PUZZLES.tiles, 0), DEFAULT_PUZZLES.tiles);
+	const moved = slideTile(DEFAULT_PUZZLES.tiles, 7);
+	assert.deepEqual(moved, [1, 2, 3, 4, 5, 6, 7, 0, 8]);
+	assert.deepEqual(slideTile(moved, 8), DEFAULT_PUZZLES.tiles);
+	assert.equal(toggleLight(0, 0), 0b000001011);
+	assert.equal(toggleLight(0, 4), 0b010111010);
+	for (let cell = 0; cell < 9; cell++) { assert.equal(toggleLight(toggleLight(177, cell), cell), 177); }
+	let seed = 19;
+	const random = () => ((seed = (1664525 * seed + 1013904223) >>> 0) / 2 ** 32);
+	for (const kind of ['cube', 'tiles', 'lights'] as const) {
+		for (let sample = 0; sample < 15; sample++) {
+			const state = shufflePuzzle(kind, DEFAULT_PUZZLES, random);
+			assert.equal(puzzleSolved(kind, state), false);
+			assert.deepEqual(restorePuzzles(state), state);
+		}
+	}
+	// Every nine-light board has a solution using each switch at most once.
+	const possible = new Set<number>();
+	for (let presses = 0; presses < 512; presses++) {
+		let lights = 0;
+		for (let cell = 0; cell < 9; cell++) { if (presses & (1 << cell)) { lights = toggleLight(lights, cell); } }
+		possible.add(lights);
+	}
+	assert.equal(possible.size, 512);
+});
+
+test('puzzle progress is bounded, survives saved-state confirmation and is retained by Reset position', () => {
+	const state = restoreState({ charmId: 'fidget:cube', caliOutfit: 'friday-coast', puzzles: {
+		cube: turnCube(DEFAULT_PUZZLES.cube, 'R'), tiles: slideTile(DEFAULT_PUZZLES.tiles, 5), lights: 31,
+	} });
+	assert.equal(matchesSavedState(state, JSON.parse(JSON.stringify(state))), true);
+	assert.deepEqual(restoreState(JSON.parse(JSON.stringify(state))), state);
+	assert.deepEqual(resetState(state).puzzles, state.puzzles);
+	assert.equal(matchesSavedState(state, { ...state, puzzles: { ...state.puzzles, lights: 30 } }), false);
+	assert.deepEqual(restorePuzzles({ cube: Array(54).fill(0), tiles: [2, 1, 3, 4, 5, 6, 7, 8, 0], lights: 512 }), DEFAULT_PUZZLES);
+	assert.deepEqual(restorePuzzles({ cube: [], tiles: Array(9), lights: -1 }), DEFAULT_PUZZLES);
+	assert.equal(restoreState({ size: 125 }).size, 125);
 });
 
 const START = 1800000000000;

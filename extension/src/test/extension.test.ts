@@ -1,6 +1,8 @@
 import { test, expect, _electron as electron, type Frame, type Page } from '@playwright/test';
-import { copyFileSync, cpSync, existsSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { CHARMS, ORIGINAL_CHARMS } from '../charm-catalog';
+import betaCatalogue from '../beta-catalogue.json';
+import { DEFAULT_STATE, getLayout } from '../charm-state';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { command, commandInput, endOfDocument, primaryModifier, readyFrame, reloadCharm } from './editor-helpers';
@@ -85,11 +87,17 @@ async function dragCharm(window: Page, frame: Frame, deltaX: number, deltaY: num
 	await window.mouse.up();
 }
 
-test('real-editor charm supports docking, gestures, focus, persistence and reduced motion', async ({}, testInfo) => {
+test('existing beta editor supports docking, gestures, focus, persistence and reduced motion', async ({}, testInfo) => {
 	// Full desktop scenario includes host startup, reloads, gestures and evidence capture.
 	// Keep individual assertion and performance limits independent of this total budget.
 	test.setTimeout(420000);
 	const profile = mkdtempSync(join(tmpdir(), 'charmlet-ui-'));
+	const storage = join(profile, 'user', 'User', 'globalStorage', 'gautham-nvidia.charmlet');
+	mkdirSync(storage, { recursive: true });
+	// This comprehensive artwork scenario follows a pre-0.13 beta profile.
+	// The companion UI suite separately verifies an empty profile's starter.
+	writeFileSync(join(storage, 'preferences.json'),
+		JSON.stringify({ ...DEFAULT_STATE, editionVersion: undefined }));
 	const scratchFile = join(profile, 'charmlet-trial.ts');
 	writeFileSync(scratchFile, "export const greeting = 'Hello, Charmlet!';\n");
 	const environment: Record<string, string> = {};
@@ -240,9 +248,9 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			frame = await readyFrame(window);
 			await openAppearance(frame);
 			let picker = frame.getByRole('combobox', { name: 'Charm', exact: true });
-			await expect(picker.locator('option')).toHaveCount(CHARMS.length);
-			await expect(picker.locator('optgroup')).toHaveCount(new Set(CHARMS.map(charm => charm.group)).size);
-			await expect(picker.locator('optgroup[label="Solar System"]')).toHaveCount(1);
+			await expect(picker.locator('option')).toHaveCount(betaCatalogue.length);
+			await expect(picker.locator('optgroup')).toHaveCount(17);
+			await expect(picker.locator('optgroup[label="Space & Stars"]')).toHaveCount(1);
 			await expect(picker.locator('option[value="terminal"]')).toHaveText('Terminal');
 			// Category grouping can place a newly appended charm inside an earlier group.
 			const lastId = await picker.locator('option').last().getAttribute('value');
@@ -380,11 +388,26 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			const defaultCharmWidth = await frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width);
 			await frame.getByRole('slider', { name: 'Size', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Size', exact: true }).press('End');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
 			await expect.poll(() => frame.locator('#charm').evaluate(charm => charm.getBoundingClientRect().width)).toBeGreaterThan(defaultCharmWidth);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			const maximumCord = (await frame.getByRole('slider', { name: 'Cord', exact: true }).getAttribute('max'))!;
 			expect(Number(maximumCord)).toBeGreaterThan(48);
+			const expectVisibleCordFitsViewport = async () => {
+				// VS Code can reflow its chrome by a few pixels after a native resize.
+				// The preference stays exact; the visible cord must fit the current viewport.
+				await expect.poll(async () => {
+					const stage = await frame.locator('#stage').evaluate(node => {
+						const { width, height } = node.getBoundingClientRect();
+						return { width, height, cord: Number(node.dataset.cord) };
+					});
+					const attachment = CHARMS.find(charm => charm.id === 'terminal')!.attachment;
+					const layout = getLayout(stage.width, stage.height, Number(maximumCord), 200, 'hanging', attachment);
+					const scale = Math.max(.01, Math.min(1, stage.width / layout.minimumWidth, stage.height / layout.minimumHeight));
+					const fitted = getLayout(stage.width / scale, stage.height / scale, Number(maximumCord), 200, 'hanging', attachment);
+					return stage.cord - Math.round(fitted.cordLength);
+				}).toBe(0);
+			};
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('End');
 			await expect(frame.getByRole('slider', { name: 'Cord', exact: true })).toHaveValue(maximumCord);
 			expect(Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThanOrEqual(Number(maximumCord));
@@ -404,8 +427,8 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			expect(expandedCordAfterClose).toBeLessThanOrEqual(Number(maximumCord));
 			const expandedVisibleCord = (await frame.locator('#stage').getAttribute('data-cord'))!;
 			frame = await reloadCharm(window);
-			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', expandedVisibleCord);
+			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
+			await expectVisibleCordFitsViewport();
 			await expect(frame.locator('#cord-length')).toHaveValue(maximumCord);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 500));
 			frame = await readyFrame(window);
@@ -419,8 +442,11 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await expect.poll(async () => Number(await frame.locator('#stage').getAttribute('data-cord'))).toBeLessThan(Number(expandedVisibleCord));
 			await expectBalancedSwingRoom(frame);
 			await window.screenshot({ path: testInfo.outputPath('phase-1-compact-large-charm.png') });
+			const compactHeight = await frame.locator('#stage').evaluate(node => node.clientHeight);
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1400, 900));
-			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', expandedVisibleCord);
+			await expect.poll(() => frame.locator('#stage').evaluate(node => node.clientHeight)).toBeGreaterThan(compactHeight);
+			await expectVisibleCordFitsViewport();
+			await expect(frame.locator('#cord-length')).toHaveValue(maximumCord);
 			await openAppearance(frame);
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).focus();
 			await frame.getByRole('slider', { name: 'Cord', exact: true }).press('Home');
@@ -460,7 +486,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1000, 650));
 			await expect(frame.locator('#phase')).toHaveText('Parked');
 			await window.mouse.up();
-			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 			await expect(frame.locator('#charm')).not.toHaveClass(/dragging/);
@@ -489,7 +515,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			}).toBe(true);
 			await window.keyboard.press(`${primaryModifier}+Alt+B`);
 			frame = await readyFrame(window);
-			await expect(frame.locator('#stage')).toHaveAttribute('data-size', '140');
+		await expect(frame.locator('#stage')).toHaveAttribute('data-size', '200');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-cord', '50');
 			await expect(frame.locator('#phase')).toHaveText('Parked');
 			await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
@@ -804,7 +830,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await openAppearance(frame);
 			const importedPicker = frame.getByRole('combobox', { name: 'Charm', exact: true });
 			await expect(importedPicker).toHaveValue('pack:probe-card:probe-card');
-			await expect(importedPicker.locator('option')).toHaveCount(CHARMS.length + 1);
+			await expect(importedPicker.locator('option')).toHaveCount(betaCatalogue.length + 1);
 			await importedPicker.press('Escape');
 			await expect(frame.locator('#settings')).toBeHidden();
 			await expect(frame.locator('#charm-name')).toHaveText('Probe Card');
@@ -832,7 +858,7 @@ test('real-editor charm supports docking, gestures, focus, persistence and reduc
 			await window.screenshot({ path: testInfo.outputPath('imported-probe-card.png') });
 			await command(window, 'Charmlet: Remove Charm Pack');
 			await window.locator('.quick-input-list').getByText('Probe Card', { exact: true }).click();
-			await expect(frame.locator('#charm-select option')).toHaveCount(CHARMS.length);
+			await expect(frame.locator('#charm-select option')).toHaveCount(betaCatalogue.length);
 			await expect(frame.locator('#stage')).toHaveAttribute('data-charm', 'terminal');
 			await expect(frame.locator('#charm-name')).toHaveText('Terminal');
 		});

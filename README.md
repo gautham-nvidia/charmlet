@@ -2,13 +2,25 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Phase 9 candidate, 2026-11-06:** **0.9.0** includes **167 offline charms**: 159 rendered designs, Terminal, four live 3D companions and three interactive fidget tools. **Cali**, a California-inspired golden bear, adds personal encouragement, focus prompts and optional win confetti. Sunny, Nimbus and Byte retain their prompt live reactions. Ten new pets include a giant panda, seven dog breeds and two cats. The spinner, bubble-pop charm and worry stone join the existing smiley balls and squishies. [Verification and release gates](docs/phase-9-live-fidgets-hosting.md) track this candidate; matched cords, small wins, local photos and the eighteen-flower garden carry forward.
+**Free starter / Pro candidate:** extension **0.14.0** starts new profiles with **31 fixed free charms**, while existing beta profiles retain their beta access with matching replacements for retired designs. The **261-design** catalogue remains bundled for offline use. The online catalogue offers 15 additional free claims, optional 49¢ / 99¢ / $1.99 extras and **Charmlet Pro at $7.49 launch / $17.49 regular, once** across the current apps.
 
-Open **Charms** after installing the trial; separate imports are no longer required. The **Art review** compares **160 selected designs**, including the original Terminal and all eighteen flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. The final bundled, free-download and paid-download lineup will be chosen later. The separate website Photo Studio's paid access remains disabled; creating local photo charms inside the app is free.
+**Sports Icons** adds 17 athlete-inspired studies to Pro without a separate sports charge, including Federer, Nadal and Phelps. **US Tech Hubs & Skylines** adds 13 cities; San Francisco, Austin and Seattle replace Alpine Lake, Night Sky and Ringed Planet in the starter. Santa Clara Office and San Francisco Tower use generic names, and Cupertino Ring Campus depicts the current circular headquarters. Existing personal imports remain intact.
 
-**Desktop 0.6.0 candidate:** starts with only the charm and cord. Hover for Move and Tools; open one control panel at a time, with optional background, toolbar and messages. Choose Cali for brief encouragement bubbles, or turn those off under Focus. Live 3D and Stress Busters appear first in the picker. Pulls use the available screen space. See the [desktop guide](desktop/README.md).
+Official contact: **getcharmlet@gmail.com**. Subscriber delivery still requires the configured email service.
 
-The website has a [Vercel setup guide](docs/vercel-hosting.md) for the owner's `greensilver-personal` team. [Monetization and checkout setup](docs/monetization-and-payments.md) compares one-time packs, Stripe and hosted digital delivery. Prices are proposals; live sales are not enabled.
+Email-only verification, a once-per-email 30-day trial, signed activation and protected delivery are implemented. **Live signup, checkout and public installers are not enabled by the checked-in configuration.** [Hosting, sender, payments and file-delivery setup](service/README.md) explains the accounts, private keys and acceptance checks.
+
+The [Phase 15 security review](docs/phase-15-security-and-launch.md) records the applied controls, verification scope, source references and remaining launch checks.
+
+The [current collections and offers guide](docs/phase-16-collections-and-offers.md) records the sports/city lineup, retained access, subscription behavior and required release checks.
+
+**Cali** keeps the approved grizzly face, seven outfits, saved wardrobe choice and four playful tap reactions. Four spinner designs turn under your pointer; Twisty Cube, Sliding Tiles and Lights Out have optional boards and saved progress. Every charm has a brief tap wiggle. The default 100% is 15% larger, and Appearance offers 60-200% sizing. Encouragement, pets, matched cords, small wins, local photos and the eighteen-flower garden carry forward. [Current verification and release gates](docs/phase-13-artists-website.md) distinguish this candidate from earlier checks.
+
+Open **Charms** to browse your available collection. The **Art review** compares **234 featured designs**, including the original Terminal and all eighteen flower illustrations. Flower previews do not unlock garden rewards or change watering progress. Existing imports, saved choices and previously shared pack files remain intact. Public distribution, likeness rights, licences and signing remain release decisions. Creating local photo charms inside the app is free.
+
+**Desktop 0.11.0 candidate:** shares the starter, trial and purchased-access rules and starts with only the charm and cord. Hover for Move and Tools; open one control panel at a time, with optional background, toolbar and messages. Choose Cali for brief encouragement bubbles, or turn those off under Focus. Pulls use the available screen space. See the [desktop guide](desktop/README.md).
+
+The approved website shows Desktop and VS Code placement, focus, encouragement and celebrations before pricing, with the Terminal logo, a compact Auto/Light/Dark control, a dismissible offer-signup popup and About/Press pages. The [current service guide](service/README.md) recommends Cloudflare's free tiers, Brevo and Lemon Squeezy for the digital launch. Earlier [provider comparisons](docs/monetization-and-payments.md) remain background; Shopify is deferred until merchandise.
 
 Holiday defaults follow **21 US celebration dates** and rotate Christmas designs through December. They are on for new profiles. An update preserves existing opt-outs and pins; use **Settings > Appearance > Follow holiday defaults** to enable and unpin in one click. Picking a charm pins it. Automatic choices use the local date and never replace the saved usual charm. [Phase 6 scope and verification](docs/phase-6-trial-catalogue.md) tracks the candidate's remaining checks.
 
@@ -29,13 +41,15 @@ preference, while the visible cord may temporarily shorten to fit the current pa
 
 Hold a Stress Buster to squeeze, or hold Space/Enter with the charm focused. Choose happy, determined, calm or winking smiley balls, a soft heart, thumbs-up or rocket, or the original Stress Ball and Squishy Star. Release to let it recover. The cord stays attached; Reduced Motion removes the transition and bounce.
 
-**Charms > Live 3D** offers Cali, Sunny, Nimbus and Byte. Their lit shapes glance toward the pointer, greet, wink and react to holds and wins, then rest between interactions. Reduced Motion stops idle animation; canvas fallback retains the interactions when WebGL is unavailable.
+**Charms > Live Companions** offers Cali, Sunny, Nimbus and Byte alongside Coast Redwood, Yosemite, Lake Tahoe, Western Gull, Harbor Seal, Golden Gate, Santa Cruz Otter, Pacific Gray Whale, Pacific Dolphin, California Condor and Golden Eagle. They react to nearby input and rest between interactions. Reduced Motion stops idle animation; software rendering retains the detailed artwork and reactions when WebGL is unavailable.
+
+Cali's week goes from **Monday denim** to a **Tuesday hoodie**, **Wednesday vest**, **Thursday flannel**, **Friday coastal shirt**, **Saturday trail fleece** and **Sunday knit**. Outfits follow the local date, including daylight-saving changes. Cali's face stays consistent, and encouragement adds a clear thumbs-up or wave.
 
 **Cali** cheers for your next small step with brief text bubbles. Click or press Enter for encouragement; focus sessions add start, halfway and completion cues. **Focus > Cali's encouragement** lets you add an optional name, turn bubbles off or disable focus prompts. Words and preferences stay on the device. Escape dismisses a bubble; bubbles never take focus or block a desktop click. Enable **Celebrate milestones** under Small wins for Cali's win confetti. Everything is silent, and celebrations stay still with Reduced Motion.
 
 The new pets are **Giant Panda**, **Golden Retriever**, **Labrador**, **German Shepherd**, **Husky**, **Corgi**, **Beagle** and **Goldendoodle**, with just two new cats: **Silver Tabby** and **Tuxedo Cat**. They join the existing pets under **Animals**.
 
-**Charms > Stress Busters** also offers a working Fidget Spinner, reusable Bubble Pop and Worry Stone. Tap/flick to spin, tap bubbles to press them in/out, or hold and rub the stone. Space/Enter work too. The tools are silent and have no scores.
+**Charms > Stress Busters** offers four spinner designs, reusable Bubble Pop, Worry Stone and three puzzles. Drag a spinner's rotor to turn it and release to coast; pull the centre for the cord. Select Twisty Cube, Sliding Tiles or Lights Out and open **Play** for the board, shuffle, undo and reset. Puzzle progress saves locally. The tools are silent, with no timers or scores.
 
 Under **Settings > Appearance > Cord material**, choose a matching default or save a separate choice for each charm: thread, soft cord, braid, leather, ribbon, silver chain, gold chain or ball chain.
 
@@ -80,7 +94,7 @@ unchanged. After rebuilding, reload that demo window to load the updated code.
 | Try | Examples |
 |---|---|
 | Live 3D | Cali, Sunny, Nimbus and Byte |
-| Stress Busters | Fidget Spinner, Bubble Pop, Worry Stone, smiley balls and squishies |
+| Stress Busters | Four spinners, Bubble Pop, Worry Stone, Twisty Cube, Sliding Tiles, Lights Out, smiley balls and squishies |
 | Animals | Giant Panda, Goldendoodle, Husky and the other new and existing pets |
 | Test Bench | ATE Tester, Oscilloscope, Tweezers and other lab tools |
 | Garden Flowers | Eighteen varieties, including four rose colours, jasmine and lily |

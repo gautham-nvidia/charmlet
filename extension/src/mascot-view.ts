@@ -79,10 +79,6 @@ export function createMascotView(options: MascotViewOptions) {
 		bubble.dataset.still = String(options.reducedMotion());
 		flush();
 	}
-	options.charm.addEventListener('click', event => { if (!event.defaultPrevented) { encourage(); } });
-	options.charm.addEventListener('keyup', event => {
-		if (event.key === ' ' || event.key === 'Enter') { window.setTimeout(encourage, 0); }
-	});
 	window.addEventListener('keydown', event => {
 		if (event.key === 'Escape' && !bubble.hidden) { pending = undefined; hide(); schedule(); }
 	});

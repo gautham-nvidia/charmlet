@@ -1,122 +1,108 @@
-# Charmlet companion gallery
+# Charmlet website
 
-This directory contains the Charmlet collection playground using the locked extension build dependencies. The current trial has **167 included charms**, with Live 3D and Stress Busters first in its collection filters. Cali joins the live companions, and ten new pets favour dogs, including Goldendoodle and Husky. The Art review retains 160 selected designs and historical comparisons; the live companions and fidgets can be tried in the website playground. Previously shared pack downloads remain intact.
+The homepage shows where Charmlet hangs on Desktop and in VS Code, then demonstrates focus, encouragement, cheers and breaks. **`charms.html`** is the searchable **234-charm gallery**, with sixteen collections including 34 Music Icons. The free starter has 31 fixed picks; the shop shows additional free claims, small extras and the planned $7.49 launch / $17.49 regular Pro purchase. Email delivery and sales are off in the checked-in configuration.
 
-Root `vercel.json` builds the current VSIX and gallery from a clean checkout, publishes only `website/dist`, and serves the disabled Photo Studio configuration without a backend. No secret is needed. See [Vercel hosting](../docs/vercel-hosting.md) for the owner's team and account steps, and [monetization](../docs/monetization-and-payments.md) for the proposed commerce setup.
+The site is static and uses the extension's locked build dependencies. It does not call an image-generation service. The [brand kit](../docs/charmlet-brand-kit.md) records the visual direction. The [current hosting and payment guide](../service/README.md) covers Cloudflare, Brevo, Lemon Squeezy and protected file delivery. Earlier Vercel and merchant comparisons remain background; merchandise is deferred.
 
-## Inputs and generated output
+## Source and output
 
-| Path | Purpose |
+| Files | Responsibility |
 |---|---|
-| `index.html`, `styles.css`, `app.js` | Static website source |
-| `extras.json`, `assets/` | Frozen classic metadata and source-authored SVGs |
-| `collections.json` | Twenty categories, preserved legacy mapping, four early studies and the sports wishlist |
-| `assets/previews/` | Earlier photographic/playful style studies |
-| `review.html`, `review.js`, `review.css`, `art-review.json` | Searchable full redraw review, original comparison, dark backdrop and review downloads |
-| `assets/review/`, `packs/review/` | Transparent PNG/WebP candidates and separately namespaced review packs |
-| `art-review-jobs.mjs`, `art-review-revisions.json`, `art-refresh-jobs.json` | Historical briefs, realistic replacements and bounded new concepts |
-| `art-curation.json`, `art-curation.mjs` | Owner keep/redraw/retire decisions, displayed names and collection groups |
-| `generate-art-review.mjs` | Explicit, resumable authoring requests only; never called by the app or normal build |
-| `art-cutout.mjs`, `prepare-art-review.mjs`, `bundle-art-review.mjs` | Checked cutouts, bounded parser validation and review-only collections |
-| `check-review.mjs` | Image integrity, curation, earned-flower boundaries, actual-size previews and download checks |
-| `studio/` | Disabled-by-default Photo Studio foundation and fake-provider verification |
-| `ARTWORK.md` | Website-specific artwork provenance and frozen/export boundaries |
-| `packs/` | Validated generated `.charmlet.json` downloads |
-| `export-packs.mjs` | One-time trusted SVG-to-PNG pack exporter |
-| `export-icon.mjs` | Exports the trusted 256×256 Marketplace PNG |
-| `distribution.json`, `distribution.mjs` | Null-or-identity-matching official store link configuration |
-| `build.mjs` | Validates packs and store configuration, then creates `dist/` |
-| `server.mjs` | Serves only generated `dist/` on localhost |
-| `check.mjs` | Focused Edge gallery/download/accessibility check |
-| `dist/` | Generated and ignored preview output |
+| `index.html`, `next.js`, `next.css` | Approved Terminal identity, workspace placement, interactive moments, local locket prototype and email dialog |
+| `design-theme.js`, `gallery-theme.css` | Saved Auto / Light / Dark themes |
+| `about.html`, `about-us.html`, `press.html`, `information.*` | Product, California origin and press information |
+| `shop.*`, `download.*`, `access-client.js`, `store.css` | Basket, verified email, private downloads and signed app access |
+| `commerce.json`, generated `commerce-public.json` | Public service settings and server-derived prices; no private credentials |
+| `charms.html`, `app.js` | Search, collection filters, URL state, preview dialog and optional legacy downloads |
+| `site.css`, `site.js` | Shared styling, public product metadata and Reduced Motion-aware reveals |
+| `assets/fonts/` | Self-hosted Manrope and Bricolage Grotesque, with their font licences |
+| `demo.ts` | Shared app physics, live renderer and puzzle preview; bounded page-specific size/camera |
+| `trial-collections.mjs` | Sixteen current themed collections, ordered with the shared app helper |
+| `launch.json`, `launch.mjs` | Validated public desktop/shop links; null means hidden |
+| `distribution.json`, `distribution.mjs` | Validated Marketplace/Open VSX links; null means unpublished |
+| `review.html`, `review.js`, `review.css` | Owner artwork review and version-labelled actual-app captures |
+| `art-review.json`, `art-curation.*` | 253 current/archived records and 210 featured designs |
+| `artist-artwork.json` | Bounded artist inventory, prompts and approved original pack/PNG hashes |
+| `art-review-jobs.mjs`, `art-review-revisions.json`, `art-refresh-jobs.json`, `art-collection-refresh.json` | Source briefs, revisions and additional collections |
+| `assets/review/`, `packs/review/` | Prepared PNG/WebP images and versioned data-only packs |
+| `live-art-assets.json` | Hashes/provenance for 36 live textures and thumbnails |
+| `extras.json`, `collections.json`, `assets/previews/` | Preserved historical metadata, art studies and legacy downloads |
+| `styles.css`, `concepts.*`, `studio/` | Legacy review/concept styling and the disabled Studio route |
+| `build.mjs`, `security-headers.mjs` | Validates inputs and emits public previews, security headers and `dist/`; excludes raw installers/packs |
 
-Install the locked extension dependencies first using the setup in the root README. The current `extension/charmlet-<version>.vsix` must exist before running the website build. Ordinary builds reuse the frozen pack files and do not rerender artwork.
+Generated `dist/` is ignored by Git. Root `vercel.json` builds it from a clean checkout. `.vercelignore` excludes raw authoring output, credentials, local profiles, session notes, desktop archives and dependency directories.
 
-## Export frozen packs
+## Build and preview
 
-Run this only when the trusted extra SVG sources or metadata intentionally change. It uses the existing Playwright dependency and installed Microsoft Edge, then validates every output through the extension parser.
+The first install/build can take several minutes; the commands print progress. Run from the repository root.
 
-**On the Windows PC (PowerShell), from the repository root:**
-
-```powershell
-npm.cmd --prefix extension run compile-tests
-node website/export-packs.mjs gpu-tile cpu-tile hbm-tower cache-stack chiplet-bridge vector-lane tensor-array neural-tile silicon-lattice bump-grid interposer memory-bus alu-key register-file clock-tree probe-needle wafer-map sweep-curve signal-eye test-socket scope-pulse loopback-link boundary-scan self-test-loop calibration-dial golden-die debug-duck token-train attention-lens embedding-stars gradient-trail inference-engine vector-index language-tile merge-branch passing-build stack-frame regex-knot async-loop recursion-shell foggy-bay bridge-lights city-tram campus-path coffee-street mountain-sun granite-dome redwood-grove desert-arch canyon-river alpine-lake pine-ridge coastal-trail night-sky
-```
-
-The exporter refuses missing, duplicate or unknown IDs. The listed Phase 4C command names only the 54 new designs; the accepted original six SVGs and packs stay frozen. `generate-phase-4c-art.mjs` is the checked-in one-time trusted source generator for those 54 original SVGs and is not part of the ordinary build.
-
-Do not weaken parser limits to accept an export. If the generated PNG profile changes, review that profile before changing validation.
-
-## Export the Marketplace icon
-
-The icon exporter reads the trusted source SVG, renders it through installed Edge, and verifies a 256×256 PNG using the existing `pngjs` decoder.
-
-**On the Windows PC (PowerShell), from the repository root:**
+**On the Windows PC (PowerShell):**
 
 ```powershell
-node website/export-icon.mjs
-```
-
-## Configure future store links
-
-`distribution.json` keeps `marketplace` and `openVsx` null until publication. The validator accepts only HTTPS URLs whose publisher/name identity matches the extension manifest. Syntax validation is not proof that a listing exists: the owner must verify namespace ownership, publishing approval, version, and the live listing before changing either value.
-
-## Build the gallery
-
-First create the development VSIX, then generate the static site.
-
-**On the Windows PC (PowerShell), from the repository root:**
-
-```powershell
-npm.cmd --prefix extension run compile-tests
-npm.cmd --prefix extension run package:vsix
+Set-Location "C:\dev\Lucky-Charms"
+npm ci --prefix extension --include=dev
+npm --prefix extension run compile-tests
 node website/build.mjs
-```
-
-The build validates the historical 60 packs and ten bundled originals, then exports the curated review items and their current category counts. It checks that each advertised download matches its image and curation decision, and retains archived download URLs. The demo uses the imported image's attachment point and supports soft squeezing. Ordinary builds never call an image-generation service.
-
-After an intentional art or curation change, run the bundler before building. It gives changed payloads new pack identities and preserves earlier files.
-
-**On the Windows PC (PowerShell), from the repository root:**
-
-```powershell
-node website/bundle-art-review.mjs
-node website/build.mjs
-```
-
-## Preview locally
-
-**On the Windows PC (PowerShell), from the repository root:**
-
-```powershell
 node website/server.mjs
 ```
 
-Leave that terminal running and visit `http://127.0.0.1:4173/`. The server refuses paths outside `website/dist`, sets explicit content types, disables caching, and marks pack/VSIX responses as downloads.
+Leave the server running and visit `http://127.0.0.1:4173/`. If a preview is already running, use it instead of starting a second copy on the same port. The local server restricts paths to `dist/`, disables caching, serves explicit content types and marks VSIX/pack responses as downloads.
 
-## Run the focused website check
+## Verification
 
-With the preview server running, open a separate PowerShell terminal.
+With the server running, open a separate terminal. The browser checks use installed Edge and write screenshots/results under the extension's versioned `test-results/` directories.
+
+**On the Windows PC (PowerShell):**
+
+```powershell
+Set-Location "C:\dev\Lucky-Charms"
+node website/sync-trial-catalogue.mjs --check
+node website/check.mjs
+node --test website/art-cutout.test.mjs website/studio/test/core.test.mjs website/studio/test/service.test.mjs
+```
+
+For a different running port, set `CHARMLET_GALLERY_URL` to that server's URL before the browser check.
+
+`check.mjs` covers all collections, accent-insensitive search and URL restoration, gallery focus/scroll position, placement, visible confetti, garden, locket controls, drag/reset/close lifecycle, fifteen live companions, three puzzle boards, Reduced Motion and 320/390/768-pixel layouts. It verifies that public builds exclude raw installers and packs. Isolated provider fixtures exercise email, activation, free claims, authenticated download, session restoration and checkout confirmation without sending mail or making a payment.
+
+For local owner artwork review only, build with `node website/build.mjs --review-downloads` and run `node website/check-review.mjs`. That mode includes the review downloads and is **not a production deployment**. Rebuild without the flag before public-site checks or hosting. Version-labelled installed-app captures remain historical evidence; they are not silently relabelled as newer builds.
+
+## Updating artwork
+
+Current approved artist PNGs must keep their exact bytes: imported selections depend on those hashes. Profile4 obtains them from the original three approved review packs. Re-rasterizing an identical-looking source can change its hash and create duplicate bundled/imported tiles.
+
+For an intentional, approved artwork change, use the existing preparation/curation workflow, then bundle and verify:
+
+**On the Windows PC (PowerShell):**
+
+```powershell
+Set-Location "C:\dev\Lucky-Charms"
+node website/bundle-art-review.mjs
+node website/sync-trial-catalogue.mjs
+node website/build.mjs
+```
+
+Changed payloads get new immutable pack identities; retain previously shared downloads. Keep the three original Music Icons packs intact. Raw generation sources and receipts stay in ignored authoring storage. Generation is an explicit authoring action, never a build/test side effect.
+
+## Launch destinations
+
+`launch.json` accepts only public desktop/archive URLs and an optional shop provider/URL. Desktop links must be this repository's GitHub Release archives; Windows is ZIP and macOS is tar.gz. Paid deliverables and keys do not belong in public metadata or assets.
+
+Shop and desktop links start hidden. The local Windows archive does not establish a public download URL. Marketplace/Open VSX links are independently validated by `distribution.json`. Future paid digital collections use hosted checkout/private delivery; merchandise can join that store later.
+
+The old `/studio/` URL remains unavailable. The public static `/api/studio/config` exposes disabled status only, and the refreshed navigation does not promote Studio. Local photo charms inside the apps remain free. Legacy Studio tests use fake licence/order responses and isolated local sessions.
+
+## Optional Phase 14 design review
 
 **On the Windows PC (PowerShell), from the repository root:**
 
 ```powershell
-node website/check.mjs
-node website/check-review.mjs
-node --test website/art-cutout.test.mjs website/studio/test/core.test.mjs website/studio/test/service.test.mjs
-node website/studio/check.mjs
+node website/build.mjs --design-preview
+node website/server.mjs --design-preview
 ```
 
-The check uses installed Edge to cover desktop/mobile overflow, image loading, category filters, the named-sports wishlist, dialogs, garden-stage navigation, retired-design search exclusion, archived/current downloads, real VSIX bytes and the swing/pull/reset lifecycle. Store-link fixtures verify rendering without navigating or claiming publication. Evidence is written under `extension/test-results/website-check-<extension-version>/`.
+The optional build adds `next.html`, the refined logo studies, email signup preview, privacy draft and post-email installation page. The server flag maps `/` to `next.html`; `/index.html` still serves the existing homepage. Set `PORT` if the default 4173 is occupied. A normal build excludes the unapproved design pages.
 
-This is a local development preview. No domain, public deployment, account, checkout, payment provider, Marketplace listing or Open VSX publication is configured here.
+`audience.json` contains only a provider, a public Brevo form URL and public contact email. Both destinations start null. Until configured, the signup dialog explicitly shows a disabled design preview and sends nothing. No API keys or subscriber records belong in this repository. The form service handles confirmation and email delivery; the free beta URL is public, not protected by this UI.
 
-## Planned Phase 4 direction
-
-The owner-authorized [Phase 4 companion plan](../docs/phase-4-plan.md) develops focus/learning/garden features, original free collections, Photo Studio preparation and a parallel desktop beta. The [original collection brief](../docs/phase-4-original-collections.md) is the reviewed direction implemented by the current sixty-design gallery.
-
-The current source builds the **0.5.2 review candidate**, adding a strictly motivational deck, soft squeezing and optional festive defaults. Curation keeps the original Terminal, removes unclear abstract concepts from the featured lineup and adds recognizable components, heritage, cricket, Stress Busters and seasonal review art. Flowers remain earned. Final bundled, website and paid-art placement requires owner approval.
-
-Photo Studio stays unavailable unless explicitly configured with validated merchant identity and secrets. Its tests use fake licence/order responses and isolated local HTTP sessions, not purchases or real vendor access. Selected photo bytes stay in browser memory; dimensions are checked before decoding, late loads are discarded after locking, expired access preserves crop/name/frame only in memory, and a manual lock clears the photo. Live merchant validation, purchase/refund operations and deployment remain separate gates.
-
-Art preparation from already-generated raw files is local: run `node website/prepare-art-review.mjs`, then `node website/bundle-art-review.mjs`, then rebuild. Raw authoring outputs/receipts live in the ignored `output/imagegen/phase-4-redraw/` directory. Explicit `generate` calls require the approved model/HTTPS endpoint and local key; they preserve previous revisions, have no automatic retries and must not be triggered merely to build or test the gallery.
+See [the Phase 14 website and audience guide](../docs/phase-14-website-and-audience.md) for sender setup, optional offers, email templates and checks before enabling collection.

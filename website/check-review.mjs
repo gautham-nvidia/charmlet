@@ -20,6 +20,7 @@ const downloadable = featured.filter(item => item.download);
 validateCuration(rules, review.items);
 const version = JSON.parse(await readFile(join(repo, 'extension/package.json'), 'utf8')).version;
 const output = join(repo, 'extension/test-results', `art-review-${version}`);
+const base = process.env.CHARMLET_GALLERY_URL || 'http://127.0.0.1:4173/';
 await mkdir(output, { recursive: true });
 assert.equal(review.expected, jobs.length);
 assert.equal(review.items.length, jobs.length);
@@ -33,8 +34,8 @@ for (const item of review.items) {
   const bytes = await readFile(join(root, item.image));
   assert.equal(createHash('sha256').update(bytes).digest('hex'), item.pngSha256);
   const png = PNG.sync.read(bytes);
-  assert.equal(png.width, 216); assert.equal(png.height, 252);
-  assert.equal(png.data[3], 0); assert.equal(png.data[(216 * 252 - 1) * 4 + 3], 0);
+  assert.ok([216, 432].includes(png.width)); assert.equal(png.height, png.width * 7 / 6);
+  assert.equal(png.data[3], 0); assert.equal(png.data[(png.width * png.height - 1) * 4 + 3], 0);
   assert.ok(bytes.length <= 256 * 1024);
   if (!item.featured || item.decision === 'original' || item.family === 'flowers') assert.equal(item.download, null);
   else {
@@ -65,7 +66,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
-  await page.goto('http://127.0.0.1:4173/review.html', { waitUntil: 'networkidle' });
+  await page.goto(new URL('review.html', base).href, { waitUntil: 'networkidle' });
   await expect(page.locator('.review-captures summary').first()).toContainText(version);
   const captureUrls = await page.locator('.review-captures a').evaluateAll(links => links.map(link => link.href));
   const pngCaptures = captureUrls.filter(url => new URL(url).pathname.endsWith('.png'));
@@ -81,7 +82,7 @@ try {
   const originals = [...new Set(review.items.map(item => item.original).filter(Boolean))];
   for (const original of originals) {
     assert.match(original, /^(?:default|extras|garden)\/[a-z0-9-]+\.svg$/);
-    const response = await page.request.get(`http://127.0.0.1:4173/assets/${original}`);
+    const response = await page.request.get(new URL(`assets/${original}`, base).href);
     assert.equal(response.status(), 200, `Original comparison is unavailable: ${original}`);
     assert.match(response.headers()['content-type'], /^image\/svg\+xml/);
   }
@@ -92,7 +93,7 @@ try {
   await expect(original.locator('a')).toHaveCount(0);
   await expect(original).toContainText('Original kept');
   const actualSize = await original.locator('img').boundingBox();
-  assert.equal(actualSize.width, 72); assert.equal(actualSize.height, 84);
+  assert.ok(Math.abs(actualSize.width - 82.8) < .05); assert.ok(Math.abs(actualSize.height - 96.6) < .05);
   await page.locator('#review-search').fill('golden die');
   await expect(page.locator('.review-card')).toHaveCount(0);
   await page.locator('#review-search').fill('');

@@ -6,15 +6,22 @@ import { fileURLToPath } from 'node:url';
 import { build } from '../extension/node_modules/esbuild/lib/main.js';
 import { validateDistribution } from './distribution.mjs';
 import { curateArtwork, validateCuration } from './art-curation.mjs';
+import { trialCollections } from './trial-collections.mjs';
+import { validateLaunch } from './launch.mjs';
+import { validateAudience } from './audience.mjs';
+import { buildCommerceCatalogue } from '../service/build-catalogue.mjs';
+import { securityHeaders } from './security-headers.mjs';
 
 const require = createRequire(import.meta.url);
 const { parseCharmPack } = require('../extension/out/charm-packs.js');
 const { FLOWERS } = require('../extension/out/garden-core.js');
-const { FIDGET_CHARMS, LIVE_CHARMS, ORIGINAL_CHARMS } = require('../extension/out/charm-catalog.js');
+const { CHARMS, FIDGET_CHARMS, LIVE_CHARMS, ORIGINAL_CHARMS } = require('../extension/out/charm-catalog.js');
+const { charmCollection, orderByCollection } = require('../extension/out/charm-collections.js');
 const { gardenArtwork, GARDEN_STAGE_FILES } = require('../extension/out/garden-catalog.js');
 const root = dirname(fileURLToPath(import.meta.url));
 const repo = join(root, '..');
 const dist = join(root, 'dist');
+const privateReview = process.argv.includes('--review-downloads');
 const builtins = JSON.parse(await readFile(join(repo, 'extension', 'src', 'builtin-charms.json'), 'utf8'));
 const trial = JSON.parse(await readFile(join(repo, 'extension', 'src', 'trial-charms.json'), 'utf8'));
 const trialByKey = new Map(trial.map(charm => [charm.artworkKey, charm]));
@@ -23,6 +30,7 @@ const collectionConfig = JSON.parse(await readFile(join(root, 'collections.json'
 const curation = JSON.parse(await readFile(join(root, 'art-curation.json'), 'utf8'));
 const manifest = JSON.parse(await readFile(join(repo, 'extension', 'package.json'), 'utf8'));
 const distribution = validateDistribution(JSON.parse(await readFile(join(root, 'distribution.json'), 'utf8')), manifest);
+const launch = validateLaunch(JSON.parse(await readFile(join(root, 'launch.json'), 'utf8')));
 if (builtins.length !== 10 || extras.length !== 60) throw new Error('Expected ten included and sixty extra charms.');
 const ids = new Set([...builtins, ...extras].map(item => item.id));
 if (ids.size !== 70) throw new Error('Charm IDs must be unique across the gallery.');
@@ -37,6 +45,7 @@ const expectedWorlds = {
   'solar-system': 0, gemstones: 0, zodiac: 0, sacred: 0, flowers: 0,
 };
 const worlds = collectionConfig.collections;
+const currentWorlds = trialCollections(worlds);
 const previews = collectionConfig.previews;
 if (!Array.isArray(worlds) || worlds.length !== Object.keys(expectedWorlds).length || !Array.isArray(previews) || previews.length !== 4) throw new Error('Unexpected collection worlds or art previews.');
 const worldIds = new Set();
@@ -75,21 +84,66 @@ for (const extra of extras) {
   validated.push({ extra, packPath });
 }
 await rm(dist, { recursive: true, force: true });
-for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'assets/garden', 'assets/app-review', 'packs', 'downloads', 'studio', 'api/studio']) {
+for (const path of ['assets/default', 'assets/extras', 'assets/previews', 'assets/garden', 'assets/app-review', 'assets/fonts', 'packs', 'downloads', 'studio', 'api/studio']) {
   await mkdir(join(dist, path), { recursive: true });
 }
 // Static hosting advertises no paid service. Do not copy local API credentials.
 await writeFile(join(dist, 'api/studio/config.json'), `${JSON.stringify({ available: false, checkoutUrl: null, testMode: false })}\n`);
-for (const name of ['index.html', 'styles.css', 'app.js', 'concepts.html', 'concepts.css']) await copyFile(join(root, name), join(dist, name));
+for (const name of ['index.html', 'charms.html', 'site.css', 'site.js', 'home.js', 'styles.css', 'app.js', 'concepts.html', 'concepts.css']) {
+  await copyFile(join(root, name), join(dist, name));
+}
+for (const name of ['manrope-variable.ttf', 'OFL.txt']) {
+  await copyFile(join(root, 'assets/fonts', name), join(dist, 'assets/fonts', name));
+}
+{
+  await mkdir(join(dist, 'assets/brand'), { recursive: true });
+  for (const name of ['brand-lab.html', 'brand-lab.css', 'theme-control.css', 'design-theme.js', 'next.css', 'download.html', 'download.js', 'privacy.html',
+    'about.html', 'about-us.html', 'press.html', 'information.css', 'information.js', 'access-client.js',
+    'shop.html', 'shop.js', 'store.css', 'gallery-theme.css', '404.html']) {
+    await copyFile(join(root, name), join(dist, name));
+  }
+  // Keep previously shared owner-preview URLs usable after promoting the approved homepage.
+  await copyFile(join(root, 'index.html'), join(dist, 'next.html'));
+  await writeFile(join(dist, 'audience.json'), `${JSON.stringify(validateAudience(JSON.parse(await readFile(join(root, 'audience.json'), 'utf8'))), null, 2)}\n`);
+  await build({
+    entryPoints: [join(root, 'audience-page.js')], bundle: true, platform: 'browser',
+    format: 'esm', outfile: join(dist, 'audience-page.js'), minify: true, target: ['es2022'],
+  });
+  for (const name of ['terminal-pendant.svg', 'cali-signature.svg', 'cali-cursor.svg']) {
+    await copyFile(join(root, 'assets/brand', name), join(dist, 'assets/brand', name));
+  }
+  for (const name of ['bricolage-grotesque-variable.ttf', 'BRICOLAGE-OFL.txt']) {
+    await copyFile(join(root, 'assets/fonts', name), join(dist, 'assets/fonts', name));
+  }
+  await build({
+    entryPoints: [join(root, 'next.js')], bundle: true, platform: 'browser',
+    format: 'esm', outfile: join(dist, 'next.js'),
+    minify: true, sourcemap: false, target: ['es2022'],
+  });
+}
+await copyFile(join(repo, 'extension', 'media', 'puzzle.css'), join(dist, 'puzzle.css'));
+await copyFile(join(repo, 'extension', 'media', 'celebration.css'), join(dist, 'celebration.css'));
 for (const builtin of builtins) {
   await copyFile(join(repo, 'extension', 'media', builtin.file), join(dist, 'assets', 'default', builtin.file));
 }
 for (const live of [...LIVE_CHARMS, ...FIDGET_CHARMS]) {
   await copyFile(join(repo, 'extension', 'media', live.file), join(dist, 'assets', 'default', live.file));
 }
+for (const charm of CHARMS) {
+  await copyFile(join(repo, 'extension/media', charm.file), join(dist, 'assets/default', charm.file));
+}
+const liveArt = JSON.parse(await readFile(join(root, 'live-art-assets.json'), 'utf8'));
+if (liveArt.version !== 1 || !Array.isArray(liveArt.assets) || liveArt.assets.length !== 36
+  || new Set(liveArt.assets.map(asset => asset.file)).size !== 36) throw new Error('Invalid live artwork manifest.');
+for (const asset of liveArt.assets) {
+  if (!/^live-(?:art-)?[a-z0-9-]+\.png$/.test(asset.file)) throw new Error('Invalid live artwork filename.');
+  const bytes = await readFile(join(repo, 'extension/media', asset.file));
+  if (createHash('sha256').update(bytes).digest('hex') !== asset.sha256) throw new Error(`Live artwork changed: ${asset.file}`);
+  await writeFile(join(dist, 'assets/default', asset.file), bytes);
+}
 for (const { extra, packPath } of validated) {
   await copyFile(join(root, 'assets', extra.file), join(dist, 'assets', 'extras', extra.file));
-  await copyFile(packPath, join(dist, 'packs', `${extra.id}.charmlet.json`));
+  if (privateReview) await copyFile(packPath, join(dist, 'packs', `${extra.id}.charmlet.json`));
 }
 for (const preview of previews) {
   await copyFile(join(root, 'assets', 'previews', preview.file), join(dist, 'assets', 'previews', preview.file));
@@ -126,11 +180,11 @@ await build({
   minify: true, sourcemap: false, target: ['es2022'],
 });
 const vsix = `charmlet-${manifest.version}.vsix`;
-await copyFile(join(repo, 'extension', vsix), join(dist, 'downloads', 'charmlet.vsix'));
+if (privateReview) await copyFile(join(repo, 'extension', vsix), join(dist, 'downloads', 'charmlet.vsix'));
 const charms = [
   ...ORIGINAL_CHARMS.map(item => ({ ...item, kind: 'included', preview: `./assets/default/${item.file}` })),
   ...[...LIVE_CHARMS, ...FIDGET_CHARMS].map(item => ({ ...item, kind: 'extra', live: true, includedInTrial: true,
-    collectionId: item.group === 'Live 3D' ? 'live' : 'stress', collectionLabel: item.group,
+    collectionId: item.group === 'Live Companions' ? 'live' : 'stress', collectionLabel: item.group,
     preview: `./assets/default/${item.file}`, download: null })),
 ];
 const artPreviews = previews.map(item => ({ ...item, preview: `./assets/previews/${item.file}` }));
@@ -139,7 +193,7 @@ const review = await readFile(join(root, 'art-review.json'), 'utf8').then(JSON.p
   throw error;
 });
 if (review) {
-  if (review.status !== 'review-only' || !Array.isArray(review.items) || review.items.length > 220
+  if (review.status !== 'review-only' || !Array.isArray(review.items) || review.items.length > 300
     || new Set(review.items.map(item => item.key)).size !== review.items.length) throw new Error('Invalid bounded art review.');
   validateCuration(curation, review.items);
   await mkdir(join(dist, 'assets/review'), { recursive: true });
@@ -173,13 +227,12 @@ if (review) {
       if (!bundled || bundled.artworkHash !== item.pngSha256 || bundled.name !== item.name) {
         throw new Error(`Trial artwork differs from the gallery: ${item.key}`);
       }
-      const alias = { 'Silicon & Code': 'silicon', 'Good Luck': 'luck' }[bundled.group];
-      const world = worlds.find(world => world.name === bundled.group || world.id === alias);
+      const world = currentWorlds.find(world => world.name === charmCollection(bundled));
       if (!world) throw new Error(`Missing curated collection: ${bundled.group}`);
       charms.push({ id: item.key, name: item.name, description: bundled.description, accent: item.accent,
         kind: 'extra', review: true, includedInTrial: true, group: bundled.group,
         collectionId: world.id, collectionLabel: world.name, preview: item.preview,
-        download: item.download, attachment: bundled.attachment });
+        download: privateReview ? item.download : null, attachment: bundled.attachment });
     }
   }
   for (const bundle of review.bundles ?? []) {
@@ -196,14 +249,26 @@ if (review) {
     if (!file.isFile() || !/^[a-z0-9-]+\.charmlet\.json$/.test(file.name)) continue;
     const source = join(root, 'packs/review', file.name);
     parseCharmPack(await readFile(source));
-    await copyFile(source, join(dist, 'packs/review', file.name));
+    if (privateReview) await copyFile(source, join(dist, 'packs/review', file.name));
   }
-  for (const name of ['review.html', 'review.js', 'review.css', 'art-review.json']) await copyFile(join(root, name), join(dist, name));
+  if (privateReview) {
+    for (const name of ['review.html', 'review.js', 'review.css', 'art-review.json']) await copyFile(join(root, name), join(dist, name));
+  }
 }
-const collections = worlds.map(world => ({ ...world, charmIds: charms
-  .filter(charm => charm.kind === 'extra' && charm.collectionId === world.id).map(charm => charm.id) }));
+const orderedCharms = orderByCollection(charms).map(charm => {
+  const world = currentWorlds.find(world => world.name === charmCollection(charm));
+  if (!world) throw new Error(`Missing trial pack for ${charm.id}`);
+  return { ...charm, collectionId: world.id, collectionLabel: world.name };
+});
+const collections = currentWorlds.map(world => ({ ...world, charmIds: orderedCharms
+  .filter(charm => charm.collectionId === world.id).map(charm => charm.id) }));
 if (!trial.length || charms.length !== ORIGINAL_CHARMS.length + trial.length + LIVE_CHARMS.length + FIDGET_CHARMS.length) throw new Error('The complete trial must appear in the gallery.');
 await writeFile(join(dist, 'catalogue.json'), `${JSON.stringify({ version: manifest.version,
-  extensionDownload: './downloads/charmlet.vsix', distribution, charms, collections, artPreviews,
+  extensionDownload: privateReview ? './downloads/charmlet.vsix' : './download.html', distribution, launch, charms: orderedCharms, collections, artPreviews,
   sportsWishlist: collectionConfig.sportsWishlist }, null, 2)}\n`, 'utf8');
 console.log(`Built Charmlet gallery ${manifest.version}: ${ORIGINAL_CHARMS.length} original, ${trial.length} rendered designs, ${LIVE_CHARMS.length} live companions and ${FIDGET_CHARMS.length} fidgets included, ${review?.featured ?? 0} selected review designs.`);
+const { publicData } = await buildCommerceCatalogue();
+await writeFile(join(dist, 'commerce-public.json'), `${JSON.stringify(publicData, null, 2)}\n`);
+await writeFile(join(dist, '_headers'), `/*\n${Object.entries(securityHeaders(publicData.apiOrigin)).map(([name, value]) => `  ${name}: ${value}`).join('\n')}\n`);
+if (privateReview) console.log('PRIVATE OWNER PREVIEW: contains review packs and an installer. Do not deploy this output.');
+else console.log('Public build excludes installers and raw download packs. Delivery requires the verified-email service.');

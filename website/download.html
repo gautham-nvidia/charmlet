@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>Your Charmlet downloads</title><script src="./design-theme.js"></script><link rel="icon" href="./assets/default/keycap.svg"><link rel="stylesheet" href="./next.css"><link rel="stylesheet" href="./store.css"></head>
+<body class="concept-page">
+  <a class="skip" href="#main">Skip to downloads</a>
+  <header class="concept-header"><a class="concept-brand" href="./" aria-label="Charmlet home"><span class="mark mark-terminal" aria-hidden="true"></span><span class="wordmark">charmlet</span></a><nav aria-label="Main navigation"><a href="./shop.html">Free &amp; paid charms</a><a href="./about.html">How it works</a></nav><div class="header-actions"><div class="theme-switch" aria-label="Website colour theme"><button data-theme-choice="light">Light</button><button data-theme-choice="dark">Dark</button><button data-theme-choice="auto">Auto</button></div></div></header>
+  <main id="main" class="information-main download-portal">
+    <p class="overline">MAKE ROOM FOR A LITTLE COMPANY</p><h1>Your next<br><em>little co-worker.</em></h1>
+    <p class="lead">One email. Your apps, free picks and purchases together. No username or password to remember.</p>
+    <p id="download-status" class="service-note" role="status" aria-live="polite">Checking download availability…</p>
+    <section id="confirm-email" class="signup-card" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Email me a download link</h2><p id="request-description">Confirm your email to choose a free starter download. This does not start a trial.</p>
+      <form id="portal-signup" class="email-form">
+        <label>Email address<input type="email" name="email" autocomplete="email" placeholder="you@example.com" maxlength="254" required></label>
+        <label class="offer-choice"><input name="offers" type="checkbox"><span>Send me launch news, new packs and occasional offer codes. Optional; unsubscribe any time.</span></label>
+        <div data-human-check></div><button type="submit" class="pill pill-dark" disabled>Email my confirmation link ↗</button>
+        <p data-signup-message role="status" aria-live="polite">Email signup is not open yet.</p>
+      </form>
+      <p class="release-note">The link lasts 15 minutes and can be used once. <a href="./privacy.html">Privacy &amp; email choices</a></p>
+    </section>
+    <section id="your-downloads" hidden aria-labelledby="library-title">
+      <div class="library-heading"><div><p class="overline">MAKE YOURSELF AT HOME</p><h2 id="library-title">Your downloads</h2></div><button id="close-downloads" class="text-button" type="button">Close my downloads</button></div>
+      <div class="access-card"><div><strong id="edition-name">Free starter</strong><p id="edition-detail"></p></div><button id="save-access" class="pill pill-dark" type="button">Save my access file ↓</button></div>
+      <p>For Pro, a trial or extra charms, import your access file using <strong>Charmlet: Import Charm Pack</strong> in VS Code, or <strong>Import Pack…</strong> in the desktop tray. The same file works in your current apps.</p>
+      <p id="test-mode-note" class="service-note" hidden>This is the test service. Test access files will not unlock release builds.</p>
+      <button id="start-trial" class="pill pill-light" type="button" hidden>Start my 30-day Pro trial</button>
+      <section class="information-section" aria-labelledby="apps-title"><h2 id="apps-title">Choose your app</h2><div id="app-downloads" class="download-grid"></div><p class="release-note">Desktop preview archives are unsigned. Extract the whole archive before opening Charmlet.</p></section>
+      <section id="checkout-section" class="information-section" hidden aria-labelledby="checkout-title"><h2 id="checkout-title">Your basket</h2><div id="checkout-items"></div><p id="checkout-total"></p><button id="continue-checkout" class="pill pill-dark" type="button" disabled>Continue to secure checkout ↗</button><p id="checkout-note" class="release-note"></p><a class="inline-link" href="./shop.html">Edit your picks ↗</a></section>
+      <section class="information-section" aria-labelledby="extras-title"><h2 id="extras-title">Your free picks &amp; purchased extras</h2><p>Free downloads do not use your trial. Live companions and fidgets use your access file; image packs can also be imported on their own.</p><div id="owned-downloads" class="download-grid"></div></section>
+    </section>
+    <section class="information-section"><h2>A quick hello, then you're in.</h2><div class="information-grid"><article><h3>Inside VS Code</h3><ol><li>Save the extension <code>.vsix</code> download.</li><li>Open VS Code's Command Palette → <strong>Extensions: Install from VSIX…</strong></li><li>Select the file, then open Charmlet in the sidebar.</li></ol></article><article><h3>On your desktop</h3><ol><li>Download the archive for your computer.</li><li>Extract the entire archive, then open Charmlet.</li><li>Use its tray menu to choose a companion, open controls or import an access file.</li></ol></article></div></section>
+    <p id="page-status" role="status" hidden></p>
+  </main>
+  <footer class="concept-footer section-width"><a class="concept-brand" href="./"><span class="mark mark-terminal" aria-hidden="true"></span><span class="wordmark">charmlet</span></a><span>Developed in Silicon Valley. Made in California.</span><nav aria-label="Footer"><a href="./about.html">About Charmlet</a><a href="./about-us.html">About us</a><a href="./press.html">Press</a><a href="./privacy.html">Privacy</a></nav></footer>
+  <script type="module" src="./download.js"></script>
+</body></html>

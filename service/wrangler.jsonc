@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "charmlet-access",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-12",
+  "workers_dev": true,
+  "vars": {
+    "WEB_ORIGIN": "",
+    "MAIL_FROM": "",
+    "MAIL_FROM_NAME": "Charmlet",
+    "SIGNING_KEY_ID": "launch-1",
+    "TEST_MODE": "true",
+    "CHECKOUT_ENABLED": "false"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "charmlet-access", "database_id": "00000000-0000-0000-0000-000000000000" }
+  ],
+  "r2_buckets": [
+    { "binding": "ASSETS", "bucket_name": "charmlet-private-downloads" }
+  ],
+  "triggers": { "crons": ["17 * * * *"] },
+  "observability": { "enabled": false }
+}
