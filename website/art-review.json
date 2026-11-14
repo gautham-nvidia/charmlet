@@ -1,7 +1,7 @@
 {
   "status": "review-only",
-  "expected": 280,
-  "prepared": 280,
+  "expected": 283,
+  "prepared": 283,
   "note": "Illustrated Gemini artwork candidates. Publication and commercial rights require review. Flowers remain earned rewards.",
   "items": [
     {
@@ -6925,6 +6925,91 @@
       "featured": true
     },
     {
+      "key": "athlete-roger-federer",
+      "id": "athlete-roger-federer",
+      "name": "Roger Federer inspired",
+      "group": "Sports Icons",
+      "family": "athletes",
+      "accent": "#b56d44",
+      "description": "Roger Federer-inspired tennis study, included with the Sports Icons collection in Charmlet Pro.",
+      "original": null,
+      "preview": "./assets/review/athlete-roger-federer-r1-p4.webp",
+      "image": "./assets/review/athlete-roger-federer-r1-p4.png",
+      "revision": 1,
+      "profile": 4,
+      "greenDespill": "all",
+      "approvedPack": "sports-icons-pro-preview-3",
+      "approvedPngSha256": "8d14809d074ce5e84baa558e5ff8c155488bfd7dfd3a0ad84f6ff939cc05d006",
+      "download": "./packs/review/art-athlete-roger-federer-r1-p4.charmlet.json",
+      "pngBytes": 108652,
+      "pngSha256": "8d14809d074ce5e84baa558e5ff8c155488bfd7dfd3a0ad84f6ff939cc05d006",
+      "rawSha256": "d4ce377c6c9083601a082adba4973b762eae3a4da761211dce2ab262cac30976",
+      "promptHash": "e9409f221156b3e86e0d8dc1b10b532be923bd25281919fac7fbc4d003444a82",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 432,
+      "height": 504,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "athlete-rafael-nadal",
+      "id": "athlete-rafael-nadal",
+      "name": "Rafael Nadal inspired",
+      "group": "Sports Icons",
+      "family": "athletes",
+      "accent": "#b56d44",
+      "description": "Rafael Nadal-inspired tennis study, included with the Sports Icons collection in Charmlet Pro.",
+      "original": null,
+      "preview": "./assets/review/athlete-rafael-nadal-r2-p4.webp",
+      "image": "./assets/review/athlete-rafael-nadal-r2-p4.png",
+      "revision": 2,
+      "profile": 4,
+      "sourceTransform": "mirror-horizontal",
+      "greenDespill": "all",
+      "approvedPack": "sports-icons-pro-preview-3",
+      "approvedPngSha256": "bcb9e5ab7fa48a107d736efad5c29d30dee941418393eed2cb30d7b5813477b2",
+      "download": "./packs/review/art-athlete-rafael-nadal-r2-p4.charmlet.json",
+      "pngBytes": 129431,
+      "pngSha256": "bcb9e5ab7fa48a107d736efad5c29d30dee941418393eed2cb30d7b5813477b2",
+      "rawSha256": "a74cc72707429b94a486831b4212590fe03363e145a97bbe5ed8825e6c231625",
+      "promptHash": "3fd6783c332b369eada80a20fdabc260010d7e779e48bf44951b1ad76def725b",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 432,
+      "height": 504,
+      "decision": "new",
+      "featured": true
+    },
+    {
+      "key": "athlete-michael-phelps",
+      "id": "athlete-michael-phelps",
+      "name": "Michael Phelps inspired",
+      "group": "Sports Icons",
+      "family": "athletes",
+      "accent": "#b56d44",
+      "description": "Michael Phelps-inspired swimming study, included with the Sports Icons collection in Charmlet Pro.",
+      "original": null,
+      "preview": "./assets/review/athlete-michael-phelps-r1-p4.webp",
+      "image": "./assets/review/athlete-michael-phelps-r1-p4.png",
+      "revision": 1,
+      "profile": 4,
+      "greenDespill": "all",
+      "approvedPack": "sports-icons-pro-preview-3",
+      "approvedPngSha256": "cf24cdef094c6ea89b9c15a2521fc513547356610317d322be98d28f742b837f",
+      "download": "./packs/review/art-athlete-michael-phelps-r1-p4.charmlet.json",
+      "pngBytes": 100139,
+      "pngSha256": "cf24cdef094c6ea89b9c15a2521fc513547356610317d322be98d28f742b837f",
+      "rawSha256": "4cadc63d98c3442865c151d594da28f46d5c4ba62d4b1401736e6bccd677ce0b",
+      "promptHash": "bde9294cdcf9b4107e9ad1f97e54524caf6060f2e337c427288fd166a208c714",
+      "model": "Gemini 3 Pro Image",
+      "status": "review-candidate",
+      "width": 432,
+      "height": 504,
+      "decision": "new",
+      "featured": true
+    },
+    {
       "key": "athlete-usain-bolt",
       "id": "athlete-usain-bolt",
       "name": "Usain Bolt inspired",
@@ -7133,12 +7218,12 @@
     {
       "name": "Sports Icons 1",
       "count": 12,
-      "download": "./packs/review/review-sports-icons-1.charmlet.json"
+      "download": "./packs/review/review-sports-icons-1-80f231da.charmlet.json"
     },
     {
       "name": "Sports Icons 2",
-      "count": 2,
-      "download": "./packs/review/review-sports-icons-2.charmlet.json"
+      "count": 5,
+      "download": "./packs/review/review-sports-icons-2-6e35bebc.charmlet.json"
     },
     {
       "name": "Bay Area Days",
@@ -7147,5 +7232,5 @@
     }
   ],
   "curationDate": "2026-11-13",
-  "featured": 234
+  "featured": 237
 }

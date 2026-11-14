@@ -219,7 +219,8 @@ test('every bundled selection survives saved-state restoration', () => {
 	assert.deepEqual(new Set(TRIAL_CHARMS.filter(charm => charm.group === 'Sports Icons').map(charm => charm.artworkKey)),
 		new Set(['lionel-messi', 'cristiano-ronaldo', 'ms-dhoni', 'sachin-tendulkar', 'michael-jordan',
 			'kobe-bryant', 'lebron-james', 'stephen-curry', 'tom-brady', 'patrick-mahomes',
-			'serena-williams', 'usain-bolt', 'simone-biles', 'lewis-hamilton'].map(id => `athlete-${id}`)));
+			'serena-williams', 'roger-federer', 'rafael-nadal', 'michael-phelps', 'usain-bolt', 'simone-biles',
+			'lewis-hamilton'].map(id => `athlete-${id}`)));
 	assert.equal(TRIAL_CHARMS.filter(charm => charm.group === 'US Tech Hubs & Skylines').length, 13);
 	assert.ok(TRIAL_CHARMS.every(charm => !/NVIDIA|Salesforce|Apple|Alpine Lake|Night Sky|Ringed Planet/.test(`${charm.name} ${charm.description}`)));
 	for (const artist of ['travis-scott', 'whitney-houston', 'beyonce', 'prince']) {

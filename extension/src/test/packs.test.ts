@@ -99,11 +99,11 @@ test('cord attachment stays on a slanted silhouette when the downward inset cros
 
 test('artist and sports packs preserve imported selection and free ownership without duplicate bundled figures', async () => {
 	const packs = await Promise.all(['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review',
-		'sports-icons-pro-preview-1', 'sports-icons-pro-preview-2']
+		'sports-icons-pro-preview-1', 'sports-icons-pro-preview-2', 'sports-icons-pro-preview-3']
 		.map(async id => parseCharmPack(await readFile(join(__dirname, '../../../website/packs/review', `${id}.charmlet.json`)))));
 	const imported = packCharms(packs);
 	const catalogue = buildCatalogue(imported);
-	assert.equal(imported.length, 48);
+	assert.equal(imported.length, 51);
 	assert.equal(catalogue.length, CHARMS.length);
 	for (const charm of imported) {
 		assert.ok(accessibleCatalogue(catalogue, {}).some(item => item.id === charm.id),

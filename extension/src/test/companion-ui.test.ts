@@ -743,7 +743,7 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 		await expect(frame.locator('#stage')).toHaveAttribute('data-running', 'false');
 		await expect(frame.locator('#stage')).toHaveAttribute('data-frames', framesBefore!);
 		expect(Number(await frame.locator('#charm').getAttribute('data-position-y'))).toBeCloseTo(restingY, 1);
-		for (const id of ['sports-icons-pro-preview-1', 'sports-icons-pro-preview-2',
+		for (const id of ['sports-icons-pro-preview-1', 'sports-icons-pro-preview-2', 'sports-icons-pro-preview-3',
 			'review-us-tech-hubs-skylines-1', 'review-us-tech-hubs-skylines-2']) {
 			const path = resolve('..', 'website', 'packs', 'review', `${id}.charmlet.json`);
 			const imported = JSON.parse(readFileSync(path, 'utf8'));
@@ -754,7 +754,10 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 			await expect(window.getByText(`Imported ${imported.name}.`, { exact: true })).toBeVisible();
 		}
 		for (const [group, count, name] of [
-			['Sports Icons', 14, 'MS Dhoni inspired'],
+			['Sports Icons', 17, 'MS Dhoni inspired'],
+			['Sports Icons', 17, 'Roger Federer inspired'],
+			['Sports Icons', 17, 'Rafael Nadal inspired'],
+			['Sports Icons', 17, 'Michael Phelps inspired'],
 			['US Tech Hubs & Skylines', 13, 'San Francisco Skyline'],
 		] as const) {
 			await frame.getByRole('button', { name: 'Browse charms', exact: true }).click();
@@ -762,7 +765,7 @@ test('imported artwork attaches to its silhouette and rebounds while focus ticks
 			await expect(frame.locator('#charm-grid .charm-tile')).toHaveCount(count);
 			await frame.getByRole('button', { name: `Select ${name}`, exact: true }).click();
 			await frame.locator('#charm-image').evaluate(image => (image as HTMLImageElement).decode());
-			await frame.locator('#app').screenshot({ path: testInfo.outputPath(`${group === 'Sports Icons' ? 'sports' : 'skyline'}-import.png`) });
+			await frame.locator('#app').screenshot({ path: testInfo.outputPath(`${name.toLowerCase().replaceAll(' ', '-')}-import.png`) });
 			expect(await alphaAtCordTip(frame), `${name}: the cord must meet the visible silhouette`).toBeGreaterThanOrEqual(128);
 		}
 	} finally {

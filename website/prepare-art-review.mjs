@@ -23,6 +23,20 @@ function neutralizeGreen(cutout, mode) {
   }
 }
 
+async function previewFromPng(page, encoded) {
+  return page.evaluate(async png => {
+    const image = new Image();
+    image.src = `data:image/png;base64,${png}`;
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = 432; canvas.height = 504;
+    const context = canvas.getContext('2d');
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/webp', .9).split(',')[1];
+  }, encoded);
+}
+
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(join(repo, 'extension/package.json'));
 const { PNG } = require('pngjs');
@@ -79,6 +93,10 @@ try {
       }
       const image = await readFile(join(imageRoot, `${renderId}.png`));
       if (digest(image) !== previous.pngSha256) throw new Error(`Prepared artwork changed unexpectedly: ${job.key}`);
+      if (job.approvedPack) {
+        const preview = await previewFromPng(page, image.toString('base64'));
+        await writeFile(join(imageRoot, `${renderId}.webp`), Buffer.from(preview, 'base64'));
+      }
       // Preserve legacy fallback descriptions so unchanged packs keep their identity.
       items.set(job.key, { ...previous, name: job.name, group: job.group,
         description: previous.description === undefined ? undefined : job.description ?? previous.description,
@@ -127,6 +145,8 @@ try {
           throw new Error(`Approved import changed: ${job.key}`);
         }
         rendered.png = charm.png;
+        // Preview the same canonical pixels, including recorded preparation transforms.
+        rendered.preview = await previewFromPng(page, charm.png);
       }
       const png = Buffer.from(rendered.png, 'base64');
       if (png.length > MAX_PNG_BYTES) throw new Error('Cutout exceeds the existing PNG cap.');
@@ -144,6 +164,7 @@ try {
         original: job.original, preview: `./assets/review/${renderId}.webp`, image: `./assets/review/${renderId}.png`,
         revision: job.revision, profile,
         ...(job.sourceVariant ? { sourceVariant: job.sourceVariant } : {}),
+        ...(job.sourceTransform ? { sourceTransform: job.sourceTransform } : {}),
         ...(job.greenSpillCleanup ? { greenSpillCleanup: true } : {}),
         ...(job.greenDespill ? { greenDespill: job.greenDespill } : {}),
         ...(job.approvedPack ? { approvedPack: job.approvedPack, approvedPngSha256: job.approvedPngSha256 } : {}),

@@ -3220,6 +3220,48 @@
     }
   },
   {
+    "id": "trial:athlete-roger-federer",
+    "name": "Roger Federer inspired",
+    "file": "trial-athlete-roger-federer-r1-p4.png",
+    "description": "Roger Federer-inspired tennis study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-roger-federer",
+    "artworkHash": "8d14809d074ce5e84baa558e5ff8c155488bfd7dfd3a0ad84f6ff939cc05d006",
+    "attachment": {
+      "x": 0.5289351851851852,
+      "y": 0.08134920634920635
+    }
+  },
+  {
+    "id": "trial:athlete-rafael-nadal",
+    "name": "Rafael Nadal inspired",
+    "file": "trial-athlete-rafael-nadal-r2-p4.png",
+    "description": "Rafael Nadal-inspired tennis study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-rafael-nadal",
+    "artworkHash": "bcb9e5ab7fa48a107d736efad5c29d30dee941418393eed2cb30d7b5813477b2",
+    "attachment": {
+      "x": 0.4826388888888889,
+      "y": 0.09722222222222222
+    }
+  },
+  {
+    "id": "trial:athlete-michael-phelps",
+    "name": "Michael Phelps inspired",
+    "file": "trial-athlete-michael-phelps-r1-p4.png",
+    "description": "Michael Phelps-inspired swimming study, included with the Sports Icons collection in Charmlet Pro.",
+    "accent": "#b56d44",
+    "group": "Sports Icons",
+    "artworkKey": "athlete-michael-phelps",
+    "artworkHash": "cf24cdef094c6ea89b9c15a2521fc513547356610317d322be98d28f742b837f",
+    "attachment": {
+      "x": 0.5011574074074074,
+      "y": 0.05952380952380952
+    }
+  },
+  {
     "id": "trial:athlete-usain-bolt",
     "name": "Usain Bolt inspired",
     "file": "trial-athlete-usain-bolt-r1-p4.png",

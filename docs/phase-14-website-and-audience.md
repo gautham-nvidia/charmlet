@@ -132,3 +132,9 @@ Pricing pages were read with agent-browser. Brevo's help centre presented a Clou
 - Download and privacy pages load without errors. Missing desktop links stay hidden and the signup status correctly says that collection is not open.
 
 The Gmail signup window is prepared with **Charmlet** as the name. The owner still needs to complete Google's private details and verification. No Gmail address, Brevo account, public form or subscriber list has been created by this work.
+
+## Update, 2026-11-13
+
+The owner has now created **getcharmlet@gmail.com** as the official Charmlet inbox. The website uses it for support, press and privacy enquiries. Gmail creation is complete; the application has no Gmail password or recovery details.
+
+Use the [current service setup guide](../service/README.md) for the implemented verified-email portal and optional offers popup. The earlier standalone-form/download description above is historical: the current public build excludes raw installers and packs, and a form URL alone does not activate signup. Brevo, an authenticated sender domain, the service and live delivery checks still need setup.

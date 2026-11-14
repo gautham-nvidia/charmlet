@@ -212,7 +212,7 @@ export async function artworkJobs(repo) {
     { file: 'artist-artwork.json', prefix: 'artist', family: 'artists', group: 'Music Icons', maximum: 40,
       packs: ['music-icons-review', 'music-icons-legends-review', 'music-icons-current-review'] },
     { file: 'sports-artwork.json', prefix: 'athlete', family: 'athletes', group: 'Sports Icons', maximum: 24,
-      packs: ['sports-icons-pro-preview-1', 'sports-icons-pro-preview-2'] },
+      packs: ['sports-icons-pro-preview-1', 'sports-icons-pro-preview-2', 'sports-icons-pro-preview-3'] },
   ]) {
     const people = JSON.parse(await readFile(join(repo, 'website', inventory.file), 'utf8'));
     if (people.version !== 1 || !Array.isArray(people.entries) || people.entries.length > inventory.maximum) {
@@ -228,6 +228,7 @@ export async function artworkJobs(repo) {
         || typeof item.prompt !== 'string' || !item.prompt.trim() || item.prompt.length > 5000
         || !inventory.packs.includes(item.approvedPack)
         || !/^[a-f0-9]{64}$/.test(item.approvedPngSha256)
+        || item.sourceTransform !== undefined && item.sourceTransform !== 'mirror-horizontal'
         || item.greenDespill !== undefined && !['all', 'edges'].includes(item.greenDespill)) {
         throw new Error(`Invalid ${inventory.group} artwork entry: ${item.key}`);
       }

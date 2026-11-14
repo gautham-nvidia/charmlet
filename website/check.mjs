@@ -19,10 +19,10 @@ const output = join(repo, 'extension/test-results', `website-check-${manifest.ve
 await mkdir(output, { recursive: true });
 const base = process.env.CHARMLET_GALLERY_URL || 'http://127.0.0.1:4173/';
 const gallery = new URL('charms.html', base).href;
-const counts = { coding: 1, live: 15, stress: 18, music: 12, 'music-icons': 34, 'sports-icons': 14,
+const counts = { coding: 1, live: 15, stress: 18, music: 12, 'music-icons': 34, 'sports-icons': 17,
   california: 12, 'us-cities': 13, animals: 13, silicon: 15, parks: 6, space: 13, zodiac: 12, gemstones: 8, culture: 25,
   sports: 5, seasonal: 24, flowers: 18 };
-assert.equal(data.charms.length, 258);
+assert.equal(data.charms.length, 261);
 assert.equal(data.version, manifest.version);
 assert.deepEqual(Object.fromEntries(data.collections.map(item => [item.id, item.charmIds.length])), counts);
 const marketplace = `https://marketplace.visualstudio.com/items?itemName=${manifest.publisher}.${manifest.name}`;
@@ -65,6 +65,7 @@ page.on('console', message => {
 });
 const overflow = () => page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
 const publicCommerce = JSON.parse(await readFile(join(root, 'dist/commerce-public.json'), 'utf8'));
+const artwork = JSON.parse(await readFile(join(root, 'art-review.json'), 'utf8'));
 // These checks remain isolated after real provider addresses are configured.
 await page.route('**/commerce-public.json', route => route.fulfill({
   json: { ...publicCommerce, apiOrigin: null, salesEnabled: false },
@@ -170,7 +171,7 @@ try {
 
   console.log('Checking collection filters, search, preview focus and protected download boundaries.');
   await page.goto(gallery, { waitUntil: 'networkidle' });
-  await expect(page.locator('.charm-card')).toHaveCount(258);
+  await expect(page.locator('.charm-card')).toHaveCount(261);
   await expect(page.locator('.charm-card').nth(0)).toHaveAttribute('data-charm-id', 'terminal');
   await expect(page.locator('.charm-card').nth(1)).toHaveAttribute('data-charm-id', 'live:cali');
   for (const collection of data.collections) {
@@ -189,7 +190,7 @@ try {
   await expect(page.locator('#empty-state')).toBeVisible();
   await page.locator('#reset-filters').click();
   await expect(page.locator('#search')).toBeFocused();
-  await expect(page.locator('.charm-card')).toHaveCount(258);
+  await expect(page.locator('.charm-card')).toHaveCount(261);
   const artistButton = page.locator('.charm-card[data-charm-id="artist-travis-scott"] .card-art');
   await artistButton.click();
   await expect(page.locator('#preview-dialog')).toBeVisible();
@@ -295,16 +296,43 @@ try {
   await page.screenshot({ path: join(output, 'gallery-desktop.png') });
 
   console.log('Checking information pages, shop, disabled service and mobile layouts.');
+  for (const key of ['athlete-roger-federer', 'athlete-rafael-nadal', 'athlete-michael-phelps']) {
+    const item = artwork.items.find(item => item.key === key);
+    const charm = publicCommerce.products.find(charm => charm.sku === `trial:${key}`);
+    assert.ok(item && charm, `Missing new sports artwork: ${key}`);
+    const difference = await page.evaluate(async urls => {
+      const masks = [];
+      for (const url of urls) {
+        const image = new Image(); image.src = url; await image.decode();
+        const canvas = document.createElement('canvas'); canvas.width = 216; canvas.height = 252;
+        const context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        masks.push(Array.from({ length: canvas.width * canvas.height }, (_, index) => pixels[index * 4 + 3] >= 128));
+      }
+      let occupied = 0, mismatched = 0;
+      for (let index = 0; index < masks[0].length; index++) {
+        if (masks[0][index] || masks[1][index]) occupied++;
+        if (masks[0][index] !== masks[1][index]) mismatched++;
+      }
+      return occupied ? mismatched / occupied : 1;
+    }, [new URL(item.preview, base).href, new URL(charm.preview, base).href]);
+    assert.ok(difference < .01, `${key}: website preview must match the native silhouette`);
+  }
   for (const path of ['about.html', 'about-us.html', 'press.html', 'privacy.html', 'shop.html', 'download.html']) {
     assert.equal((await page.goto(new URL(path, base).href, { waitUntil: 'networkidle' })).status(), 200);
     await expect(page.locator('h1')).toBeVisible();
+    if (['about-us.html', 'press.html', 'privacy.html'].includes(path)) {
+      await expect(page.locator('[data-site-contact] a')).toHaveAttribute('href', 'mailto:getcharmlet@gmail.com');
+      await expect(page.locator('[data-site-contact]')).toHaveText('getcharmlet@gmail.com');
+    }
     assert.equal(await overflow(), false, `Page overflow: ${path}`);
   }
   await expect(page.locator('#portal-signup button[type="submit"]')).toBeDisabled();
   await page.goto(new URL('shop.html', base).href, { waitUntil: 'networkidle' });
   await page.locator('#store-collection').selectOption('Sports Icons');
-  await expect(page.locator('.store-card')).toHaveCount(14);
-  await expect(page.locator('.store-price')).toHaveText(Array(14).fill('Included with Charmlet Pro'));
+  await expect(page.locator('.store-card')).toHaveCount(17);
+  await expect(page.locator('.store-price')).toHaveText(Array(17).fill('Included with Charmlet Pro'));
   await expect(page.locator('.store-card button')).toHaveCount(0);
   await page.locator('#store-price').selectOption('0');
   await expect(page.locator('.store-card')).toHaveCount(0);
@@ -472,7 +500,7 @@ try {
   await expect(page.locator('#confirm-email')).toBeVisible();
   assert.equal(await page.evaluate(() => sessionStorage.getItem('charmlet-download-session-v1')), null);
   assert.deepEqual(errors, []);
-  const result = { version: manifest.version, charms: 258, artists: 34, athletes: 14, skylines: 13, collections: 18,
+  const result = { version: manifest.version, charms: 261, artists: 34, athletes: 17, skylines: 13, collections: 18,
     desktop: true, mobileWidths: [390, 320, 768], liveCompanions: 15, puzzleBoards: 3,
     publicDownloadsGated: true, rawPackUrlsExcluded: true, reducedMotion: true,
     checkoutDisabledByDefault: true, connectedPortalFixture: true, offersVerifiedWithoutTrial: true,

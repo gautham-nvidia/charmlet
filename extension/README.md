@@ -1,6 +1,6 @@
 # Charmlet: Coding Charms
 
-Start with 31 free charms, interactive fidgets and puzzles, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders. The current catalogue contains 258 designs; existing beta profiles retain their beta access with free replacements for three retired designs.
+Start with 31 free charms, interactive fidgets and puzzles, local photo keepsakes, small wins, free Focus/Learn tools, a gentle garden and optional reminders. The current catalogue contains 261 designs; existing beta profiles retain their beta access with free replacements for three retired designs.
 The default Hanging layout saves headroom; Orbit layout reserves room for full loops.
 
 **Free starter / Pro candidate, version 0.14.0.** Charmlet lives in a dockable VS Code view, not over your code
@@ -28,9 +28,9 @@ Charmlet has its own Activity Bar container titled **Charmlet**. You can move it
 8. Click **Garden**, then **Plant a seed**, or run **Charmlet: Open Garden**. Water once per local day and earn an original flower after eleven valid waterings. Optional water/move schedules live under **Settings → Reminders**.
 9. Run **Charmlet: Import Charm Pack** for a free downloaded `.charmlet.json`; remove imported packs with **Charmlet: Remove Charm Pack**.
 
-The trial includes 233 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools: **258 charms** in all. Open **Charms** to search the themed packs. Terminal is first, followed by Live 3D, Stress Busters, Music and Music Icons; no separate imports are needed. Music Icons includes all 34 artist studies, with Travis Scott, legends and twelve women. Existing imports keep their saved IDs and exact artwork without duplicate bundled figures.
+The trial includes 236 rendered designs, Terminal, fifteen live companions and nine fidget/puzzle tools: **261 charms** in all. Open **Charms** to search the themed packs. Terminal is first, followed by Live 3D, Stress Busters, Music and Music Icons; no separate imports are needed. Music Icons includes all 34 artist studies, with Travis Scott, legends and twelve women. Existing imports keep their saved IDs and exact artwork without duplicate bundled figures.
 
-**Music** has twelve instruments and controllers. **Sports Icons** includes 14 athlete-inspired studies with Pro, including Dhoni, Tendulkar, Curry and Hamilton. **US Tech Hubs & Skylines** includes 13 cities from the Bay Area to Boston and New York. Public artwork and likeness review remains required.
+**Music** has twelve instruments and controllers. **Sports Icons** includes 17 athlete-inspired studies with Pro, including Dhoni, Tendulkar, Curry, Hamilton, Federer, Nadal and Phelps. **US Tech Hubs & Skylines** includes 13 cities from the Bay Area to Boston and New York. Public artwork and likeness review remains required.
 
 **California** includes Palace of Fine Arts, Painted Ladies, Pebble Beach, Coastal Cypress, San Francisco Tower, Granite Dome, Santa Clara Office and the current circular Cupertino Ring Campus. **Celebrations** adds Diwali Diyas and Halloween Lantern. Saved Alpine Lake, Night Sky and Ringed Planet selections move to the free San Francisco, Austin and Seattle skylines, preserving pins and cord choices. Existing personal imports remain usable.
 

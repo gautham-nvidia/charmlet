@@ -2,9 +2,11 @@
 
 **Charmlet: Coding Charms** is a small, interactive hanging charm in a dockable VS Code view.
 
-**Free starter / Pro candidate:** extension **0.14.0** starts new profiles with **31 fixed free charms**, while existing beta profiles retain their beta access with matching replacements for retired designs. The **258-design** catalogue remains bundled for offline use. The online catalogue offers 15 additional free claims, optional 49¢ / 99¢ / $1.99 extras and **Charmlet Pro at $7.49 launch / $17.49 regular, once** across the current apps.
+**Free starter / Pro candidate:** extension **0.14.0** starts new profiles with **31 fixed free charms**, while existing beta profiles retain their beta access with matching replacements for retired designs. The **261-design** catalogue remains bundled for offline use. The online catalogue offers 15 additional free claims, optional 49¢ / 99¢ / $1.99 extras and **Charmlet Pro at $7.49 launch / $17.49 regular, once** across the current apps.
 
-**Sports Icons** adds 14 athlete-inspired studies to Pro without a separate sports charge. **US Tech Hubs & Skylines** adds 13 cities; San Francisco, Austin and Seattle replace Alpine Lake, Night Sky and Ringed Planet in the starter. Santa Clara Office and San Francisco Tower use generic names, and Cupertino Ring Campus depicts the current circular headquarters. Existing personal imports remain intact.
+**Sports Icons** adds 17 athlete-inspired studies to Pro without a separate sports charge, including Federer, Nadal and Phelps. **US Tech Hubs & Skylines** adds 13 cities; San Francisco, Austin and Seattle replace Alpine Lake, Night Sky and Ringed Planet in the starter. Santa Clara Office and San Francisco Tower use generic names, and Cupertino Ring Campus depicts the current circular headquarters. Existing personal imports remain intact.
+
+Official contact: **getcharmlet@gmail.com**. Subscriber delivery still requires the configured email service.
 
 Email-only verification, a once-per-email 30-day trial, signed activation and protected delivery are implemented. **Live signup, checkout and public installers are not enabled by the checked-in configuration.** [Hosting, sender, payments and file-delivery setup](service/README.md) explains the accounts, private keys and acceptance checks.
 

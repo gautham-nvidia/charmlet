@@ -28,7 +28,8 @@ const email = value => {
 if (process.argv.includes('--check')) {
   const missing = [];
   if (!access.apiOrigin || !access.websiteOrigin) missing.push('Public website and API origins');
-  if (!commerce.contactEmail || !commerce.turnstileSiteKey) missing.push('Contact email and public Turnstile site key');
+  if (!commerce.contactEmail) missing.push('Public support email');
+  if (!commerce.turnstileSiteKey) missing.push('Public Turnstile site key');
   if (!access.publicKeys[worker.vars.SIGNING_KEY_ID]) missing.push('Matching public signing key in the apps');
   if (!worker.vars.MAIL_FROM || worker.vars.WEB_ORIGIN !== access.websiteOrigin) missing.push('Verified sender and matching website origin');
   if (!worker.d1_databases[0].database_id || worker.d1_databases[0].database_id === '00000000-0000-0000-0000-000000000000') {

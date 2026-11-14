@@ -1,17 +1,17 @@
 # Collections and Pro offers
 
-Extension 0.14.0 and desktop 0.11.0 expand the catalogue to 258 designs, retain the 31-charm starter and add a compact website theme control and optional subscription popup. The candidate remains for review; live provider configuration and artwork clearance are still required.
+Extension 0.14.0 and desktop 0.11.0 expand the catalogue to 261 designs, retain the 31-charm starter and add a compact website theme control and optional subscription popup. The candidate remains for review; live provider configuration and artwork clearance are still required.
 
 ## Collections
 
 | Collection | Change |
 |---|---|
-| Sports Icons | 14 studies included with Pro; no individual sports purchase or free-claim route |
+| Sports Icons | 17 studies included with Pro; no individual sports purchase or free-claim route |
 | US Tech Hubs & Skylines | 13 new miniature city designs |
 | California | Santa Clara Office and San Francisco Tower use generic names; Cupertino Ring Campus depicts the current circular headquarters |
 | Retired starter designs | Alpine Lake → San Francisco, Night Sky → Austin, Ringed Planet → Seattle |
 
-The sports lineup is Messi, Ronaldo, Michael Jordan, Kobe Bryant, LeBron James, Stephen Curry, Tom Brady, Patrick Mahomes, Serena Williams, Usain Bolt, Simone Biles, MS Dhoni, Sachin Tendulkar and Lewis Hamilton. Mia Hamm and Caitlin Clark are removed from the current lineup. Ten retained sports images preserve their earlier private-pack bytes, so identical existing imports keep their IDs and do not acquire duplicate bundled tiles.
+The sports lineup is Messi, Ronaldo, Michael Jordan, Kobe Bryant, LeBron James, Stephen Curry, Tom Brady, Patrick Mahomes, Serena Williams, Roger Federer, Rafael Nadal, Michael Phelps, Usain Bolt, Simone Biles, MS Dhoni, Sachin Tendulkar and Lewis Hamilton. Mia Hamm and Caitlin Clark are removed from the current lineup. Ten retained sports images preserve their earlier private-pack bytes, so identical existing imports keep their IDs and do not acquire duplicate bundled tiles. Federer, Nadal and Phelps have a third source pack; neither of the existing fourteen-design source packs is overwritten.
 
 Cities are Bay Area/Silicon Valley, San Francisco, San Diego, Austin, Raleigh-Durham, Dallas, Miami, Seattle, Boston, New York, Chicago, Atlanta and Denver. No company names or logos appear in the new city illustrations. Historical source IDs remain stable for the renamed buildings.
 
@@ -25,13 +25,17 @@ Existing beta access remains frozen, with free replacements for the three retire
 - Subscribing neither starts a trial nor grants Pro. Email is not stored in browser storage. Unconfigured signup remains disabled and explains why.
 - Hosted Pro checkout permits provider-managed coupon codes. Item checkout keeps discounts off. The signed payment handler validates the original server-owned cart subtotal and bounds the provider discount.
 
-Start with a dedicated regular Gmail address for support and account administration. Use Brevo for confirmed subscribers and campaigns, with an authenticated sender domain before public delivery. A paid Google Workspace mailbox is optional. Create an actual code, its terms and its Pro restriction in Lemon Squeezy, then rehearse a discounted purchase/refund before mailing it.
+The owner created **getcharmlet@gmail.com** as Charmlet's official support and administration inbox. It is linked from the homepage, About Us, Press and Privacy pages. Use Brevo for confirmed subscribers and campaigns, with an authenticated sender domain before public delivery. The Gmail address alone does not activate collection or send email. A paid Google Workspace mailbox is optional. Create an actual code, its terms and its Pro restriction in Lemon Squeezy, then rehearse a discounted purchase/refund before mailing it.
 
 See [the service setup guide](../service/README.md) for account configuration, public signing keys, private secrets, delivery and provider checks. An `audience.json` form URL alone does not enable the popup.
 
 ## Artwork and verification
 
-The review inventory has 280 bounded, unique records and 234 featured designs. The review-only status, image-path validation, immutable pack rules and public exclusion of installers/raw packs remain enforced. Unchanged legacy descriptions and image bytes are retained; renamed/new designs carry their revised metadata.
+The review inventory has 283 bounded, unique records and 237 featured designs. The review-only status, image-path validation, immutable pack rules and public exclusion of installers/raw packs remain enforced. Unchanged legacy descriptions and image bytes are retained; renamed/new designs carry their revised metadata.
+
+Approved-source WebP previews now render from the same canonical PNG as the app. This preserves preparation changes such as Nadal's left-handed pose. The website check compares the three new preview silhouettes against the native PNGs, so a thumbnail cannot silently show an earlier pose.
+
+The 17-athlete follow-up passed all 101 model checks, the native import/attachment scenario covering the three additions, the full 261-design website suite and the extracted Windows archive check. All fourteen earlier sports registry entries and both source packs were verified unchanged. The website suite also verifies the official contact links and that signup remains disabled with no service configured.
 
 A native check caught a cord ending on a faint skyline edge. The attachment calculation now keeps its downward inset on opaque pixels, including slanted roofs and instrument necks. A regression test uses a slanted three-pixel silhouette; native checks measure the real rendered cord endpoint.
 
@@ -39,7 +43,7 @@ Local checks recorded so far:
 
 - 101 app model tests, including migrations, imported ownership and attachment geometry.
 - 13 service tests, including subscription without trial and Pro-only sports guards.
-- Public website checks across 258 designs and 320/390/768-pixel layouts, with keyboard dismissal, theme persistence, protected delivery and isolated email/checkout responses.
+- Public website checks across the full catalogue and 320/390/768-pixel layouts, with keyboard dismissal, theme persistence, protected delivery and isolated email/checkout responses.
 - Desktop model, development-host and extracted Windows archive checks.
 - Native VS Code sports/city imports, visible cord attachment, retained beta access and free-starter boundaries.
 

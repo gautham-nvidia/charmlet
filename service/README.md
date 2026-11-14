@@ -31,7 +31,7 @@ The Worker bundles with Wrangler and the schema has been applied to the local D1
 Use your own browser for login, recovery details and merchant verification. Do not put passwords or API keys into chat.
 
 1. Create a Cloudflare Pages project for the website, a Workers subdomain and a Turnstile widget for the exact website hostname. Start on the free tiers; R2 activation may require a billing method and usage beyond allowances can cost money.
-2. Create a Brevo account and verify the sender. A dedicated Gmail address can be your contact address; an authenticated domain is preferable for reliable transactional delivery. Create a separate list for **confirmed, optional offers**. Free-plan sending limits apply to all email, not just campaigns.
+2. Create a Brevo account using the official Charmlet inbox, **getcharmlet@gmail.com**, and verify an authenticated-domain sender for transactional delivery. Create a separate list for **confirmed, optional offers**. Free-plan sending limits apply to all email, not just campaigns.
 3. Create a Lemon Squeezy store when ready for payment testing. Confirm your business country is supported and complete merchant approval. Use USD and create **two fixed-price, one-time variants**: Charmlet Pro and a digital-items basket. Do not enable a subscription, quantity changes or pay-what-you-want. Hosted coupon entry is enabled for Pro; individual-item checkout keeps it off.
 4. Configure the payment webhook for `/v1/webhooks/lemon`, with `order_created` and `order_refunded`, and keep its signing secret private.
 
@@ -39,7 +39,9 @@ No physical products, shipping fields or merchandise preorders are needed. Keep 
 
 ### Gmail, subscriptions and Pro offers
 
-Start with a **regular Gmail account dedicated to Charmlet** for account administration and support. A Google Workspace mailbox is optional; do not buy it just to manage a subscriber list. Before public email delivery, use an authenticated domain you own for Brevo sending and test how replies reach your support inbox. Domain authentication does not require a paid Google Workspace mailbox.
+The owner created **getcharmlet@gmail.com** as Charmlet's official support and administration inbox. It is configured as the website's public contact address. A Google Workspace mailbox is optional; do not buy it just to manage a subscriber list. Before public email delivery, use an authenticated domain you own for Brevo sending and test how replies reach this support inbox. Domain authentication does not require a paid Google Workspace mailbox.
+
+The Gmail address alone does not connect the signup forms. Brevo, the confirmed-offers list, sender authentication and the service still need setup. The configuration helper already offers this address as the support-email default. Complete Gmail security and recovery settings directly in the account; do not put its password or recovery codes in the project or chat.
 
 The homepage offers popup asks only for an email and explicit subscription consent. It closes with Escape, the close button, the backdrop or “Maybe later”; dismissal lasts seven days on that browser, and the footer can reopen it. The separate download form keeps its offers checkbox unchecked. Only a confirmed email joins the Brevo offers list. Joining does not start a trial, charge a card or unlock Pro. No email is saved in browser storage.
 
